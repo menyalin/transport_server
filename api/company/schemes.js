@@ -3,7 +3,8 @@ export const createCompanySchema = {
   properties: {
     name: { type: 'string' },
     fullName: { type: 'string' },
-    inn: { type: 'string' }
+    inn: { type: 'string' },
+    hasOwnDirectories: { type: 'boolean' }
   },
   required: ['name', 'fullName', 'inn'],
   additionalProperties: true

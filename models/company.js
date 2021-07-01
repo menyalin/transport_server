@@ -45,6 +45,10 @@ const companySchema = new Schema(
       type: String,
       unique: true,
       lowerCase: true
+    },
+    hasOwnDirectories: {
+      type: Boolean,
+      default: true
     }
   },
   { timestamps: true }
