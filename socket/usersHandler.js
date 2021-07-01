@@ -1,4 +1,4 @@
-const UserService = require('../services/user')
+import { UserService } from '../services/index.js'
 
 const _updateUserList = async (io, socket, room) => {
   const sockets = []
@@ -21,12 +21,7 @@ const _updateUserList = async (io, socket, room) => {
   else io.emit('activeUsers', users)
 }
 
-const _addSocketRooms = (socket) => {
-  socket.join(socket.userId) // userId room
-}
-
-module.exports = (io, socket) => {
-  _addSocketRooms(socket)
+export default (io, socket) => {
   _updateUserList(io)
 
   socket.on('getActiveUsers', () => {

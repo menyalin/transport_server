@@ -1,6 +1,7 @@
-const mongoose = require('mongoose')
-const dg = require('debug')('mongo:connection')
-dg('start connection')
+/* eslint-disable semi */
+import mongoose from 'mongoose';
+// const dg = require('debug')('mongo:connection')
+// dg('start connection')
 mongoose.connect(
   process.env.DB_URL,
   {
@@ -10,7 +11,6 @@ mongoose.connect(
     useFindAndModify: true
   },
   (err) => {
-    if (err) throw new Error(err.message)
-    dg('db connected')
+    if (err) throw new Error(err.message); // dg('db connected')
   }
-)
+);

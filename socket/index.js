@@ -1,20 +1,23 @@
-const authMiddleware = require('./authMiddleware')
-const usersHandler = require('./usersHandler')
+import authMiddleware from './authMiddleware.js'
+import usersHandler from './usersHandler.js'
+import initDataHandler from './initDataHandler.js'
 
-const io = require('socket.io')({
-  serveClient: true
-})
+import { Server } from 'socket.io'
+const io = new Server({})
+
+const options = {
+  cors: ['http://localhost:8080']
+}
+const emitTo = (to, eventType, payload) => {
+  io.to(to).emit(eventType, payload)
+}
 
 io.use(authMiddleware)
 const onConnection = (socket) => {
   usersHandler(io, socket)
+  initDataHandler(io, socket)
 }
 
 io.on('connection', onConnection)
 
-module.exports = {
-  io,
-  options: {
-    cors: ['http://localhost:8080']
-  }
-}
+export { io, options, emitTo }

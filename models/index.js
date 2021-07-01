@@ -1,4 +1,5 @@
-const User = require('./user')
-const Company = require('./company')
+import User from './user.js'
+import Company from './company.js'
+import Task from './task.js'
 
-module.exports = { User, Company }
+export { User, Company, Task }

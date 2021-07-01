@@ -1,4 +1,4 @@
-const { User } = require('../../models')
+import { User } from '../../models/index.js'
 
 class UserService {
   async findById(id, fields = '-password') {
@@ -10,6 +10,14 @@ class UserService {
     const tmp = await User.find(query, fields)
     return tmp
   }
+
+  async findByEmail(email) {
+    const user = await User.findOne(
+      { email, openForSearch: true },
+      '-password'
+    )
+    return user
+  }
 }
 
-module.exports = new UserService()
+export default new UserService()

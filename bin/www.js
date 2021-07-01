@@ -1,11 +1,10 @@
 #!/usr/bin/env node
-require('dotenv').config()
-
-require('../db')
-const app = require('../app')
-const { io, options } = require('../socket')
-const debug = require('debug')('todo-app-server:server')
-const http = require('http')
+import './config.js'
+import '../db.js'
+import app from '../app.js'
+import { io, options } from '../socket/index.js'
+// const debug = require('debug')('todo-app-server:server')
+import http from 'http'
 
 const port = normalizePort(process.env.PORT || '3000')
 app.set('port', port)
@@ -45,7 +44,7 @@ function onError(error) {
 }
 
 function onListening() {
-  const addr = server.address()
-  const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port
-  debug('Listening on ' + bind)
+  // const addr = server.address()
+  // const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port
+  // debug('Listening on ' + bind)
 }

@@ -1,4 +1,5 @@
-const { Schema, model, Types } = require('mongoose')
+import pkg from 'mongoose'
+const { Schema, model, Types } = pkg
 
 const employeeSchema = new Schema(
   {
@@ -10,11 +11,16 @@ const employeeSchema = new Schema(
       {
         type: String,
         required: true,
-        enum: ['admin', 'manager', 'dispatsher']
+        enum: ['admin', 'manager', 'dispatcher']
       }
     ],
     position: {
       type: String
+    },
+    tasks: [{ type: Types.ObjectId, ref: 'Task' }],
+    isActive: {
+      type: Boolean,
+      default: false
     }
   },
   {
@@ -44,4 +50,4 @@ const companySchema = new Schema(
   { timestamps: true }
 )
 
-module.exports = model('Company', companySchema, 'companies')
+export default model('Company', companySchema, 'companies')

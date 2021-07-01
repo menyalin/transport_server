@@ -1,14 +1,14 @@
-const express = require('express')
-const router = express.Router()
+import express from 'express'
+import { bodyValidator } from '../../utils/validator.js'
+import { jwtAuth } from '../../utils/auth.middleware.js'
+import { login, registration, getMe } from './handlers.js'
+import { loginSchema, registrationSchema } from './schemes.js'
 
-const { bodyValidator } = require('../../utils/validator')
-const { jwtAuth } = require('../../utils/auth.middleware')
-const { login, registration, getMe } = require('./handlers')
-const { loginSchema, registrationSchema } = require('./schemes')
+const router = express.Router()
 
 /* GET home page. */
 router.get('/', [jwtAuth], getMe)
 router.post('/login', [bodyValidator(loginSchema)], login)
 router.post('/registration', [bodyValidator(registrationSchema)], registration)
 
-module.exports = router
+export default router

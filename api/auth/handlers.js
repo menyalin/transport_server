@@ -1,7 +1,7 @@
-const { User } = require('../../models')
-const UserService = require('../../services/user')
+import { User } from '../../models/index.js'
+import { UserService } from '../../services/index.js'
 
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
   try {
     const { email, password } = req.body
     const tmpUser = await User.findOne({ email })
@@ -13,7 +13,7 @@ exports.login = async (req, res) => {
   }
 }
 
-exports.registration = async (req, res) => {
+export const registration = async (req, res) => {
   try {
     const newUser = await User.create(req.body)
     res.status(201).json({
@@ -26,7 +26,7 @@ exports.registration = async (req, res) => {
   }
 }
 
-exports.getMe = async (req, res) => {
+export const getMe = async (req, res) => {
   try {
     const user = await UserService.findById(req.userId)
     res.status(200).json({ data: user })

@@ -1,6 +1,7 @@
-const { Schema, model } = require('mongoose')
-const bcrypt = require('bcryptjs')
-const jwt = require('jsonwebtoken')
+import pkg from 'mongoose'
+import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+const { Schema, model } = pkg
 
 const userSchema = new Schema(
   {
@@ -12,7 +13,11 @@ const userSchema = new Schema(
       trim: true
     },
     password: { type: String, required: true },
-    name: String
+    name: String,
+    openForSearch: {
+      type: Boolean,
+      default: true
+    }
   },
   { timestamps: true }
 )
@@ -45,4 +50,4 @@ userSchema.pre('save', function (next) {
   }
 })
 
-module.exports = model('User', userSchema, 'users')
+export default model('User', userSchema, 'users')

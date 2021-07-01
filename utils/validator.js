@@ -1,6 +1,6 @@
-const Ajv = require('ajv')
+import Ajv from 'ajv'
 
-module.exports.bodyValidator = (schema) => (req, res, next) => {
+export const bodyValidator = (schema) => (req, res, next) => {
   const newAjv = new Ajv({ allErrors: true })
   const validate = newAjv.compile(schema)
 
@@ -9,7 +9,7 @@ module.exports.bodyValidator = (schema) => (req, res, next) => {
   res.status(400).json({ message: 'validation fail', errors: validate.errors })
 }
 
-module.exports.queryValidator = (schema) => (req, res, next) => {
+export const queryValidator = (schema) => (req, res, next) => {
   const newAjv = new Ajv({ allErrors: true })
   const validate = newAjv.compile(schema)
 

@@ -1,4 +1,4 @@
-exports.loginSchema = {
+export const loginSchema = {
   type: 'object',
   properties: {
     email: { type: 'string', format: 'email' },
@@ -8,7 +8,7 @@ exports.loginSchema = {
   additionalProperties: false
 }
 
-exports.registrationSchema = {
+export const registrationSchema = {
   type: 'object',
   properties: {
     email: { type: 'string', format: 'email' },
