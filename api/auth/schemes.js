@@ -18,3 +18,11 @@ export const registrationSchema = {
   required: ['email', 'password', 'name'],
   additionalProperties: false
 }
+
+export const configProfileSchema = {
+  type: 'object',
+  properties: {
+    directoriesProfile: { type: ['string', 'null'] }
+  },
+  additionalProperties: false
+}

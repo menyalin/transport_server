@@ -1,7 +1,7 @@
 import pkg from 'mongoose'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-const { Schema, model } = pkg
+const { Schema, model, Types } = pkg
 
 const userSchema = new Schema(
   {
@@ -17,6 +17,9 @@ const userSchema = new Schema(
     openForSearch: {
       type: Boolean,
       default: true
+    },
+    directoriesProfile: {
+      type: Types.ObjectId
     }
   },
   { timestamps: true }

@@ -18,6 +18,13 @@ class UserService {
     )
     return user
   }
+
+  async configProfile(userId, { directoriesProfile }) {
+    const user = await User.findById(userId)
+    if (directoriesProfile !== undefined)
+      user.directoriesProfile = directoriesProfile
+    await user.save()
+  }
 }
 
 export default new UserService()
