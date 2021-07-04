@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import axios from 'axios'
 import { Address } from '../../models/index.js'
+import { emitTo } from '../../socket/index.js'
 
 const URL =
   'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address'
@@ -38,6 +39,7 @@ class AddressService {
       isShipmentPlace: body.isShipmentPlace,
       isDeliveryPlace: body.isDeliveryPlace
     })
+    emitTo(newAddress.company.toString(), 'address:created', newAddress)
     return newAddress
   }
 
