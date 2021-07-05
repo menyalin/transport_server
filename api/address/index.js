@@ -6,8 +6,11 @@ import { queryValidator, bodyValidator } from '../../utils/validator.js'
 import {
   getSuggestions,
   createAddress,
+  updateAddress,
   searchAddress,
-  getProfileAddresses
+  getProfileAddresses,
+  getById,
+  deleteById
 } from './handlers.js'
 import {
   getSuggestionsSchema,
@@ -30,7 +33,15 @@ router.get(
   getSuggestions
 )
 
+router.get('/:id', [jwtAuth], getById)
+
 router.post('/', [jwtAuth, bodyValidator(createAddressSchema)], createAddress)
+router.put(
+  '/:id',
+  [jwtAuth, bodyValidator(createAddressSchema)],
+  updateAddress
+)
+router.delete('/:id', [jwtAuth], deleteById)
 router.get('/search', searchAddress)
 
 export default router

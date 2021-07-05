@@ -43,6 +43,16 @@ class AddressService {
     return newAddress
   }
 
+  async updateOne(id, body) {
+    body.geo = {
+      type: 'Point',
+      coordinates: this._convertCoordinatesStr(body.geo)
+    }
+    const address = await Address.findByIdAndUpdate(id, body, { new: true })
+    emitTo(address.company.toString(), 'address:updated', address)
+    return address
+  }
+
   async search(str) {
     const res = await Address.find(
       {
@@ -61,6 +71,17 @@ class AddressService {
   async getByProfile(profile) {
     const addresses = await Address.find({ company: profile })
     return addresses
+  }
+
+  async getById(id) {
+    const address = await Address.findById(id)
+    return address
+  }
+
+  async deleteById(id) {
+    const address = await Address.findByIdAndDelete(id)
+    emitTo(address.company.toString(), 'address:deleted', id)
+    return address
   }
 }
 
