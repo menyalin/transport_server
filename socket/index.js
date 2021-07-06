@@ -6,7 +6,7 @@ import { Server } from 'socket.io'
 const io = new Server({})
 
 const options = {
-  cors: '*'
+  cors: ['http://localhost:8080']
 }
 const emitTo = (to, eventType, payload) => {
   io.to(to).emit(eventType, payload)
