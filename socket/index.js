@@ -7,7 +7,7 @@ const io = new Server({})
 
 const options = {
   cors: {
-    origin: ['http://localhost:8080', 'http://192.168.1.59:8080']
+    origin: true
   }
 }
 const emitTo = (to, eventType, payload) => {
