@@ -28,8 +28,8 @@ export const registration = async (req, res) => {
 
 export const getMe = async (req, res) => {
   try {
-    const user = await UserService.findById(req.userId)
-    res.status(200).json({ data: user })
+    const user = await UserService.getUserData(req.userId)
+    res.status(200).json(user)
   } catch (e) {
     res.status(500).json({ message: e.message })
   }

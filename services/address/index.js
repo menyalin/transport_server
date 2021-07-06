@@ -69,8 +69,12 @@ class AddressService {
   }
 
   async getByProfile(profile) {
-    const addresses = await Address.find({ company: profile })
-    return addresses
+    const addresses = await Address.find({ company: profile }).lean()
+    const preparedAddresses = addresses.map((item) => ({
+      ...item,
+      geo: item.geo.coordinates.reverse().join(', ')
+    }))
+    return preparedAddresses
   }
 
   async getById(id) {

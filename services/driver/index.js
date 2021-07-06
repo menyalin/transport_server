@@ -17,12 +17,12 @@ class AddressService {
   }
 
   async getByProfile(profile) {
-    const data = await Driver.find({ company: profile })
+    const data = await Driver.find({ company: profile }).lean()
     return data
   }
 
   async getById(id) {
-    const data = await Driver.findById(id)
+    const data = await Driver.findById(id).lean()
     return data
   }
 
