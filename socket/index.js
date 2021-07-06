@@ -6,9 +6,7 @@ import { Server } from 'socket.io'
 const io = new Server({})
 
 const options = {
-  cors: {
-    origin: '*'
-  }
+  cors: '*'
 }
 const emitTo = (to, eventType, payload) => {
   io.to(to).emit(eventType, payload)
