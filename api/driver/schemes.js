@@ -17,6 +17,13 @@ export const createDriverSchema = {
     },
     name: {
       type: 'string'
+    },
+    birthday: {
+      type: ['string', 'null'],
+      formats: ['date', 'date-time']
+    },
+    phone: {
+      type: ['string', 'null']
     }
   },
   required: ['company', 'name'],
