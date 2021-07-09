@@ -1,4 +1,5 @@
 import pkg from 'mongoose'
+import { USER_ROLES } from '../constants/enums.js'
 const { Schema, model, Types } = pkg
 
 const employeeSchema = new Schema(
@@ -11,7 +12,7 @@ const employeeSchema = new Schema(
       {
         type: String,
         required: true,
-        enum: ['admin', 'manager', 'dispatcher']
+        enum: USER_ROLES
       }
     ],
     position: {
