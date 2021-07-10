@@ -22,4 +22,5 @@ app.use('/api/tasks', taskRouter)
 app.use('/api/addresses', addressRouter)
 app.use('/api/drivers', driverRouter)
 app.use('/api/trucks', truckRouter)
+
 export default app
