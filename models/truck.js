@@ -9,25 +9,38 @@ const truckSchema = new Schema(
       type: String,
       required: true
     },
+    brand: {
+      type: String
+    },
     model: {
       type: String
     },
+    issueYear: String,
+    endServiceDate: Date,
+    startServiceDate: Date,
     type: {
       type: String,
       enum: TRUCK_TYPES
     },
+    tkName: String,
     regNum: {
       type: String
     },
+    win: String,
     sts: {
       type: String
     },
+    stsDate: Date,
     pts: {
       type: String
     },
     owner: {
       type: String
     },
+    volumeFuel: { type: Number, default: 0 },
+    volumeRef: { type: Number, default: 0 },
+    liftCapacity: { type: Number, default: 0},
+    pltCount:{ type: Number, default: 0 },
     company: {
       type: Types.ObjectId,
       ref: 'Company'
@@ -35,7 +48,8 @@ const truckSchema = new Schema(
     isActive: {
       type: Boolean,
       default: true
-    }
+    },
+    note: String
   },
   { timestamps: true }
 )
