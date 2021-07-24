@@ -1,5 +1,5 @@
 import { User } from '../../models/index.js'
-import { AddressService, CompanyService, DriverService } from '../index.js'
+import { AddressService, CompanyService, DriverService, TruckService } from '../index.js'
 
 class UserService {
   async findById(id, fields = '-password') {
@@ -13,7 +13,8 @@ class UserService {
     const companies = await CompanyService.getUserCompanies(id)
     const addresses = await AddressService.getByProfile(profile)
     const drivers = await DriverService.getByProfile(profile)
-    return { user, companies, addresses, drivers }
+    const trucks = await TruckService.getByProfile(profile)
+    return { user, companies, addresses, drivers, trucks }
   }
 
   async find(query, fields = '-password') {
