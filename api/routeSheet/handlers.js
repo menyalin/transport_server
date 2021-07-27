@@ -1,8 +1,8 @@
-import { DriverService } from '../../services/index.js'
+import { RouteSheetService } from '../../services/index.js'
 
 export const create = async (req, res) => {
   try {
-    const data = await DriverService.create(req.body)
+    const data = await RouteSheetService.create(req.body)
     res.status(201).json(data)
   } catch (e) {
     res.status(500).json({ message: e.message })
@@ -11,28 +11,16 @@ export const create = async (req, res) => {
 
 export const updateOne = async (req, res) => {
   try {
-    const data = await DriverService.updateOne(req.params.id, req.body)
+    const data = await RouteSheetService.updateOne(req.params.id, req.body)
     res.status(200).json(data)
   } catch (e) {
     res.status(500).json({ message: e.message })
   }
 }
 
-export const getProfileDrivers = async (req, res) => {
+export const getProfileDocs = async (req, res) => {
   try {
-    const data = await DriverService.getByProfile(req.query.profile)
-    res.status(200).json(data)
-  } catch (e) {
-    res.status(500).json({ message: e.message })
-  }
-}
-
-export const search = async (req, res) => {
-  try {
-    const data = await DriverService.search({
-      search: req.query.querySearch,
-      profile: req.query.profile
-    })
+    const data = await RouteSheetService.getByProfile(req.query.profile)
     res.status(200).json(data)
   } catch (e) {
     res.status(500).json({ message: e.message })
@@ -41,7 +29,7 @@ export const search = async (req, res) => {
 
 export const getById = async (req, res) => {
   try {
-    const data = await DriverService.getById(req.params.id)
+    const data = await RouteSheetService.getById(req.params.id)
     res.status(200).json(data)
   } catch (e) {
     res.status(500).json({ message: e.message })
@@ -50,7 +38,7 @@ export const getById = async (req, res) => {
 
 export const deleteById = async (req, res) => {
   try {
-    const data = await DriverService.deleteById(req.params.id)
+    const data = await RouteSheetService.deleteById(req.params.id)
     res.status(200).json(data)
   } catch (e) {
     res.status(500).json({ message: e.message })

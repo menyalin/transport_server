@@ -6,26 +6,25 @@ import { queryValidator, bodyValidator } from '../../utils/validator.js'
 import {
   create,
   updateOne,
-  getProfileDrivers,
+  getProfileDocs,
   getById,
-  search,
   deleteById
 } from './handlers.js'
-import { getProfileDriversSchema, createDriverSchema } from './schemes.js'
+import { getProfileDocsSchema, createDocSchema } from './schemes.js'
 
 const router = express.Router()
 
-// api/driver
+// api/routeSheet
 router.get(
   '/',
-  [jwtAuth, queryValidator(getProfileDriversSchema)],
-  getProfileDrivers
+  [jwtAuth, queryValidator(getProfileDocsSchema)],
+  getProfileDocs
 )
-router.get('/search', [jwtAuth], search)
+
 router.get('/:id', [jwtAuth], getById)
 
-router.post('/', [jwtAuth, bodyValidator(createDriverSchema)], create)
-router.put('/:id', [jwtAuth, bodyValidator(createDriverSchema)], updateOne)
+router.post('/', [jwtAuth, bodyValidator(createDocSchema)], create)
+router.put('/:id', [jwtAuth, bodyValidator(createDocSchema)], updateOne)
 router.delete('/:id', [jwtAuth], deleteById)
 
 export default router

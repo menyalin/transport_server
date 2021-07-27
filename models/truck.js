@@ -39,8 +39,8 @@ const truckSchema = new Schema(
     },
     volumeFuel: { type: Number, default: 0 },
     volumeRef: { type: Number, default: 0 },
-    liftCapacity: { type: Number, default: 0},
-    pltCount:{ type: Number, default: 0 },
+    liftCapacity: { type: Number, default: 0 },
+    pltCount: { type: Number, default: 0 },
     company: {
       type: Types.ObjectId,
       ref: 'Company'
@@ -49,7 +49,11 @@ const truckSchema = new Schema(
       type: Boolean,
       default: true
     },
-    note: String
+    note: String,
+    allowUseTrailer: {
+      type: Boolean,
+      default: false
+    }
   },
   { timestamps: true }
 )

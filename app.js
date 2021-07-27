@@ -8,6 +8,7 @@ import taskRouter from './api/task/index.js'
 import addressRouter from './api/address/index.js'
 import driverRouter from './api/driver/index.js'
 import truckRouter from './api/truck/index.js'
+import routeSheetRouter from './api/routeSheet/index.js'
 
 const app = express()
 
@@ -22,5 +23,6 @@ app.use('/api/tasks', taskRouter)
 app.use('/api/addresses', addressRouter)
 app.use('/api/drivers', driverRouter)
 app.use('/api/trucks', truckRouter)
+app.use('/api/routeSheets', routeSheetRouter)
 
 export default app

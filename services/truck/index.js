@@ -16,6 +16,19 @@ class TruckService {
     return data
   }
 
+  async search({ search, type, profile }) {
+    const query = {
+      $or: [
+        { name: new RegExp(search, 'i') },
+        { regNum: new RegExp(search, 'i') }
+      ]
+    }
+    if (profile) query.company = profile
+    if (type) query.type = type
+    const data = await Truck.find(query).lean()
+    return data
+  }
+
   async getByProfile(profile) {
     const data = await Truck.find({ company: profile }).lean()
     return data

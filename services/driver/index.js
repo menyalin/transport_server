@@ -21,6 +21,13 @@ class AddressService {
     return data
   }
 
+  async search({ search, profile }) {
+    const query = { surname: new RegExp(search, 'i') }
+    if (profile) query.company = profile
+    const data = await Driver.find(query).lean()
+    return data
+  }
+
   async getById(id) {
     const data = await Driver.findById(id).lean()
     return data

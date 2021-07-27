@@ -8,6 +8,7 @@ import {
   updateOne,
   getProfileTrucks,
   getById,
+  search,
   deleteById
 } from './handlers.js'
 import { getProfileTrucksSchema, createTruckSchema } from './schemes.js'
@@ -20,7 +21,7 @@ router.get(
   [jwtAuth, queryValidator(getProfileTrucksSchema)],
   getProfileTrucks
 )
-
+router.get('/search', [jwtAuth], search)
 router.get('/:id', [jwtAuth], getById)
 
 router.post('/', [jwtAuth, bodyValidator(createTruckSchema)], create)

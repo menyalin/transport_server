@@ -27,6 +27,19 @@ export const getProfileTrucks = async (req, res) => {
   }
 }
 
+export const search = async (req, res) => {
+  try {
+    const data = await TruckService.search({
+      search: req.query.querySearch,
+      type: req.query.type,
+      profile: req.query.profile
+    })
+    res.status(200).json(data)
+  } catch (e) {
+    res.status(500).json({ message: e.message })
+  }
+}
+
 export const getById = async (req, res) => {
   try {
     const data = await TruckService.getById(req.params.id)

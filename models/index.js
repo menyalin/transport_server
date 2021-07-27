@@ -4,5 +4,6 @@ import Task from './task.js'
 import { Address } from './address.js'
 import { Driver } from './driver.js'
 import { Truck } from './truck.js'
+import RouteSheet from './routeSheet.js'
 
-export { User, Company, Task, Address, Driver, Truck }
+export { User, Company, Task, Address, Driver, Truck, RouteSheet }
