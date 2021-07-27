@@ -38,7 +38,7 @@ export const createDriverSchema = {
       formats: ['date', 'date-time']
     },
     licenseId: {
-      type: 'string'
+      type: ['string', 'null'],
     },
     licenseDate: {
       type: ['string', 'null'],
@@ -54,7 +54,6 @@ export const createDriverSchema = {
       type: ['string', 'null'],
       formats: ['date', 'date-time']
     },
-    hasScans: { type: 'boolean' },
     employmentDate: {
       type: ['string', 'null'],
       formats: ['date', 'date-time']
@@ -77,6 +76,6 @@ export const createDriverSchema = {
     }
   },
   required: ['company', 'surname'],
-  additionalProperties: false
+  additionalProperties: true
 }
 //
