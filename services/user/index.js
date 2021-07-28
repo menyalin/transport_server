@@ -1,5 +1,10 @@
-import { User } from '../../models/index.js'
-import { AddressService, CompanyService, DriverService, TruckService } from '../index.js'
+import { User, UserActivity } from '../../models/index.js'
+import {
+  AddressService,
+  CompanyService,
+  DriverService,
+  TruckService
+} from '../index.js'
 
 class UserService {
   async findById(id, fields = '-password') {
@@ -9,11 +14,15 @@ class UserService {
 
   async getUserData(id, fields = '-password') {
     const user = await User.findById(id, fields)
+    if (!user) throw new Error('user not found!')
+
+    UserActivity.create({ user: id, type: 'getUserData' })
     const profile = user.directoriesProfile
     const companies = await CompanyService.getUserCompanies(id)
     const addresses = await AddressService.getByProfile(profile)
     const drivers = await DriverService.getByProfile(profile)
     const trucks = await TruckService.getByProfile(profile)
+
     return { user, companies, addresses, drivers, trucks }
   }
 

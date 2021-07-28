@@ -2,7 +2,7 @@ import { RouteSheetService } from '../../services/index.js'
 
 export const create = async (req, res) => {
   try {
-    const data = await RouteSheetService.create(req.body)
+    const data = await RouteSheetService.create(req.body, req.userId)
     res.status(201).json(data)
   } catch (e) {
     res.status(500).json({ message: e.message })
@@ -11,7 +11,11 @@ export const create = async (req, res) => {
 
 export const updateOne = async (req, res) => {
   try {
-    const data = await RouteSheetService.updateOne(req.params.id, req.body)
+    const data = await RouteSheetService.updateOne(
+      req.params.id,
+      req.body,
+      req.userId
+    )
     res.status(200).json(data)
   } catch (e) {
     res.status(500).json({ message: e.message })
