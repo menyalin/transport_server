@@ -3,13 +3,14 @@ import express from 'express'
 
 import { jwtAuth } from '../../utils/auth.middleware.js'
 import { queryValidator, bodyValidator } from '../../utils/validator.js'
+import { getById } from '../../controllers/address.controllers.js'
+
 import {
   getSuggestions,
   createAddress,
   updateAddress,
   searchAddress,
   getProfileAddresses,
-  getById,
   deleteById
 } from './handlers.js'
 import {

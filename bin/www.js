@@ -3,9 +3,10 @@ import './config.js'
 import '../db.js'
 import app from '../app.js'
 import { io, options } from '../socket/index.js'
-// const debug = require('debug')('todo-app-server:server')
+import Debug from 'debug'
 import http from 'http'
 
+const debug = Debug('server')
 const port = normalizePort(process.env.PORT || '3000')
 app.set('port', port)
 
@@ -44,7 +45,7 @@ function onError(error) {
 }
 
 function onListening() {
-  // const addr = server.address()
-  // const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port
-  // debug('Listening on ' + bind)
+  const addr = server.address()
+  const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port
+  debug('Listening on ' + bind)
 }

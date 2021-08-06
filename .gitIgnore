@@ -2,3 +2,4 @@
 .env
 .VSCode
 /mongo_data
+startDevInDocker
