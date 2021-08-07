@@ -16,7 +16,7 @@ export const createTruckSchema = {
       type: 'string'
     },
     name: {
-      type: 'string'
+      type: ['string', 'null']
     },
     brand: {
       type: ['string', 'null']
@@ -52,6 +52,7 @@ export const createTruckSchema = {
       type: ['number', 'null'],
       message: 'не верный формат грузоподъемности'
     },
+    allowedDrivers: { type: ['array', 'null'] },
     pltCount: { type: ['number', 'null'] },
     type: {
       type: 'string'

@@ -4,7 +4,8 @@ import TaskService from './task/index.js'
 import AddressService from './address/index.js'
 import DriverService from './driver/index.js'
 import TruckService from './truck/index.js'
-import RouteSheetService from './routeSheet/index.js'
+import CrewService from './crew/index.js'
+import TkNameService from './tkName/index.js'
 
 export {
   UserService,
@@ -13,5 +14,6 @@ export {
   AddressService,
   DriverService,
   TruckService,
-  RouteSheetService
+  CrewService,
+  TkNameService
 }

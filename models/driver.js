@@ -4,6 +4,7 @@ const { Schema, model, Types } = pkg
 
 const driverSchema = new Schema(
   {
+    fullName: String,
     name: {
       type: String
     },
@@ -13,7 +14,10 @@ const driverSchema = new Schema(
     surname: {
       type: String
     },
-    tkName: String,
+    tkName: {
+      type: Types.ObjectId,
+      ref: 'TkName'
+    },
     passportId: String,
     passportIssued: String,
     passportDate: Date,

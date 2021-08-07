@@ -22,7 +22,10 @@ const truckSchema = new Schema(
       type: String,
       enum: TRUCK_TYPES
     },
-    tkName: String,
+    tkName: {
+      type: Types.ObjectId,
+      ref: 'TkName'
+    },
     regNum: {
       type: String
     },
@@ -53,7 +56,13 @@ const truckSchema = new Schema(
     allowUseTrailer: {
       type: Boolean,
       default: false
-    }
+    },
+    allowedDrivers: [
+      {
+        type: Types.ObjectId,
+        ref: 'Driver'
+      }
+    ]
   },
   { timestamps: true }
 )

@@ -9,12 +9,12 @@ import {
   getProfileDocs,
   getById,
   deleteById
-} from './handlers.js'
+} from '../../controllers/crew.controllers.js'
 import { getProfileDocsSchema, createDocSchema } from './schemes.js'
 
 const router = express.Router()
 
-// api/routeSheet
+// api/crews
 router.get(
   '/',
   [jwtAuth, queryValidator(getProfileDocsSchema)],

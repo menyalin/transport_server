@@ -4,8 +4,9 @@ import Task from './task.js'
 import { Address } from './address.js'
 import { Driver } from './driver.js'
 import { Truck } from './truck.js'
-import RouteSheet from './routeSheet.js'
+import Crew from './crew.js'
 import { UserActivity } from './userActivity.js'
+import TkName from './tkName.js'
 
 export {
   User,
@@ -14,6 +15,7 @@ export {
   Address,
   Driver,
   Truck,
-  RouteSheet,
-  UserActivity
+  Crew,
+  UserActivity,
+  TkName
 }

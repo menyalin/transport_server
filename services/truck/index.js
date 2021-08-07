@@ -5,13 +5,16 @@ import { emitTo } from '../../socket/index.js'
 
 class TruckService {
   async create(body) {
-    const data = await Truck.create(body)
+    let data = await Truck.create(body)
+    data = await data.populate('tkName').execPopulate()
     emitTo(data.company.toString(), 'truck:created', data)
     return data
   }
 
   async updateOne(id, body) {
-    const data = await Truck.findByIdAndUpdate(id, body, { new: true })
+    const data = await Truck.findByIdAndUpdate(id, body, {
+      new: true
+    }).populate('tkName')
     emitTo(data.company.toString(), 'truck:updated', data)
     return data
   }
@@ -25,17 +28,19 @@ class TruckService {
     }
     if (profile) query.company = profile
     if (type) query.type = type
-    const data = await Truck.find(query).lean()
+    const data = await Truck.find(query).populate('tkName').lean()
     return data
   }
 
   async getByProfile(profile) {
-    const data = await Truck.find({ company: profile }).lean()
+    const data = await Truck.find({ company: profile })
+      .populate('tkName')
+      .lean()
     return data
   }
 
   async getById(id) {
-    const data = await Truck.findById(id).lean()
+    const data = await Truck.findById(id).populate('tkName').lean()
     return data
   }
 

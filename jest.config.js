@@ -6,7 +6,8 @@
 export default {
   transform: {
     '^.+\\.[t|j]sx?$': 'babel-jest'
-  }
+  },
+  testEnvironment: 'node'
   // All imported modules in your tests should be mocked automatically
   // automock: false,
 
@@ -140,7 +141,6 @@ export default {
   // snapshotSerializers: [],
 
   // The test environment that will be used for testing
-  // testEnvironment: "jest-environment-node",
 
   // Options that will be passed to the testEnvironment
   // testEnvironmentOptions: {},

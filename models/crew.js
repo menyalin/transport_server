@@ -3,6 +3,10 @@ const { Schema, model, Types } = pkg
 
 const schema = new Schema(
   {
+    tkName: {
+      type: Types.ObjectId,
+      ref: 'TkName'
+    },
     truck: {
       type: Types.ObjectId,
       ref: 'Truck'
@@ -15,16 +19,9 @@ const schema = new Schema(
       type: Types.ObjectId,
       ref: 'Driver'
     },
-    driver2: {
-      type: Types.ObjectId,
-      ref: 'Driver'
-    },
     startDate: {
       type: Date,
       required: true
-    },
-    endDate: {
-      type: Date
     },
     manager: {
       type: Types.ObjectId,
@@ -41,4 +38,4 @@ const schema = new Schema(
   { timestamps: true }
 )
 
-export default model('RouteSheet', schema, 'routesheets')
+export default model('Crew', schema, 'crews')

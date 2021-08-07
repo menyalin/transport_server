@@ -12,6 +12,9 @@ export const getProfileDocsSchema = {
 export const createDocSchema = {
   type: 'object',
   properties: {
+    tkName: {
+      type: 'string'
+    },
     truck: {
       type: 'string'
     },
@@ -21,15 +24,8 @@ export const createDocSchema = {
     driver: {
       type: 'string'
     },
-    driver2: {
-      type: ['string', 'null']
-    },
     startDate: {
       type: 'string',
-      formats: ['date', 'date-time']
-    },
-    endDate: {
-      type: ['string', 'null'],
       formats: ['date', 'date-time']
     },
     note: {
@@ -39,7 +35,7 @@ export const createDocSchema = {
       type: 'string'
     }
   },
-  required: ['truck', 'driver', 'startDate', 'company'],
+  required: ['tkName', 'truck', 'driver', 'startDate', 'company'],
   additionalProperties: false
 }
 //

@@ -3,6 +3,7 @@ import {
   AddressService,
   CompanyService,
   DriverService,
+  TkNameService,
   TruckService
 } from '../index.js'
 
@@ -22,8 +23,9 @@ class UserService {
     const addresses = await AddressService.getByProfile(profile)
     const drivers = await DriverService.getByProfile(profile)
     const trucks = await TruckService.getByProfile(profile)
+    const tkNames = await TkNameService.getByProfile(profile)
 
-    return { user, companies, addresses, drivers, trucks }
+    return { user, companies, addresses, drivers, trucks, tkNames }
   }
 
   async find(query, fields = '-password') {
