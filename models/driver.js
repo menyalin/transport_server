@@ -4,7 +4,6 @@ const { Schema, model, Types } = pkg
 
 const driverSchema = new Schema(
   {
-    fullName: String,
     name: {
       type: String
     },
@@ -47,7 +46,11 @@ const driverSchema = new Schema(
       ref: 'Company'
     }
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true } }
 )
+
+driverSchema.virtual('fullName').get(function () {
+  return this.surname + ' ' + this.name + ' ' + this.patronymic
+})
 
 export const Driver = model('Driver', driverSchema, 'drivers')
