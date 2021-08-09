@@ -40,6 +40,10 @@ const truckSchema = new Schema(
     owner: {
       type: String
     },
+    order: {
+      type: Number,
+      default: 50
+    },
     volumeFuel: { type: Number, default: 0 },
     volumeRef: { type: Number, default: 0 },
     liftCapacity: { type: Number, default: 0 },

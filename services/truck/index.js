@@ -46,7 +46,7 @@ class TruckService {
   }
 
   async deleteById(id) {
-    const data = await Truck.findByIdAndUpdate(id, { isActive: true })
+    const data = await Truck.findByIdAndUpdate(id, { isActive: false })
     emitTo(data.company.toString(), 'truck:deleted', id)
     return data
   }

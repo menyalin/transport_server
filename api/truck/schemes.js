@@ -48,17 +48,15 @@ export const createTruckSchema = {
     note: { type: ['string', 'null'] },
     volumeFuel: { type: ['number', 'null'] },
     volumeRef: { type: ['number', 'null'] },
-    liftCapacity: {
-      type: ['number', 'null'],
-      message: 'не верный формат грузоподъемности'
-    },
+    liftCapacity: { type: ['number', 'null'] },
     allowedDrivers: { type: ['array', 'null'] },
     pltCount: { type: ['number', 'null'] },
+    order: { type: ['number', 'null'] },
     type: {
       type: 'string'
     }
   },
   required: ['company', 'name', 'type'],
-  additionalProperties: true
+  additionalProperties: false
 }
 //
