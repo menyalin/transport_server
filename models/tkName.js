@@ -3,10 +3,17 @@ const { Schema, model, Types } = pkg
 
 const schema = new Schema(
   {
-    name: String,
+    name: {
+      type: String,
+      unique: true
+    },
     company: {
       type: Types.ObjectId,
       ref: 'Company'
+    },
+    isActive: {
+      type: Boolean,
+      default: true
     }
   },
   { timestamps: true }

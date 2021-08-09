@@ -21,13 +21,18 @@ class DriverService {
   }
 
   async getByProfile(profile) {
-    const data = await Driver.find({ company: profile }).populate('tkName')
-
+    const data = await Driver.find({
+      company: profile,
+      isActive: true
+    }).populate('tkName')
     return data
   }
 
   async search({ search, profile }) {
-    const query = { surname: new RegExp(search, 'i') }
+    const query = {
+      isActive: true,
+      surname: new RegExp(search, 'i')
+    }
     if (profile) query.company = profile
     const data = await Driver.find(query).populate('tkName').lean()
     return data
@@ -39,7 +44,7 @@ class DriverService {
   }
 
   async deleteById(id) {
-    const data = await Driver.findByIdAndDelete(id)
+    const data = await Driver.findByIdAndUpdate(id, { isActive: false })
     emitTo(data.company.toString(), 'driver:deleted', id)
     return data
   }

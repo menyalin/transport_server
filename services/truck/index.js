@@ -21,6 +21,7 @@ class TruckService {
 
   async search({ search, type, profile }) {
     const query = {
+      isActive: true,
       $or: [
         { name: new RegExp(search, 'i') },
         { regNum: new RegExp(search, 'i') }
@@ -33,7 +34,7 @@ class TruckService {
   }
 
   async getByProfile(profile) {
-    const data = await Truck.find({ company: profile })
+    const data = await Truck.find({ company: profile, isActive: true })
       .populate('tkName')
       .lean()
     return data
@@ -45,7 +46,7 @@ class TruckService {
   }
 
   async deleteById(id) {
-    const data = await Truck.findByIdAndDelete(id)
+    const data = await Truck.findByIdAndUpdate(id, { isActive: true })
     emitTo(data.company.toString(), 'truck:deleted', id)
     return data
   }

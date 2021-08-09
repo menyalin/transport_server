@@ -5,17 +5,20 @@ const { Schema, model, Types } = pkg
 const driverSchema = new Schema(
   {
     name: {
-      type: String
+      type: String,
+      required: true
+    },
+    surname: {
+      type: String,
+      required: true
     },
     patronymic: {
       type: String
     },
-    surname: {
-      type: String
-    },
     tkName: {
       type: Types.ObjectId,
-      ref: 'TkName'
+      ref: 'TkName',
+      required: true
     },
     passportId: String,
     passportIssued: String,
@@ -44,13 +47,19 @@ const driverSchema = new Schema(
     company: {
       type: Types.ObjectId,
       ref: 'Company'
+    },
+    isActive: {
+      type: Boolean,
+      default: true
     }
   },
   { timestamps: true, toJSON: { virtuals: true } }
 )
 
 driverSchema.virtual('fullName').get(function () {
-  return this.surname + ' ' + this.name + ' ' + this.patronymic
+  if (this.patronymic)
+    return this.surname + ' ' + this.name + ' ' + this.patronymic
+  else return this.surname + ' ' + this.name
 })
 
 export const Driver = model('Driver', driverSchema, 'drivers')

@@ -16,12 +16,15 @@ class TkNameService {
   }
 
   async getByProfile(profile) {
-    const data = await TkName.find({ company: profile }).lean()
+    const data = await TkName.find({ company: profile, isActive: true }).lean()
     return data
   }
 
   async search({ search, profile }) {
-    const query = { surname: new RegExp(search, 'i') }
+    const query = {
+      isActive: true,
+      surname: new RegExp(search, 'i')
+    }
     if (profile) query.company = profile
     const data = await TkName.find(query).lean()
     return data
@@ -33,7 +36,7 @@ class TkNameService {
   }
 
   async deleteById(id) {
-    const data = await TkName.findByIdAndDelete(id)
+    const data = await TkName.findByIdAndUpdate(id, { isActive: false })
     emitTo(data.company.toString(), 'tkName:deleted', id)
     return data
   }

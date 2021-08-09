@@ -27,6 +27,10 @@ const addressSchema = new Schema(
     company: {
       type: Types.ObjectId,
       ref: 'Company'
+    },
+    isActive: {
+      type: Boolean,
+      default: true
     }
   },
   { timestamps: true }

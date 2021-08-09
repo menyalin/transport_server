@@ -56,6 +56,7 @@ class AddressService {
   async search(str) {
     const res = await Address.find(
       {
+        isActive: true,
         $text: {
           $search: str,
           $language: 'russian'
@@ -69,7 +70,10 @@ class AddressService {
   }
 
   async getByProfile(profile) {
-    const addresses = await Address.find({ company: profile }).lean()
+    const addresses = await Address.find({
+      isActive: true,
+      company: profile
+    }).lean()
     const preparedAddresses = addresses.map((item) => ({
       ...item,
       geo: item.geo.coordinates.reverse().join(', ')
@@ -83,7 +87,7 @@ class AddressService {
   }
 
   async deleteById(id) {
-    const address = await Address.findByIdAndDelete(id)
+    const address = await Address.findByIdAndUpdate(id, { isActive: false })
     emitTo(address.company.toString(), 'address:deleted', id)
     return address
   }
