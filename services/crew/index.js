@@ -32,10 +32,9 @@ class CrewService {
   }
 
   async getByProfile(profile) {
-    const data = await Crew.find({ company: profile })
+    const data = await Crew.find({ company: profile, isActive: true })
       .populate('tkName')
       .populate('driver')
-
       .populate('truck')
       .populate('trailer')
       .populate('manager')

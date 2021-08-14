@@ -54,9 +54,11 @@ export const createTruckSchema = {
     order: { type: ['number', 'null'] },
     type: {
       type: 'string'
+    },
+    allowUseTrailer: {
+      type: ['boolean', 'null']
     }
   },
   required: ['company', 'name', 'type'],
   additionalProperties: false
 }
-//
