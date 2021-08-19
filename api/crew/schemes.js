@@ -9,6 +9,21 @@ export const getProfileDocsSchema = {
   additionalProperties: false
 }
 
+export const getActualCrewsSchema = {
+  type: 'object',
+  properties: {
+    profile: {
+      type: 'string'
+    },
+    date: {
+      type: 'string',
+      formats: ['date', 'date-time']
+    }
+  },
+  required: ['profile', 'date'],
+  additionalProperties: false
+}
+
 export const createDocSchema = {
   type: 'object',
   properties: {

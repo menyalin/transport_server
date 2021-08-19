@@ -8,9 +8,14 @@ import {
   updateOne,
   getProfileDocs,
   getById,
-  deleteById
+  deleteById,
+  getActualCrews
 } from '../../controllers/crew.controllers.js'
-import { getProfileDocsSchema, createDocSchema } from './schemes.js'
+import {
+  getProfileDocsSchema,
+  createDocSchema,
+  getActualCrewsSchema
+} from './schemes.js'
 
 const router = express.Router()
 
@@ -20,7 +25,11 @@ router.get(
   [jwtAuth, queryValidator(getProfileDocsSchema)],
   getProfileDocs
 )
-
+router.get(
+  '/actual',
+  [jwtAuth, queryValidator(getActualCrewsSchema)],
+  getActualCrews
+)
 router.get('/:id', [jwtAuth], getById)
 
 router.post('/', [jwtAuth, bodyValidator(createDocSchema)], create)

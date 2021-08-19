@@ -1,6 +1,7 @@
 // import axios from 'axios'
 import { Crew } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
+import getActualCrewsPipeline from './getActualCrewsPipeline.js'
 
 class CrewService {
   async create(body, userId) {
@@ -28,6 +29,13 @@ class CrewService {
       .populate('driver')
       .populate('manager')
     emitTo(data.company.toString(), 'crew:updated', data)
+    return data
+  }
+
+  async getActualCrews(profile, date) {
+    const pipeline = getActualCrewsPipeline(profile, date)
+    
+    const data = await Crew.aggregate(pipeline)
     return data
   }
 

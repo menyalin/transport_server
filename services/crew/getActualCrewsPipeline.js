@@ -1,94 +1,53 @@
-const COUNT_NEAR_DAYS = 1
+import mongoose from 'mongoose'
 
 export default (profile, date) => {
   const inputDate = new Date(date)
+  console.log(profile)
   if (!inputDate) throw new Error('wrong date format error')
-  if (!profile) throw new Error('profile id is not exist')
+  if (!profile) throw new Error('profile id not exist')
   return [
     {
       $match: {
-        company: profile,
-        isActive: true,
-        type: 'truck'
+        startDate: {
+          $lte: inputDate
+        },
+        company: mongoose.Types.ObjectId(profile),
+        isActive: true
       }
     },
     {
-      $lookup: {
-        from: 'crews',
-        let: { truckId: '$_id' },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $and: [
-                  { $eq: ['$isActive', true] },
-                  { $eq: ['$truck', '$$truckId'] },
-                  {
-                    $lte: [
-                      '$startDate',
-                      {
-                        $dateAdd: {
-                          startDate: inputDate,
-                          unit: 'day',
-                          amount: 1
-                        }
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
-          },
-          { $sort: { startDate: -1 } }
-        ],
-        as: 'crews'
+      $sort: {
+        startDate: -1
+      }
+    },
+    {
+      $group: {
+        _id: '$truck',
+        crews: {
+          $push: {
+            _id: '$_id',
+            truck: '$truck',
+            trailer: '$trailer',
+            driver: '$driver',
+            startDate: '$startDate',
+            tkName: '$tkName'
+          }
+        }
       }
     },
     {
       $addFields: {
-        actualCrew: {
-          $first: {
-            $filter: {
-              input: '$crews',
-              as: 'crew',
-              cond: { $lte: ['$$crew.startDate', inputDate] }
-            }
-          }
-        },
-        nearCrews: {
-          $filter: {
-            input: '$crews',
-            as: 'crew',
-            cond: {
-              $and: [
-                {
-                  $gte: [
-                    '$$crew.startDate',
-                    {
-                      $dateAdd: {
-                        startDate: inputDate,
-                        unit: 'day',
-                        amount: COUNT_NEAR_DAYS * -1
-                      }
-                    }
-                  ]
-                },
-                {
-                  $lte: [
-                    '$$crew.startDate',
-                    {
-                      $dateAdd: {
-                        startDate: inputDate,
-                        unit: 'day',
-                        amount: COUNT_NEAR_DAYS
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        }
+        crew: { $first: '$crews' }
+      }
+    },
+    {
+      $project: {
+        _id: '$crew._id',
+        truck: '$crew.truck',
+        trailer: '$crew.trailer',
+        driver: '$crew.driver',
+        startDate: '$crew.startDate',
+        tkName: '$crew.tkName'
       }
     }
   ]

@@ -27,6 +27,18 @@ export const getProfileDocs = async (req, res) => {
   }
 }
 
+export const getActualCrews = async (req, res) => {
+  try {
+    const data = await service.getActualCrews(
+      req.query.profile,
+      req.query.date
+    )
+    res.status(200).json(data)
+  } catch (e) {
+    res.status(500).json({ message: e.message })
+  }
+}
+
 export const getById = async (req, res) => {
   try {
     const data = await service.getById(req.params.id)
