@@ -1,14 +1,14 @@
 /* eslint-disable no-unused-vars */
 import pkg from 'mongoose'
-import { TRUCK_TYPES } from '../constants/enums.js'
+import {
+  TRUCK_TYPES,
+  TRUCK_KINDS,
+  TRUCK_LIFT_CAPACITY_TYPES
+} from '../constants/enums.js'
 const { Schema, model, Types } = pkg
 
 const truckSchema = new Schema(
   {
-    name: {
-      type: String,
-      required: true
-    },
     brand: {
       type: String
     },
@@ -21,6 +21,11 @@ const truckSchema = new Schema(
     type: {
       type: String,
       enum: TRUCK_TYPES
+    },
+    kind: { type: String, enum: TRUCK_KINDS },
+    liftCapacityType: {
+      type: Number,
+      enum: TRUCK_LIFT_CAPACITY_TYPES
     },
     tkName: {
       type: Types.ObjectId,

@@ -15,9 +15,6 @@ export const createTruckSchema = {
     company: {
       type: 'string'
     },
-    name: {
-      type: ['string', 'null']
-    },
     brand: {
       type: ['string', 'null']
     },
@@ -48,17 +45,17 @@ export const createTruckSchema = {
     note: { type: ['string', 'null'] },
     volumeFuel: { type: ['number', 'null'] },
     volumeRef: { type: ['number', 'null'] },
-    liftCapacity: { type: ['number', 'null'] },
+
     allowedDrivers: { type: ['array', 'null'] },
     pltCount: { type: ['number', 'null'] },
     order: { type: ['number', 'null'] },
     type: {
       type: 'string'
     },
-    allowUseTrailer: {
-      type: ['boolean', 'null']
-    }
+    kind: { type: ['string', 'null'] },
+    liftCapacityType: { type: 'number' },
+    liftCapacity: { type: ['number', 'null'] }
   },
-  required: ['company', 'name', 'type'],
+  required: ['company', 'type', 'liftCapacityType'],
   additionalProperties: false
 }
