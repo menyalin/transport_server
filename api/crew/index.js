@@ -9,12 +9,18 @@ import {
   getProfileDocs,
   getById,
   deleteById,
-  getActualCrews
+  getActualCrews,
+  getByDriver,
+  getByTruck,
+  closeCrew
 } from '../../controllers/crew.controllers.js'
 import {
   getProfileDocsSchema,
   createDocSchema,
-  getActualCrewsSchema
+  getActualCrewsSchema,
+  getByDriverScheme,
+  getByTruckScheme,
+  closeCrewSchema
 } from './schemes.js'
 
 const router = express.Router()
@@ -30,9 +36,22 @@ router.get(
   [jwtAuth, queryValidator(getActualCrewsSchema)],
   getActualCrews
 )
+router.get(
+  '/by_driver',
+  [jwtAuth, queryValidator(getByDriverScheme)],
+  getByDriver
+)
+router.get(
+  '/by_truck',
+  [jwtAuth, queryValidator(getByTruckScheme)],
+  getByTruck
+)
+
 router.get('/:id', [jwtAuth], getById)
 
 router.post('/', [jwtAuth, bodyValidator(createDocSchema)], create)
+
+router.put('/close/:id', [jwtAuth, bodyValidator(closeCrewSchema)], closeCrew)
 router.put('/:id', [jwtAuth, bodyValidator(createDocSchema)], updateOne)
 router.delete('/:id', [jwtAuth], deleteById)
 

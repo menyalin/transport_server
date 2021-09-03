@@ -18,6 +18,28 @@ export const updateOne = async (req, res) => {
   }
 }
 
+export const closeCrew = async (req, res) => {
+  let data
+  try {
+    if (req.body.type === 'crew') {
+      data = await service.closeCrew(req.params.id, {
+        endDate: req.body.endDate,
+        userId: req.userId
+      })
+    } else if (req.body.type === 'transport') {
+      data = await service.closeTransportItem(req.params.id, {
+        endDate: req.body.endDate,
+        userId: req.userId
+      })
+    }
+
+    if (!data) res.status(400).json({ message: 'Bad params' })
+    res.status(200).json(data)
+  } catch (e) {
+    res.status(500).json({ message: e.message })
+  }
+}
+
 export const getProfileDocs = async (req, res) => {
   try {
     const data = await service.getByProfile(req.query.profile)
@@ -33,6 +55,26 @@ export const getActualCrews = async (req, res) => {
       req.query.profile,
       req.query.date
     )
+    res.status(200).json(data)
+  } catch (e) {
+    res.status(500).json({ message: e.message })
+  }
+}
+export const getByDriver = async (req, res) => {
+  try {
+    const data = await service.getOneByDriver(
+      req.query.driver,
+      req.query?.date
+    )
+    res.status(200).json(data)
+  } catch (e) {
+    res.status(500).json({ message: e.message })
+  }
+}
+
+export const getByTruck = async (req, res) => {
+  try {
+    const data = await service.getOneByTruck(req.query.truck, req.query?.date)
     res.status(200).json(data)
   } catch (e) {
     res.status(500).json({ message: e.message })

@@ -1,27 +1,42 @@
 import pkg from 'mongoose'
 const { Schema, model, Types } = pkg
 
+const transportSchema = new Schema({
+  startDate: {
+    type: Date,
+    required: true
+  },
+  endDate: {
+    type: Date,
+  },
+  truck: {
+    type: Types.ObjectId,
+    ref: 'Truck'
+  },
+  trailer: {
+    type: Types.ObjectId,
+    ref: 'Truck'
+  },
+  note: String
+})
+
 const schema = new Schema(
   {
+    startDate: {
+      type: Date,
+      required: true
+    },
     tkName: {
       type: Types.ObjectId,
       ref: 'TkName'
     },
-    truck: {
-      type: Types.ObjectId,
-      ref: 'Truck'
-    },
-    trailer: {
-      type: Types.ObjectId,
-      ref: 'Truck'
-    },
+    transport: [transportSchema],
     driver: {
       type: Types.ObjectId,
       ref: 'Driver'
     },
-    startDate: {
-      type: Date,
-      required: true
+    endDate: {
+      type: Date
     },
     manager: {
       type: Types.ObjectId,
