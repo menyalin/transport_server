@@ -6,13 +6,9 @@ import getCrewByTruckPipeline from './getCrewByTruckPipeline.js'
 
 class CrewService {
   async create(body, userId) {
-    let newCrew = new Crew({ ...body, manager: userId || null })
-    await newCrew.save()
-    newCrew = await newCrew
-      .populate('tkName')
-      .populate('driver')
-      .populate('manager')
-      .execPopulate()
+    const newCrew = await Crew.create({ ...body, manager: userId || null })
+    await newCrew.populate(['tkName', 'driver', 'manager'])
+
     emitTo(newCrew.company.toString(), 'crew:created', newCrew)
     return newCrew
   }
@@ -82,7 +78,7 @@ class CrewService {
       isActive: true,
       transport: {
         $elemMatch: {
-          truck,
+          $or: [{ truck: truck }, { trailer: truck }],
           startDate: { $gte: new Date(date) }
         }
       }

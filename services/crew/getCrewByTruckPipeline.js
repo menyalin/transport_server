@@ -19,9 +19,17 @@ export default (truck, date) => {
         },
         transport: {
           $elemMatch: {
-            truck: mongoose.Types.ObjectId(truck),
-            startDate: { $lte: inputDate },
-            $or: [{ endDate: null }, { endDate: { $gt: inputDate } }]
+            $and: [
+              {
+                $or: [
+                  { truck: mongoose.Types.ObjectId(truck) },
+                  { trailer: mongoose.Types.ObjectId(truck) }
+                ]
+              },
+              { $or: [{ endDate: null }, { endDate: { $gt: inputDate } }] }
+            ],
+
+            startDate: { $lte: inputDate }
           }
         }
       }
