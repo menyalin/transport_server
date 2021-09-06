@@ -1,55 +1,32 @@
 import mongoose from 'mongoose'
 
-export default (truck, date) => {
+export default (truck) => {
   if (!truck) throw new Error('bad pipeline arguments')
-  let inputDate
-  if (date) inputDate = new Date(date)
-  else inputDate = new Date()
+
   return [
     {
       $match: {
         isActive: true,
-        startDate: { $lte: inputDate },
-        $expr: {
-          $or: [
-            { $eq: [{ $toBool: '$endDate' }, null] },
-            { $eq: [{ $toBool: '$endDate' }, false] },
-            { $gt: ['$endDate', inputDate] }
-          ]
-        },
-        transport: {
-          $elemMatch: {
-            $and: [
-              {
-                $or: [
-                  { truck: mongoose.Types.ObjectId(truck) },
-                  { trailer: mongoose.Types.ObjectId(truck) }
-                ]
-              },
-              { $or: [{ endDate: null }, { endDate: { $gt: inputDate } }] }
-            ],
-
-            startDate: { $lte: inputDate }
-          }
-        }
+        $or: [
+          { 'transport.truck': mongoose.Types.ObjectId(truck) },
+          { 'transport.trailer': mongoose.Types.ObjectId(truck) }
+        ]
       }
     },
     {
-      $unwind: {
-        path: '$transport'
-      }
+      $unwind: { path: '$transport' }
     },
     {
       $match: {
-        'transport.truck': mongoose.Types.ObjectId(truck),
-        'transport.startDate': { $lte: inputDate }
+        $expr: {
+          $or: [
+            { $eq: ['$transport.truck', mongoose.Types.ObjectId(truck)] },
+            { $eq: ['$transport.trailer', mongoose.Types.ObjectId(truck)] }
+          ]
+        }
       }
     },
-    {
-      $sort: {
-        'transport.startDate': -1
-      }
-    },
+    { $sort: { 'transport.startDate': -1 } },
     { $limit: 1 }
   ]
 }

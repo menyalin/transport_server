@@ -33,7 +33,14 @@ class CrewService {
       .populate('manager')
     if (!crew) return null
     const idx = crew.transport.length - 1
-    crew.endDate = crew.transport[idx].endDate || endDate
+
+    if (crew.transport[idx].endDate) {
+      crew.endDate = crew.transport[idx].endDate
+    } else {
+      crew.endDate = endDate
+      crew.transport[idx].endDate = endDate
+    }
+
     crew.manager = userId
     await crew.save()
     emitTo(crew.company.toString(), 'crew:updated', crew)
@@ -72,21 +79,8 @@ class CrewService {
     }
   }
 
-  async getOneByTruck(truck, date) {
-    const pipeline = getCrewByTruckPipeline(truck, date)
-    const newerCrew = await Crew.findOne({
-      isActive: true,
-      transport: {
-        $elemMatch: {
-          $or: [{ truck: truck }, { trailer: truck }],
-          startDate: { $gte: new Date(date) }
-        }
-      }
-    })
-    if (newerCrew)
-      throw new Error(
-        'Нарушение последовательности использования транспорта. Создание записи невозможно'
-      )
+  async getOneByTruck(truck) {
+    const pipeline = getCrewByTruckPipeline(truck)
     const data = await Crew.aggregate(pipeline)
     if (data.length) return data[0]
     else return null

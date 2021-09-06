@@ -5,8 +5,8 @@ import { emitTo } from '../../socket/index.js'
 
 class TruckService {
   async create(body) {
-    let data = await Truck.create(body)
-    data = await data.populate('tkName').execPopulate()
+    const data = await Truck.create(body)
+    await data.populate('tkName')
     emitTo(data.company.toString(), 'truck:created', data)
     return data
   }

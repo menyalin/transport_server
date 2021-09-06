@@ -6,8 +6,8 @@ import { emitTo } from '../../socket/index.js'
 
 class DriverService {
   async create(body) {
-    let data = await Driver.create(body)
-    data = await data.populate('tkName').execPopulate()
+    const data = await Driver.create(body)
+    await data.populate('tkName')
     emitTo(data.company.toString(), 'driver:created', data)
     return data
   }
