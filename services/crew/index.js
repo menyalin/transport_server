@@ -14,16 +14,21 @@ class CrewService {
   }
 
   async updateOne(id, body, userId) {
-    const data = await Crew.findByIdAndUpdate(
-      id,
-      { ...body, manager: userId },
-      { new: true }
-    )
-      .populate('tkName')
-      .populate('driver')
-      .populate('manager')
-    emitTo(data.company.toString(), 'crew:updated', data)
-    return data
+    let crew = await Crew.findById(id)
+    if (!crew) return null
+    if (body.endDate) {
+      const idx = body.transport.length - 1
+      if (body.transport[idx].endDate)
+        body.endDate = body.transport[idx].endDate
+      else body.transport[idx].endDate = body.endDate
+    }
+
+    crew = Object.assign(crew, { ...body, manager: userId })
+
+    await crew.save()
+    await crew.populate(['tkName', 'driver', 'manager'])
+    emitTo(crew.company.toString(), 'crew:updated', crew)
+    return crew
   }
 
   async closeCrew(id, { endDate, userId }) {
