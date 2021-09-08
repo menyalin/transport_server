@@ -10,8 +10,11 @@ import {
 
 const router = express.Router()
 
- // api/auth
+// api/auth
 router.get('/', [jwtAuth], getMe)
+router.get('/test', (req, res) => {
+  res.status(200).json({ message: 'api connected' })
+})
 router.post('/login', [bodyValidator(loginSchema)], login)
 router.post('/registration', [bodyValidator(registrationSchema)], registration)
 router.post(
