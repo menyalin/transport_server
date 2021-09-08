@@ -6,7 +6,7 @@ import { Server } from 'socket.io'
 const io = new Server({})
 
 const options = {
-  cors: ['http://localhost:3000']
+  cors: ['http://localhost:3000', 'http://192.168.1.47']
 }
 const emitTo = (to, eventType, payload) => {
   io.to(to).emit(eventType, payload)
