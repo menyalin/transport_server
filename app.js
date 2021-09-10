@@ -13,7 +13,16 @@ import tkNameRouter from './api/tkName/index.js'
 
 const app = express()
 
-app.use(cors())
+app.use(
+  cors([
+    // 'http://s4log.ru',
+    // 'http://www.s4log.ru',
+    // 'https://s4log.ru',
+    // 'http://localhost',
+    // 'http://localhost:3000',
+    '*'
+  ])
+)
 app.use(logger('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
