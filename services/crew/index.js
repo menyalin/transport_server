@@ -6,6 +6,10 @@ import getCrewByTruckPipeline from './getCrewByTruckPipeline.js'
 
 class CrewService {
   async create(body, userId) {
+    if (body.endDate) {
+      const idx = body.transport.length - 1
+      body.transport[idx].endDate = body.endDate
+    }
     const newCrew = await Crew.create({ ...body, manager: userId || null })
     await newCrew.populate(['tkName', 'driver', 'manager'])
 
