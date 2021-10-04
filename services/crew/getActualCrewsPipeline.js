@@ -2,7 +2,6 @@ import mongoose from 'mongoose'
 
 export default (profile, date) => {
   const inputDate = new Date(date)
-  console.log(profile)
   if (!inputDate) throw new Error('wrong date format error')
   if (!profile) throw new Error('profile id not exist')
   return [

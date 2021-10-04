@@ -12,7 +12,8 @@ import {
   getActualCrews,
   getByDriver,
   getByTruck,
-  closeCrew
+  closeCrew,
+  crewDiagramReport
 } from '../../controllers/crew.controllers.js'
 import {
   getProfileDocsSchema,
@@ -46,11 +47,10 @@ router.get(
   [jwtAuth, queryValidator(getByTruckScheme)],
   getByTruck
 )
+router.get('/reports/crew_diagram', [], crewDiagramReport)
 
 router.get('/:id', [jwtAuth], getById)
-
 router.post('/', [jwtAuth, bodyValidator(createDocSchema)], create)
-
 router.put('/close/:id', [jwtAuth, bodyValidator(closeCrewSchema)], closeCrew)
 router.put('/:id', [jwtAuth, bodyValidator(createDocSchema)], updateOne)
 router.delete('/:id', [jwtAuth], deleteById)

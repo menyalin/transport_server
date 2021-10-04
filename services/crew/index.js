@@ -3,6 +3,7 @@ import { Crew } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 import getActualCrewsPipeline from './getActualCrewsPipeline.js'
 import getCrewByTruckPipeline from './getCrewByTruckPipeline.js'
+import getCrewDiagramReportPipeline from './getCrewDiagramReportPipeline.js'
 
 class CrewService {
   async create(body, userId) {
@@ -120,6 +121,12 @@ class CrewService {
   async deleteById(id) {
     const data = await Crew.findByIdAndDelete(id)
     emitTo(data.company.toString(), 'crew:deleted', id)
+    return data
+  }
+
+  async crewDiagramReport (params) {
+    const pipeline = getCrewDiagramReportPipeline(params)
+    const data = await Crew.aggregate(pipeline)
     return data
   }
 }

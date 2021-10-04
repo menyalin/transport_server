@@ -99,4 +99,15 @@ export const deleteById = async (req, res) => {
   }
 }
 
+export const crewDiagramReport = async (req, res) => {
+  try {
+    const data = await service.crewDiagramReport(req.query)
+    res.status(200).json(data)
+  } catch (e) {
+    if (e.message === 'bad query params')
+      res.status(400).json({ message: e.message })
+    else res.status(500).json({ message: e.message })
+  }
+}
+
 //
