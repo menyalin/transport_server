@@ -50,7 +50,11 @@ class CrewService {
       crew.endDate = endDate
       crew.transport[idx].endDate = endDate
     }
-
+    if (
+      new Date(crew.transport[idx].startDate) >
+      new Date(crew.transport[idx].end)
+    )
+      throw new Error('bad query params')
     crew.manager = userId
     await crew.save()
     emitTo(crew.company.toString(), 'crew:updated', crew)
@@ -66,6 +70,8 @@ class CrewService {
     const transportItem = crew.transport.find(
       (item) => item._id.toString() === id
     )
+    if (new Date(transportItem.startDate) > new Date(endDate))
+      throw new Error('bad query params')
     transportItem.endDate = endDate
     crew.manager = userId
     await crew.save()
@@ -124,7 +130,7 @@ class CrewService {
     return data
   }
 
-  async crewDiagramReport (params) {
+  async crewDiagramReport(params) {
     const pipeline = getCrewDiagramReportPipeline(params)
     const data = await Crew.aggregate(pipeline)
     return data

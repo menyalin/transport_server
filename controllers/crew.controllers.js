@@ -36,7 +36,9 @@ export const closeCrew = async (req, res) => {
     if (!data) res.status(400).json({ message: 'Bad params' })
     res.status(200).json(data)
   } catch (e) {
-    res.status(500).json({ message: e.message })
+    if (e.message === 'bad query params')
+      res.status(400).json({ message: e.message })
+    else res.status(500).json({ message: e.message })
   }
 }
 
