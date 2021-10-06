@@ -72,11 +72,11 @@ export default ({ period, profile }) => {
       as: 'trailer'
     }
   }
-
   const finalProject = {
     $project: {
       _id: '$transport._id',
       crewId: '$_id',
+      tkNameId: '$tkName',
       truck: { $first: '$truck' },
       driver: { $first: '$driver' },
       trailer: { $first: '$trailer' },
