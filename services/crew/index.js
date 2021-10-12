@@ -1,9 +1,9 @@
-// import axios from 'axios'
 import { Crew } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
-import getActualCrewsPipeline from './getActualCrewsPipeline.js'
-import getCrewByTruckPipeline from './getCrewByTruckPipeline.js'
-import getCrewDiagramReportPipeline from './getCrewDiagramReportPipeline.js'
+import isLastItem from './isLastItem.js'
+import getActualCrewsPipeline from './pipelines/getActualCrewsPipeline.js'
+import getCrewByTruckPipeline from './pipelines/getCrewByTruckPipeline.js'
+import getCrewDiagramReportPipeline from './pipelines/getCrewDiagramReportPipeline.js'
 
 class CrewService {
   async create(body, userId) {
@@ -116,12 +116,16 @@ class CrewService {
     return data
   }
 
-  async getById(id) {
+  async getById({ id, forEdit }) {
     const data = await Crew.findById(id)
       .populate('tkName')
       .populate('driver')
       .populate('manager')
-    return data
+    const plainData = data.toObject()
+    if (forEdit)
+      plainData.editable = await isLastItem({ crew: data.toObject() })
+
+    return plainData
   }
 
   async deleteById(id) {

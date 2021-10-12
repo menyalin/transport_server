@@ -85,7 +85,9 @@ export const getByTruck = async (req, res) => {
 
 export const getById = async (req, res) => {
   try {
-    const data = await service.getById(req.params.id)
+    const id = req.params.id
+    const forEdit = req.query.forEdit
+    const data = await service.getById({ id, forEdit })
     res.status(200).json(data)
   } catch (e) {
     res.status(500).json({ message: e.message })
