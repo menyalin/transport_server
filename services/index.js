@@ -6,6 +6,7 @@ import DriverService from './driver/index.js'
 import TruckService from './truck/index.js'
 import CrewService from './crew/index.js'
 import TkNameService from './tkName/index.js'
+import OrderService from './order/index.js'
 
 export {
   UserService,
@@ -15,5 +16,6 @@ export {
   DriverService,
   TruckService,
   CrewService,
-  TkNameService
+  TkNameService,
+  OrderService
 }

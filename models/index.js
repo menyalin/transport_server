@@ -7,6 +7,7 @@ import { Truck } from './truck.js'
 import Crew from './crew.js'
 import { UserActivity } from './userActivity.js'
 import TkName from './tkName.js'
+import Order from './order.js'
 
 export {
   User,
@@ -17,5 +18,6 @@ export {
   Truck,
   Crew,
   UserActivity,
-  TkName
+  TkName,
+  Order
 }
