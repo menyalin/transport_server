@@ -11,10 +11,10 @@ const router = express.Router()
 // api/orders
 router.get('/', [jwtAuth], ctrl.getList)
 // router.get('/search', [jwtAuth], search)
-// router.get('/:id', [jwtAuth], getById)
+router.get('/:id', [jwtAuth], ctrl.getById)
 
 router.post('/', [jwtAuth, bodyValidator(createSchema)], ctrl.create)
-// router.put('/:id', [jwtAuth, bodyValidator(createDriverSchema)], updateOne)
-// router.delete('/:id', [jwtAuth], deleteById)
+router.put('/:id', [jwtAuth, bodyValidator(createSchema)], ctrl.updateOne)
+router.delete('/:id', [jwtAuth], ctrl.deleteById)
 
 export default router

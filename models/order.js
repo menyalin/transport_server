@@ -20,6 +20,7 @@ const schema = new Schema(
     },
     company: { type: Types.ObjectId, ref: 'Company', required: true },
     truck: { type: Types.ObjectId, ref: 'Truck' },
+    manager: { type: Types.ObjectId, ref: 'User' },
     trailer: { type: Types.ObjectId, ref: 'Truck' },
     driver: { type: Types.ObjectId, ref: 'Driver' }
   },
