@@ -8,6 +8,13 @@ class OrderService {
     return res
   }
 
+  async disableOrder({ orderId, state }) {
+    const order = await OrderModel.findById(orderId)
+    order.isDisabled = state
+    emitTo(order.company.toString(), 'order:updated', order)
+    await order.save()
+  }
+
   async moveOrderInSchedule({
     orderId,
     truck,
@@ -18,6 +25,7 @@ class OrderService {
     order.truck = mongoose.Types.ObjectId(truck)
     order.startPositionDate = startPositionDate
     order.endPositionDate = endPositionDate
+    order.isDisabled = false
     emitTo(order.company.toString(), 'order:updated', order)
     await order.save()
   }
@@ -26,12 +34,6 @@ class OrderService {
     const res = await OrderModel.find({ company }).lean()
     return res
   }
-
-  // async getSchedule({ company }) {
-  //   const pipeline = getSchedulePipeline({ company })
-  //   const res = await OrderModel.aggregate(pipeline)
-  //   return res
-  // }
 
   delete() {}
 

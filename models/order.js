@@ -9,6 +9,10 @@ const schema = new Schema(
       type: Date,
       required: true
     },
+    isDisabled: {
+      type: Boolean,
+      default: false
+    },
     endPositionDate: {
       // дата для отображения в таблице распределения
       type: Date,
