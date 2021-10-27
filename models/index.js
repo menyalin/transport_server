@@ -8,6 +8,7 @@ import Crew from './crew.js'
 import { UserActivity } from './userActivity.js'
 import TkName from './tkName.js'
 import Order from './order.js'
+import Partner from './partner.js'
 
 export {
   User,
@@ -19,5 +20,6 @@ export {
   Crew,
   UserActivity,
   TkName,
-  Order
+  Order,
+  Partner
 }
