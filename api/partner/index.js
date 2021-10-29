@@ -10,11 +10,11 @@ import ctrl from '../../controllers/partner.controller.js'
 const router = express.Router()
 
 // api/partner
-router.get('/', [jwtAuth], ctrl.getByProfile)
-router.get('/:id', [jwtAuth], ctrl.getById)
+router.get('/', [jwtAuth], (...args) => ctrl.getByProfile(...args))
+router.get('/:id', [jwtAuth], (...args) => ctrl.getById(...args))
 
-router.post('/', [jwtAuth], ctrl.create)
-router.put('/:id', [jwtAuth], ctrl.updateOne)
-router.delete('/:id', [jwtAuth], ctrl.deleteById)
+router.post('/', [jwtAuth], (...args) => ctrl.create(...args))
+router.put('/:id', [jwtAuth], (...args) => ctrl.updateOne(...args))
+router.delete('/:id', [jwtAuth], (...args) => ctrl.deleteById(...args))
 
 export default router
