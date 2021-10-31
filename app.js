@@ -21,7 +21,7 @@ app.use(
     // 'http://www.s4log.ru',
     // 'https://s4log.ru',
     // 'http://localhost',
-    'http://localhost:8080',
+    'localhost:8080',
     '*'
   ])
 )
