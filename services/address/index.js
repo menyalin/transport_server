@@ -14,6 +14,7 @@ dadataApi.defaults.headers.common.Authorization =
 
 class AddressService {
   _convertCoordinatesStr(str) {
+    if (!str) return null
     return str.split(',').reverse()
   }
 
@@ -26,28 +27,23 @@ class AddressService {
   }
 
   async create(body) {
-    const newAddress = await Address.create({
-      company: body.company,
-      shortName: body.shortName,
-      note: body.note,
-      name: body.name,
-      geo: {
+    if (body.geo)
+      body.geo = {
         type: 'Point',
         coordinates: this._convertCoordinatesStr(body.geo)
-      },
-      label: body.label,
-      isShipmentPlace: body.isShipmentPlace,
-      isDeliveryPlace: body.isDeliveryPlace
-    })
+      }
+
+    const newAddress = await Address.create(body)
     emitTo(newAddress.company.toString(), 'address:created', newAddress)
     return newAddress
   }
 
   async updateOne(id, body) {
-    body.geo = {
-      type: 'Point',
-      coordinates: this._convertCoordinatesStr(body.geo)
-    }
+    if (body.geo)
+      body.geo = {
+        type: 'Point',
+        coordinates: this._convertCoordinatesStr(body.geo)
+      }
     const address = await Address.findByIdAndUpdate(id, body, { new: true })
     emitTo(address.company.toString(), 'address:updated', address)
     return address

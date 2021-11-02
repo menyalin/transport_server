@@ -41,6 +41,9 @@ export const createAddressSchema = {
     label: {
       type: ['string', 'null']
     },
+    partner: {
+      type: ['string', 'null']
+    },
     isShipmentPlace: {
       type: ['boolean', 'null']
     },
@@ -48,7 +51,7 @@ export const createAddressSchema = {
       type: ['boolean', 'null']
     }
   },
-  required: ['company', 'name', 'geo'],
+  required: ['company', 'name'],
   additionalProperties: false
 }
 //

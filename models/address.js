@@ -31,6 +31,10 @@ const addressSchema = new Schema(
     isActive: {
       type: Boolean,
       default: true
+    },
+    partner: {
+      type: Types.ObjectId,
+      ref: 'Partner'
     }
   },
   { timestamps: true }
