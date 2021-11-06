@@ -9,7 +9,7 @@ import pkg from 'mongoose'
 const { Schema, model, Types } = pkg
 
 const point = {
-  pointType: {
+  type: {
     type: String,
     enum: POINT_TYPES
   },
@@ -20,7 +20,6 @@ const point = {
   plannedDate: {
     type: Date
   },
-
   note: String
 }
 
