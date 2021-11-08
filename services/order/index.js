@@ -23,7 +23,7 @@ class OrderService {
     endPositionDate
   }) {
     const order = await OrderModel.findById(orderId)
-    order.truck = mongoose.Types.ObjectId(truck)
+    order.confirmedCrew.truck = mongoose.Types.ObjectId(truck)
     order.startPositionDate = startPositionDate
     order.endPositionDate = endPositionDate
     order.isDisabled = false

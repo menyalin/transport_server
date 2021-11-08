@@ -2,7 +2,8 @@ import {
   POINT_TYPES,
   TRUCK_KINDS,
   TRUCK_LIFT_CAPACITY_TYPES,
-  TRUCK_LOAD_DIRECTION
+  TRUCK_LOAD_DIRECTION,
+  ORDER_STATES
 } from '../constants/enums.js'
 import pkg from 'mongoose'
 
@@ -30,6 +31,25 @@ const cargoParams = {
   tRegime: String
 }
 
+const state = {
+  status: {
+    type: String,
+    enum: ORDER_STATES
+  },
+  warning: {
+    type: Boolean,
+    default: false
+  },
+  driverNotified: {
+    type: Boolean,
+    default: false
+  },
+  clientNotified: {
+    type: Boolean,
+    default: false
+  }
+}
+
 const reqTransport = {
   kind: {
     type: String,
@@ -41,8 +61,14 @@ const reqTransport = {
   },
   loadDirection: {
     type: String,
-    enam: TRUCK_LOAD_DIRECTION
+    enum: TRUCK_LOAD_DIRECTION
   }
+}
+
+const confirmedCrew = {
+  truck: { type: Types.ObjectId, ref: 'Truck' },
+  trailer: { type: Types.ObjectId, ref: 'Truck' },
+  driver: { type: Types.ObjectId, ref: 'Driver' }
 }
 
 const schema = new Schema(
@@ -52,9 +78,11 @@ const schema = new Schema(
       type: Date,
       required: true
     },
+    confirmedCrew,
     route: [point],
     cargoParams: cargoParams,
     reqTransport: reqTransport,
+    state: state,
     isActive: {
       type: Boolean,
       default: false
@@ -69,10 +97,7 @@ const schema = new Schema(
       required: true
     },
     company: { type: Types.ObjectId, ref: 'Company', required: true },
-    truck: { type: Types.ObjectId, ref: 'Truck' },
-    manager: { type: Types.ObjectId, ref: 'User' },
-    trailer: { type: Types.ObjectId, ref: 'Truck' },
-    driver: { type: Types.ObjectId, ref: 'Driver' }
+    manager: { type: Types.ObjectId, ref: 'User' }
   },
   { timestamps: true }
 )
