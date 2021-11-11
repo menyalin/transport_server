@@ -1,3 +1,4 @@
+import { ORDER_STATUSES } from '../../constants/orderStatuses.js'
 import { User, UserActivity } from '../../models/index.js'
 import {
   AddressService,
@@ -26,8 +27,17 @@ class UserService {
     const trucks = await TruckService.getByProfile(profile)
     const tkNames = await TkNameService.getByProfile(profile)
     const partners = await PartnerService.getByProfile(profile)
-
-    return { user, companies, addresses, drivers, trucks, tkNames, partners }
+    const orderStatuses = ORDER_STATUSES
+    return {
+      user,
+      companies,
+      addresses,
+      drivers,
+      trucks,
+      tkNames,
+      partners,
+      orderStatuses
+    }
   }
 
   async find(query, fields = '-password') {

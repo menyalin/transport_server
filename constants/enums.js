@@ -7,11 +7,3 @@ export const TRUCK_LOAD_DIRECTION = ['rear', 'top', 'side']
 
 export const POINT_TYPES = ['loading', 'unloading']
 
-export const ORDER_STATES = [
-  'needGet',
-  'getted',
-  'inProgress',
-  'completed',
-  'weRefused',
-  'clientRefused'
-]

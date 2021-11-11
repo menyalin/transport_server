@@ -2,9 +2,9 @@ import {
   POINT_TYPES,
   TRUCK_KINDS,
   TRUCK_LIFT_CAPACITY_TYPES,
-  TRUCK_LOAD_DIRECTION,
-  ORDER_STATES
+  TRUCK_LOAD_DIRECTION
 } from '../constants/enums.js'
+import { ORDER_STATUSES_ENUM } from '../constants/orderStatuses.js'
 import pkg from 'mongoose'
 
 const { Schema, model, Types } = pkg
@@ -18,9 +18,9 @@ const point = {
     type: Types.ObjectId,
     ref: 'Address'
   },
-  plannedDate: {
-    type: Date
-  },
+  plannedDate: Date,
+  arrivalDate: Date,
+  departureDate: Date,
   note: String
 }
 
@@ -34,7 +34,7 @@ const cargoParams = {
 const state = {
   status: {
     type: String,
-    enum: ORDER_STATES
+    enum: ORDER_STATUSES_ENUM
   },
   warning: {
     type: Boolean,
@@ -78,6 +78,11 @@ const schema = new Schema(
       type: Date,
       required: true
     },
+    endPositionDate: {
+      // дата для отображения в таблице распределения
+      type: Date,
+      required: true
+    },
     confirmedCrew,
     route: [point],
     cargoParams: cargoParams,
@@ -91,11 +96,7 @@ const schema = new Schema(
       type: Boolean,
       default: false
     },
-    endPositionDate: {
-      // дата для отображения в таблице распределения
-      type: Date,
-      required: true
-    },
+
     company: { type: Types.ObjectId, ref: 'Company', required: true },
     manager: { type: Types.ObjectId, ref: 'User' }
   },
