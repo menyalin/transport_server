@@ -13,7 +13,8 @@ import {
   getByDriver,
   getByTruck,
   closeCrew,
-  crewDiagramReport
+  crewDiagramReport,
+  getByTruckAndDate
 } from '../../controllers/crew.controllers.js'
 import {
   getProfileDocsSchema,
@@ -42,10 +43,12 @@ router.get(
   [jwtAuth, queryValidator(getByDriverScheme)],
   getByDriver
 )
+router.get('/by_truck', [jwtAuth], getByTruck)
+
 router.get(
-  '/by_truck',
+  '/by_truck_and_date',
   [jwtAuth, queryValidator(getByTruckScheme)],
-  getByTruck
+  getByTruckAndDate
 )
 router.get('/reports/crew_diagram', [], crewDiagramReport)
 

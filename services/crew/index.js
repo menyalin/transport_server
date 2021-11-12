@@ -4,6 +4,7 @@ import isLastItem from './isLastItem.js'
 import getActualCrewsPipeline from './pipelines/getActualCrewsPipeline.js'
 import getCrewByTruckPipeline from './pipelines/getCrewByTruckPipeline.js'
 import getCrewDiagramReportPipeline from './pipelines/getCrewDiagramReportPipeline.js'
+import getCrewByTruckAndDatePipeline from './pipelines/getCrewByTruckAndDatePipeline.js'
 
 class CrewService {
   async create(body, userId) {
@@ -97,6 +98,13 @@ class CrewService {
 
   async getOneByTruck(truck) {
     const pipeline = getCrewByTruckPipeline(truck)
+    const data = await Crew.aggregate(pipeline)
+    if (data.length) return data[0]
+    else return null
+  }
+
+  async getOneByTruckAndDate({ truck, date }) {
+    const pipeline = getCrewByTruckAndDatePipeline({ truck, date })
     const data = await Crew.aggregate(pipeline)
     if (data.length) return data[0]
     else return null

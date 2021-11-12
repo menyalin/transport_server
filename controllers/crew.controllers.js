@@ -83,6 +83,18 @@ export const getByTruck = async (req, res) => {
   }
 }
 
+export const getByTruckAndDate = async (req, res) => {
+  try {
+    const data = await service.getOneByTruckAndDate({
+      truck: req.query.truck,
+      date: req.query?.date
+    })
+    res.status(200).json(data)
+  } catch (e) {
+    res.status(500).json({ message: e.message })
+  }
+}
+
 export const getById = async (req, res) => {
   try {
     const id = req.params.id
