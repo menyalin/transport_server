@@ -11,6 +11,10 @@ const schema = new Schema(
       type: Types.ObjectId,
       ref: 'Company'
     },
+    isClient: {
+      type: Boolean,
+      default: false
+    },
     isActive: {
       type: Boolean,
       default: true

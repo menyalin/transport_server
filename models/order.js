@@ -9,6 +9,14 @@ import pkg from 'mongoose'
 
 const { Schema, model, Types } = pkg
 
+const client = {
+  client: {
+    type: Types.ObjectId,
+    ref: 'Partner'
+  },
+  num: String
+}
+
 const point = {
   type: {
     type: String,
@@ -83,6 +91,7 @@ const schema = new Schema(
       type: Date,
       required: true
     },
+    client,
     confirmedCrew,
     route: [point],
     cargoParams: cargoParams,
