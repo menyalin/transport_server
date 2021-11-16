@@ -3,51 +3,68 @@ import mongoose from 'mongoose'
 export default ({ period, profile }) => {
   const periodArr = period.split(',')
   if (!periodArr || periodArr.length !== 2) throw new Error('bad query params')
-  const startDate = new Date(periodArr[0])
-  const endDate = new Date(periodArr[1])
-  if (startDate > endDate) throw new Error('bad query params')
+  const startPeriod = new Date(periodArr[0])
+  const endPeriod = new Date(periodArr[1])
+  if (startPeriod > endPeriod) throw new Error('bad query params')
 
   const company = mongoose.Types.ObjectId(profile)
 
   const firstMatcher = {
     $match: {
       company: company,
+      transport: {
+        $elemMatch: {
+          $or: [
+            {
+              $and: [{ startDate: { $lt: endPeriod } }, { endDate: null }]
+            },
+            {
+              $and: [
+                { startDate: { $lte: startPeriod } },
+                { endDate: { $gt: startPeriod } }
+              ]
+            },
+            {
+              $and: [
+                { startDate: { $gte: startPeriod } },
+                { startDate: { $lt: endPeriod } }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+
+  const unwindTransport = {
+    $unwind: '$transport'
+  }
+
+  const secondMatcher = {
+    $match: {
       $or: [
         {
-          $expr: {
-            $and: [
-              { $gte: ['$startDate', startDate] },
-              { $lte: ['$startDate', endDate] }
-            ]
-          }
+          $and: [
+            { 'transport.startDate': { $lt: endPeriod } },
+            { 'transport.endDate': null }
+          ]
         },
         {
-          $expr: {
-            $and: [
-              { $gte: ['$endDate', startDate] },
-              { $lte: ['$endDate', endDate] }
-            ]
-          }
+          $and: [
+            { 'transport.startDate': { $lte: startPeriod } },
+            { 'transport.endDate': { $gt: startPeriod } }
+          ]
         },
         {
-          $expr: {
-            $and: [
-              { $lte: ['$startDate', startDate] },
-              { $gte: ['$endDate', endDate] }
-            ]
-          }
-        },
-        {
-          $expr: {
-            $and: [{ $lte: ['$startDate', startDate] }, { endDate: null }]
-          }
+          $and: [
+            { 'transport.startDate': { $gte: startPeriod } },
+            { 'transport.startDate': { $lt: endPeriod } }
+          ]
         }
       ]
     }
   }
-  const unwindTransport = {
-    $unwind: '$transport'
-  }
+
   const truckLookup = {
     $lookup: {
       from: 'trucks',
@@ -56,6 +73,7 @@ export default ({ period, profile }) => {
       as: 'truck'
     }
   }
+
   const driverLookup = {
     $lookup: {
       from: 'drivers',
@@ -64,6 +82,7 @@ export default ({ period, profile }) => {
       as: 'driver'
     }
   }
+
   const trailerLookup = {
     $lookup: {
       from: 'trucks',
@@ -88,6 +107,7 @@ export default ({ period, profile }) => {
   return [
     firstMatcher,
     unwindTransport,
+    secondMatcher,
     truckLookup,
     driverLookup,
     trailerLookup,
