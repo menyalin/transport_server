@@ -96,7 +96,7 @@ const schema = new Schema(
     route: [point],
     cargoParams: cargoParams,
     reqTransport: reqTransport,
-    state: state,
+    state,
     isActive: {
       type: Boolean,
       default: false

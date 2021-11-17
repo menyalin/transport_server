@@ -9,7 +9,9 @@ export const getSchedulePipeline = ({ company, startDate, endDate }) => {
     $project: {
       _id: '$_id',
       startPositionDate: '$startPositionDate',
-      endPositionDate: '$endPositionDate'
+      endPositionDate: '$endPositionDate',
+      state: '$state',
+      isDisable: '$isDisable'
     }
   }
   return [firstMatcher, finalProject]
