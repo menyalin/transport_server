@@ -16,12 +16,12 @@ export default ({ period, profile }) => {
         $elemMatch: {
           $or: [
             {
-              $and: [{ startDate: { $lt: endPeriod } }, { endDate: null }]
+              $and: [{ startDate: { $lte: endPeriod } }, { endDate: null }]
             },
             {
               $and: [
                 { startDate: { $lte: startPeriod } },
-                { endDate: { $gt: startPeriod } }
+                { endDate: { $gte: startPeriod } }
               ]
             },
             {
@@ -45,14 +45,14 @@ export default ({ period, profile }) => {
       $or: [
         {
           $and: [
-            { 'transport.startDate': { $lt: endPeriod } },
+            { 'transport.startDate': { $lte: endPeriod } },
             { 'transport.endDate': null }
           ]
         },
         {
           $and: [
             { 'transport.startDate': { $lte: startPeriod } },
-            { 'transport.endDate': { $gt: startPeriod } }
+            { 'transport.endDate': { $gte: startPeriod } }
           ]
         },
         {
