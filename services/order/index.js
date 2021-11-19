@@ -16,16 +16,11 @@ class OrderService {
     await order.save()
   }
 
-  async moveOrderInSchedule({
-    orderId,
-    truck,
-    startPositionDate,
-    endPositionDate
-  }) {
+  async moveOrderInSchedule({ orderId, truck, startPositionDate }) {
     const order = await OrderModel.findById(orderId)
-    order.confirmedCrew.truck = mongoose.Types.ObjectId(truck)
+    if (!truck) order.confirmedCrew.truck = null
+    else order.confirmedCrew.truck = mongoose.Types.ObjectId(truck)
     order.startPositionDate = startPositionDate
-    order.endPositionDate = endPositionDate
     order.isDisabled = false
     emitTo(order.company.toString(), 'order:updated', order)
     await order.save()

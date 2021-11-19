@@ -7,12 +7,8 @@ export const createSchema = {
     startPositionDate: {
       type: ['string', 'null'],
       formats: ['date', 'date-time']
-    },
-    endPositionDate: {
-      type: ['string', 'null'],
-      formats: ['date', 'date-time']
     }
   },
-  required: ['company', 'startPositionDate', 'endPositionDate'],
+  required: ['company', 'startPositionDate'],
   additionalProperties: true
 }

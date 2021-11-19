@@ -86,11 +86,11 @@ const schema = new Schema(
       type: Date,
       required: true
     },
-    endPositionDate: {
-      // дата для отображения в таблице распределения
-      type: Date,
-      required: true
-    },
+    // endPositionDate: {
+    //   // дата для отображения в таблице распределения
+    //   type: Date,
+    //   required: true
+    // },
     client,
     confirmedCrew,
     route: [point],
