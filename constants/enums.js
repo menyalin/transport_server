@@ -7,3 +7,4 @@ export const TRUCK_LOAD_DIRECTION = ['rear', 'top', 'side']
 
 export const POINT_TYPES = ['loading', 'unloading']
 
+export const DOWNTIME_TYPES = ['repair', 'holiday']

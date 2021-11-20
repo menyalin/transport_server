@@ -9,6 +9,7 @@ import { UserActivity } from './userActivity.js'
 import TkName from './tkName.js'
 import Order from './order.js'
 import Partner from './partner.js'
+import Downtime from './downtime.js'
 
 export {
   User,
@@ -21,5 +22,6 @@ export {
   UserActivity,
   TkName,
   Order,
-  Partner
+  Partner,
+  Downtime
 }

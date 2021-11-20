@@ -8,6 +8,7 @@ import CrewService from './crew/index.js'
 import TkNameService from './tkName/index.js'
 import OrderService from './order/index.js'
 import PartnerService from './partner/index.js'
+import DowntimeService from './downtime/index.js'
 
 export {
   UserService,
@@ -19,5 +20,6 @@ export {
   CrewService,
   TkNameService,
   OrderService,
-  PartnerService
+  PartnerService,
+  DowntimeService
 }
