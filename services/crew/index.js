@@ -5,6 +5,7 @@ import getActualCrewsPipeline from './pipelines/getActualCrewsPipeline.js'
 import getCrewByTruckPipeline from './pipelines/getCrewByTruckPipeline.js'
 import getCrewDiagramReportPipeline from './pipelines/getCrewDiagramReportPipeline.js'
 import getCrewByTruckAndDatePipeline from './pipelines/getCrewByTruckAndDatePipeline.js'
+import getLastCrewByDriverPipeline from './pipelines/getLastCrewByDriverPipeline.js'
 
 class CrewService {
   async create(body, userId) {
@@ -80,20 +81,11 @@ class CrewService {
     return crew
   }
 
-  async getOneByDriver(driver, date) {
-    if (date) {
-      const data = await Crew.findOne({
-        isActive: true,
-        driver: driver,
-        $or: [{ endDate: null }, { endDate: { $gte: new Date(date) } }]
-      })
-      return data
-    } else {
-      const data = await Crew.find({ isActive: true, driver })
-        .sort({ startDate: -1 })
-        .limit(1)
-      return data ? data[0] : null
-    }
+  async getOneByDriver(driver) {
+    const pipeline = getLastCrewByDriverPipeline(driver)
+    const data = await Crew.aggregate(pipeline)
+    if (data.length) return data[0]
+    else return null
   }
 
   async getOneByTruck(truck) {
