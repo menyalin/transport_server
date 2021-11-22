@@ -33,11 +33,11 @@ router.get(
   [jwtAuth, queryValidator(getProfileDocsSchema)],
   getProfileDocs
 )
-router.get(
-  '/actual',
-  [jwtAuth, queryValidator(getActualCrewsSchema)],
-  getActualCrews
-)
+// router.get(
+//   '/actual',
+//   [jwtAuth, queryValidator(getActualCrewsSchema)],
+//   getActualCrews
+// )
 router.get(
   '/by_driver',
   [jwtAuth, queryValidator(getByDriverScheme)],
