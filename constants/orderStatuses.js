@@ -5,7 +5,7 @@ const statuses = [
   { value: 'completed', text: 'Выполнен' },
   { value: 'weRefused', text: 'Мы отказались' },
   { value: 'clientRefused', text: 'Клиент снял заказ' },
-  { value: 'notСonfirmedByClient ', text: 'Клиент не подтвердил заказ' }
+  { value: 'notСonfirmedByClient', text: 'Клиент не подтвердил заказ' }
 ]
 
 export const ORDER_STATUSES_ENUM = statuses.map((item) => item.value)
