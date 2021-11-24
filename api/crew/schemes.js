@@ -6,7 +6,7 @@ export const getProfileDocsSchema = {
     }
   },
   required: ['profile'],
-  additionalProperties: false
+  additionalProperties: true
 }
 
 export const getByDriverScheme = {

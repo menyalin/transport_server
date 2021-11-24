@@ -44,7 +44,7 @@ export const closeCrew = async (req, res) => {
 
 export const getProfileDocs = async (req, res) => {
   try {
-    const data = await service.getByProfile(req.query.profile)
+    const data = await service.getList(req.query)
     res.status(200).json(data)
   } catch (e) {
     res.status(500).json({ message: e.message })

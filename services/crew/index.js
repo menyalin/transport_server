@@ -6,6 +6,7 @@ import getCrewByTruckPipeline from './pipelines/getCrewByTruckPipeline.js'
 import getCrewDiagramReportPipeline from './pipelines/getCrewDiagramReportPipeline.js'
 import getCrewByTruckAndDatePipeline from './pipelines/getCrewByTruckAndDatePipeline.js'
 import getLastCrewByDriverPipeline from './pipelines/getLastCrewByDriverPipeline.js'
+import getCrewListPipeline from './pipelines/getCrewListPipeline.js'
 
 class CrewService {
   async create(body, userId) {
@@ -108,11 +109,9 @@ class CrewService {
     return data
   }
 
-  async getByProfile(profile) {
-    const data = await Crew.find({ company: profile, isActive: true })
-      .populate('tkName')
-      .populate('driver')
-      .populate('manager')
+  async getList(params) {
+    const pipeline = getCrewListPipeline(params)
+    const data = await Crew.aggregate(pipeline)
     return data
   }
 
