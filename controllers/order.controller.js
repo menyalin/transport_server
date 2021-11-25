@@ -23,7 +23,18 @@ class OrderController {
     try {
       if (!req.query.profile)
         res.status(400).json({ message: 'bad query params' })
-      const data = await service.getList({ company: req.query.profile })
+      const data = await service.getList(req.query)
+      res.status(200).json(data)
+    } catch (e) {
+      res.status(500).json({ mesasge: e.message })
+    }
+  }
+
+  async getListForSchedule(req, res) {
+    try {
+      if (!req.query.profile)
+        res.status(400).json({ message: 'bad query params' })
+      const data = await service.getListForSchedule(req.query)
       res.status(200).json(data)
     } catch (e) {
       res.status(500).json({ mesasge: e.message })

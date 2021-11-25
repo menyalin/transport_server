@@ -1,6 +1,8 @@
 import mongoose from 'mongoose'
 import { Order as OrderModel } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
+import { getSchedulePipeline } from './pipelines/getSchedulePipeline.js'
+import { getOrderListPipeline } from './pipelines/getOrderListPipeline.js'
 
 class OrderService {
   async create(orderBody) {
@@ -26,9 +28,28 @@ class OrderService {
     await order.save()
   }
 
-  async getList({ company }) {
-    const res = await OrderModel.find({ company }).lean()
-    return res
+  async getList(params) {
+    try {
+      const pipeline = getOrderListPipeline(params)
+      const res = await OrderModel.aggregate(pipeline)
+      return res
+    } catch (e) {
+      throw new Error(e.message)
+    }
+  }
+
+  async getListForSchedule({ profile, startDate, endDate }) {
+    try {
+      const pipeline = getSchedulePipeline({
+        company: profile,
+        startDate,
+        endDate
+      })
+      const res = await OrderModel.aggregate(pipeline)
+      return res
+    } catch (e) {
+      throw new Error(e.message)
+    }
   }
 
   async deleteById(id) {
@@ -38,7 +59,7 @@ class OrderService {
   }
 
   async getById(id) {
-    const res = await OrderModel.findById(id)
+    const res = await OrderModel.findById(id).lean()
     return res
   }
 

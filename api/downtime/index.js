@@ -10,7 +10,10 @@ import ctrl from '../../controllers/downtime.controller.js'
 const router = express.Router()
 
 // api/downtimes
-router.get('/', [jwtAuth], (...args) => ctrl.getByProfile(...args))
+router.get('/', [jwtAuth], (...args) => ctrl.getList(...args))
+router.get('/schedule', [jwtAuth], (...args) =>
+  ctrl.getListForSchedule(...args)
+)
 router.get('/:id', [jwtAuth], (...args) => ctrl.getById(...args))
 
 router.post('/', [jwtAuth], (...args) => ctrl.create(...args))

@@ -1,18 +1,30 @@
 import mongoose from 'mongoose'
 
 export const getSchedulePipeline = ({ company, startDate, endDate }) => {
-  const firstMatcher = {
-    company: mongoose.Types.ObjectId(company)
-  }
+  const sP = new Date(startDate)
+  const eP = new Date(endDate)
 
-  const finalProject = {
-    $project: {
-      _id: '$_id',
-      startPositionDate: '$startPositionDate',
-      endPositionDate: '$endPositionDate',
-      state: '$state',
-      isDisable: '$isDisable'
+  const lastDate = {
+    $reduce: {
+      input: '$route',
+      initialValue: null,
+      in: {
+        $max: [
+          '$$value',
+          '$$this.plannedDate',
+          '$$this.arrivalDate',
+          '$$this.departureDate'
+        ]
+      }
     }
   }
-  return [firstMatcher, finalProject]
+
+  const firstMatcher = {
+    $match: {
+      company: mongoose.Types.ObjectId(company),
+      startPositionDate: { $lte: eP },
+      $expr: { $gt: [lastDate, sP] }
+    }
+  }
+  return [firstMatcher]
 }

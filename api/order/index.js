@@ -10,7 +10,7 @@ const router = express.Router()
 
 // api/orders
 router.get('/', [jwtAuth], ctrl.getList)
-// router.get('/search', [jwtAuth], search)
+router.get('/schedule', [jwtAuth], ctrl.getListForSchedule)
 router.get('/:id', [jwtAuth], ctrl.getById)
 
 router.post('/', [jwtAuth, bodyValidator(createSchema)], ctrl.create)
