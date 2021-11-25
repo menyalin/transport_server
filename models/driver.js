@@ -2,6 +2,14 @@
 import pkg from 'mongoose'
 const { Schema, model, Types } = pkg
 
+const medBook = {
+  number: String,
+  issueDate: Date,
+  certifiedBeforeDate: Date,
+  annualCommisionDate: Date,
+  note: String
+}
+
 const driverSchema = new Schema(
   {
     name: {
@@ -32,6 +40,7 @@ const driverSchema = new Schema(
       type: Boolean,
       default: false
     },
+    medBook,
     employmentDate: Date,
     dismissalDate: Date,
     recommender: String,
