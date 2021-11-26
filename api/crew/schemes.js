@@ -1,11 +1,17 @@
-export const getProfileDocsSchema = {
+export const getListSchema = {
   type: 'object',
   properties: {
     profile: {
       type: 'string'
+    },
+    limit: {
+      type: 'string'
+    },
+    skip: {
+      type: 'string'
     }
   },
-  required: ['profile'],
+  required: ['profile', 'limit', 'skip'],
   additionalProperties: true
 }
 

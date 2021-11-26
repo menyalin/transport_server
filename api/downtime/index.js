@@ -2,17 +2,24 @@
 import express from 'express'
 
 import { jwtAuth } from '../../utils/auth.middleware.js'
-// import { queryValidator, bodyValidator } from '../../utils/validator.js'
+import {
+  queryValidator
+  // bodyValidator
+} from '../../utils/validator.js'
 
-// import { getProfileListSchema, createSchema } from './schemes.js'
+import { getListSchema, getListForSchedule } from './schemes.js'
 import ctrl from '../../controllers/downtime.controller.js'
 
 const router = express.Router()
 
 // api/downtimes
-router.get('/', [jwtAuth], (...args) => ctrl.getList(...args))
-router.get('/schedule', [jwtAuth], (...args) =>
-  ctrl.getListForSchedule(...args)
+router.get('/', [jwtAuth, queryValidator(getListSchema)], (...args) =>
+  ctrl.getList(...args)
+)
+router.get(
+  '/schedule',
+  [jwtAuth, queryValidator(getListForSchedule)],
+  (...args) => ctrl.getListForSchedule(...args)
 )
 router.get('/:id', [jwtAuth], (...args) => ctrl.getById(...args))
 

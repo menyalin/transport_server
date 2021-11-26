@@ -17,7 +17,7 @@ import {
   getByTruckAndDate
 } from '../../controllers/crew.controllers.js'
 import {
-  getProfileDocsSchema,
+  getListSchema,
   createDocSchema,
   getActualCrewsSchema,
   getByDriverScheme,
@@ -28,11 +28,7 @@ import {
 const router = express.Router()
 
 // api/crews
-router.get(
-  '/',
-  [jwtAuth, queryValidator(getProfileDocsSchema)],
-  getProfileDocs
-)
+router.get('/', [jwtAuth, queryValidator(getListSchema)], getProfileDocs)
 // router.get(
 //   '/actual',
 //   [jwtAuth, queryValidator(getActualCrewsSchema)],
