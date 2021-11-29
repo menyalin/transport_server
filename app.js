@@ -16,15 +16,7 @@ import downtimeRouter from './api/downtime/index.js'
 
 const app = express()
 
-app.use(
-  cors([
-    // 'http://s4log.ru',
-    // 'http://www.s4log.ru',
-    // 'https://s4log.ru',
-    // 'http://localhost'
-    '*'
-  ])
-)
+app.use(cors(['*']))
 if (process.env.MODE === 'dev') app.use(logger('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
