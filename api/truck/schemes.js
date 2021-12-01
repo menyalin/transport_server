@@ -57,5 +57,5 @@ export const createTruckSchema = {
     liftCapacity: { type: ['number', 'null'] }
   },
   required: ['company', 'type', 'liftCapacityType'],
-  additionalProperties: false
+  additionalProperties: true
 }

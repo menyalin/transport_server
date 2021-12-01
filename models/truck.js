@@ -7,14 +7,62 @@ import {
 } from '../constants/enums.js'
 const { Schema, model, Types } = pkg
 
+const additionalDetails = {
+  diagnosticCardExpDate: Date,
+  platonNumber: String,
+  platonDate: Date,
+  tachographNumber: String,
+  tachographExpDate: Date,
+  tachographNote: String,
+  transponderNumber: String,
+  transponderDate: Date,
+  fuelCardNumber: String,
+  fuelCardDate: Date,
+  fuelCardNote: String
+}
+
+const allowedDriver = {
+  driver: {
+    type: Types.ObjectId,
+    ref: 'Driver'
+  },
+  isPermanent: {
+    type: Boolean,
+    default: false
+  }
+}
+
+const insurance = {
+  osagoNum: String,
+  osagoExpDate: Date,
+  osagoCompany: String,
+  kaskoNum: String,
+  kaskoExpDate: Date,
+  kaskoCompany: String,
+  leasingСompany: String
+}
+
+const permits = {
+  dayPermitNumber: String,
+  dayPermitExpDate: Date,
+  dayPermitZone: String,
+  nightPermitNumber: String,
+  nightPermitExpDate: Date,
+  nightPermitZone: String
+}
+
 const truckSchema = new Schema(
   {
+    additionalDetails,
+    insurance,
+    permits,
     brand: {
       type: String
     },
     model: {
       type: String
     },
+    sanitaryPassportExpDate: Date,
     issueYear: String,
     endServiceDate: Date,
     startServiceDate: Date,
@@ -66,12 +114,7 @@ const truckSchema = new Schema(
       type: Boolean,
       default: false
     },
-    allowedDrivers: [
-      {
-        type: Types.ObjectId,
-        ref: 'Driver'
-      }
-    ]
+    allowedDrivers: [allowedDriver]
   },
   { timestamps: true }
 )
