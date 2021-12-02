@@ -63,7 +63,8 @@ const truckSchema = new Schema(
       type: String
     },
     sanitaryPassportExpDate: Date,
-    issueYear: String,
+    sanitaryPassportNote: String,
+    issueYear: Number,
     endServiceDate: Date,
     startServiceDate: Date,
     type: {
