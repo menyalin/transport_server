@@ -22,7 +22,7 @@ export const createTruckSchema = {
       type: ['string', 'null']
     },
     issueYear: {
-      type: ['string', 'null']
+      type: ['string', 'number', 'null']
     },
     endServiceDate: {
       type: ['string', 'null'],
