@@ -4,13 +4,13 @@ import express from 'express'
 import { jwtAuth } from '../../utils/auth.middleware.js'
 import { queryValidator, bodyValidator } from '../../utils/validator.js'
 import ctrl from '../../controllers/order.controller.js'
-import { createSchema } from './schemes.js'
+import { createSchema, getListSchema, getListForScheduleSchema } from './schemes.js'
 
 const router = express.Router()
 
 // api/orders
-router.get('/', [jwtAuth], ctrl.getList)
-router.get('/schedule', [jwtAuth], ctrl.getListForSchedule)
+router.get('/', [jwtAuth, queryValidator(getListSchema)], ctrl.getList)
+router.get('/schedule', [jwtAuth, queryValidator(getListForScheduleSchema)], ctrl.getListForSchedule)
 router.get('/:id', [jwtAuth], ctrl.getById)
 
 router.post('/', [jwtAuth, bodyValidator(createSchema)], ctrl.create)
