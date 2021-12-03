@@ -22,6 +22,10 @@ class UserService {
     UserActivity.create({ user: id, type: 'getUserData' })
     const profile = user.directoriesProfile
     const companies = await CompanyService.getUserCompanies(id)
+    if (!profile) {
+      return { user, companies }
+    }
+
     const addresses = await AddressService.getByProfile(profile)
     const drivers = await DriverService.getByProfile(profile)
     const trucks = await TruckService.getByProfile(profile)
