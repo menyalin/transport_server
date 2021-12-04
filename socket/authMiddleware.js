@@ -14,6 +14,6 @@ export default async (socket, next) => {
   }
   socket.userId = userId
   socket.join(userId)
-  socket.userId = userId
+
   next()
 }

@@ -1,20 +1,38 @@
 /* eslint-disable no-unused-vars */
-
 import { Truck } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
+import logService from '../changeLog/index.js'
 
 class TruckService {
-  async create(body) {
+  async create({ body, user }) {
     const data = await Truck.create(body)
+    await logService.add({
+      docId: data._id.toString(),
+      coll: 'truck',
+      user,
+      opType: 'create',
+      company: data.company.toString(),
+      body: JSON.stringify(data.toJSON())
+    })
     await data.populate('tkName')
     emitTo(data.company.toString(), 'truck:created', data)
     return data
   }
 
-  async updateOne(id, body) {
+  async updateOne({ id, body, user }) {
     const data = await Truck.findByIdAndUpdate(id, body, {
       new: true
-    }).populate('tkName')
+    })
+    await logService.add({
+      docId: data._id.toString(),
+      coll: 'truck',
+      user,
+      opType: 'update',
+      company: data.company.toString(),
+      body: JSON.stringify(data.toJSON())
+    })
+
+    await data.populate('tkName')
     emitTo(data.company.toString(), 'truck:updated', data)
     return data
   }
@@ -45,8 +63,20 @@ class TruckService {
     return data
   }
 
-  async deleteById(id) {
-    const data = await Truck.findByIdAndUpdate(id, { isActive: false })
+  async deleteById({ id, user }) {
+    const data = await Truck.findByIdAndUpdate(
+      id,
+      { isActive: false },
+      { new: true }
+    )
+    await logService.add({
+      docId: data._id.toString(),
+      coll: 'truck',
+      user,
+      opType: 'delete',
+      company: data.company.toString(),
+      body: JSON.stringify(data.toJSON())
+    })
     emitTo(data.company.toString(), 'truck:deleted', id)
     return data
   }

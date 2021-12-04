@@ -24,14 +24,15 @@ export default class IService {
   async updateOne({ id, body, user }) {
     const data = await this.model.findByIdAndUpdate(id, body, { new: true })
     this.emitter(data.company.toString(), `${this.modelName}:updated`, data)
-    await this.logService.add({
-      docId: data._id.toString(),
-      coll: this.modelName,
-      opType: 'update',
-      user,
-      company: data.company.toString(),
-      body: JSON.stringify(data.toJSON())
-    })
+    if (this.logService)
+      await this.logService.add({
+        docId: data._id.toString(),
+        coll: this.modelName,
+        opType: 'update',
+        user,
+        company: data.company.toString(),
+        body: JSON.stringify(data.toJSON())
+      })
     return data
   }
 
@@ -48,16 +49,21 @@ export default class IService {
   }
 
   async deleteById({ id, user }) {
-    const data = await this.model.findByIdAndUpdate(id, { isActive: false })
+    const data = await this.model.findByIdAndUpdate(
+      id,
+      { isActive: false },
+      { new: true }
+    )
     this.emitter(data.company.toString(), `${this.modelName}:deleted`, id)
-    await this.logService.add({
-      docId: data._id.toString(),
-      coll: this.modelName,
-      opType: 'delete',
-      user,
-      company: data.company.toString(),
-      body: JSON.stringify(data.toJSON())
-    })
+    if (this.logService)
+      await this.logService.add({
+        docId: data._id.toString(),
+        coll: this.modelName,
+        opType: 'delete',
+        user,
+        company: data.company.toString(),
+        body: JSON.stringify(data.toJSON())
+      })
     return data
   }
 }

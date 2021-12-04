@@ -2,7 +2,10 @@ import { TruckService } from '../../services/index.js'
 
 export const create = async (req, res) => {
   try {
-    const data = await TruckService.create(req.body)
+    const data = await TruckService.create({
+      body: req.body,
+      user: req.userId
+    })
     res.status(201).json(data)
   } catch (e) {
     res.status(500).json({ message: e.message })
@@ -11,7 +14,11 @@ export const create = async (req, res) => {
 
 export const updateOne = async (req, res) => {
   try {
-    const data = await TruckService.updateOne(req.params.id, req.body)
+    const data = await TruckService.updateOne({
+      id: req.params.id,
+      body: req.body,
+      user: req.userId
+    })
     res.status(200).json(data)
   } catch (e) {
     res.status(500).json({ message: e.message })
@@ -51,7 +58,10 @@ export const getById = async (req, res) => {
 
 export const deleteById = async (req, res) => {
   try {
-    const data = await TruckService.deleteById(req.params.id)
+    const data = await TruckService.deleteById({
+      id: req.params.id,
+      user: req.userId
+    })
     res.status(200).json(data)
   } catch (e) {
     res.status(500).json({ message: e.message })

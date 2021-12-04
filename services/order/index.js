@@ -3,11 +3,20 @@ import { Order as OrderModel } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 import { getSchedulePipeline } from './pipelines/getSchedulePipeline.js'
 import { getOrderListPipeline } from './pipelines/getOrderListPipeline.js'
+import { ChangeLogService } from '../index.js'
 
 class OrderService {
-  async create(orderBody) {
-    const order = await OrderModel.create(orderBody)
+  async create({ body, user }) {
+    const order = await OrderModel.create(body)
     emitTo(order.company.toString(), 'order:created', order.toJSON())
+    await ChangeLogService.add({
+      docId: order._id.toString(),
+      company: order.company.toString(),
+      coll: 'order',
+      user,
+      opType: 'create',
+      body: JSON.stringify(order.toJSON())
+    })
     return order
   }
 
@@ -18,7 +27,7 @@ class OrderService {
     await order.save()
   }
 
-  async moveOrderInSchedule({ orderId, truck, startPositionDate }) {
+  async moveOrderInSchedule({ orderId, truck, startPositionDate }, user) {
     const order = await OrderModel.findById(orderId)
     if (!truck) order.confirmedCrew.truck = null
     else order.confirmedCrew.truck = mongoose.Types.ObjectId(truck)
@@ -26,6 +35,14 @@ class OrderService {
     order.isDisabled = false
     emitTo(order.company.toString(), 'order:updated', order)
     await order.save()
+    await ChangeLogService.add({
+      docId: order._id.toString(),
+      company: order.company.toString(),
+      coll: 'order',
+      user,
+      opType: 'move order',
+      body: JSON.stringify(order.toJSON())
+    })
   }
 
   async getList(params) {
@@ -52,9 +69,17 @@ class OrderService {
     }
   }
 
-  async deleteById(id) {
+  async deleteById({ id, user }) {
     const data = await OrderModel.findByIdAndDelete(id)
     emitTo(data.company.toString(), 'order:deleted', id)
+    await ChangeLogService.add({
+      docId: data._id.toString(),
+      company: data.company.toString(),
+      coll: 'order',
+      user,
+      opType: 'delete',
+      body: JSON.stringify(data.toJSON())
+    })
     return data
   }
 
@@ -68,8 +93,16 @@ class OrderService {
     if (!order) return null
     order = Object.assign(order, { ...body, manager: userId })
     await order.save()
-    // await order.populate(['tkName', 'driver', 'manager'])
+
     emitTo(order.company.toString(), 'order:updated', order.toJSON())
+    await ChangeLogService.add({
+      docId: order._id.toString(),
+      company: order.company.toString(),
+      coll: 'order',
+      user: userId,
+      opType: 'update',
+      body: JSON.stringify(order.toJSON())
+    })
     return order.toJSON()
   }
 }

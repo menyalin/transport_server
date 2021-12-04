@@ -3,7 +3,7 @@ import { OrderService as service } from '../services/index.js'
 class OrderController {
   async create(req, res) {
     try {
-      const data = await service.create(req.body)
+      const data = await service.create({ body: req.body, user: req.userId })
       res.status(201).json(data)
     } catch (e) {
       res.status(500).json({ mesasge: e.message })
@@ -12,7 +12,11 @@ class OrderController {
 
   async updateOne(req, res) {
     try {
-      const data = await service.updateOne(req.params.id, req.body, req.userId)
+      const data = await service.updateOne({
+        id: req.params.id,
+        body: req.body,
+        user: req.userId
+      })
       res.status(200).json(data)
     } catch (e) {
       res.status(500).json({ message: e.message })
@@ -52,7 +56,10 @@ class OrderController {
 
   async deleteById(req, res) {
     try {
-      const data = await service.deleteById(req.params.id)
+      const data = await service.deleteById({
+        id: req.params.id,
+        user: req.userId
+      })
       res.status(200).json(data)
     } catch (e) {
       res.status(500).json({ message: e.message })
