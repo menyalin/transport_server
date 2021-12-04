@@ -1,21 +1,39 @@
 /* eslint-disable no-unused-vars */
-import axios from 'axios'
 import { Driver } from '../../models/index.js'
 
 import { emitTo } from '../../socket/index.js'
+import { ChangeLogService } from '../index.js'
 
 class DriverService {
-  async create(body) {
+  async create({ body, user }) {
     const data = await Driver.create(body)
+    await ChangeLogService.add({
+      docId: data._id.toString(),
+      company: data.company.toString(),
+      user,
+      coll: 'driver',
+      opType: 'create',
+      body: JSON.stringify(data.toJSON())
+    })
+
     await data.populate('tkName')
     emitTo(data.company.toString(), 'driver:created', data)
     return data
   }
 
-  async updateOne(id, body) {
+  async updateOne({ id, body, user }) {
     const data = await Driver.findByIdAndUpdate(id, body, {
       new: true
-    }).populate('tkName')
+    })
+    await ChangeLogService.add({
+      docId: data._id.toString(),
+      company: data.company.toString(),
+      user,
+      coll: 'driver',
+      opType: 'update',
+      body: JSON.stringify(data.toJSON())
+    })
+    await data.populate(['tkName'])
     emitTo(data.company.toString(), 'driver:updated', data)
     return data
   }
@@ -43,8 +61,16 @@ class DriverService {
     return data
   }
 
-  async deleteById(id) {
+  async deleteById({ id, user }) {
     const data = await Driver.findByIdAndUpdate(id, { isActive: false })
+    await ChangeLogService.add({
+      docId: data._id.toString(),
+      company: data.company.toString(),
+      user,
+      coll: 'driver',
+      opType: 'delete',
+      body: JSON.stringify(data.toJSON())
+    })
     emitTo(data.company.toString(), 'driver:deleted', id)
     return data
   }

@@ -5,7 +5,10 @@ export class IController {
 
   async create(req, res) {
     try {
-      const data = await this.service.create(req.body)
+      const data = await this.service.create({
+        body: req.body,
+        user: req.userId
+      })
       res.status(201).json(data)
     } catch (e) {
       res.status(500).json({ message: e.message })
@@ -14,7 +17,11 @@ export class IController {
 
   async updateOne(req, res) {
     try {
-      const data = await this.service.updateOne(req.params.id, req.body)
+      const data = await this.service.updateOne({
+        id: req.params.id,
+        body: req.body,
+        user: req.userId
+      })
       res.status(200).json(data)
     } catch (e) {
       res.status(500).json({ message: e.message })
@@ -41,7 +48,10 @@ export class IController {
 
   async deleteById(req, res) {
     try {
-      const data = await this.service.deleteById(req.params.id)
+      const data = await this.service.deleteById({
+        id: req.params.id,
+        user: req.userId
+      })
       res.status(200).json(data)
     } catch (e) {
       res.status(500).json({ message: e.message })

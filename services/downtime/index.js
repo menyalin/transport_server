@@ -1,13 +1,16 @@
+import ChangeLogService from '../changeLog/index.js'
 import { Downtime } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 import IService from '../iService.js'
+
 import { getListSchedulePipeline } from './pipelines/getListSchedulePipeline.js'
 import { getListPipeline } from './pipelines/getListPipeline.js'
 
 class DowntimeService extends IService {
-  constructor({ model, emitter, modelName }) {
-    super({ model, emitter, modelName })
+  constructor({ model, emitter, modelName, logService }) {
+    super({ model, emitter, modelName, logService })
     this.model = model
+    this.logService = logService
   }
 
   async getListForSchedule(params) {
@@ -30,5 +33,6 @@ class DowntimeService extends IService {
 export default new DowntimeService({
   model: Downtime,
   emitter: emitTo,
-  modelName: 'downtime'
+  modelName: 'downtime',
+  logService: ChangeLogService
 })

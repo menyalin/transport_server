@@ -12,6 +12,7 @@ export const getListPipeline = ({
 
   const firstMatcher = {
     $match: {
+      isActive: true,
       company: mongoose.Types.ObjectId(company),
       $and: [
         { startPositionDate: { $gte: sP } },
