@@ -47,6 +47,14 @@ const driverSchema = new Schema(
     birthday: {
       type: Date
     },
+    isBrigadier: {
+      type: Boolean,
+      default: false
+    },
+    isMechanic: {
+      type: Boolean,
+      default: false
+    },
     phone: {
       type: String
     },

@@ -62,6 +62,14 @@ const truckSchema = new Schema(
     model: {
       type: String
     },
+    brigadier: {
+      type: Types.ObjectId,
+      ref: 'Driver'
+    },
+    mechanic: {
+      type: Types.ObjectId,
+      ref: 'Driver'
+    },
     sanitaryPassportExpDate: Date,
     sanitaryPassportNote: String,
     issueYear: Number,
@@ -71,7 +79,7 @@ const truckSchema = new Schema(
       type: String,
       enum: TRUCK_TYPES
     },
-    kind: { type: String, enum: TRUCK_KINDS},
+    kind: { type: String, enum: TRUCK_KINDS },
     liftCapacityType: {
       type: Number,
       enum: TRUCK_LIFT_CAPACITY_TYPES
