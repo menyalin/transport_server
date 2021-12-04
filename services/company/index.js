@@ -1,5 +1,5 @@
 import { Company, User } from '../../models/index.js'
-import { TaskService } from '../../services/index.js'
+import { TaskService, ChangeLogService } from '../../services/index.js'
 import { emitTo } from '../../socket/index.js'
 import addUserToRoom from '../../socket/addUserToRoom.js'
 
@@ -8,6 +8,14 @@ class CompanyService {
     const newCompany = new Company(body)
     newCompany.staff.push({ user: userId, roles: ['admin'], isActive: true })
     await newCompany.save()
+    await ChangeLogService.add({
+      docId: newCompany._id.toString(),
+      company: newCompany._id.toString(),
+      user: userId,
+      coll: 'companies',
+      body: JSON.stringify(newCompany.toJSON()),
+      opType: 'create'
+    })
     return newCompany
   }
 
@@ -53,7 +61,6 @@ class CompanyService {
     })
     employee.tasks.push(task._id)
     await company.save()
-    console.log('task:executor', task.executor)
     emitTo(task.executor.toString(), 'tasks:added', task)
     return employee
   }

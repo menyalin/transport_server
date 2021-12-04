@@ -1,5 +1,6 @@
 import { Crew } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
+import { ChangeLogService } from '../index.js'
 import isLastItem from './isLastItem.js'
 import getActualCrewsPipeline from './pipelines/getActualCrewsPipeline.js'
 import getCrewByTruckPipeline from './pipelines/getCrewByTruckPipeline.js'
@@ -15,8 +16,16 @@ class CrewService {
       body.transport[idx].endDate = body.endDate
     }
     const newCrew = await Crew.create({ ...body, manager: userId || null })
-    await newCrew.populate(['tkName', 'driver', 'manager'])
 
+    await ChangeLogService.add({
+      docId: newCrew._id.toString(),
+      company: newCrew.company.toString(),
+      user: userId,
+      coll: 'crews',
+      body: JSON.stringify(newCrew.toJSON()),
+      opType: 'create'
+    })
+    await newCrew.populate(['tkName', 'driver', 'manager'])
     emitTo(newCrew.company.toString(), 'crew:created', newCrew)
     return newCrew
   }
@@ -34,16 +43,22 @@ class CrewService {
     crew = Object.assign(crew, { ...body, manager: userId })
 
     await crew.save()
-    await crew.populate(['tkName', 'driver', 'manager'])
+    await ChangeLogService.add({
+      docId: crew._id.toString(),
+      company: crew.company.toString(),
+      user: userId,
+      coll: 'crews',
+      body: JSON.stringify(crew.toJSON()),
+      opType: 'update'
+    })
+
     emitTo(crew.company.toString(), 'crew:updated', crew)
     return crew
   }
 
   async closeCrew(id, { endDate, userId }) {
     const crew = await Crew.findById(id)
-      .populate('tkName')
-      .populate('driver')
-      .populate('manager')
+
     if (!crew) return null
     const idx = crew.transport.length - 1
 
@@ -60,15 +75,22 @@ class CrewService {
       throw new Error('bad query params')
     crew.manager = userId
     await crew.save()
+    await ChangeLogService.add({
+      docId: crew._id.toString(),
+      company: crew.company.toString(),
+      user: userId,
+      coll: 'crews',
+      body: JSON.stringify(crew.toJSON()),
+      opType: 'update'
+    })
+    await crew.populate(['tkName', 'driver', 'manager'])
     emitTo(crew.company.toString(), 'crew:updated', crew)
     return crew
   }
 
   async closeTransportItem(id, { endDate, userId }) {
     const crew = await Crew.findOne({ 'transport._id': id })
-      .populate('tkName')
-      .populate('driver')
-      .populate('manager')
+
     if (!crew) return null
     const transportItem = crew.transport.find(
       (item) => item._id.toString() === id
@@ -78,6 +100,15 @@ class CrewService {
     transportItem.endDate = endDate
     crew.manager = userId
     await crew.save()
+    await ChangeLogService.add({
+      docId: crew._id.toString(),
+      company: crew.company.toString(),
+      user: userId,
+      coll: 'crews',
+      body: JSON.stringify(crew.toJSON()),
+      opType: 'update'
+    })
+    await crew.populate(['tkName', 'driver', 'manager'])
     emitTo(crew.company.toString(), 'crew:updated', crew)
     return crew
   }
@@ -127,9 +158,18 @@ class CrewService {
     return plainData
   }
 
-  async deleteById(id) {
+  async deleteById({ id, userId }) {
     const data = await Crew.findByIdAndDelete(id)
     emitTo(data.company.toString(), 'crew:deleted', id)
+    await ChangeLogService.add({
+      docId: data._id.toString(),
+      company: data.company.toString(),
+      user: userId,
+      coll: 'crews',
+      body: JSON.stringify(data.toJSON()),
+      opType: 'delete'
+    })
+
     return data
   }
 

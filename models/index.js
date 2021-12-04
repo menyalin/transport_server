@@ -10,6 +10,7 @@ import TkName from './tkName.js'
 import Order from './order.js'
 import Partner from './partner.js'
 import Downtime from './downtime.js'
+import ChangeLog from './changeLog.js'
 
 export {
   User,
@@ -23,5 +24,6 @@ export {
   TkName,
   Order,
   Partner,
-  Downtime
+  Downtime,
+  ChangeLog
 }

@@ -71,7 +71,7 @@ const truckSchema = new Schema(
       type: String,
       enum: TRUCK_TYPES
     },
-    kind: { type: String, enum: TRUCK_KINDS },
+    kind: { type: String, enum: TRUCK_KINDS},
     liftCapacityType: {
       type: Number,
       enum: TRUCK_LIFT_CAPACITY_TYPES

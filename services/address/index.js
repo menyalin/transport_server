@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import axios from 'axios'
+import { ChangeLogService } from '../../services/index.js'
 import { Address } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 
@@ -26,7 +27,7 @@ class AddressService {
     return suggestions
   }
 
-  async create(body) {
+  async create({ body, user }) {
     if (body.geo)
       body.geo = {
         type: 'Point',
@@ -35,10 +36,18 @@ class AddressService {
 
     const newAddress = await Address.create(body)
     emitTo(newAddress.company.toString(), 'address:created', newAddress)
+    await ChangeLogService.add({
+      docId: newAddress._id.toString(),
+      company: newAddress.company.toString(),
+      user,
+      coll: 'addresses',
+      body: JSON.stringify(newAddress.toJSON()),
+      opType: 'create'
+    })
     return newAddress
   }
 
-  async updateOne(id, body) {
+  async updateOne({ id, body, user }) {
     if (body.geo)
       body.geo = {
         type: 'Point',
@@ -46,6 +55,14 @@ class AddressService {
       }
     const address = await Address.findByIdAndUpdate(id, body, { new: true })
     emitTo(address.company.toString(), 'address:updated', address)
+    await ChangeLogService.add({
+      docId: address._id.toString(),
+      company: address.company.toString(),
+      user,
+      coll: 'addresses',
+      body: JSON.stringify(address.toJSON()),
+      opType: 'update'
+    })
     return address
   }
 
@@ -82,9 +99,17 @@ class AddressService {
     return address
   }
 
-  async deleteById(id) {
+  async deleteById({id, user}) {
     const address = await Address.findByIdAndUpdate(id, { isActive: false })
     emitTo(address.company.toString(), 'address:deleted', id)
+    await ChangeLogService.add({
+      docId: address._id.toString(),
+      company: address.company.toString(),
+      user,
+      coll: 'addresses',
+      body: JSON.stringify(address.toJSON()),
+      opType: 'delete'
+    })
     return address
   }
 }
