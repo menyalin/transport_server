@@ -9,5 +9,7 @@ export default ({ profile, limit, tkName, state, skip }) => {
   }
   if (tkName) firstMatcher.$match.tkName = mongoose.Types.ObjectId(tkName)
   if (state === 'active') firstMatcher.$match['transport.endDate'] = null
+  if (state === 'inactive')
+    firstMatcher.$match['transport.endDate'] = { $ne: null }
   return [firstMatcher, { $skip: +skip }, { $limit: +limit }]
 }
