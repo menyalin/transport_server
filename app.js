@@ -13,6 +13,7 @@ import tkNameRouter from './api/tkName/index.js'
 import orderRouter from './api/order/index.js'
 import partnerRouter from './api/partner/index.js'
 import downtimeRouter from './api/downtime/index.js'
+import reportRouter from './api/reports/index.js'
 
 const app = express()
 
@@ -32,5 +33,6 @@ app.use('/api/tk_names', tkNameRouter)
 app.use('/api/orders', orderRouter)
 app.use('/api/partners', partnerRouter)
 app.use('/api/downtimes', downtimeRouter)
+app.use('/api/reports', reportRouter)
 
 export default app

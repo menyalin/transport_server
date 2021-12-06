@@ -4,6 +4,7 @@ import { Driver } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 import { ChangeLogService } from '../index.js'
 
+
 class DriverService {
   async create({ body, user }) {
     const data = await Driver.create(body)
