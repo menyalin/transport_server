@@ -11,6 +11,7 @@ export default (dayLimit = 30, profile) => {
     {
       $project: {
         collection: 'drivers',
+        tkName: '$tkName',
         name: {
           $trim: {
             input: {
@@ -46,10 +47,10 @@ export default (dayLimit = 30, profile) => {
             dbField: 'medBook.annualCommisionDate',
             validDays: {
               $dateDiff: {
-                startDate: '$medBook.annualCommisionDate',
+                startDate: '$$NOW',
                 endDate: {
                   $dateAdd: {
-                    startDate: '$$NOW',
+                    startDate: '$medBook.annualCommisionDate',
                     unit: 'year',
                     amount: 1
                   }
@@ -86,6 +87,7 @@ export default (dayLimit = 30, profile) => {
           {
             $project: {
               collection: 'trucks',
+              tkName: '$tkName',
               name: '$regNum',
               controlDates: [
                 {
