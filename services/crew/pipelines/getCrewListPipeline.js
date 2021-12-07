@@ -11,5 +11,10 @@ export default ({ profile, limit, tkName, state, skip }) => {
   if (state === 'active') firstMatcher.$match['transport.endDate'] = null
   if (state === 'inactive')
     firstMatcher.$match['transport.endDate'] = { $ne: null }
-  return [firstMatcher, { $skip: +skip }, { $limit: +limit }]
+  return [
+    firstMatcher,
+    { $sort: { startDate: -1 } },
+    { $skip: +skip },
+    { $limit: +limit }
+  ]
 }
