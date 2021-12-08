@@ -143,7 +143,7 @@ class CrewService {
   async getList(params) {
     const pipeline = getCrewListPipeline(params)
     const data = await Crew.aggregate(pipeline)
-    return data
+    return data[0]
   }
 
   async getById({ id, forEdit }) {

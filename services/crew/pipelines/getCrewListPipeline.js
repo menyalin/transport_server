@@ -11,10 +11,30 @@ export default ({ profile, limit, tkName, state, skip }) => {
   if (state === 'active') firstMatcher.$match['transport.endDate'] = null
   if (state === 'inactive')
     firstMatcher.$match['transport.endDate'] = { $ne: null }
-  return [
-    firstMatcher,
-    { $sort: { startDate: -1 } },
-    { $skip: +skip },
-    { $limit: +limit }
+  const group = [
+    {
+      $sort: {
+        startDate: -1.0
+      }
+    },
+    {
+      $group: {
+        _id: 'crews',
+        items: {
+          $push: '$$ROOT'
+        }
+      }
+    },
+    {
+      $addFields: {
+        count: {
+          $size: '$items'
+        },
+        items: {
+          $slice: ['$items', +skip, +limit]
+        }
+      }
+    }
   ]
+  return [firstMatcher, ...group]
 }
