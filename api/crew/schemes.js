@@ -48,14 +48,10 @@ export const getActualCrewsSchema = {
   properties: {
     profile: {
       type: 'string'
-    },
-    date: {
-      type: 'string',
-      formats: ['date', 'date-time']
     }
   },
-  required: ['profile', 'date'],
-  additionalProperties: false
+  required: ['profile'],
+  additionalProperties: true
 }
 
 export const createDocSchema = {

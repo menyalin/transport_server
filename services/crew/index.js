@@ -134,8 +134,8 @@ class CrewService {
     else return null
   }
 
-  async getActualCrews(profile, date) {
-    const pipeline = getActualCrewsPipeline(profile, date)
+  async getActualCrews(profile) {
+    const pipeline = getActualCrewsPipeline(profile)
     const data = await Crew.aggregate(pipeline)
     return data
   }

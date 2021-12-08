@@ -29,11 +29,11 @@ const router = express.Router()
 
 // api/crews
 router.get('/', [jwtAuth, queryValidator(getListSchema)], getProfileDocs)
-// router.get(
-//   '/actual',
-//   [jwtAuth, queryValidator(getActualCrewsSchema)],
-//   getActualCrews
-// )
+router.get(
+  '/actual',
+  [jwtAuth, queryValidator(getActualCrewsSchema)],
+  getActualCrews
+)
 router.get(
   '/by_driver',
   [jwtAuth, queryValidator(getByDriverScheme)],
