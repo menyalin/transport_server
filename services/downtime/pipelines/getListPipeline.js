@@ -28,7 +28,7 @@ export const getListPipeline = ({
     },
     {
       $group: {
-        _id: 'crews',
+        _id: 'downtimes',
         items: {
           $push: '$$ROOT'
         }

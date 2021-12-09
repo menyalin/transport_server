@@ -99,7 +99,7 @@ const schema = new Schema(
     state,
     isActive: {
       type: Boolean,
-      default: false
+      default: true
     },
     isDisabled: {
       type: Boolean,

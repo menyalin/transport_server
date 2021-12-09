@@ -19,6 +19,7 @@ export const getOrderListPipeline = ({
 
   const firstMatcher = {
     $match: {
+      isActive: true,
       company: mongoose.Types.ObjectId(profile),
       $expr: {
         $and: [
@@ -28,5 +29,30 @@ export const getOrderListPipeline = ({
       }
     }
   }
-  return [firstMatcher, { $skip: +skip }, { $limit: +limit }]
+  const group = [
+    {
+      $sort: {
+        createdAt: -1.0
+      }
+    },
+    {
+      $group: {
+        _id: 'orders',
+        items: {
+          $push: '$$ROOT'
+        }
+      }
+    },
+    {
+      $addFields: {
+        count: {
+          $size: '$items'
+        },
+        items: {
+          $slice: ['$items', +skip, +limit]
+        }
+      }
+    }
+  ]
+  return [firstMatcher, ...group]
 }

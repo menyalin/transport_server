@@ -49,7 +49,7 @@ class OrderService {
     try {
       const pipeline = getOrderListPipeline(params)
       const res = await OrderModel.aggregate(pipeline)
-      return res
+      return res[0]
     } catch (e) {
       throw new Error(e.message)
     }
