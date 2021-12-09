@@ -23,7 +23,7 @@ class DowntimeService extends IService {
     try {
       const pipeline = getListPipeline(params)
       const res = await this.model.aggregate(pipeline)
-      return res
+      return res[0]
     } catch (e) {
       throw new Error(e.message)
     }

@@ -20,5 +20,30 @@ export const getListPipeline = ({
       ]
     }
   }
-  return [firstMatcher, { $skip: +skip }, { $limit: +limit }]
+  const group = [
+    {
+      $sort: {
+        startPositionDate: -1.0
+      }
+    },
+    {
+      $group: {
+        _id: 'crews',
+        items: {
+          $push: '$$ROOT'
+        }
+      }
+    },
+    {
+      $addFields: {
+        count: {
+          $size: '$items'
+        },
+        items: {
+          $slice: ['$items', +skip, +limit]
+        }
+      }
+    }
+  ]
+  return [firstMatcher, ...group]
 }
