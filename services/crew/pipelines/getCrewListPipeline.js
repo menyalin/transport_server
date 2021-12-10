@@ -1,6 +1,23 @@
 import mongoose from 'mongoose'
 
-export default ({ profile, limit, tkName, state, skip }) => {
+export default ({ profile, limit, tkName, state, skip, sortBy, sortDesc }) => {
+  let sortingField = 'startDate'
+  let sortingDirection = -1
+  switch (sortBy) {
+    case 'tkName':
+      sortingField = 'tkName'
+      sortingDirection = sortDesc === 'true' ? -1 : 1
+      break
+    case 'driver':
+      sortingField = 'driver'
+      sortingDirection = sortDesc === 'true' ? -1 : 1
+      break
+    case 'startDate':
+      sortingField = 'startDate'
+      sortingDirection = sortDesc === 'true' ? -1 : 1
+      break
+  }
+
   const firstMatcher = {
     $match: {
       isActive: true,
@@ -14,7 +31,7 @@ export default ({ profile, limit, tkName, state, skip }) => {
   const group = [
     {
       $sort: {
-        startDate: -1.0
+        [sortingField]: sortingDirection
       }
     },
     {
