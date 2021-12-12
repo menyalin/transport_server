@@ -5,6 +5,8 @@ import {
   TRUCK_KINDS,
   TRUCK_LIFT_CAPACITY_TYPES
 } from '../constants/enums.js'
+import additionalNotification from './_additionalNotification.js'
+
 const { Schema, model, Types } = pkg
 
 const additionalDetails = {
@@ -53,6 +55,7 @@ const permits = {
 
 const truckSchema = new Schema(
   {
+    additionalNotifications: [additionalNotification],
     additionalDetails,
     insurance,
     permits,
