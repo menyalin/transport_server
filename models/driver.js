@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+import additionalNotification from './_additionalNotification.js'
 import pkg from 'mongoose'
 const { Schema, model, Types } = pkg
 
@@ -28,6 +29,7 @@ const driverSchema = new Schema(
       ref: 'TkName',
       required: true
     },
+    additionalNotifications: [additionalNotification],
     passportId: String,
     passportIssued: String,
     passportDate: Date,

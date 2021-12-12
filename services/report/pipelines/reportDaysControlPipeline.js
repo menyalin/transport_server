@@ -2,6 +2,43 @@ import pkg from 'mongoose'
 const { Types } = pkg
 
 export default (dayLimit = 30, profile) => {
+  const additionalNotifications = {
+    $ifNull: [
+      {
+        $filter: {
+          input: {
+            $map: {
+              input: '$additionalNotifications',
+              as: 'item',
+              in: {
+                title: '$$item.title',
+                daysBeforeRemind: '$$item.daysBeforeRemind',
+                validDays: {
+                  $dateDiff: {
+                    startDate: '$$NOW',
+                    endDate: '$$item.expDate',
+                    unit: 'day'
+                  }
+                }
+              }
+            }
+          },
+          as: 'item',
+          cond: {
+            $gte: ['$$item.daysBeforeRemind', '$$item.validDays']
+          }
+        }
+      },
+      []
+    ]
+  }
+  const concatArrays = {
+    $addFields: {
+      controlDates: {
+        $concatArrays: ['$controlDates', '$additionalNotifications']
+      }
+    }
+  }
   const drivers = [
     {
       $match: {
@@ -19,6 +56,7 @@ export default (dayLimit = 30, profile) => {
             }
           }
         },
+        additionalNotifications,
         controlDates: [
           {
             title: 'Карта водителя',
@@ -63,6 +101,10 @@ export default (dayLimit = 30, profile) => {
       }
     },
     {
+      ...concatArrays
+    },
+
+    {
       $unwind: '$controlDates'
     },
     {
@@ -89,6 +131,7 @@ export default (dayLimit = 30, profile) => {
               collection: 'trucks',
               tkName: '$tkName',
               name: '$regNum',
+              additionalNotifications,
               controlDates: [
                 {
                   title: 'Сан.паспорт',
@@ -170,6 +213,10 @@ export default (dayLimit = 30, profile) => {
               ]
             }
           },
+          {
+            ...concatArrays
+          },
+
           {
             $unwind: '$controlDates'
           },
