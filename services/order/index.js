@@ -9,14 +9,14 @@ class OrderService {
   async create({ body, user }) {
     const order = await OrderModel.create(body)
     emitTo(order.company.toString(), 'order:created', order.toJSON())
-    await ChangeLogService.add({
-      docId: order._id.toString(),
-      company: order.company.toString(),
-      coll: 'order',
-      user,
-      opType: 'create',
-      body: JSON.stringify(order.toJSON())
-    })
+    // await ChangeLogService.add({
+    //   docId: order._id.toString(),
+    //   company: order.company.toString(),
+    //   coll: 'order',
+    //   user,
+    //   opType: 'create',
+    //   body: JSON.stringify(order.toObject({ flattenMaps: true }))
+    // })
     return order
   }
 
@@ -88,7 +88,7 @@ class OrderService {
     return res
   }
 
-  async updateOne(id, body, userId) {
+  async updateOne({ id, body, userId }) {
     let order = await OrderModel.findById(id)
     if (!order) return null
     order = Object.assign(order, { ...body, manager: userId })
@@ -101,9 +101,9 @@ class OrderService {
       coll: 'order',
       user: userId,
       opType: 'update',
-      body: JSON.stringify(order.toJSON())
+      body: JSON.stringify(order.toObject({ flattenMaps: true }))
     })
-    return order.toJSON()
+    return order
   }
 }
 
