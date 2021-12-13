@@ -66,10 +66,11 @@ class AddressService {
     return address
   }
 
-  async search(str) {
+  async search(str, profile) {
     const res = await Address.find(
       {
-        isActive: true,
+        // company: profile,
+        // isActive: true,
         $text: {
           $search: str,
           $language: 'russian'
@@ -99,7 +100,7 @@ class AddressService {
     return address
   }
 
-  async deleteById({id, user}) {
+  async deleteById({ id, user }) {
     const address = await Address.findByIdAndUpdate(id, { isActive: false })
     emitTo(address.company.toString(), 'address:deleted', id)
     await ChangeLogService.add({

@@ -9,4 +9,14 @@ export const getById = async (req, res) => {
   }
 }
 
-
+export const searchAddress = async (req, res) => {
+  try {
+    const addresses = await AddressService.search(
+      req.query.search,
+      req.query.profile
+    )
+    res.status(200).json(addresses)
+  } catch (e) {
+    res.status(500).json({ message: e.message })
+  }
+}

@@ -38,14 +38,7 @@ export const updateAddress = async (req, res) => {
   }
 }
 
-export const searchAddress = async (req, res) => {
-  try {
-    const newAddress = await AddressService.search(req.query.search)
-    res.status(201).json(newAddress)
-  } catch (e) {
-    res.status(500).json({ message: e.message })
-  }
-}
+
 
 export const getProfileAddresses = async (req, res) => {
   try {
