@@ -41,7 +41,7 @@ const addressSchema = new Schema(
 )
 
 addressSchema.index(
-  { name: 'text', label: 'text' },
+  { name: 'text', label: 'text', shortName: 'text' },
   {
     default_language: 'russian'
   }
