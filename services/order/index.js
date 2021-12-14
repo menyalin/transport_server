@@ -88,10 +88,10 @@ class OrderService {
     return res
   }
 
-  async updateOne({ id, body, userId }) {
+  async updateOne({ id, body, user }) {
     let order = await OrderModel.findById(id)
     if (!order) return null
-    order = Object.assign(order, { ...body, manager: userId })
+    order = Object.assign(order, { ...body, manager: user })
     await order.save()
 
     emitTo(order.company.toString(), 'order:updated', order.toJSON())
@@ -99,7 +99,7 @@ class OrderService {
       docId: order._id.toString(),
       company: order.company.toString(),
       coll: 'order',
-      user: userId,
+      user,
       opType: 'update',
       body: JSON.stringify(order.toObject({ flattenMaps: true }))
     })
