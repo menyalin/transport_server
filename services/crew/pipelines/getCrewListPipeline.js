@@ -1,6 +1,16 @@
 import mongoose from 'mongoose'
 
-export default ({ profile, limit, tkName, state, skip, sortBy, sortDesc }) => {
+export default ({
+  profile,
+  limit,
+  tkName,
+  state,
+  skip,
+  sortBy,
+  sortDesc,
+  driver,
+  truck
+}) => {
   let sortingField = 'startDate'
   let sortingDirection = -1
   switch (sortBy) {
@@ -18,12 +28,20 @@ export default ({ profile, limit, tkName, state, skip, sortBy, sortDesc }) => {
       break
   }
 
-  const firstMatcher = {
+  let firstMatcher = {
     $match: {
       isActive: true,
       company: mongoose.Types.ObjectId(profile)
     }
   }
+  if (truck)
+    firstMatcher = {
+      ...firstMatcher,
+      $match: {
+        $expr: { $in: [mongoose.Types.ObjectId(truck), '$transport.truck'] }
+      }
+    }
+  if (driver) firstMatcher.$match.driver = mongoose.Types.ObjectId(driver)
   if (tkName) firstMatcher.$match.tkName = mongoose.Types.ObjectId(tkName)
   if (state === 'active') firstMatcher.$match['transport.endDate'] = null
   if (state === 'inactive')
