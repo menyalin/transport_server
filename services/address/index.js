@@ -69,8 +69,8 @@ class AddressService {
   async search(str, profile) {
     const res = await Address.find(
       {
-        // company: profile,
-        // isActive: true,
+        company: profile,
+        isActive: true,
         $text: {
           $search: str,
           $language: 'russian'
