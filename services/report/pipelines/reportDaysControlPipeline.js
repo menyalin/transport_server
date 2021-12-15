@@ -42,7 +42,8 @@ export default (dayLimit = 30, profile) => {
   const drivers = [
     {
       $match: {
-        company: Types.ObjectId(profile)
+        company: Types.ObjectId(profile),
+        dismissalDate: null
       }
     },
     {
@@ -123,7 +124,8 @@ export default (dayLimit = 30, profile) => {
         pipeline: [
           {
             $match: {
-              company: Types.ObjectId(profile)
+              company: Types.ObjectId(profile),
+              endServiceDate: null
             }
           },
           {
