@@ -6,7 +6,7 @@ class OrderController {
       const data = await service.create({ body: req.body, user: req.userId })
       res.status(201).json(data)
     } catch (e) {
-      res.status(500).json({ mesasge: e.message })
+      res.status(e.statusCode || 500).json(e.message)
     }
   }
 
@@ -19,7 +19,7 @@ class OrderController {
       })
       res.status(200).json(data)
     } catch (e) {
-      res.status(500).json({ message: e.message })
+      res.status(e.statusCode || 500).json(e.message)
     }
   }
 

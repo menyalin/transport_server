@@ -4,19 +4,21 @@ import { emitTo } from '../../socket/index.js'
 import { getSchedulePipeline } from './pipelines/getSchedulePipeline.js'
 import { getOrderListPipeline } from './pipelines/getOrderListPipeline.js'
 import { ChangeLogService } from '../index.js'
+import checkCrossItems from './checkCrossItems.js'
 
 class OrderService {
   async create({ body, user }) {
+    await checkCrossItems({ body })
     const order = await OrderModel.create(body)
     emitTo(order.company.toString(), 'order:created', order.toJSON())
-    // await ChangeLogService.add({
-    //   docId: order._id.toString(),
-    //   company: order.company.toString(),
-    //   coll: 'order',
-    //   user,
-    //   opType: 'create',
-    //   body: JSON.stringify(order.toObject({ flattenMaps: true }))
-    // })
+    await ChangeLogService.add({
+      docId: order._id.toString(),
+      company: order.company.toString(),
+      coll: 'order',
+      user,
+      opType: 'create',
+      body: JSON.stringify(order.toObject({ flattenMaps: true }))
+    })
     return order
   }
 
@@ -91,6 +93,7 @@ class OrderService {
   async updateOne({ id, body, user }) {
     let order = await OrderModel.findById(id)
     if (!order) return null
+    await checkCrossItems({ body, id })
     order = Object.assign(order, { ...body, manager: user })
     await order.save()
 
