@@ -93,7 +93,15 @@ class OrderService {
   async updateOne({ id, body, user }) {
     let order = await OrderModel.findById(id)
     if (!order) return null
-    await checkCrossItems({ body, id })
+    
+    const datesChanged = !(
+      new Date(order.route[0].arrivalDate) ===
+        new Date(body.route[0].arrivalDate) &&
+      new Date(order.route[order.route.length - 1].departureDate) ===
+        new Date(body.route[body.route.length - 1].departureDate)
+    )
+    if (datesChanged) await checkCrossItems({ body, id })
+
     order = Object.assign(order, { ...body, manager: user })
     await order.save()
 
