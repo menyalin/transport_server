@@ -11,7 +11,7 @@ export class IController {
       })
       res.status(201).json(data)
     } catch (e) {
-      res.status(500).json({ message: e.message })
+      res.status(e.statusCode || 500).json(e.message)
     }
   }
 
@@ -24,7 +24,7 @@ export class IController {
       })
       res.status(200).json(data)
     } catch (e) {
-      res.status(500).json({ message: e.message })
+      res.status(e.statusCode || 500).json(e.message)
     }
   }
 
@@ -33,7 +33,7 @@ export class IController {
       const data = await this.service.getByProfile(req.query.profile)
       res.status(200).json(data)
     } catch (e) {
-      res.status(500).json({ message: e.message })
+      res.status(e.statusCode || 500).json(e.message)
     }
   }
 
@@ -54,7 +54,7 @@ export class IController {
       })
       res.status(200).json(data)
     } catch (e) {
-      res.status(500).json({ message: e.message })
+      res.status(e.statusCode || 500).json(e.message)
     }
   }
 }
