@@ -90,17 +90,31 @@ class OrderService {
     return res
   }
 
+  _isEqualDatesOfRoute({ oldRoute, newRoute }) {
+    const oldArrivalDate = new Date(oldRoute[0].arrivalDate).toLocaleString()
+    const newArrivalDate = new Date(newRoute[0].arrivalDate).toLocaleString()
+    const oldDepartureDate = new Date(
+      oldRoute[oldRoute.length - 1].departureDate
+    ).toLocaleString()
+
+    const newDepartureDate = new Date(
+      newRoute[newRoute.length - 1].departureDate
+    ).toLocaleString()
+    return (
+      oldArrivalDate === newArrivalDate && oldDepartureDate === newDepartureDate
+    )
+  }
+
   async updateOne({ id, body, user }) {
     let order = await OrderModel.findById(id)
     if (!order) return null
-    
-    const datesChanged = !(
-      new Date(order.route[0].arrivalDate) ===
-        new Date(body.route[0].arrivalDate) &&
-      new Date(order.route[order.route.length - 1].departureDate) ===
-        new Date(body.route[body.route.length - 1].departureDate)
-    )
-    if (datesChanged) await checkCrossItems({ body, id })
+
+    const datesNotChanged = this._isEqualDatesOfRoute({
+      oldRoute: order.toJSON().route,
+      newRoute: body.route
+    })
+
+    if (!datesNotChanged) await checkCrossItems({ body, id })
 
     order = Object.assign(order, { ...body, manager: user })
     await order.save()
