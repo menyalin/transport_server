@@ -12,7 +12,7 @@ import ctrl from '../../controllers/orderTemplate.controller.js'
 
 const router = express.Router()
 
-// api/downtimes
+// api/order_templates
 router.get('/', [jwtAuth, queryValidator(getListSchema)], (...args) =>
   ctrl.getList(...args)
 )

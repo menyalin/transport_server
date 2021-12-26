@@ -35,6 +35,6 @@ app.use('/api/orders', orderRouter)
 app.use('/api/partners', partnerRouter)
 app.use('/api/downtimes', downtimeRouter)
 app.use('/api/reports', reportRouter)
-app.use('./api/order_templates', orderTemplateRouter)
+app.use('/api/order_templates', orderTemplateRouter)
 
 export default app

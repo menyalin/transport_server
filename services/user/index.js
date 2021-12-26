@@ -6,7 +6,8 @@ import {
   DriverService,
   PartnerService,
   TkNameService,
-  TruckService
+  TruckService,
+  OrderTemplateService
 } from '../index.js'
 
 class UserService {
@@ -31,6 +32,7 @@ class UserService {
     const trucks = await TruckService.getByProfile(profile)
     const tkNames = await TkNameService.getByProfile(profile)
     const partners = await PartnerService.getByProfile(profile)
+    const orderTemplates = await OrderTemplateService.getByProfile(profile)
     const orderStatuses = ORDER_STATUSES
     return {
       user,
@@ -40,7 +42,8 @@ class UserService {
       trucks,
       tkNames,
       partners,
-      orderStatuses
+      orderStatuses,
+      orderTemplates
     }
   }
 
