@@ -11,6 +11,7 @@ import PartnerService from './partner/index.js'
 import DowntimeService from './downtime/index.js'
 import ChangeLogService from './changeLog/index.js'
 import ReportService from './report/index.js'
+import OrderTemplateService from './orderTemplate/index.js'
 
 export {
   UserService,
@@ -25,5 +26,6 @@ export {
   PartnerService,
   DowntimeService,
   ChangeLogService,
-  ReportService
+  ReportService,
+  OrderTemplateService
 }

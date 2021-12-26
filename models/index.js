@@ -11,6 +11,7 @@ import Order from './order.js'
 import Partner from './partner.js'
 import Downtime from './downtime.js'
 import ChangeLog from './changeLog.js'
+import OrderTemplate from './orderTemplate.js'
 
 export {
   User,
@@ -25,5 +26,6 @@ export {
   Order,
   Partner,
   Downtime,
-  ChangeLog
+  ChangeLog,
+  OrderTemplate
 }
