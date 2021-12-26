@@ -62,12 +62,6 @@ const reqTransport = {
   }
 }
 
-// const confirmedCrew = {
-//   truck: { type: Types.ObjectId, ref: 'Truck' },
-//   trailer: { type: Types.ObjectId, ref: 'Truck' },
-//   driver: { type: Types.ObjectId, ref: 'Driver' }
-// }
-
 const schema = new Schema(
   {
     name: {
@@ -78,12 +72,7 @@ const schema = new Schema(
       type: Types.ObjectId,
       ref: 'Partner'
     },
-    // startPositionDate: {
-    //   // дата для отображения в таблице распределения
-    //   type: Date,
-    //   required: true
-    // },
-    // confirmedCrew,
+  
     route: [point],
     cargoParams: cargoParams,
     reqTransport: reqTransport,
