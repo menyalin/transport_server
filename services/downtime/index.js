@@ -16,7 +16,7 @@ class DowntimeService extends IService {
 
   async create({ body, user }) {
     await checkCrossItems({ body })
-    
+
     const data = await this.model.create(body)
     if (this.logService)
       await this.logService.add({
@@ -32,8 +32,8 @@ class DowntimeService extends IService {
   }
 
   async updateOne({ id, body, user }) {
-    await checkCrossItems({ body })
-    
+    await checkCrossItems({ body, id })
+
     const data = await this.model.findByIdAndUpdate(id, body, { new: true })
     this.emitter(data.company.toString(), `${this.modelName}:updated`, data)
     if (this.logService)

@@ -86,8 +86,7 @@ const _checkCrossDowntimes = async ({ body, dates, id }) => {
       }
     }
   }
-  if (body.type && id)
-    matcher.$match._id = { $ne: mongoose.Types.ObjectId(id) }
+  if (id) matcher.$match._id = { $ne: mongoose.Types.ObjectId(id) }
 
   if (dates.length >= 2) {
     const eDate = new Date(dates[dates.length - 1])
@@ -217,8 +216,7 @@ const _checkCrossOrders = async ({ body, dates, id }) => {
       ]
     })
   }
-  if (!body.type && id)
-    matcher.$match._id = { $ne: mongoose.Types.ObjectId(id) }
+  if (id) matcher.$match._id = { $ne: mongoose.Types.ObjectId(id) }
 
   const orders = await Order.aggregate([matcher])
   if (orders.length > 0)
