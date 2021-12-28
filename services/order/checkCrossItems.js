@@ -70,6 +70,7 @@ const _checkCrossDowntimes = async ({ body, dates, id }) => {
   )
   const matcher = {
     $match: {
+      isActive: true,
       company: mongoose.Types.ObjectId(body.company),
       truck: truckId,
       $expr: {
@@ -121,6 +122,7 @@ const _checkCrossOrders = async ({ body, dates, id }) => {
   )
   const matcher = {
     $match: {
+      isActive: true,
       company: mongoose.Types.ObjectId(body.company),
       'confirmedCrew.truck': truckId,
       $expr: {
