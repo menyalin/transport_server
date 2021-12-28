@@ -23,7 +23,7 @@ export const getSchedulePipeline = ({ company, startDate, endDate }) => {
     $match: {
       company: mongoose.Types.ObjectId(company),
       startPositionDate: { $lte: eP },
-      $expr: { $gt: [lastDate, sP] }
+      $expr: { $gte: [lastDate, sP] }
     }
   }
   return [firstMatcher]
