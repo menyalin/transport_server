@@ -1,10 +1,11 @@
 import mongoose from 'mongoose'
-import { Order as OrderModel } from '../../models/index.js'
+import { Order as OrderModel, OrderTemplate } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 import { getSchedulePipeline } from './pipelines/getSchedulePipeline.js'
 import { getOrderListPipeline } from './pipelines/getOrderListPipeline.js'
 import { ChangeLogService } from '../index.js'
 import checkCrossItems from './checkCrossItems.js'
+import { BadRequestError } from '../../helpers/errors.js'
 
 class OrderService {
   async create({ body, user }) {
@@ -20,6 +21,37 @@ class OrderService {
       body: JSON.stringify(order.toObject({ flattenMaps: true }))
     })
     return order
+  }
+
+  async createFromTemplate({ body, user }) {
+    if (!Array.isArray(body) || body.length === 0)
+      throw new BadRequestError('Не верный формат данных')
+    const templateIds = body.map((i) => i.template)
+    const templates = await OrderTemplate.find({ _id: templateIds }).lean()
+    for (let i = 0; i < body.length; i++) {
+      const template = templates.find(
+        (t) => t._id.toString() === body[i].template
+      )
+      const startDate = body[i].date
+      for (let j = 0; j < body[i].count; j++) {
+        const newOrder = {
+          client: {
+            client: template.client
+          },
+          startPositionDate: startDate,
+          route: template.route,
+          company: template.company,
+          reqTransport: template.reqTransport,
+          cargoParams: template.cargoParams,
+          state: {
+            status: 'needGet'
+          }
+        }
+        newOrder.route[0].plannedDate = startDate
+        await this.create({ body: newOrder, user })
+      }
+    }
+    return { message: 'created' }
   }
 
   async disableOrder({ orderId, state }) {

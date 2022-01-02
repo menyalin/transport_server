@@ -13,7 +13,9 @@ router.get('/', [jwtAuth, queryValidator(getListSchema)], ctrl.getList)
 router.get('/schedule', [jwtAuth, queryValidator(getListForScheduleSchema)], ctrl.getListForSchedule)
 router.get('/:id', [jwtAuth], ctrl.getById)
 
+router.post('/from_template', [jwtAuth], ctrl.createFromTemplate)
 router.post('/', [jwtAuth, bodyValidator(createSchema)], ctrl.create)
+
 router.put('/:id', [jwtAuth, bodyValidator(createSchema)], ctrl.updateOne)
 router.delete('/:id', [jwtAuth], ctrl.deleteById)
 
