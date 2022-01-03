@@ -3,6 +3,7 @@ import usersHandler from './usersHandler.js'
 import initDataHandler from './initDataHandler.js'
 import ordersHandler from './ordersHandler.js'
 import dountimesHandler from './dountimesHandler.js'
+import scheduleNotesHandler from './scheduleNotesHandler.js'
 
 import { Server } from 'socket.io'
 const io = new Server({})
@@ -20,6 +21,7 @@ const onConnection = (socket) => {
   initDataHandler(io, socket)
   ordersHandler(io, socket)
   dountimesHandler(io, socket)
+  scheduleNotesHandler(io, socket)
 }
 
 io.on('connection', onConnection)

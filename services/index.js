@@ -12,6 +12,7 @@ import DowntimeService from './downtime/index.js'
 import ChangeLogService from './changeLog/index.js'
 import ReportService from './report/index.js'
 import OrderTemplateService from './orderTemplate/index.js'
+import ScheduleNoteService from './scheduleNote/index.js'
 
 export {
   UserService,
@@ -27,5 +28,6 @@ export {
   DowntimeService,
   ChangeLogService,
   ReportService,
-  OrderTemplateService
+  OrderTemplateService,
+  ScheduleNoteService
 }
