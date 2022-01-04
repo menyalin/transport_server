@@ -26,7 +26,7 @@ export const getOrderListPipeline = ({
       $expr: {
         $and: [
           { $gte: [firstPlannedDate, sP] },
-          { $lte: [firstPlannedDate, eP] }
+          { $lt: [firstPlannedDate, eP] }
         ]
       }
     }

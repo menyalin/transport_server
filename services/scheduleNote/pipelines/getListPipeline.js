@@ -10,40 +10,40 @@ export const getListPipeline = ({
   sortBy,
   sortDesc
 }) => {
-  // const sP = new Date(startDate)
-  // const eP = new Date(endDate)
+  const sP = new Date(startDate)
+  const eP = new Date(endDate)
 
-  // let sortingField = 'startPositionDate'
-  // let sortingDirection = -1
-  // switch (sortBy) {
-  //   case 'startPositionDate':
-  //     sortingField = 'startPositionDate'
-  //     sortingDirection = sortDesc === 'true' ? -1 : 1
-  //     break
-  //   case 'truck':
-  //     sortingField = 'truck'
-  //     sortingDirection = sortDesc === 'true' ? -1 : 1
-  //     break
-  // }
+  let sortingField = 'startPositionDate'
+  let sortingDirection = -1
+  switch (sortBy) {
+    case 'startPositionDate':
+      sortingField = 'startPositionDate'
+      sortingDirection = sortDesc === 'true' ? -1 : 1
+      break
+    case 'truck':
+      sortingField = 'truck'
+      sortingDirection = sortDesc === 'true' ? -1 : 1
+      break
+  }
 
   const firstMatcher = {
     $match: {
       isActive: true,
-      company: mongoose.Types.ObjectId(company)
-      // $and: [
-      //   { startPositionDate: { $gte: sP } },
-      //   { startPositionDate: { $lt: eP } }
-      // ]
+      company: mongoose.Types.ObjectId(company),
+      $and: [
+        { startPositionDate: { $gte: sP } },
+        { startPositionDate: { $lt: eP } }
+      ]
     }
   }
-  // if (truckFilter)
-  //   firstMatcher.$match.truck = mongoose.Types.ObjectId(truckFilter)
+  if (truckFilter)
+    firstMatcher.$match.truck = mongoose.Types.ObjectId(truckFilter)
   const group = [
-    // {
-    //   $sort: {
-    //     [sortingField]: sortingDirection
-    //   }
-    // },
+    {
+      $sort: {
+        [sortingField]: sortingDirection
+      }
+    },
     {
       $group: {
         _id: 'scheduleNotes',
