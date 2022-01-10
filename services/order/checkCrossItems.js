@@ -22,6 +22,7 @@ const _checkUnfinishedOrder = async ({ body, id }) => {
   )
   const matcher = {
     $match: {
+      isActive: true,
       'confirmedCrew.truck': truckId,
       $expr: {
         $and: [
