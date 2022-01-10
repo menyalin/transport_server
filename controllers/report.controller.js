@@ -8,7 +8,7 @@ class ReportController {
   async daysControl(req, res) {
     try {
       const data = await this.service.daysControl(
-        req.query.daysLimit,
+        req.query.days,
         req.query.profile
       )
       res.status(200).json(data)

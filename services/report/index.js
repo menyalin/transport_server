@@ -8,7 +8,7 @@ class ReportService {
 
   async daysControl(days, profile) {
     let parsedDays
-    if (!!days && parseInt(days)) parsedDays = parseInt(days)
+    if (!!days && !isNaN(parseInt(days))) parsedDays = parseInt(days)
     const pipeline = getReportDaysControlPipeline(parsedDays, profile)
     const data = await Driver.aggregate(pipeline)
     return data
