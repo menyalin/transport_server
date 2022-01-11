@@ -149,6 +149,7 @@ class OrderService {
     if (!datesNotChanged) await checkCrossItems({ body, id })
 
     order = Object.assign(order, { ...body, manager: user })
+    order.isDisabled = false
     await order.save()
 
     emitTo(order.company.toString(), 'order:updated', order.toJSON())

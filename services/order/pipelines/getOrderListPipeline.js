@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 
 export const getOrderListPipeline = ({
   profile,
+  client,
   startDate,
   endDate,
   limit,
@@ -32,6 +33,9 @@ export const getOrderListPipeline = ({
     }
   }
   if (status) firstMatcher.$match['state.status'] = status
+  if (client)
+    firstMatcher.$match['client.client'] = mongoose.Types.ObjectId(client)
+
   if (truck)
     firstMatcher.$match['confirmedCrew.truck'] = mongoose.Types.ObjectId(truck)
   const group = [
