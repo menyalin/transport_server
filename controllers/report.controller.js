@@ -16,6 +16,18 @@ class ReportController {
       res.status(500).json({ message: e.message })
     }
   }
+
+  async inProgressOrders(req, res) {
+    try {
+      const data = await this.service.inProgressOrders({
+        profile: req.query.profile,
+        client: req.query.client
+      })
+      res.status(200).json(data)
+    } catch (e) {
+      res.status(500).json({ message: e.message })
+    }
+  }
 }
 
 export default new ReportController({ service: ReportService })

@@ -15,4 +15,8 @@ router.get(
   (...args) => ctrl.daysControl(...args)
 )
 
+router.get('/inProgressOrders', [jwtAuth], (...args) =>
+  ctrl.inProgressOrders(...args)
+)
+
 export default router
