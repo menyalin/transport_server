@@ -277,6 +277,29 @@ export default ({ profile, client }) => {
             }
           }
         }
+      },
+      currentPoint  : {
+        $getField: {
+          field: 'addressObj',
+          input: {
+            $last: {
+              $filter: {
+                input: '$route',
+                cond: {
+                  $and: [
+                    { $ne: ['$$this.arrivalDate', null] },
+                    {
+                      $or: [
+                        { $eq: ['$$this.departureDate', null] },
+                        { $gte: ['$$this.departureDate', currentMoment] }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
