@@ -267,7 +267,12 @@ export default ({ profile, client }) => {
                     { $ne: ['$$this.arrivalDate', null] },
                     {
                       $or: [
-                        { $eq: ['$$this.departureDate', null] },
+                        {
+                          $eq: [
+                            { $ifNull: ['$$this.departureDate', null] },
+                            null
+                          ]
+                        },
                         { $gte: ['$$this.departureDate', currentMoment] }
                       ]
                     }
@@ -278,7 +283,8 @@ export default ({ profile, client }) => {
           }
         }
       },
-      currentPoint  : {
+
+      currentPoint: {
         $getField: {
           field: 'addressObj',
           input: {
@@ -290,7 +296,12 @@ export default ({ profile, client }) => {
                     { $ne: ['$$this.arrivalDate', null] },
                     {
                       $or: [
-                        { $eq: ['$$this.departureDate', null] },
+                        {
+                          $eq: [
+                            { $ifNull: ['$$this.departureDate', null] },
+                            null
+                          ]
+                        },
                         { $gte: ['$$this.departureDate', currentMoment] }
                       ]
                     }
@@ -314,6 +325,11 @@ export default ({ profile, client }) => {
     lookupDriver,
     lookupTruck,
     lookupTrailer,
-    finalProject
+    finalProject,
+    {
+      $sort: {
+        plannedDate: 1
+      }
+    }
   ]
 }
