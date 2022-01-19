@@ -17,6 +17,11 @@ const client = {
   num: String
 }
 
+const grade = {
+  grade: Number,
+  note: String
+}
+
 const point = {
   type: {
     type: String,
@@ -86,11 +91,7 @@ const schema = new Schema(
       type: Date,
       required: true
     },
-    // endPositionDate: {
-    //   // дата для отображения в таблице распределения
-    //   type: Date,
-    //   required: true
-    // },
+    grade,
     client,
     confirmedCrew,
     route: [point],
