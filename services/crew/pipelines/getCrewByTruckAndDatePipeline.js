@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 
 export default ({ truck, date, state }) => {
   if (!truck || !date) throw new Error('bad pipeline arguments')
+  console.log('date: ', date)
   const inputDate = new Date(date)
   const firstMatcher = {
     $match: {
@@ -31,7 +32,7 @@ export default ({ truck, date, state }) => {
     secondMatcher,
     {
       $sort: {
-        'transport.startDate': 1
+        'transport.startDate': -1
       }
     },
     {
