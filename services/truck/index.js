@@ -2,7 +2,7 @@
 import { Truck } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 import logService from '../changeLog/index.js'
-
+import checkNotCompletedOrders from './checkNotCompletedOrders.js'
 class TruckService {
   async create({ body, user }) {
     const data = await Truck.create(body)
@@ -20,6 +20,7 @@ class TruckService {
   }
 
   async updateOne({ id, body, user }) {
+    if (body.endServiceDate) await checkNotCompletedOrders({ truckId: id })
     const data = await Truck.findByIdAndUpdate(id, body, {
       new: true
     })
@@ -31,7 +32,6 @@ class TruckService {
       company: data.company.toString(),
       body: JSON.stringify(data.toJSON())
     })
-
     await data.populate('tkName')
     emitTo(data.company.toString(), 'truck:updated', data)
     return data
