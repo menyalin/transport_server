@@ -288,7 +288,7 @@ export default ({ profile, client }) => {
         $getField: {
           field: 'addressObj',
           input: {
-            $last: {
+            $first: {
               $filter: {
                 input: '$route',
                 cond: {
