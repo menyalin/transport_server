@@ -183,43 +183,29 @@ export default ({ profile, client }) => {
         }
       },
       loadingPoints: {
-        $trim: {
+        $map: {
           input: {
-            $reduce: {
-              input: {
-                $filter: {
-                  input: '$route',
-                  cond: {
-                    $eq: ['$$this.type', 'loading']
-                  }
-                }
-              },
-              initialValue: '',
-              in: {
-                $concat: ['$$value', '$$this.addressObj.shortName', ';']
+            $filter: {
+              input: '$route',
+              cond: {
+                $eq: ['$$this.type', 'loading']
               }
             }
-          }
+          },
+          in: '$$this.addressObj.shortName'
         }
       },
       unloadingPoints: {
-        $trim: {
+        $map: {
           input: {
-            $reduce: {
-              input: {
-                $filter: {
-                  input: '$route',
-                  cond: {
-                    $eq: ['$$this.type', 'unloading']
-                  }
-                }
-              },
-              initialValue: '',
-              in: {
-                $concat: ['$$value', '$$this.addressObj.shortName', ';']
+            $filter: {
+              input: '$route',
+              cond: {
+                $eq: ['$$this.type', 'unloading']
               }
             }
-          }
+          },
+          in: '$$this.addressObj.shortName'
         }
       },
       truckId: {
