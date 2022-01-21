@@ -259,7 +259,7 @@ export default ({ profile, client }) => {
         $getField: {
           field: 'type',
           input: {
-            $last: {
+            $first: {
               $filter: {
                 input: '$route',
                 cond: {
