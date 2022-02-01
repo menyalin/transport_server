@@ -16,7 +16,6 @@ class DowntimeService extends IService {
 
   async create({ body, user }) {
     await checkCrossItems({ body })
-
     const data = await this.model.create(body)
     if (this.logService)
       await this.logService.add({

@@ -32,6 +32,10 @@ const schema = new Schema(
       ref: 'Company',
       required: true
     },
+    inOrderTime: {
+      type: Boolean,
+      default: false
+    },
     isActive: {
       type: Boolean,
       default: true

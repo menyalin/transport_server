@@ -107,6 +107,9 @@ const _checkCrossDowntimes = async ({ body, dates, id }) => {
     })
   }
 
+  // При сохранении рейса исключить Downtime с inOrderTime: true
+  if (!body.type) matcher.$match.inOrderTime = { $ne: true }
+  console.log(matcher)
   const res = await Downtime.aggregate([matcher])
   if (res.length)
     throw new BadRequestError(
