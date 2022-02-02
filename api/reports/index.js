@@ -19,4 +19,7 @@ router.get('/inProgressOrders', [jwtAuth], (...args) =>
   ctrl.inProgressOrders(...args)
 )
 
+router.get('/truckStateOnDate', [jwtAuth], (...args) =>
+  ctrl.truckStateOnDate(...args)
+)
 export default router

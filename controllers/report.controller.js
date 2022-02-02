@@ -13,7 +13,7 @@ class ReportController {
       )
       res.status(200).json(data)
     } catch (e) {
-      res.status(500).json({ message: e.message })
+      res.status(e.statusCode || 500).json(e.message)
     }
   }
 
@@ -25,7 +25,21 @@ class ReportController {
       })
       res.status(200).json(data)
     } catch (e) {
-      res.status(500).json({ message: e.message })
+      res.status(e.statusCode || 500).json(e.message)
+    }
+  }
+
+  async truckStateOnDate(req, res) {
+    try {
+      const data = await this.service.truckStateOnDate({
+        company: req.query.company,
+        date: req.query.date,
+        truckType: req.query.truckType,
+        tkName: req.query.tkName
+      })
+      res.status(200).json(data)
+    } catch (e) {
+      res.status(e.statusCode || 500).json(e.message)
     }
   }
 }
