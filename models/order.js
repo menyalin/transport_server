@@ -5,6 +5,7 @@ import {
   TRUCK_LOAD_DIRECTION
 } from '../constants/enums.js'
 import { ORDER_STATUSES_ENUM } from '../constants/orderStatuses.js'
+import { ORDER_ANALYTIC_TYPES_ENUM } from '../constants/orderAnalyticTypes.js'
 import pkg from 'mongoose'
 
 const { Schema, model, Types } = pkg
@@ -21,7 +22,11 @@ const grade = {
   grade: Number,
   note: String
 }
-
+const analytics = {
+  type: { type: String, enum: ORDER_ANALYTIC_TYPES_ENUM },
+  distanceRoad: { type: Number },
+  distanceDirect: { type: Number }
+}
 const point = {
   type: {
     type: String,
@@ -98,6 +103,7 @@ const schema = new Schema(
     cargoParams: cargoParams,
     reqTransport: reqTransport,
     state,
+    analytics,
     isActive: {
       type: Boolean,
       default: true

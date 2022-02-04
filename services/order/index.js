@@ -5,6 +5,7 @@ import { getSchedulePipeline } from './pipelines/getSchedulePipeline.js'
 import { getOrderListPipeline } from './pipelines/getOrderListPipeline.js'
 import { ChangeLogService } from '../index.js'
 import checkCrossItems from './checkCrossItems.js'
+import { orsDirections } from '../../helpers/orsClient.js'
 import { BadRequestError } from '../../helpers/errors.js'
 
 class OrderService {
@@ -162,6 +163,29 @@ class OrderService {
       body: JSON.stringify(order.toObject({ flattenMaps: true }))
     })
     return order
+  }
+
+  async getDistance({ coords }) {
+    try {
+      const radiusesArray = []
+      coords.forEach((i) => {
+        radiusesArray.push(-1)
+      })
+      const res = await orsDirections.calculate({
+        coordinates: coords,
+        profile: 'driving-hgv',
+        format: 'json',
+        units: 'km',
+        radiuses: radiusesArray
+      })
+      return {
+        distanceRoad: res.routes[0].summary.distance,
+        durationInSec: res.routes[0].summary.duration,
+        durationStr: 'TODO'
+      }
+    } catch (e) {
+      return null
+    }
   }
 }
 

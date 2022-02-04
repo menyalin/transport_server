@@ -1,4 +1,5 @@
 import { ORDER_STATUSES } from '../../constants/orderStatuses.js'
+import { ORDER_ANALYTIC_TYPES } from '../../constants/orderAnalyticTypes.js'
 import { User, UserActivity } from '../../models/index.js'
 import {
   AddressService,
@@ -34,6 +35,7 @@ class UserService {
     const partners = await PartnerService.getByProfile(profile)
     const orderTemplates = await OrderTemplateService.getByProfile(profile)
     const orderStatuses = ORDER_STATUSES
+    const orderAnalyticTypes = ORDER_ANALYTIC_TYPES
     return {
       user,
       companies,
@@ -43,7 +45,8 @@ class UserService {
       tkNames,
       partners,
       orderStatuses,
-      orderTemplates
+      orderTemplates,
+      orderAnalyticTypes
     }
   }
 
