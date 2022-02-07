@@ -13,6 +13,7 @@ import ChangeLogService from './changeLog/index.js'
 import ReportService from './report/index.js'
 import OrderTemplateService from './orderTemplate/index.js'
 import ScheduleNoteService from './scheduleNote/index.js'
+import AgreementServive from './agreement/index.js'
 
 export {
   UserService,
@@ -29,5 +30,6 @@ export {
   ChangeLogService,
   ReportService,
   OrderTemplateService,
-  ScheduleNoteService
+  ScheduleNoteService,
+  AgreementServive
 }

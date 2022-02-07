@@ -13,6 +13,7 @@ import Downtime from './downtime.js'
 import ChangeLog from './changeLog.js'
 import OrderTemplate from './orderTemplate.js'
 import ScheduleNote from './scheduleNote.js'
+import Agreement from './agreement.js'
 
 export {
   User,
@@ -29,5 +30,6 @@ export {
   Downtime,
   ChangeLog,
   OrderTemplate,
-  ScheduleNote
+  ScheduleNote,
+  Agreement
 }

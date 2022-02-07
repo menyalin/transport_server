@@ -16,6 +16,7 @@ import downtimeRouter from './api/downtime/index.js'
 import reportRouter from './api/reports/index.js'
 import orderTemplateRouter from './api/orderTemplate/index.js'
 import scheduleNoteRouter from './api/scheduleNote/index.js'
+import agreementRouter from './api/agreement/index.js'
 
 const app = express()
 
@@ -38,5 +39,6 @@ app.use('/api/downtimes', downtimeRouter)
 app.use('/api/reports', reportRouter)
 app.use('/api/order_templates', orderTemplateRouter)
 app.use('/api/schedule_notes', scheduleNoteRouter)
+app.use('/api/agreements', agreementRouter)
 
 export default app
