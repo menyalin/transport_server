@@ -10,6 +10,7 @@ import {
   TruckService,
   OrderTemplateService
 } from '../index.js'
+import { CALC_METHODS } from '../../constants/calcMethods.js'
 
 class UserService {
   async findById(id, fields = '-password') {
@@ -36,6 +37,7 @@ class UserService {
     const orderTemplates = await OrderTemplateService.getByProfile(profile)
     const orderStatuses = ORDER_STATUSES
     const orderAnalyticTypes = ORDER_ANALYTIC_TYPES
+    const calcMethods = CALC_METHODS
     return {
       user,
       companies,
@@ -46,7 +48,8 @@ class UserService {
       partners,
       orderStatuses,
       orderTemplates,
-      orderAnalyticTypes
+      orderAnalyticTypes,
+      calcMethods
     }
   }
 

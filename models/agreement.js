@@ -1,4 +1,5 @@
 import pkg from 'mongoose'
+import { CALC_METHODS_ENUM } from '../constants/calcMethods.js'
 const { Schema, model, Types } = pkg
 
 const schema = new Schema(
@@ -15,6 +16,11 @@ const schema = new Schema(
     ],
     vatRate: {
       type: Number,
+      required: true
+    },
+    calcMethod: {
+      type: String,
+      enum: CALC_METHODS_ENUM,
       required: true
     },
     date: {
