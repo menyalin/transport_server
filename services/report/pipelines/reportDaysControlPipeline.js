@@ -13,6 +13,7 @@ export default (dayLimit = 30, profile) => {
               in: {
                 title: '$$item.title',
                 daysBeforeRemind: '$$item.daysBeforeRemind',
+                note: '$$item.note',
                 validDays: {
                   $dateDiff: {
                     startDate: '$$NOW',
@@ -98,7 +99,8 @@ export default (dayLimit = 30, profile) => {
               }
             }
           }
-        ]
+        ],
+        note: '$medbook.note'
       }
     },
     {
@@ -133,6 +135,7 @@ export default (dayLimit = 30, profile) => {
               collection: 'trucks',
               tkName: '$tkName',
               name: '$regNum',
+              note: '$note',
               additionalNotifications,
               controlDates: [
                 {

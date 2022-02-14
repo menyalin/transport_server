@@ -2,18 +2,25 @@
 import express from 'express'
 
 import { jwtAuth } from '../../utils/auth.middleware.js'
-// import {
-//   queryValidator
-//   // bodyValidator
-// } from '../../utils/validator.js'
+import {
+  queryValidator
+  // bodyValidator
+} from '../../utils/validator.js'
 
-// import { getListSchema } from './schemes.js'
+import { getListSchema, getForOrderSchema } from './schemes.js'
 import ctrl from '../../controllers/agreement.controller.js'
 
 const router = express.Router()
 
 // api/agreements
-router.get('/', [jwtAuth], (...args) => ctrl.getList(...args))
+router.get('/', [jwtAuth, queryValidator(getListSchema)], (...args) =>
+  ctrl.getList(...args)
+)
+router.get(
+  '/get_for_order',
+  [jwtAuth, queryValidator(getForOrderSchema)],
+  (...args) => ctrl.getForOrder(...args)
+)
 
 router.get('/:id', [jwtAuth], (...args) => ctrl.getById(...args))
 

@@ -12,7 +12,16 @@ class AgreementController extends IController {
       const data = await this.service.getList(req.query)
       res.status(200).json(data)
     } catch (e) {
-      res.status(500).json({ message: e.message })
+      res.status(e.statusCode || 500).json(e.message)
+    }
+  }
+
+  async getForOrder(req, res) {
+    try {
+      const data = await this.service.getForOrder(req.query)
+      res.status(200).json(data)
+    } catch (e) {
+      res.status(e.statusCode || 500).json(e.message)
     }
   }
 }

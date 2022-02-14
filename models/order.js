@@ -10,12 +10,29 @@ import pkg from 'mongoose'
 
 const { Schema, model, Types } = pkg
 
+const prices = [
+  {
+    type: {
+      type: String,
+      required: true
+    },
+    priceWOVat: { type: Number },
+    sumVat: { type: Number },
+    price: { type: Number },
+    note: String
+  }
+]
+
 const client = {
   client: {
     type: Types.ObjectId,
     ref: 'Partner'
   },
-  num: String
+  num: String,
+  agreement: {
+    type: Types.ObjectId,
+    ref: 'Agreement'
+  }
 }
 
 const grade = {
@@ -39,6 +56,10 @@ const point = {
   plannedDate: Date,
   arrivalDate: Date,
   departureDate: Date,
+  isReturn: {
+    type: Boolean,
+    default: false
+  },
   note: String
 }
 
@@ -98,6 +119,7 @@ const schema = new Schema(
     },
     grade,
     client,
+    prices,
     confirmedCrew,
     route: [point],
     cargoParams: cargoParams,

@@ -8,12 +8,7 @@ const schema = new Schema(
       type: String,
       required: true
     },
-    clients: [
-      {
-        type: Types.ObjectId,
-        ref: 'Partner'
-      }
-    ],
+    clients: [{ type: Types.ObjectId, ref: 'Partner' }],
     vatRate: {
       type: Number,
       required: true
@@ -22,6 +17,14 @@ const schema = new Schema(
       type: String,
       enum: CALC_METHODS_ENUM,
       required: true
+    },
+    closed: {
+      type: Boolean,
+      default: false
+    },
+    useByDefault: {
+      type: Boolean,
+      default: false
     },
     date: {
       type: Date,
@@ -36,7 +39,13 @@ const schema = new Schema(
     isActive: {
       type: Boolean,
       default: true
-    }
+    },
+    zones: [
+      {
+        value: Number,
+        price: Number
+      }
+    ]
   },
   { timestamps: true }
 )

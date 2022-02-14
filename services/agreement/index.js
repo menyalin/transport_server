@@ -3,6 +3,7 @@ import { Agreement } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 import IService from '../iService.js'
 import getListPipeline from './pipelines/getListPipeline.js'
+import getForOrderPipeline from './pipelines/getForOrderPipeline.js'
 
 class AgreementService extends IService {
   constructor({ model, emitter, modelName, logService }) {
@@ -16,6 +17,16 @@ class AgreementService extends IService {
       const pipeline = getListPipeline(params)
       const res = await this.model.aggregate(pipeline)
       return res[0]
+    } catch (e) {
+      throw new Error(e.message)
+    }
+  }
+
+  async getForOrder(params) {
+    try {
+      const pipeline = getForOrderPipeline(params)
+      const res = await this.model.aggregate(pipeline)
+      return res
     } catch (e) {
       throw new Error(e.message)
     }

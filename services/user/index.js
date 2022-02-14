@@ -1,5 +1,6 @@
 import { ORDER_STATUSES } from '../../constants/orderStatuses.js'
 import { ORDER_ANALYTIC_TYPES } from '../../constants/orderAnalyticTypes.js'
+import { ORDER_PRICE_TYPES } from '../../constants/priceTypes.js'
 import { User, UserActivity } from '../../models/index.js'
 import {
   AddressService,
@@ -38,6 +39,7 @@ class UserService {
     const orderStatuses = ORDER_STATUSES
     const orderAnalyticTypes = ORDER_ANALYTIC_TYPES
     const calcMethods = CALC_METHODS
+    const orderPriceTypes = ORDER_PRICE_TYPES
     return {
       user,
       companies,
@@ -49,7 +51,8 @@ class UserService {
       orderStatuses,
       orderTemplates,
       orderAnalyticTypes,
-      calcMethods
+      calcMethods,
+      orderPriceTypes
     }
   }
 
