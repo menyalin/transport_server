@@ -11,42 +11,5 @@ export default ({ company, client, date }) => {
       date: { $lt: new Date(date) }
     }
   }
-  const addField = {
-    $addFields: {
-      type: {
-        $cond: {
-          if: '$useByDefault',
-          then: 'default',
-          else: '$calcMethod'
-        }
-      }
-    }
-  }
-  const groupByType = {
-    $group: {
-      _id: '$type',
-      agreements: {
-        $push: '$$ROOT'
-      }
-    }
-  }
-  const getLastAgreement = {
-    $project: {
-      agreement: {
-        $last: '$agreements'
-      }
-    }
-  }
-
-  const lastProject = {
-    $project: {
-      _id: '$agreement._id',
-      type: '$_id',
-      name: '$agreement.name',
-      vatRate: '$agreement.vatRate',
-      calcMethod: '$agreement.calcMethod'
-    }
-  }
-
-  return [firstMatcher, addField, groupByType, getLastAgreement, lastProject]
+  return [firstMatcher, { $sort: { date: -1 } }, { $limit: 1 }]
 }

@@ -26,7 +26,7 @@ class AgreementService extends IService {
     try {
       const pipeline = getForOrderPipeline(params)
       const res = await this.model.aggregate(pipeline)
-      return res
+      return res.length ? res[0] : null
     } catch (e) {
       throw new Error(e.message)
     }
