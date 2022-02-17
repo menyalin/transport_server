@@ -14,6 +14,7 @@ export default (dayLimit = 30, profile) => {
                 title: '$$item.title',
                 daysBeforeRemind: '$$item.daysBeforeRemind',
                 note: '$$item.note',
+                endDate: '$$item.expDate',
                 validDays: {
                   $dateDiff: {
                     startDate: '$$NOW',
@@ -63,6 +64,7 @@ export default (dayLimit = 30, profile) => {
           {
             title: 'Карта водителя',
             dbField: 'driverCardPeriod',
+            endDate: '$driverCardPeriod',
             validDays: {
               $dateDiff: {
                 startDate: '$$NOW',
@@ -74,6 +76,7 @@ export default (dayLimit = 30, profile) => {
           {
             title: 'Аттестация (мед.книжка)',
             dbField: 'medBook.certifiedBeforeDate',
+            endDate: '$medBook.certifiedBeforeDate',
             validDays: {
               $dateDiff: {
                 startDate: '$$NOW',
@@ -85,6 +88,13 @@ export default (dayLimit = 30, profile) => {
           {
             title: 'Ежегодная комиссия (мед.книжка)',
             dbField: 'medBook.annualCommisionDate',
+            endDate: {
+              $dateAdd: {
+                startDate: '$medBook.annualCommisionDate',
+                unit: 'year',
+                amount: 1
+              }
+            },
             validDays: {
               $dateDiff: {
                 startDate: '$$NOW',
@@ -100,7 +110,7 @@ export default (dayLimit = 30, profile) => {
             }
           }
         ],
-        note: '$medbook.note'
+        note: '$medBook.note'
       }
     },
     {
@@ -141,6 +151,7 @@ export default (dayLimit = 30, profile) => {
                 {
                   title: 'Сан.паспорт',
                   dbField: 'sanitaryPassportExpDate',
+                  endDate: '$sanitaryPassportExpDate',
                   validDays: {
                     $dateDiff: {
                       startDate: '$$NOW',
@@ -152,6 +163,7 @@ export default (dayLimit = 30, profile) => {
                 {
                   title: 'Дневной пропуск',
                   dbField: 'permits.dayPermitExpDate',
+                  endDate: '$permits.dayPermitExpDate',
                   validDays: {
                     $dateDiff: {
                       startDate: '$$NOW',
@@ -163,6 +175,7 @@ export default (dayLimit = 30, profile) => {
                 {
                   title: 'Ночной пропуск',
                   dbField: 'permits.nightPermitExpDate',
+                  endDate: '$permits.nightPermitExpDate',
                   validDays: {
                     $dateDiff: {
                       startDate: '$$NOW',
@@ -174,6 +187,7 @@ export default (dayLimit = 30, profile) => {
                 {
                   title: 'Осаго',
                   dbField: 'insurance.osagoExpDate',
+                  endDate: '$insurance.osagoExpDate',
                   validDays: {
                     $dateDiff: {
                       startDate: '$$NOW',
@@ -185,6 +199,7 @@ export default (dayLimit = 30, profile) => {
                 {
                   title: 'Каско',
                   dbField: 'insurance.kaskoExpDate',
+                  endDate: '$insurance.kaskoExpDate',
                   validDays: {
                     $dateDiff: {
                       startDate: '$$NOW',
@@ -196,6 +211,7 @@ export default (dayLimit = 30, profile) => {
                 {
                   title: 'Диагностическая карта',
                   dbField: 'additionalDetails.diagnosticCardExpDate',
+                  endDate: '$additionalDetails.diagnosticCardExpDate',
                   validDays: {
                     $dateDiff: {
                       startDate: '$$NOW',
@@ -207,6 +223,7 @@ export default (dayLimit = 30, profile) => {
                 {
                   title: 'Тахограф',
                   dbField: 'additionalDetails.tachographExpDate',
+                  endDate: '$additionalDetails.tachographExpDate',
                   validDays: {
                     $dateDiff: {
                       startDate: '$$NOW',
