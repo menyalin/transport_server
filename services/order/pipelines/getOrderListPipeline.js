@@ -8,7 +8,8 @@ export const getOrderListPipeline = ({
   limit,
   skip,
   status,
-  truck
+  truck,
+  driver
 }) => {
   const sP = new Date(startDate)
   const eP = new Date(endDate)
@@ -38,6 +39,10 @@ export const getOrderListPipeline = ({
 
   if (truck)
     firstMatcher.$match['confirmedCrew.truck'] = mongoose.Types.ObjectId(truck)
+  if (driver)
+    firstMatcher.$match['confirmedCrew.driver'] = mongoose.Types.ObjectId(
+      driver
+    )
   const group = [
     {
       $sort: {
