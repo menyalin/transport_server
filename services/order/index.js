@@ -179,7 +179,7 @@ class OrderService {
         radiuses: radiusesArray
       })
       return {
-        distanceRoad: res.routes[0].summary.distance,
+        distanceRoad: Math.round(res.routes[0].summary.distance),
         durationInSec: res.routes[0].summary.duration,
         durationStr: 'TODO'
       }
