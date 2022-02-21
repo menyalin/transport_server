@@ -8,7 +8,8 @@ export const getOrderListPipeline = ({
   limit,
   skip,
   status,
-  truck
+  truck,
+  accountingMode
 }) => {
   const sP = new Date(startDate)
   const eP = new Date(endDate)
@@ -38,6 +39,24 @@ export const getOrderListPipeline = ({
 
   if (truck)
     firstMatcher.$match['confirmedCrew.truck'] = mongoose.Types.ObjectId(truck)
+  const agreementLookup = [
+    {
+      $lookup: {
+        from: 'agreements',
+        localField: 'client.agreement',
+        foreignField: '_id',
+        as: 'agreements'
+      }
+    },
+    {
+      $addFields: {
+        agreement: {
+          $first: '$agreements'
+        }
+      }
+    }
+  ]
+
   const group = [
     {
       $sort: {
@@ -63,5 +82,7 @@ export const getOrderListPipeline = ({
       }
     }
   ]
-  return [firstMatcher, ...group]
+  let pipeline = [firstMatcher]
+  if (accountingMode) pipeline = [...pipeline, ...agreementLookup]
+  return [...pipeline, ...group]
 }

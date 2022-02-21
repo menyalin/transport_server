@@ -4,6 +4,10 @@ import {
   TRUCK_LIFT_CAPACITY_TYPES,
   TRUCK_LOAD_DIRECTION
 } from '../constants/enums.js'
+import {
+  DOCUMENT_TYPES_ENUM,
+  DOCUMENT_STATUSES_ENUM
+} from '../constants/accounting.js'
 import { ORDER_STATUSES_ENUM } from '../constants/orderStatuses.js'
 import { ORDER_ANALYTIC_TYPES_ENUM } from '../constants/orderAnalyticTypes.js'
 import pkg from 'mongoose'
@@ -20,6 +24,23 @@ const prices = [
     sumVat: { type: Number },
     price: { type: Number },
     note: String
+  }
+]
+
+const docs = [
+  {
+    type: {
+      type: String,
+      enum: DOCUMENT_TYPES_ENUM
+    },
+    number: {
+      type: String
+    },
+    note: String,
+    status: {
+      type: String,
+      enum: DOCUMENT_STATUSES_ENUM
+    }
   }
 ]
 
@@ -118,6 +139,7 @@ const schema = new Schema(
       required: true
     },
     grade,
+    docs,
     client,
     prices,
     confirmedCrew,

@@ -12,6 +12,10 @@ import {
   OrderTemplateService
 } from '../index.js'
 import { CALC_METHODS } from '../../constants/calcMethods.js'
+import {
+  DOCUMENT_TYPES,
+  DOCUMENT_STATUSES
+} from '../../constants/accounting.js'
 
 class UserService {
   async findById(id, fields = '-password') {
@@ -40,6 +44,9 @@ class UserService {
     const orderAnalyticTypes = ORDER_ANALYTIC_TYPES
     const calcMethods = CALC_METHODS
     const orderPriceTypes = ORDER_PRICE_TYPES
+    const documentTypes = DOCUMENT_TYPES
+    const documentStatuses = DOCUMENT_STATUSES
+
     return {
       user,
       companies,
@@ -52,7 +59,9 @@ class UserService {
       orderTemplates,
       orderAnalyticTypes,
       calcMethods,
-      orderPriceTypes
+      orderPriceTypes,
+      documentTypes,
+      documentStatuses
     }
   }
 
