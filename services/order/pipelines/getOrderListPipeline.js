@@ -10,7 +10,8 @@ export const getOrderListPipeline = ({
   status,
   truck,
   accountingMode,
-  driver
+  driver,
+  tkName
 }) => {
   const sP = new Date(startDate)
   const eP = new Date(endDate)
@@ -34,7 +35,15 @@ export const getOrderListPipeline = ({
       }
     }
   }
-  if (status) firstMatcher.$match['state.status'] = status
+  if (accountingMode)
+    firstMatcher.$match.$expr.$and.push({
+      $or: [
+        { $eq: ['$state.status', 'inProgress'] },
+        { $eq: ['$state.status', 'completed'] }
+      ]
+    })
+
+  if (status && !accountingMode) firstMatcher.$match['state.status'] = status
   if (client)
     firstMatcher.$match['client.client'] = mongoose.Types.ObjectId(client)
 
@@ -54,6 +63,28 @@ export const getOrderListPipeline = ({
         agreement: {
           $first: '$agreements'
         }
+      }
+    }
+  ]
+  const tkNameLookup = [
+    {
+      $lookup: {
+        from: 'trucks',
+        localField: 'confirmedCrew.truck',
+        foreignField: '_id',
+        as: 'trucks'
+      }
+    },
+    {
+      $addFields: {
+        truck: {
+          $first: '$trucks'
+        }
+      }
+    },
+    {
+      $match: {
+        'truck.tkName': mongoose.Types.ObjectId(tkName)
       }
     }
   ]
@@ -89,5 +120,6 @@ export const getOrderListPipeline = ({
   ]
   let pipeline = [firstMatcher]
   if (accountingMode) pipeline = [...pipeline, ...agreementLookup]
+  if (tkName) pipeline = [...pipeline, ...tkNameLookup]
   return [...pipeline, ...group]
 }
