@@ -25,7 +25,7 @@ router.post('/get_distance', [jwtAuth], ctrl.getDistance)
 router.post('/from_template', [jwtAuth], ctrl.createFromTemplate)
 router.post('/', [jwtAuth, bodyValidator(createSchema)], ctrl.create)
 
-router.put('/:id', [jwtAuth, bodyValidator(createSchema)], ctrl.updateOne)
+router.put('/:id', [jwtAuth], ctrl.updateOne)
 router.delete('/:id', [jwtAuth], ctrl.deleteById)
 
 export default router

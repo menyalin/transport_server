@@ -141,13 +141,15 @@ class OrderService {
   async updateOne({ id, body, user }) {
     let order = await OrderModel.findById(id)
     if (!order) return null
-
-    const datesNotChanged = this._isEqualDatesOfRoute({
-      oldRoute: order.toJSON().route,
-      newRoute: body.route
-    })
-
-    if (!datesNotChanged) await checkCrossItems({ body, id })
+    if (order.company.toString() !== body.company)
+      throw new BadRequestError('The order is owned by another company')
+    if (body.route) {
+      const datesNotChanged = this._isEqualDatesOfRoute({
+        oldRoute: order.toJSON().route,
+        newRoute: body.route
+      })
+      if (!datesNotChanged) await checkCrossItems({ body, id })
+    }
 
     order = Object.assign(order, { ...body, manager: user })
     order.isDisabled = false
