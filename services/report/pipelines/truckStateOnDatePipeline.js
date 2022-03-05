@@ -26,8 +26,8 @@ export default ({ company, date, truckType, tkName }) => {
             $match: {
               $expr: {
                 $and: [
-                  { company: mongoose.Types.ObjectId(company) },
-                  { isActive: true },
+                  { $eq: ['$company', mongoose.Types.ObjectId(company)] },
+                  { $eq: ['$isActive', true] },
                   { $lte: ['$startDate', inputDate] },
                   {
                     $or: [
@@ -79,6 +79,8 @@ export default ({ company, date, truckType, tkName }) => {
               $expr: {
                 $and: [
                   { $eq: ['$truck', '$$truckId'] },
+                  { $eq: ['$isActive', true] },
+
                   { $lte: ['$startPositionDate', inputDate] },
                   { $gt: ['$endPositionDate', inputDate] }
                 ]
