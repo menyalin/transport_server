@@ -13,17 +13,7 @@ export const getSuggestions = async (req, res) => {
   }
 }
 
-export const createAddress = async (req, res) => {
-  try {
-    const newAddress = await AddressService.create({
-      body: req.body,
-      user: req.userId
-    })
-    res.status(201).json(newAddress)
-  } catch (e) {
-    res.status(500).json({ message: e.message })
-  }
-}
+
 
 export const updateAddress = async (req, res) => {
   try {
@@ -37,8 +27,6 @@ export const updateAddress = async (req, res) => {
     res.status(500).json({ message: e.message })
   }
 }
-
-
 
 export const getProfileAddresses = async (req, res) => {
   try {

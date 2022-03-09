@@ -9,7 +9,8 @@ import {
   PartnerService,
   TkNameService,
   TruckService,
-  OrderTemplateService
+  OrderTemplateService,
+  PermissionService
 } from '../index.js'
 import { CALC_METHODS } from '../../constants/calcMethods.js'
 import {
@@ -46,6 +47,7 @@ class UserService {
     const orderPriceTypes = ORDER_PRICE_TYPES
     const documentTypes = DOCUMENT_TYPES
     const documentStatuses = DOCUMENT_STATUSES
+    const staffRoles = await PermissionService.getAllRoles()
 
     return {
       user,
@@ -61,7 +63,8 @@ class UserService {
       calcMethods,
       orderPriceTypes,
       documentTypes,
-      documentStatuses
+      documentStatuses,
+      staffRoles
     }
   }
 

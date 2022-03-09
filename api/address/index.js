@@ -5,12 +5,11 @@ import { jwtAuth } from '../../utils/auth.middleware.js'
 import { queryValidator, bodyValidator } from '../../utils/validator.js'
 import {
   getById,
-  searchAddress
+  searchAddress, createAddress
 } from '../../controllers/address.controllers.js'
 
 import {
   getSuggestions,
-  createAddress,
   updateAddress,
   getProfileAddresses,
   deleteById

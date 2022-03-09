@@ -95,6 +95,11 @@ class CompanyService {
     }
     return true
   }
+
+  async getUserRolesByCompanyIdAndUserId({ userId, companyId }) {
+    const company = await Company.findById(companyId).lean()
+    return company?.staff.find((s) => s.user.toString() === userId)
+  }
 }
 
 export default new CompanyService()
