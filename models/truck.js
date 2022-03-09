@@ -11,6 +11,7 @@ const { Schema, model, Types } = pkg
 
 const additionalDetails = {
   diagnosticCardExpDate: Date,
+  diagnosticCardNote: String,
   platonNumber: String,
   platonDate: Date,
   tachographNumber: String,

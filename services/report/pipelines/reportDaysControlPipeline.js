@@ -212,6 +212,7 @@ export default (dayLimit = 30, profile) => {
                   title: 'Диагностическая карта',
                   dbField: 'additionalDetails.diagnosticCardExpDate',
                   endDate: '$additionalDetails.diagnosticCardExpDate',
+                  note: '$additionalDetails.diagnosticCardNote',
                   validDays: {
                     $dateDiff: {
                       startDate: '$$NOW',
