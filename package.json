@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "nodemon ./bin/www",
-    "build_alfa": "docker build . --tag menyalin/alfa_server:latest;docker image push menyalin/alfa_server:latest",
+    "build": "docker build . -t menyalin/server:latest && docker image push menyalin/server:latest",
+    "buildalfa": "docker build . -t menyalin/alfa_server:latest && docker image push menyalin/alfa_server:latest",
     "test": "jest --watchAll"
   },
   "dependencies": {
