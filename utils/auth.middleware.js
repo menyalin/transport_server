@@ -12,7 +12,7 @@ export const jwtAuth = async (req, res, next) => {
       const user = await UserService.findById(payload.userId)
       if (!user) res.sendStatus(401)
       req.userId = user._id.toString()
-      req.companyId = user.directoriesProfile.toString()
+      req.companyId = user.directoriesProfile?.toString()
       next()
     } catch (e) {
       res.sendStatus(401)

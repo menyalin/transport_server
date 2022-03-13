@@ -3,29 +3,25 @@ import express from 'express'
 
 import { jwtAuth } from '../../utils/auth.middleware.js'
 import { queryValidator, bodyValidator } from '../../utils/validator.js'
-import {
-  create,
-  updateOne,
-  getProfileTrucks,
-  getById,
-  search,
-  deleteById
-} from './handlers.js'
+import ctrl from '../../controllers/truck.controller.js'
+
 import { getProfileTrucksSchema, createTruckSchema } from './schemes.js'
 
 const router = express.Router()
 
-// api/driver
-router.get(
-  '/',
-  [jwtAuth, queryValidator(getProfileTrucksSchema)],
-  getProfileTrucks
+// api/truck
+router.get('/', [jwtAuth, queryValidator(getProfileTrucksSchema)], (...args) =>
+  ctrl.getByProfile(...args)
 )
-router.get('/search', [jwtAuth], search)
-router.get('/:id', [jwtAuth], getById)
+router.get('/search', [jwtAuth], (...args) => ctrl.search(...args))
+router.get('/:id', [jwtAuth], (...args) => ctrl.getById(...args))
 
-router.post('/', [jwtAuth, bodyValidator(createTruckSchema)], create)
-router.put('/:id', [jwtAuth, bodyValidator(createTruckSchema)], updateOne)
-router.delete('/:id', [jwtAuth], deleteById)
+router.post('/', [jwtAuth, bodyValidator(createTruckSchema)], (...args) =>
+  ctrl.create(...args)
+)
+router.put('/:id', [jwtAuth, bodyValidator(createTruckSchema)], (...args) =>
+  ctrl.updateOne(...args)
+)
+router.delete('/:id', [jwtAuth], (...args) => ctrl.deleteById(...args))
 
 export default router

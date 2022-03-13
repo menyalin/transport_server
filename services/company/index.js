@@ -2,6 +2,7 @@ import { Company, User } from '../../models/index.js'
 import { TaskService, ChangeLogService } from '../../services/index.js'
 import { emitTo } from '../../socket/index.js'
 import addUserToRoom from '../../socket/addUserToRoom.js'
+import { BadRequestError } from '../../helpers/errors.js'
 
 class CompanyService {
   async create(body, userId) {
@@ -98,7 +99,8 @@ class CompanyService {
 
   async getUserRolesByCompanyIdAndUserId({ userId, companyId }) {
     const company = await Company.findById(companyId).lean()
-    return company?.staff.find((s) => s.user.toString() === userId)
+    if (!company) throw new BadRequestError('Почему то нет компании')
+    return { ...company?.staff.find((s) => s.user._id.toString() === userId) }
   }
 }
 

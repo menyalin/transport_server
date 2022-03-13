@@ -2,8 +2,8 @@ import { IController } from './iController.js'
 import { OrderTemplateService } from '../services/index.js'
 
 class OrderTemplateController extends IController {
-  constructor({ service }) {
-    super({ service })
+  constructor({ service, permissionName }) {
+    super({ service, permissionName })
     this.service = service
   }
 
@@ -12,9 +12,9 @@ class OrderTemplateController extends IController {
       const data = await this.service.getList(req.query)
       res.status(200).json(data)
     } catch (e) {
-      res.status(500).json({ message: e.message })
+      res.status(e.statusCode || 500).json(e.message)
     }
   }
 }
 
-export default new OrderTemplateController({ service: OrderTemplateService })
+export default new OrderTemplateController({ service: OrderTemplateService, permissionName: 'orderTemplate' })

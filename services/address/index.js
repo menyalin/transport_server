@@ -1,10 +1,8 @@
 /* eslint-disable no-unused-vars */
 import axios from 'axios'
-
 import { ChangeLogService } from '../../services/index.js'
 import { Address } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
-import PermissionService from '../permission/index.js'
 
 const URL =
   'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address'
@@ -29,13 +27,7 @@ class AddressService {
     return suggestions
   }
 
-  async create({ body, user, company }) {
-    await PermissionService.check({
-      userId: user,
-      companyId: company,
-      operation: 'address:write'
-    })
-
+  async create({ body, user }) {
     if (body.geo)
       body.geo = {
         type: 'Point',
@@ -104,7 +96,7 @@ class AddressService {
   }
 
   async getById(id) {
-    const address = await Address.findById(id)
+    const address = await Address.findById(id).lean()
     return address
   }
 

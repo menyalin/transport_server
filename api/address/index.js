@@ -5,15 +5,14 @@ import { jwtAuth } from '../../utils/auth.middleware.js'
 import { queryValidator, bodyValidator } from '../../utils/validator.js'
 import {
   getById,
-  searchAddress, createAddress
-} from '../../controllers/address.controllers.js'
-
-import {
-  getSuggestions,
+  searchAddress,
+  createAddress,
   updateAddress,
+  getSuggestions,
   getProfileAddresses,
   deleteById
-} from './handlers.js'
+} from '../../controllers/address.controllers.js'
+
 import {
   getSuggestionsSchema,
   getProfileAddressesSchema,
