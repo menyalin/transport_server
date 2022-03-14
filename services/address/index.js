@@ -96,7 +96,7 @@ class AddressService {
   }
 
   async getById(id) {
-    const address = await Address.findById(id)
+    const address = await Address.findById(id).lean()
     return address
   }
 

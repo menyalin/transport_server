@@ -3,6 +3,13 @@ export class BadRequestError extends Error {
     super(error)
     this.data = { error }
     this.statusCode = 400
-    // this.message = error
+  }
+}
+
+export class ForbiddenError extends Error {
+  constructor(error) {
+    super(error)
+    this.data = { error }
+    this.statusCode = 403
   }
 }

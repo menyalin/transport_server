@@ -2,8 +2,8 @@ import { IController } from './iController.js'
 import { ScheduleNoteService } from '../services/index.js'
 
 class ScheduleNoteController extends IController {
-  constructor({ service }) {
-    super({ service })
+  constructor({ service, permissionName }) {
+    super({ service, permissionName })
     this.service = service
   }
 
@@ -12,7 +12,7 @@ class ScheduleNoteController extends IController {
       const data = await this.service.getListForSchedule(req.query)
       res.status(200).json(data)
     } catch (e) {
-      res.status(500).json({ message: e.message })
+      res.status(e.statusCode || 500).json(e.message)
     }
   }
 
@@ -21,9 +21,12 @@ class ScheduleNoteController extends IController {
       const data = await this.service.getList(req.query)
       res.status(200).json(data)
     } catch (e) {
-      res.status(500).json({ message: e.message })
+      res.status(e.statusCode || 500).json(e.message)
     }
   }
 }
 
-export default new ScheduleNoteController({ service: ScheduleNoteService })
+export default new ScheduleNoteController({
+  service: ScheduleNoteService,
+  permissionName: 'scheduleNote'
+})

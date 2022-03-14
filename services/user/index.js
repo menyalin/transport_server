@@ -9,7 +9,8 @@ import {
   PartnerService,
   TkNameService,
   TruckService,
-  OrderTemplateService
+  OrderTemplateService,
+  PermissionService
 } from '../index.js'
 import { CALC_METHODS } from '../../constants/calcMethods.js'
 import {
@@ -24,7 +25,7 @@ class UserService {
   }
 
   async getUserData(id, fields = '-password') {
-    const user = await User.findById(id, fields)
+    const user = await User.findById(id, fields).lean()
     if (!user) throw new Error('user not found!')
 
     UserActivity.create({ user: id, type: 'getUserData' })
@@ -46,6 +47,11 @@ class UserService {
     const orderPriceTypes = ORDER_PRICE_TYPES
     const documentTypes = DOCUMENT_TYPES
     const documentStatuses = DOCUMENT_STATUSES
+    const staffRoles = await PermissionService.getAllRoles()
+    const permissions = await PermissionService.getUserPermissions({
+      userId: id,
+      companyId: profile
+    })
 
     return {
       user,
@@ -61,7 +67,9 @@ class UserService {
       calcMethods,
       orderPriceTypes,
       documentTypes,
-      documentStatuses
+      documentStatuses,
+      staffRoles,
+      permissions
     }
   }
 

@@ -1,10 +1,20 @@
+import { PermissionService } from '../services/index.js'
+
 export class IController {
-  constructor({ service }) {
+  constructor({ service, permissionName }) {
     this.service = service
+    this.permissionName = permissionName
+    this.PermissionService = PermissionService
   }
 
   async create(req, res) {
     try {
+      if (this.permissionName)
+        await PermissionService.check({
+          userId: req.userId,
+          companyId: req.companyId,
+          operation: this.permissionName + ':write'
+        })
       const data = await this.service.create({
         body: req.body,
         user: req.userId
@@ -17,6 +27,12 @@ export class IController {
 
   async updateOne(req, res) {
     try {
+      if (this.permissionName)
+        await PermissionService.check({
+          userId: req.userId,
+          companyId: req.companyId,
+          operation: this.permissionName + ':write'
+        })
       const data = await this.service.updateOne({
         id: req.params.id,
         body: req.body,
@@ -48,6 +64,12 @@ export class IController {
 
   async deleteById(req, res) {
     try {
+      if (this.permissionName)
+        await PermissionService.check({
+          userId: req.userId,
+          companyId: req.companyId,
+          operation: this.permissionName + ':delete'
+        })
       const data = await this.service.deleteById({
         id: req.params.id,
         user: req.userId
