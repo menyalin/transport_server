@@ -105,17 +105,20 @@ class OrderService {
   }
 
   async deleteById({ id, user }) {
-    const data = await OrderModel.findByIdAndDelete(id)
-    emitTo(data.company.toString(), 'order:deleted', id)
-    await ChangeLogService.add({
-      docId: data._id.toString(),
-      company: data.company.toString(),
-      coll: 'order',
-      user,
-      opType: 'delete',
-      body: JSON.stringify(data.toJSON())
-    })
-    return data
+    const order = await OrderModel.findById(id)
+    if (order?.state?.status === 'needGet') {
+      emitTo(order.company.toString(), 'order:deleted', id)
+      await ChangeLogService.add({
+        docId: order._id.toString(),
+        company: order.company.toString(),
+        coll: 'order',
+        user,
+        opType: 'delete',
+        body: JSON.stringify(order.toJSON())
+      })
+      await order.remove()
+      return order
+    } else throw new BadRequestError('Рейс нельзя удалить')
   }
 
   async getById(id) {
