@@ -77,6 +77,11 @@ class OrderController {
 
   async deleteById(req, res) {
     try {
+      await PermissionService.check({
+        operation: 'order:delete',
+        userId: req.userId,
+        companyId: req.companyId
+      })
       const data = await service.deleteById({
         id: req.params.id,
         user: req.userId

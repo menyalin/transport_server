@@ -57,7 +57,6 @@ class PermissionService {
     if (!employee) throw new ForbiddenError('Пользователь не найден')
     if (Array.isArray(employee.roles) && employee.roles.includes('admin'))
       return true
-    console.log('employee.roles', employee.roles)
     const userPermissionsMap = this._getPermissionsByRoles([...employee.roles])
     if (userPermissionsMap.has(operation) && userPermissionsMap.get(operation))
       return true
