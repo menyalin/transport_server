@@ -99,7 +99,7 @@ export const seniorDispatcher = {
 }
 
 export const checkman = {
-  'order:daysForRead': 10,
+  'order:daysForRead': 30,
 
   'tkName:readList': true,
   'tkName:readItem': true,
