@@ -1,4 +1,7 @@
-import { OrderService as service } from '../services/index.js'
+import {
+  OrderService as service,
+  PermissionService
+} from '../services/index.js'
 
 class OrderController {
   async create(req, res) {
@@ -39,10 +42,16 @@ class OrderController {
     try {
       if (!req.query.profile)
         res.status(400).json({ message: 'bad query params' })
+      await PermissionService.checkPeriod({
+        userId: req.userId,
+        companyId: req.companyId,
+        startDate: req.query.startDate,
+        operation: 'order:daysForRead'
+      })
       const data = await service.getList(req.query)
       res.status(200).json(data)
     } catch (e) {
-      res.status(500).json({ mesasge: e.message })
+      res.status(e.statusCode || 500).json(e.message)
     }
   }
 
@@ -53,7 +62,7 @@ class OrderController {
       const data = await service.getListForSchedule(req.query)
       res.status(200).json(data)
     } catch (e) {
-      res.status(500).json({ mesasge: e.message })
+      res.status(e.statusCode || 500).json(e.message)
     }
   }
 
@@ -62,7 +71,7 @@ class OrderController {
       const data = await service.getById(req.params.id)
       res.status(200).json(data)
     } catch (e) {
-      res.status(500).json({ mesasge: e.message })
+      res.status(e.statusCode || 500).json(e.message)
     }
   }
 
@@ -74,7 +83,7 @@ class OrderController {
       })
       res.status(200).json(data)
     } catch (e) {
-      res.status(500).json({ message: e.message })
+      res.status(e.statusCode || 500).json(e.message)
     }
   }
 

@@ -6,12 +6,14 @@ import {
   seniorDispatcher,
   checkman,
   accountant,
-  mechanic
+  mechanic,
+  admin
 } from './permissionList.js'
 
 class PermissionService {
   constructor() {
     this.defaultRoles = {
+      admin,
       director,
       dispatcher,
       seniorDispatcher,
@@ -37,7 +39,7 @@ class PermissionService {
   async getUserPermissions({ userId, companyId }) {
     const employee = await CompanyService.getUserRolesByCompanyIdAndUserId({
       userId,
-      companyId: companyId.toString()
+      companyId: companyId.toString() || companyId
     })
 
     if (!employee) throw new ForbiddenError('Пользователь не найден')
@@ -61,6 +63,21 @@ class PermissionService {
       return true
 
     throw new ForbiddenError('Действие запрещено')
+  }
+
+  async checkPeriod({ userId, companyId, operation, startDate }) {
+    // найти разрешения для пользователя
+    const permissions = await this.getUserPermissions({ userId, companyId })
+    if (permissions.fullAccess || permissions[operation] === -1) return true
+
+    if (!permissions || !permissions[operation])
+      throw new ForbiddenError('Нет доступа!')
+    const dayCount = Math.floor(
+      (new Date() - new Date(startDate)) / (1000 * 60 * 60 * 24)
+    )
+    if (dayCount > permissions[operation])
+      throw new ForbiddenError('Период закрыт')
+    return true
   }
 
   async getAllRoles() {
