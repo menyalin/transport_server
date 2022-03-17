@@ -20,6 +20,11 @@ const schema = new Schema(
     useCustomPrices: {
       type: Boolean
     },
+    usePriceWithVAT: {
+      // нужно для определения типа (с/без НДС) при выгрузке в excel
+      type: Boolean,
+      default: false
+    },
     date: {
       type: Date,
       required: true

@@ -95,7 +95,7 @@ export const seniorDispatcher = {
   'orderTemplate:write': true,
   'orderTemplate:delete': true,
   'order:delete': true,
-  'order:daysForRead': 60,
+  'order:daysForRead': 60
 }
 
 export const checkman = {
@@ -131,7 +131,8 @@ export const accountant = {
   ...checkman,
   'order:daysForRead': -1,
   'agreement:readList': true,
-  'agreement:readItem': true
+  'agreement:readItem': true,
+  'partner:write': true
 }
 
 export const mechanic = {
