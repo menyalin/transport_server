@@ -6,6 +6,12 @@ import {
 class OrderController {
   async create(req, res) {
     try {
+      await PermissionService.check({
+        userId: req.userId,
+        companyId: req.companyId,
+        operation: 'order:daysForWrite'
+      })
+      
       const data = await service.create({ body: req.body, user: req.userId })
       res.status(201).json(data)
     } catch (e) {

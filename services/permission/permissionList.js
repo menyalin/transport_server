@@ -5,6 +5,7 @@ export const admin = {
 export const orderPermissions = {
   'order:read': true,
   'order:write': true,
+  'order:move': true,
   'order:delete': true,
   'order:readPrice': true,
   'order:writePrice': true,
@@ -16,7 +17,6 @@ export const orderPermissions = {
 
 export const director = {
   'order:read': true,
-
   'order:daysForRead': -1,
   'order:readPrice': true,
 
@@ -51,9 +51,11 @@ export const director = {
 }
 
 export const dispatcher = {
+  'order:daysForRead': 30,
+  'order:daysForWrite': 2,
   'tkName:readList': true,
   'tkName:readItem': true,
-  'order:daysForRead': 30,
+  
   'address:readList': true,
   'address:readItem': true,
 
@@ -77,7 +79,8 @@ export const dispatcher = {
   'driver:readList': true,
   'driver:readItem': true,
   'orderTemplate:readList': true,
-  'orderTemplate:readItem': true
+  'orderTemplate:readItem': true,
+  'order:move': true,
 }
 
 export const seniorDispatcher = {
@@ -95,7 +98,8 @@ export const seniorDispatcher = {
   'orderTemplate:write': true,
   'orderTemplate:delete': true,
   'order:delete': true,
-  'order:daysForRead': 60
+  'order:daysForRead': 60,
+  'order:daysForWrite': 10,
 }
 
 export const checkman = {
@@ -130,6 +134,7 @@ export const checkman = {
 export const accountant = {
   ...checkman,
   'order:daysForRead': -1,
+  'order:daysForWrite': -1,
   'agreement:readList': true,
   'agreement:readItem': true,
   'partner:write': true
