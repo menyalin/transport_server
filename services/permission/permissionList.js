@@ -124,8 +124,11 @@ export const checkman = {
 
   'truck:readList': true,
   'truck:readItem': true,
+  'truck:write': true,
+  
   'driver:readList': true,
   'driver:readItem': true,
+  'driver:write': true,
 
   'orderTemplate:readList': true,
   'orderTemplate:readItem': true
