@@ -3,10 +3,25 @@ import { Order as OrderModel, OrderTemplate } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 import { getSchedulePipeline } from './pipelines/getSchedulePipeline.js'
 import { getOrderListPipeline } from './pipelines/getOrderListPipeline.js'
-import { ChangeLogService } from '../index.js'
+import { ChangeLogService, PermissionService } from '../index.js'
 import checkCrossItems from './checkCrossItems.js'
 import { orsDirections } from '../../helpers/orsClient.js'
 import { BadRequestError } from '../../helpers/errors.js'
+
+const _isEqualDatesOfRoute = ({ oldRoute, newRoute }) => {
+  const oldArrivalDate = new Date(oldRoute[0].arrivalDate).toLocaleString()
+  const newArrivalDate = new Date(newRoute[0].arrivalDate).toLocaleString()
+  const oldDepartureDate = new Date(
+    oldRoute[oldRoute.length - 1].departureDate
+  ).toLocaleString()
+
+  const newDepartureDate = new Date(
+    newRoute[newRoute.length - 1].departureDate
+  ).toLocaleString()
+  return (
+    oldArrivalDate === newArrivalDate && oldDepartureDate === newDepartureDate
+  )
+}
 
 class OrderService {
   async create({ body, user }) {
@@ -126,32 +141,29 @@ class OrderService {
     return res
   }
 
-  _isEqualDatesOfRoute({ oldRoute, newRoute }) {
-    const oldArrivalDate = new Date(oldRoute[0].arrivalDate).toLocaleString()
-    const newArrivalDate = new Date(newRoute[0].arrivalDate).toLocaleString()
-    const oldDepartureDate = new Date(
-      oldRoute[oldRoute.length - 1].departureDate
-    ).toLocaleString()
-
-    const newDepartureDate = new Date(
-      newRoute[newRoute.length - 1].departureDate
-    ).toLocaleString()
-    return (
-      oldArrivalDate === newArrivalDate && oldDepartureDate === newDepartureDate
-    )
-  }
-
   async updateOne({ id, body, user }) {
     let order = await OrderModel.findById(id)
     if (!order) return null
     if (order.company.toString() !== body.company)
       throw new BadRequestError('The order is owned by another company')
+
+    // если в маршруте изменились даты проверяется пересечение с другими записями
     if (body.route) {
-      const datesNotChanged = this._isEqualDatesOfRoute({
+      const datesNotChanged = _isEqualDatesOfRoute({
         oldRoute: order.toJSON().route,
         newRoute: body.route
       })
       if (!datesNotChanged) await checkCrossItems({ body, id })
+    }
+
+    // контроль разрешения на редактирвоание выполненного рейса
+    if (order.state.status === 'completed') {
+      await PermissionService.checkPeriod({
+        userId: user,
+        companyId: body.company,
+        operation: 'order:daysForWrite',
+        startDate: order.route.reverse()[0].departureDate
+      })
     }
 
     order = Object.assign(order, { ...body, manager: user })

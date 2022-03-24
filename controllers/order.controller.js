@@ -11,7 +11,7 @@ class OrderController {
         companyId: req.companyId,
         operation: 'order:daysForWrite'
       })
-      
+
       const data = await service.create({ body: req.body, user: req.userId })
       res.status(201).json(data)
     } catch (e) {
@@ -21,6 +21,11 @@ class OrderController {
 
   async createFromTemplate(req, res) {
     try {
+      await PermissionService.check({
+        userId: req.userId,
+        companyId: req.companyId,
+        operation: 'order:daysForWrite'
+      })
       const data = await service.createFromTemplate({
         body: req.body,
         user: req.userId
@@ -33,6 +38,11 @@ class OrderController {
 
   async updateOne(req, res) {
     try {
+      await PermissionService.check({
+        userId: req.userId,
+        companyId: req.companyId,
+        operation: 'order:daysForWrite'
+      })
       const data = await service.updateOne({
         id: req.params.id,
         body: req.body,
