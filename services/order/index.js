@@ -5,6 +5,7 @@ import { getSchedulePipeline } from './pipelines/getSchedulePipeline.js'
 import { getOrderListPipeline } from './pipelines/getOrderListPipeline.js'
 import { ChangeLogService, PermissionService } from '../index.js'
 import checkCrossItems from './checkCrossItems.js'
+import checkRefusedOrder from './checkRefusedOrder.js'
 import { orsDirections } from '../../helpers/orsClient.js'
 import { BadRequestError } from '../../helpers/errors.js'
 
@@ -25,6 +26,7 @@ const _isEqualDatesOfRoute = ({ oldRoute, newRoute }) => {
 
 class OrderService {
   async create({ body, user }) {
+    checkRefusedOrder(body)
     await checkCrossItems({ body })
     const order = await OrderModel.create(body)
     emitTo(order.company.toString(), 'order:created', order.toJSON())
@@ -142,6 +144,7 @@ class OrderService {
   }
 
   async updateOne({ id, body, user }) {
+    checkRefusedOrder(body)
     let order = await OrderModel.findById(id)
     if (!order) return null
     if (order.company.toString() !== body.company)

@@ -158,7 +158,8 @@ const schema = new Schema(
     },
 
     company: { type: Types.ObjectId, ref: 'Company', required: true },
-    manager: { type: Types.ObjectId, ref: 'User' }
+    manager: { type: Types.ObjectId, ref: 'User' },
+    note: { type: String }
   },
   { timestamps: true }
 )
