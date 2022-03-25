@@ -8,6 +8,7 @@ import checkCrossItems from './checkCrossItems.js'
 import checkRefusedOrder from './checkRefusedOrder.js'
 import { orsDirections } from '../../helpers/orsClient.js'
 import { BadRequestError } from '../../helpers/errors.js'
+import AgreementService from '../agreement/index.js'
 
 const _isEqualDatesOfRoute = ({ oldRoute, newRoute }) => {
   const oldArrivalDate = new Date(oldRoute[0].arrivalDate).toLocaleString()
@@ -24,8 +25,21 @@ const _isEqualDatesOfRoute = ({ oldRoute, newRoute }) => {
   )
 }
 
+const _getAgreementId = async (body) => {
+  if (!body.route[0].plannedDate || !body.client.client) return null
+  const agreement = await AgreementService.getForOrder({
+    company: body.company,
+    client: body.client.client,
+    date: body.route[0].plannedDate
+  })
+  return agreement ? agreement._id.toString() : null
+}
+
 class OrderService {
   async create({ body, user }) {
+    if (!body.client.agreement && body.route[0].plannedDate)
+      body.client.agreement = await _getAgreementId(body)
+
     checkRefusedOrder(body)
     await checkCrossItems({ body })
     const order = await OrderModel.create(body)
@@ -144,6 +158,9 @@ class OrderService {
   }
 
   async updateOne({ id, body, user }) {
+    if (!body.client.agreement && body.route[0].plannedDate)
+      body.client.agreement = await _getAgreementId(body)
+
     checkRefusedOrder(body)
     let order = await OrderModel.findById(id)
     if (!order) return null
@@ -168,6 +185,9 @@ class OrderService {
         startDate: order.route.reverse()[0].departureDate
       })
     }
+
+    if (!body.client.agreement && body.route[0].plannedDate)
+      body.client.agreement = await _getAgreementId(body)
 
     order = Object.assign(order, { ...body, manager: user })
     order.isDisabled = false
