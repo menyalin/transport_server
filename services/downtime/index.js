@@ -6,6 +6,7 @@ import IService from '../iService.js'
 import { getListSchedulePipeline } from './pipelines/getListSchedulePipeline.js'
 import { getListPipeline } from './pipelines/getListPipeline.js'
 import checkCrossItems from '../order/checkCrossItems.js'
+import { PermissionService } from '../index.js'
 
 class DowntimeService extends IService {
   constructor({ model, emitter, modelName, logService }) {
@@ -15,6 +16,13 @@ class DowntimeService extends IService {
   }
 
   async create({ body, user }) {
+    await PermissionService.checkPeriod({
+      userId: user,
+      companyId: body.company,
+      operation: 'downtime:daysForWrite',
+      startDate: body.startPositionDate
+    })
+
     await checkCrossItems({ body })
     const data = await this.model.create(body)
     if (this.logService)
@@ -32,19 +40,32 @@ class DowntimeService extends IService {
 
   async updateOne({ id, body, user }) {
     await checkCrossItems({ body, id })
+    let downtime = await this.model.findById(id)
+    await PermissionService.checkPeriod({
+      userId: user,
+      companyId: body.company,
+      operation: 'downtime:daysForWrite',
+      startDate: downtime.endPositionDate
+    })
+    downtime = Object.assign(downtime, body)
+    await downtime.save()
 
-    const data = await this.model.findByIdAndUpdate(id, body, { new: true })
-    this.emitter(data.company.toString(), `${this.modelName}:updated`, data)
+    this.emitter(
+      downtime.company.toString(),
+      `${this.modelName}:updated`,
+      downtime
+    )
+
     if (this.logService)
       await this.logService.add({
-        docId: data._id.toString(),
+        docId: downtime._id.toString(),
         coll: this.modelName,
         opType: 'update',
         user,
-        company: data.company.toString(),
-        body: JSON.stringify(data.toJSON())
+        company: downtime.company.toString(),
+        body: JSON.stringify(downtime.toJSON())
       })
-    return data
+    return downtime
   }
 
   async getListForSchedule(params) {
@@ -61,6 +82,30 @@ class DowntimeService extends IService {
     } catch (e) {
       throw new Error(e.message)
     }
+  }
+
+  async deleteById({ id, user }) {
+    const data = await this.model.findById(id)
+    await PermissionService.checkPeriod({
+      userId: user,
+      companyId: data.company.toString(),
+      operation: 'downtime:daysForWrite',
+      startDate: data.endPositionDate
+    })
+    data.isActive = false
+    await data.save()
+    
+    this.emitter(data.company.toString(), `${this.modelName}:deleted`, id)
+    if (this.logService)
+      await this.logService.add({
+        docId: data._id.toString(),
+        coll: this.modelName,
+        opType: 'delete',
+        user,
+        company: data.company.toString(),
+        body: JSON.stringify(data.toJSON())
+      })
+    return data
   }
 }
 

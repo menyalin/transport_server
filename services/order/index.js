@@ -3,12 +3,15 @@ import { Order as OrderModel, OrderTemplate } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 import { getSchedulePipeline } from './pipelines/getSchedulePipeline.js'
 import { getOrderListPipeline } from './pipelines/getOrderListPipeline.js'
-import { ChangeLogService, PermissionService } from '../index.js'
+import {
+  ChangeLogService,
+  PermissionService,
+  AgreementService
+} from '../index.js'
 import checkCrossItems from './checkCrossItems.js'
 import checkRefusedOrder from './checkRefusedOrder.js'
 import { orsDirections } from '../../helpers/orsClient.js'
 import { BadRequestError } from '../../helpers/errors.js'
-import AgreementService from '../agreement/index.js'
 
 const _isEqualDatesOfRoute = ({ oldRoute, newRoute }) => {
   const oldArrivalDate = new Date(oldRoute[0].arrivalDate).toLocaleString()
@@ -37,6 +40,13 @@ const _getAgreementId = async (body) => {
 
 class OrderService {
   async create({ body, user }) {
+    await PermissionService.checkPeriod({
+      userId: user,
+      companyId: body.company,
+      operation: 'order:daysForWrite',
+      startDate: body.route[0].plannedDate
+    })
+
     if (!body.client.agreement && body.route[0].plannedDate)
       body.client.agreement = await _getAgreementId(body)
 

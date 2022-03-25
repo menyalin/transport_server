@@ -13,7 +13,7 @@ import ChangeLogService from './changeLog/index.js'
 import ReportService from './report/index.js'
 import OrderTemplateService from './orderTemplate/index.js'
 import ScheduleNoteService from './scheduleNote/index.js'
-import AgreementServive from './agreement/index.js'
+import AgreementService from './agreement/index.js'
 import PermissionService from './permission/index.js'
 
 export {
@@ -32,6 +32,6 @@ export {
   ReportService,
   OrderTemplateService,
   ScheduleNoteService,
-  AgreementServive,
+  AgreementService,
   PermissionService
 }

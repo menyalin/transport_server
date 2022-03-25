@@ -1,19 +1,6 @@
 export const admin = {
   fullAccess: true
 }
-
-export const orderPermissions = {
-  'order:read': true,
-  'order:write': true,
-  'order:move': true,
-  'order:delete': true,
-  'order:writePrice': true,
-  'order:daysForRead': 10,
-  'order:daysForWrite': 10,
-  'order:daysForReadPrice': 10,
-  'order:daysForWritePrice': 10
-}
-
 export const director = {
   'order:read': true,
   'order:daysForRead': -1,
@@ -42,9 +29,9 @@ export const director = {
 
 export const dispatcher = {
   'order:daysForRead': 30,
-  'order:daysForWrite': 5,
-  'order:daysForReadPrice': 5,
-  'order:daysForWritePrice': 5,
+  'order:daysForWrite': 4,
+  'order:daysForReadPrice': 4,
+  'order:daysForWritePrice': 4,
   'tkName:readList': true,
   'tkName:readItem': true,
   'address:readList': true,
@@ -52,6 +39,7 @@ export const dispatcher = {
   'downtime:readList': true,
   'downtime:readItem': true,
   'downtime:write': true,
+  'downtime:daysForWrite': 4,
   'downtime:delete': true,
   'scheduleNote:readList': true,
   'scheduleNote:readItem': true,
@@ -90,13 +78,14 @@ export const seniorDispatcher = {
   'order:daysForRead': 60,
   'order:daysForWrite': 15,
   'order:daysForReadPrice': 15,
-  'order:daysForWritePrice': 15
+  'order:daysForWritePrice': 15,
+  'downtime:daysForWrite': 30
 }
 
 export const checkman = {
   'order:daysForRead': 30,
   'order:daysForWrite': 14,
-  'order:daysForReadPrice': 10,
+  'order:daysForReadPrice': 14,
   // 'order:daysForWritePrice': 10,
 
   'tkName:readList': true,
