@@ -1,5 +1,5 @@
 export const admin = {
-  fullAccess: true
+  fullAccess: true,
 }
 export const director = {
   'order:read': true,
@@ -24,14 +24,11 @@ export const director = {
   'driver:readList': true,
   'driver:readItem': true,
   'orderTemplate:readList': true,
-  'orderTemplate:readItem': true
+  'orderTemplate:readItem': true,
+  orderListForAccountant: true,
 }
 
 export const dispatcher = {
-  'order:daysForRead': 30,
-  'order:daysForWrite': 4,
-  'order:daysForReadPrice': 4,
-  'order:daysForWritePrice': 4,
   'tkName:readList': true,
   'tkName:readItem': true,
   'address:readList': true,
@@ -57,7 +54,12 @@ export const dispatcher = {
   'driver:readItem': true,
   'orderTemplate:readList': true,
   'orderTemplate:readItem': true,
-  'order:move': true
+  'order:move': true,
+  'order:daysForRead': 30,
+  'order:daysForWrite': 4,
+  'order:daysForReadPrice': 4,
+  'order:daysForWritePrice': 4,
+  'order:groupCreate': true,
 }
 
 export const seniorDispatcher = {
@@ -79,10 +81,11 @@ export const seniorDispatcher = {
   'order:daysForWrite': 15,
   'order:daysForReadPrice': 15,
   'order:daysForWritePrice': 15,
-  'downtime:daysForWrite': 30
+  'downtime:daysForWrite': 30,
 }
 
 export const checkman = {
+  orderListForAccountant: true,
   'order:daysForRead': 30,
   'order:daysForWrite': 14,
   'order:daysForReadPrice': 14,
@@ -114,7 +117,7 @@ export const checkman = {
   'driver:write': true,
 
   'orderTemplate:readList': true,
-  'orderTemplate:readItem': true
+  'orderTemplate:readItem': true,
 }
 
 export const accountant = {
@@ -126,7 +129,7 @@ export const accountant = {
 
   'agreement:readList': true,
   'agreement:readItem': true,
-  'partner:write': true
+  'partner:write': true,
 }
 
 export const mechanic = {
@@ -146,7 +149,7 @@ export const mechanic = {
   'truck:readList': true,
   'truck:readItem': true,
   'driver:readList': true,
-  'driver:readItem': true
+  'driver:readItem': true,
 }
 
 /*

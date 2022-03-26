@@ -2,7 +2,7 @@ import {
   POINT_TYPES,
   TRUCK_KINDS,
   TRUCK_LIFT_CAPACITY_TYPES,
-  TRUCK_LOAD_DIRECTION
+  TRUCK_LOAD_DIRECTION,
 } from '../constants/enums.js'
 import { ORDER_STATUSES_ENUM } from '../constants/orderStatuses.js'
 import pkg from 'mongoose'
@@ -12,80 +12,82 @@ const { Schema, model, Types } = pkg
 const point = {
   type: {
     type: String,
-    enum: POINT_TYPES
+    enum: POINT_TYPES,
   },
   address: {
     type: Types.ObjectId,
-    ref: 'Address'
+    ref: 'Address',
   },
-  note: String
+  fixedTime: String,
+  offsetDays: Number,
+  note: String,
 }
 
 const cargoParams = {
   weight: Number,
   places: Number,
   note: String,
-  tRegime: String
+  tRegime: String,
 }
 
 const state = {
   status: {
     type: String,
-    enum: ORDER_STATUSES_ENUM
+    enum: ORDER_STATUSES_ENUM,
   },
   warning: {
     type: Boolean,
-    default: false
+    default: false,
   },
   driverNotified: {
     type: Boolean,
-    default: false
+    default: false,
   },
   clientNotified: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 }
 
 const reqTransport = {
   kind: {
     type: String,
-    enum: TRUCK_KINDS
+    enum: TRUCK_KINDS,
   },
   liftCapacity: {
     type: Number,
-    enum: TRUCK_LIFT_CAPACITY_TYPES
+    enum: TRUCK_LIFT_CAPACITY_TYPES,
   },
   loadDirection: {
     type: String,
-    enum: TRUCK_LOAD_DIRECTION
-  }
+    enum: TRUCK_LOAD_DIRECTION,
+  },
 }
 
 const schema = new Schema(
   {
     name: {
       type: String,
-      required: true
+      required: true,
     },
     client: {
       type: Types.ObjectId,
-      ref: 'Partner'
+      ref: 'Partner',
     },
-  
+    fixedTimeSlots: { type: Boolean, default: false },
     route: [point],
     cargoParams: cargoParams,
     reqTransport: reqTransport,
     state,
     isActive: {
       type: Boolean,
-      default: true
+      default: true,
     },
 
     company: { type: Types.ObjectId, ref: 'Company', required: true },
-    manager: { type: Types.ObjectId, ref: 'User' }
+    manager: { type: Types.ObjectId, ref: 'User' },
   },
-  { timestamps: true }
+  { timestamps: true },
 )
 
 export default model('OrderTemlate', schema, 'orderTemplates')

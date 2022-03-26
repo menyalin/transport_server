@@ -6,10 +6,11 @@ import { getOrderListPipeline } from './pipelines/getOrderListPipeline.js'
 import {
   ChangeLogService,
   PermissionService,
-  AgreementService
+  AgreementService,
 } from '../index.js'
 import checkCrossItems from './checkCrossItems.js'
 import checkRefusedOrder from './checkRefusedOrder.js'
+import getRouteFromTemplate from './getRouteFromTemplate.js'
 import { orsDirections } from '../../helpers/orsClient.js'
 import { BadRequestError } from '../../helpers/errors.js'
 
@@ -17,11 +18,11 @@ const _isEqualDatesOfRoute = ({ oldRoute, newRoute }) => {
   const oldArrivalDate = new Date(oldRoute[0].arrivalDate).toLocaleString()
   const newArrivalDate = new Date(newRoute[0].arrivalDate).toLocaleString()
   const oldDepartureDate = new Date(
-    oldRoute[oldRoute.length - 1].departureDate
+    oldRoute[oldRoute.length - 1].departureDate,
   ).toLocaleString()
 
   const newDepartureDate = new Date(
-    newRoute[newRoute.length - 1].departureDate
+    newRoute[newRoute.length - 1].departureDate,
   ).toLocaleString()
   return (
     oldArrivalDate === newArrivalDate && oldDepartureDate === newDepartureDate
@@ -33,7 +34,7 @@ const _getAgreementId = async (body) => {
   const agreement = await AgreementService.getForOrder({
     company: body.company,
     client: body.client.client,
-    date: body.route[0].plannedDate
+    date: body.route[0].plannedDate,
   })
   return agreement ? agreement._id.toString() : null
 }
@@ -44,7 +45,7 @@ class OrderService {
       userId: user,
       companyId: body.company,
       operation: 'order:daysForWrite',
-      startDate: body.route[0].plannedDate
+      startDate: body.route[0].plannedDate,
     })
 
     if (!body.client.agreement && body.route[0].plannedDate)
@@ -60,7 +61,7 @@ class OrderService {
       coll: 'order',
       user,
       opType: 'create',
-      body: JSON.stringify(order.toObject({ flattenMaps: true }))
+      body: JSON.stringify(order.toObject({ flattenMaps: true })),
     })
     return order
   }
@@ -72,24 +73,24 @@ class OrderService {
     const templates = await OrderTemplate.find({ _id: templateIds }).lean()
     for (let i = 0; i < body.length; i++) {
       const template = templates.find(
-        (t) => t._id.toString() === body[i].template
+        (t) => t._id.toString() === body[i].template,
       )
       const startDate = body[i].date
+      const route = getRouteFromTemplate({ template, date: startDate })
       for (let j = 0; j < body[i].count; j++) {
         const newOrder = {
           client: {
-            client: template.client
+            client: template.client,
           },
-          startPositionDate: startDate,
-          route: template.route,
+          startPositionDate: route[0].plannedDate,
+          route,
           company: template.company,
           reqTransport: template.reqTransport,
           cargoParams: template.cargoParams,
           state: {
-            status: 'needGet'
-          }
+            status: 'needGet',
+          },
         }
-        newOrder.route[0].plannedDate = startDate
         await this.create({ body: newOrder, user })
       }
     }
@@ -117,7 +118,7 @@ class OrderService {
       coll: 'order',
       user,
       opType: 'move order',
-      body: JSON.stringify(order.toJSON())
+      body: JSON.stringify(order.toJSON()),
     })
   }
 
@@ -136,7 +137,7 @@ class OrderService {
       const pipeline = getSchedulePipeline({
         company: profile,
         startDate,
-        endDate
+        endDate,
       })
       const res = await OrderModel.aggregate(pipeline)
       return res
@@ -155,7 +156,7 @@ class OrderService {
         coll: 'order',
         user,
         opType: 'delete',
-        body: JSON.stringify(order.toJSON())
+        body: JSON.stringify(order.toJSON()),
       })
       await order.remove()
       return order
@@ -181,7 +182,7 @@ class OrderService {
     if (body.route) {
       const datesNotChanged = _isEqualDatesOfRoute({
         oldRoute: order.toJSON().route,
-        newRoute: body.route
+        newRoute: body.route,
       })
       if (!datesNotChanged) await checkCrossItems({ body, id })
     }
@@ -192,7 +193,7 @@ class OrderService {
         userId: user,
         companyId: body.company,
         operation: 'order:daysForWrite',
-        startDate: order.route.reverse()[0].departureDate
+        startDate: order.route.reverse()[0].departureDate,
       })
     }
 
@@ -210,7 +211,7 @@ class OrderService {
       coll: 'order',
       user,
       opType: 'update',
-      body: JSON.stringify(order.toObject({ flattenMaps: true }))
+      body: JSON.stringify(order.toObject({ flattenMaps: true })),
     })
     return order
   }
@@ -226,12 +227,12 @@ class OrderService {
         profile: 'driving-hgv',
         format: 'json',
         units: 'km',
-        radiuses: radiusesArray
+        radiuses: radiusesArray,
       })
       return {
         distanceRoad: Math.round(res.routes[0].summary.distance),
         durationInSec: res.routes[0].summary.duration,
-        durationStr: 'TODO'
+        durationStr: 'TODO',
       }
     } catch (e) {
       return null
