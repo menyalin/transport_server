@@ -6,28 +6,32 @@ const schema = new Schema(
     truck: {
       type: Types.ObjectId,
       ref: 'Truck',
-      required: true
+      required: true,
     },
     text: {
       type: String,
-      required: true
+      required: true,
     },
     note: String,
     startPositionDate: {
       type: Date,
-      required: true
+      required: true,
     },
     company: {
       type: Types.ObjectId,
       ref: 'Company',
-      required: true
+      required: true,
+    },
+    priority: {
+      type: String,
+      default: 'low',
     },
     isActive: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 )
 
 export default model('ScheduleNote', schema, 'scheduleNotes ')
