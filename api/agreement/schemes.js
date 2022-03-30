@@ -2,32 +2,35 @@ export const getListSchema = {
   type: 'object',
   properties: {
     company: {
-      type: 'string'
+      type: 'string',
     },
     limit: {
-      type: 'string'
+      type: 'string',
     },
     skip: {
-      type: 'string'
-    }
+      type: 'string',
+    },
   },
   required: ['company', 'limit', 'skip'],
-  additionalProperties: true
+  additionalProperties: true,
 }
 
 export const getForOrderSchema = {
   type: 'object',
   properties: {
     company: {
-      type: 'string'
+      type: 'string',
     },
     date: {
-      type: 'string'
+      type: 'string',
     },
     client: {
-      type: 'string'
-    }
+      type: 'string',
+    },
+    tkNameId: {
+      type: 'string',
+    },
   },
-  required: ['company', 'date', 'client'],
-  additionalProperties: true
+  required: ['company', 'date'],
+  additionalProperties: true,
 }

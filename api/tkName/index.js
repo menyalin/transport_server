@@ -11,7 +11,7 @@ import {
   getProfileTkNames,
   create,
   updateOne,
-  deleteById
+  deleteById,
 } from '../../controllers/tkName.controllers.js'
 
 const router = express.Router()
@@ -20,7 +20,7 @@ const router = express.Router()
 router.get(
   '/',
   [jwtAuth, queryValidator(getProfileListSchema)],
-  getProfileTkNames
+  getProfileTkNames,
 )
 router.get('/search', [jwtAuth], search)
 router.get('/:id', [jwtAuth], getById)

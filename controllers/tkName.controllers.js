@@ -1,14 +1,14 @@
 import {
   TkNameService as service,
-  PermissionService
+  PermissionService,
 } from '../services/index.js'
 
 export const create = async (req, res) => {
   try {
     await PermissionService.check({
       userId: req.userId,
-      companyId: req.userId,
-      operation: 'tkName:write'
+      companyId: req.companyId,
+      operation: 'tkName:write',
     })
     const data = await service.create({ body: req.body, user: req.userId })
     res.status(201).json(data)
@@ -21,13 +21,13 @@ export const updateOne = async (req, res) => {
   try {
     await PermissionService.check({
       userId: req.userId,
-      companyId: req.userId,
-      operation: 'tkName:write'
+      companyId: req.companyId,
+      operation: 'tkName:write',
     })
     const data = await service.updateOne({
       id: req.params.id,
       body: req.body,
-      user: req.userId
+      user: req.userId,
     })
     res.status(200).json(data)
   } catch (e) {
@@ -48,7 +48,7 @@ export const search = async (req, res) => {
   try {
     const data = await service.search({
       search: req.query.querySearch,
-      profile: req.query.profile
+      profile: req.query.profile,
     })
     res.status(200).json(data)
   } catch (e) {
@@ -69,12 +69,12 @@ export const deleteById = async (req, res) => {
   try {
     await PermissionService.check({
       userId: req.userId,
-      companyId: req.userId,
-      operation: 'tkName:delete'
+      companyId: req.companyId,
+      operation: 'tkName:delete',
     })
     const data = await service.deleteById({
       id: req.params.id,
-      user: req.userId
+      user: req.userId,
     })
     res.status(200).json(data)
   } catch (e) {

@@ -7,7 +7,8 @@ import {
   checkman,
   accountant,
   mechanic,
-  admin
+  admin,
+  outsourceCarriersManager,
 } from './permissionList.js'
 
 class PermissionService {
@@ -19,7 +20,8 @@ class PermissionService {
       seniorDispatcher,
       checkman,
       accountant,
-      mechanic
+      mechanic,
+      outsourceCarriersManager,
     }
   }
 
@@ -39,7 +41,7 @@ class PermissionService {
   async getUserPermissions({ userId, companyId }) {
     const employee = await CompanyService.getUserRolesByCompanyIdAndUserId({
       userId,
-      companyId: companyId.toString() || companyId
+      companyId: companyId.toString() || companyId,
     })
 
     if (!employee) throw new ForbiddenError('Пользователь не найден')
@@ -52,7 +54,7 @@ class PermissionService {
     if (!companyId) throw new ForbiddenError('Не указан профиль настроек')
     const employee = await CompanyService.getUserRolesByCompanyIdAndUserId({
       userId,
-      companyId
+      companyId,
     })
     if (!employee) throw new ForbiddenError('Пользователь не найден')
     if (Array.isArray(employee.roles) && employee.roles.includes('admin'))
@@ -72,7 +74,7 @@ class PermissionService {
     if (!permissions || !permissions[operation])
       throw new ForbiddenError('Нет доступа!')
     const dayCount = Math.floor(
-      (new Date() - new Date(startDate)) / (1000 * 60 * 60 * 24)
+      (new Date() - new Date(startDate)) / (1000 * 60 * 60 * 24),
     )
     if (dayCount > permissions[operation])
       throw new ForbiddenError('Период закрыт')
@@ -84,22 +86,22 @@ class PermissionService {
       {
         value: 'admin',
         text: 'ТОП',
-        note: 'Полный доступ к данным компании'
+        note: 'Полный доступ к данным компании',
       },
       {
         value: 'director',
         text: 'Директор',
-        note: 'Возможен просмотр всех данных, правка запрещена'
+        note: 'Возможен просмотр всех данных, правка запрещена',
       },
       {
         value: 'seniorDispatcher',
         text: 'Руководитель логистики',
-        note: 'Описание...'
+        note: 'Описание...',
       },
       {
         value: 'dispatcher',
         text: 'Логист',
-        note: 'Создание рейсов, адресов...'
+        note: 'Создание рейсов, адресов...',
       },
       { value: 'juniorDispatcher', text: 'Диспетчер', note: 'Описание...' },
       { value: 'mechanic', text: 'Механик', note: 'Описание...' },
@@ -108,8 +110,12 @@ class PermissionService {
       { value: 'trainee', text: 'Стажер', note: 'Описание...' },
       {
         value: 'accountant',
-        text: 'Бухгалтер'
-      }
+        text: 'Бухгалтер',
+      },
+      {
+        value: 'outsourceCarriersManager',
+        text: 'Менеджер по работе с привлеченными ТК',
+      },
     ]
   }
 }

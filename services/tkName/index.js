@@ -12,7 +12,7 @@ class TkNameService extends IService {
   async search({ search, profile }) {
     const query = {
       isActive: true,
-      surname: new RegExp(search, 'i')
+      surname: new RegExp(search, 'i'),
     }
     if (profile) query.company = profile
     const data = await this.model.find(query).lean()
@@ -24,5 +24,5 @@ export default new TkNameService({
   model: TkName,
   emitter: emitTo,
   modelName: 'tkName',
-  logService: ChangeLogService
+  logService: ChangeLogService,
 })

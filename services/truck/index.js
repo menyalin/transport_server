@@ -12,7 +12,7 @@ class TruckService {
       user,
       opType: 'create',
       company: data.company.toString(),
-      body: JSON.stringify(data.toJSON())
+      body: JSON.stringify(data.toJSON()),
     })
     await data.populate('tkName')
     emitTo(data.company.toString(), 'truck:created', data)
@@ -22,7 +22,7 @@ class TruckService {
   async updateOne({ id, body, user }) {
     if (body.endServiceDate) await checkNotCompletedOrders({ truckId: id })
     const data = await Truck.findByIdAndUpdate(id, body, {
-      new: true
+      new: true,
     })
     await logService.add({
       docId: data._id.toString(),
@@ -30,7 +30,7 @@ class TruckService {
       user,
       opType: 'update',
       company: data.company.toString(),
-      body: JSON.stringify(data.toJSON())
+      body: JSON.stringify(data.toJSON()),
     })
     await data.populate('tkName')
     emitTo(data.company.toString(), 'truck:updated', data)
@@ -42,8 +42,8 @@ class TruckService {
       isActive: true,
       $or: [
         { name: new RegExp(search, 'i') },
-        { regNum: new RegExp(search, 'i') }
-      ]
+        { regNum: new RegExp(search, 'i') },
+      ],
     }
     if (profile) query.company = profile
     if (type) query.type = type
@@ -67,7 +67,7 @@ class TruckService {
     const data = await Truck.findByIdAndUpdate(
       id,
       { isActive: false },
-      { new: true }
+      { new: true },
     )
     await logService.add({
       docId: data._id.toString(),
@@ -75,7 +75,7 @@ class TruckService {
       user,
       opType: 'delete',
       company: data.company.toString(),
-      body: JSON.stringify(data.toJSON())
+      body: JSON.stringify(data.toJSON()),
     })
     emitTo(data.company.toString(), 'truck:deleted', id)
     return data

@@ -1,15 +1,17 @@
 import mongoose from 'mongoose'
-// required: ['company', 'date', 'client'],
 
-export default ({ company, client, date }) => {
+export default ({ company, client, date, tkNameId }) => {
   const firstMatcher = {
     $match: {
       isActive: true,
       closed: { $ne: true },
       company: mongoose.Types.ObjectId(company),
-      clients: mongoose.Types.ObjectId(client),
-      date: { $lt: new Date(date) }
-    }
+      date: { $lt: new Date(date) },
+    },
   }
+
+  if (tkNameId)
+    firstMatcher.$match.outsourceCarriers = mongoose.Types.ObjectId(tkNameId)
+  else if (client) firstMatcher.$match.clients = mongoose.Types.ObjectId(client)
   return [firstMatcher, { $sort: { date: -1 } }, { $limit: 1 }]
 }

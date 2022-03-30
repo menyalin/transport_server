@@ -3,14 +3,12 @@ import { Order as OrderModel, OrderTemplate } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 import { getSchedulePipeline } from './pipelines/getSchedulePipeline.js'
 import { getOrderListPipeline } from './pipelines/getOrderListPipeline.js'
-import {
-  ChangeLogService,
-  PermissionService,
-  AgreementService,
-} from '../index.js'
+import { ChangeLogService, PermissionService } from '../index.js'
 import checkCrossItems from './checkCrossItems.js'
 import checkRefusedOrder from './checkRefusedOrder.js'
 import getRouteFromTemplate from './getRouteFromTemplate.js'
+import getClientAgreementId from './getClientAgreement.js'
+import getOutsourceAgreementId from './getOutsourceAgreementId.js'
 import { orsDirections } from '../../helpers/orsClient.js'
 import { BadRequestError } from '../../helpers/errors.js'
 
@@ -29,16 +27,6 @@ const _isEqualDatesOfRoute = ({ oldRoute, newRoute }) => {
   )
 }
 
-const _getAgreementId = async (body) => {
-  if (!body.route[0].plannedDate || !body.client.client) return null
-  const agreement = await AgreementService.getForOrder({
-    company: body.company,
-    client: body.client.client,
-    date: body.route[0].plannedDate,
-  })
-  return agreement ? agreement._id.toString() : null
-}
-
 class OrderService {
   async create({ body, user }) {
     await PermissionService.checkPeriod({
@@ -48,11 +36,17 @@ class OrderService {
       startDate: body.route[0].plannedDate,
     })
 
-    if (!body.client.agreement && body.route[0].plannedDate)
-      body.client.agreement = await _getAgreementId(body)
-
     checkRefusedOrder(body)
     await checkCrossItems({ body })
+
+    if (!body.client.agreement && body.route[0].plannedDate)
+      body.client.agreement = await getClientAgreementId(body)
+
+    if (!body.confirmedCrew.outsourceAgreement && body.route[0].plannedDate)
+      body.confirmedCrew.outsourceAgreement = await getOutsourceAgreementId(
+        body,
+      )
+
     const order = await OrderModel.create(body)
     emitTo(order.company.toString(), 'order:created', order.toJSON())
     await ChangeLogService.add({
@@ -106,8 +100,17 @@ class OrderService {
 
   async moveOrderInSchedule({ orderId, truck, startPositionDate }, user) {
     const order = await OrderModel.findById(orderId)
-    if (!truck) order.confirmedCrew.truck = null
-    else order.confirmedCrew.truck = mongoose.Types.ObjectId(truck)
+
+    if (!truck) {
+      order.confirmedCrew.truck = null
+      order.confirmedCrew.outsourceAgreement = null
+    } else {
+      order.confirmedCrew.truck = mongoose.Types.ObjectId(truck)
+      order.confirmedCrew.outsourceAgreement = await getOutsourceAgreementId(
+        order,
+      )
+    }
+
     order.startPositionDate = startPositionDate
     order.isDisabled = false
     emitTo(order.company.toString(), 'order:updated', order)
@@ -169,10 +172,14 @@ class OrderService {
   }
 
   async updateOne({ id, body, user }) {
-    if (!body.client.agreement && body.route[0].plannedDate)
-      body.client.agreement = await _getAgreementId(body)
-
     checkRefusedOrder(body)
+    if (!body.client.agreement && body.route[0].plannedDate)
+      body.client.agreement = await getClientAgreementId(body)
+
+    if (!body.confirmedCrew.outsourceAgreement && body.confirmedCrew.truck)
+      body.confirmedCrew.outsourceAgreement = await getOutsourceAgreementId(
+        body,
+      )
     let order = await OrderModel.findById(id)
     if (!order) return null
     if (order.company.toString() !== body.company)
@@ -186,19 +193,14 @@ class OrderService {
       })
       if (!datesNotChanged) await checkCrossItems({ body, id })
     }
-
     // контроль разрешения на редактирвоание выполненного рейса
-    if (order.state.status === 'completed') {
+    if (order.state.status === 'completed')
       await PermissionService.checkPeriod({
         userId: user,
         companyId: body.company,
         operation: 'order:daysForWrite',
         startDate: order.route.reverse()[0].departureDate,
       })
-    }
-
-    if (!body.client.agreement && body.route[0].plannedDate)
-      body.client.agreement = await _getAgreementId(body)
 
     order = Object.assign(order, { ...body, manager: user })
     order.isDisabled = false

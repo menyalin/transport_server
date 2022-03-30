@@ -3,7 +3,7 @@ import express from 'express'
 
 import { jwtAuth } from '../../utils/auth.middleware.js'
 import {
-  queryValidator
+  queryValidator,
   // bodyValidator
 } from '../../utils/validator.js'
 
@@ -14,12 +14,12 @@ const router = express.Router()
 
 // api/agreements
 router.get('/', [jwtAuth, queryValidator(getListSchema)], (...args) =>
-  ctrl.getList(...args)
+  ctrl.getList(...args),
 )
 router.get(
   '/get_for_order',
   [jwtAuth, queryValidator(getForOrderSchema)],
-  (...args) => ctrl.getForOrder(...args)
+  (...args) => ctrl.getForOrder(...args),
 )
 
 router.get('/:id', [jwtAuth], (...args) => ctrl.getById(...args))

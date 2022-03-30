@@ -5,18 +5,21 @@ const schema = new Schema(
   {
     name: {
       type: String,
-      unique: true
     },
     company: {
       type: Types.ObjectId,
-      ref: 'Company'
+      ref: 'Company',
+    },
+    outsource: {
+      type: Boolean,
+      default: false,
     },
     isActive: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 )
 
 export default model('TkName', schema, 'tknames')

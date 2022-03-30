@@ -2,24 +2,27 @@ export const getProfileListSchema = {
   type: 'object',
   properties: {
     profile: {
-      type: 'string'
-    }
+      type: 'string',
+    },
   },
   required: ['profile'],
-  additionalProperties: false
+  additionalProperties: false,
 }
 
 export const createSchema = {
   type: 'object',
   properties: {
     company: {
-      type: 'string'
+      type: 'string',
     },
     name: {
-      type: 'string'
-    }
+      type: 'string',
+    },
+    outsource: {
+      type: 'boolean',
+    },
   },
   required: ['company', 'name'],
-  additionalProperties: true
+  additionalProperties: true,
 }
 //

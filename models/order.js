@@ -2,11 +2,11 @@ import {
   POINT_TYPES,
   TRUCK_KINDS,
   TRUCK_LIFT_CAPACITY_TYPES,
-  TRUCK_LOAD_DIRECTION
+  TRUCK_LOAD_DIRECTION,
 } from '../constants/enums.js'
 import {
   DOCUMENT_TYPES_ENUM,
-  DOCUMENT_STATUSES_ENUM
+  DOCUMENT_STATUSES_ENUM,
 } from '../constants/accounting.js'
 import { ORDER_STATUSES_ENUM } from '../constants/orderStatuses.js'
 import { ORDER_ANALYTIC_TYPES_ENUM } from '../constants/orderAnalyticTypes.js'
@@ -18,117 +18,132 @@ const prices = [
   {
     type: {
       type: String,
-      required: true
+      required: true,
     },
     priceWOVat: { type: Number },
     sumVat: { type: Number },
     price: { type: Number },
-    note: String
-  }
+    note: String,
+  },
+]
+
+const outsourceCosts = [
+  {
+    type: {
+      type: String,
+      required: true,
+    },
+    priceWOVat: { type: Number },
+    sumVat: { type: Number },
+    price: { type: Number },
+    note: String,
+    cashPayment: Boolean,
+  },
 ]
 
 const docs = [
   {
     type: {
       type: String,
-      enum: DOCUMENT_TYPES_ENUM
+      enum: DOCUMENT_TYPES_ENUM,
     },
     number: {
-      type: String
+      type: String,
     },
     note: String,
     status: {
       type: String,
-      enum: DOCUMENT_STATUSES_ENUM
-    }
-  }
+      enum: DOCUMENT_STATUSES_ENUM,
+    },
+  },
 ]
 
 const client = {
   client: {
     type: Types.ObjectId,
-    ref: 'Partner'
+    ref: 'Partner',
   },
   num: String,
   agreement: {
     type: Types.ObjectId,
-    ref: 'Agreement'
-  }
+    ref: 'Agreement',
+  },
 }
 
 const grade = {
   grade: Number,
-  note: String
+  note: String,
 }
 const analytics = {
   type: { type: String, enum: ORDER_ANALYTIC_TYPES_ENUM },
   distanceRoad: { type: Number },
-  distanceDirect: { type: Number }
+  distanceDirect: { type: Number },
 }
 const point = {
   type: {
     type: String,
-    enum: POINT_TYPES
+    enum: POINT_TYPES,
   },
   address: {
     type: Types.ObjectId,
-    ref: 'Address'
+    ref: 'Address',
   },
   plannedDate: Date,
   arrivalDate: Date,
   departureDate: Date,
   isReturn: {
     type: Boolean,
-    default: false
+    default: false,
   },
-  note: String
+  note: String,
 }
 
 const cargoParams = {
   weight: Number,
   places: Number,
   note: String,
-  tRegime: String
+  tRegime: String,
 }
 
 const state = {
   status: {
     type: String,
-    enum: ORDER_STATUSES_ENUM
+    enum: ORDER_STATUSES_ENUM,
   },
   warning: {
     type: Boolean,
-    default: false
+    default: false,
   },
   driverNotified: {
     type: Boolean,
-    default: false
+    default: false,
   },
   clientNotified: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 }
 
 const reqTransport = {
   kind: {
     type: String,
-    enum: TRUCK_KINDS
+    enum: TRUCK_KINDS,
   },
   liftCapacity: {
     type: Number,
-    enum: TRUCK_LIFT_CAPACITY_TYPES
+    enum: TRUCK_LIFT_CAPACITY_TYPES,
   },
   loadDirection: {
     type: String,
-    enum: TRUCK_LOAD_DIRECTION
-  }
+    enum: TRUCK_LOAD_DIRECTION,
+  },
 }
 
 const confirmedCrew = {
   truck: { type: Types.ObjectId, ref: 'Truck' },
   trailer: { type: Types.ObjectId, ref: 'Truck' },
-  driver: { type: Types.ObjectId, ref: 'Driver' }
+  driver: { type: Types.ObjectId, ref: 'Driver' },
+  outsourceAgreement: { type: Types.ObjectId, ref: 'Agreement' },
 }
 
 const schema = new Schema(
@@ -136,12 +151,13 @@ const schema = new Schema(
     startPositionDate: {
       // дата для отображения в таблице распределения
       type: Date,
-      required: true
+      required: true,
     },
     grade,
     docs,
     client,
     prices,
+    outsourceCosts,
     confirmedCrew,
     route: [point],
     cargoParams: cargoParams,
@@ -150,18 +166,18 @@ const schema = new Schema(
     analytics,
     isActive: {
       type: Boolean,
-      default: true
+      default: true,
     },
     isDisabled: {
       type: Boolean,
-      default: false
+      default: false,
     },
 
     company: { type: Types.ObjectId, ref: 'Company', required: true },
     manager: { type: Types.ObjectId, ref: 'User' },
-    note: { type: String }
+    note: { type: String },
   },
-  { timestamps: true }
+  { timestamps: true },
 )
 
 export default model('Order', schema, 'orders')

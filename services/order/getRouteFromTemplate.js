@@ -17,6 +17,7 @@ const getRouteFromTemplate = ({ template, date }) => {
           .format(),
       })
     } else {
+      // Добавить проверку на отсутвие времени выгрузки
       tmpRoute.push({
         ...template.route[i],
         plannedDate: moment(date)

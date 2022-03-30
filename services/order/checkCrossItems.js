@@ -18,7 +18,7 @@ const _getDatesFromBody = ({ body }) => {
 
 const _checkUnfinishedOrder = async ({ body, id }) => {
   const truckId = mongoose.Types.ObjectId(
-    body.confirmedCrew?.truck || body.truck
+    body.confirmedCrew?.truck || body.truck,
   )
   const matcher = {
     $match: {
@@ -29,22 +29,22 @@ const _checkUnfinishedOrder = async ({ body, id }) => {
           {
             $getField: {
               field: 'arrivalDate',
-              input: { $first: '$route' }
-            }
+              input: { $first: '$route' },
+            },
           },
           {
             $not: [
               {
                 $getField: {
                   field: 'departureDate',
-                  input: { $last: '$route' }
-                }
-              }
-            ]
-          }
-        ]
-      }
-    }
+                  input: { $last: '$route' },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
   }
   if (id && !body.type)
     matcher.$match._id = { $ne: mongoose.Types.ObjectId(id) }
@@ -58,7 +58,7 @@ const _checkSequenceOfDates = (dates) => {
     for (let i = 1; i < dates.length; i++) {
       if (dates[i] < dates[i - 1])
         throw new BadRequestError(
-          'Не правильная последовательность дат в маршруте'
+          'Не правильная последовательность дат в маршруте',
         )
     }
   }
@@ -67,7 +67,7 @@ const _checkSequenceOfDates = (dates) => {
 const _checkCrossDowntimes = async ({ body, dates, id }) => {
   const sDate = new Date(dates[0])
   const truckId = mongoose.Types.ObjectId(
-    body.confirmedCrew?.truck || body.truck
+    body.confirmedCrew?.truck || body.truck,
   )
   const matcher = {
     $match: {
@@ -80,12 +80,12 @@ const _checkCrossDowntimes = async ({ body, dates, id }) => {
             // Начало нового рейса внутри Downtime
             $and: [
               { $lte: ['$startPositionDate', sDate] },
-              { $gte: ['$endPositionDate', sDate] }
-            ]
-          }
-        ]
-      }
-    }
+              { $gte: ['$endPositionDate', sDate] },
+            ],
+          },
+        ],
+      },
+    },
   }
   if (id) matcher.$match._id = { $ne: mongoose.Types.ObjectId(id) }
 
@@ -95,15 +95,15 @@ const _checkCrossDowntimes = async ({ body, dates, id }) => {
     matcher.$match.$expr.$or.push({
       $and: [
         { $lte: ['$startPositionDate', eDate] },
-        { $gte: ['$endPositionDate', eDate] }
-      ]
+        { $gte: ['$endPositionDate', eDate] },
+      ],
     })
     // перекрытие рейса
     matcher.$match.$expr.$or.push({
       $and: [
         { $gte: ['$startPositionDate', sDate] },
-        { $lte: ['$endPositionDate', eDate] }
-      ]
+        { $lte: ['$endPositionDate', eDate] },
+      ],
     })
   }
 
@@ -113,7 +113,7 @@ const _checkCrossDowntimes = async ({ body, dates, id }) => {
   const res = await Downtime.aggregate([matcher])
   if (res.length)
     throw new BadRequestError(
-      'Сохранение не возможно! Имеется пересечение с "сервисом"'
+      'Сохранение не возможно! Имеется пересечение с "сервисом"',
     )
   return null
 }
@@ -121,7 +121,7 @@ const _checkCrossDowntimes = async ({ body, dates, id }) => {
 const _checkCrossOrders = async ({ body, dates, id }) => {
   const sDate = new Date(dates[0])
   const truckId = mongoose.Types.ObjectId(
-    body.confirmedCrew?.truck || body.truck
+    body.confirmedCrew?.truck || body.truck,
   )
   const matcher = {
     $match: {
@@ -138,28 +138,28 @@ const _checkCrossOrders = async ({ body, dates, id }) => {
                   {
                     $getField: {
                       field: 'arrivalDate',
-                      input: { $first: '$route' }
-                    }
+                      input: { $first: '$route' },
+                    },
                   },
-                  sDate
-                ]
+                  sDate,
+                ],
               },
               {
                 $gte: [
                   {
                     $getField: {
                       field: 'departureDate',
-                      input: { $last: '$route' }
-                    }
+                      input: { $last: '$route' },
+                    },
                   },
-                  sDate
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    }
+                  sDate,
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    },
   }
 
   if (dates.length >= 2) {
@@ -172,24 +172,24 @@ const _checkCrossOrders = async ({ body, dates, id }) => {
             {
               $getField: {
                 field: 'arrivalDate',
-                input: { $first: '$route' }
-              }
+                input: { $first: '$route' },
+              },
             },
-            eDate
-          ]
+            eDate,
+          ],
         },
         {
           $gte: [
             {
               $getField: {
                 field: 'departureDate',
-                input: { $last: '$route' }
-              }
+                input: { $last: '$route' },
+              },
             },
-            eDate
-          ]
-        }
-      ]
+            eDate,
+          ],
+        },
+      ],
     })
 
     // перекрытие рейса
@@ -200,24 +200,24 @@ const _checkCrossOrders = async ({ body, dates, id }) => {
             {
               $getField: {
                 field: 'arrivalDate',
-                input: { $first: '$route' }
-              }
+                input: { $first: '$route' },
+              },
             },
-            sDate
-          ]
+            sDate,
+          ],
         },
         {
           $lte: [
             {
               $getField: {
                 field: 'departureDate',
-                input: { $last: '$route' }
-              }
+                input: { $last: '$route' },
+              },
             },
-            eDate
-          ]
-        }
-      ]
+            eDate,
+          ],
+        },
+      ],
     })
   }
   if (id) matcher.$match._id = { $ne: mongoose.Types.ObjectId(id) }
@@ -225,7 +225,7 @@ const _checkCrossOrders = async ({ body, dates, id }) => {
   const orders = await Order.aggregate([matcher])
   if (orders.length > 0)
     throw new BadRequestError(
-      'Сохранение невозможно! Имеется пересечение с рейсами'
+      'Сохранение невозможно! Имеется пересечение с рейсами',
     )
 }
 

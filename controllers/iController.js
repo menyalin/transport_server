@@ -13,11 +13,11 @@ export class IController {
         await PermissionService.check({
           userId: req.userId,
           companyId: req.companyId,
-          operation: this.permissionName + ':write'
+          operation: this.permissionName + ':write',
         })
       const data = await this.service.create({
         body: req.body,
-        user: req.userId
+        user: req.userId,
       })
       res.status(201).json(data)
     } catch (e) {
@@ -31,12 +31,12 @@ export class IController {
         await PermissionService.check({
           userId: req.userId,
           companyId: req.companyId,
-          operation: this.permissionName + ':write'
+          operation: this.permissionName + ':write',
         })
       const data = await this.service.updateOne({
         id: req.params.id,
         body: req.body,
-        user: req.userId
+        user: req.userId,
       })
       res.status(200).json(data)
     } catch (e) {
@@ -68,11 +68,11 @@ export class IController {
         await PermissionService.check({
           userId: req.userId,
           companyId: req.companyId,
-          operation: this.permissionName + ':delete'
+          operation: this.permissionName + ':delete',
         })
       const data = await this.service.deleteById({
         id: req.params.id,
-        user: req.userId
+        user: req.userId,
       })
       res.status(200).json(data)
     } catch (e) {

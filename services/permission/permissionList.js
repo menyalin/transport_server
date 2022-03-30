@@ -1,6 +1,20 @@
 export const admin = {
   fullAccess: true,
 }
+
+export const outsourceCarriersManager = {
+  'agreement:readList': true,
+  'agreement:readItem': true,
+  'agreement:write': true,
+  'agreement:delete': true,
+  'tkName:readList': true,
+  'tkName:readItem': true,
+  'tkName:write': true,
+  'tkName:delete': true,
+  'order:outsourceCostsRead': true,
+  'order:outsourceCostsWrite': true,
+}
+
 export const director = {
   'order:read': true,
   'order:daysForRead': -1,
@@ -129,6 +143,7 @@ export const accountant = {
 
   'agreement:readList': true,
   'agreement:readItem': true,
+  'agreement:write': true,
   'partner:write': true,
 }
 

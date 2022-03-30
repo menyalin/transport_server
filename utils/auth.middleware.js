@@ -7,7 +7,7 @@ export const jwtAuth = async (req, res, next) => {
     try {
       const payload = await jwt.verify(
         token,
-        process.env.JWT_SECRET || 'secret'
+        process.env.JWT_SECRET || 'secret',
       )
       const user = await UserService.findById(payload.userId)
       if (!user) res.sendStatus(401)

@@ -15,7 +15,7 @@ export default class IService {
         opType: 'create',
         user,
         company: data.company.toString(),
-        body: JSON.stringify(data.toJSON())
+        body: JSON.stringify(data.toJSON()),
       })
     this.emitter(data.company.toString(), `${this.modelName}:created`, data)
     return data
@@ -31,7 +31,7 @@ export default class IService {
         opType: 'update',
         user,
         company: data.company.toString(),
-        body: JSON.stringify(data.toJSON())
+        body: JSON.stringify(data.toJSON()),
       })
     return data
   }
@@ -52,7 +52,7 @@ export default class IService {
     const data = await this.model.findByIdAndUpdate(
       id,
       { isActive: false },
-      { new: true }
+      { new: true },
     )
     this.emitter(data.company.toString(), `${this.modelName}:deleted`, id)
     if (this.logService)
@@ -62,7 +62,7 @@ export default class IService {
         opType: 'delete',
         user,
         company: data.company.toString(),
-        body: JSON.stringify(data.toJSON())
+        body: JSON.stringify(data.toJSON()),
       })
     return data
   }
