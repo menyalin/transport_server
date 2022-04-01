@@ -11,14 +11,16 @@ export const outsourceCarriersManager = {
   'tkName:readItem': true,
   'tkName:write': true,
   'tkName:delete': true,
-  'order:outsourceCostsRead': true,
-  'order:outsourceCostsWrite': true,
+  'order:daysForReadOutsourceCosts': -1,
+  'order:daysForWriteOutsourceCosts': 14,
+  'order:daysForWrite': 14,
 }
 
 export const director = {
   'order:read': true,
   'order:daysForRead': -1,
   'order:daysForReadPrice': -1,
+  'order:daysForReadOutsourceCosts': -1,
   'agreement:readList': true,
   'agreement:readItem': true,
   'tkName:readList': true,
@@ -103,33 +105,24 @@ export const checkman = {
   'order:daysForRead': 30,
   'order:daysForWrite': 14,
   'order:daysForReadPrice': 14,
-  // 'order:daysForWritePrice': 10,
-
   'tkName:readList': true,
   'tkName:readItem': true,
-
   'address:readList': true,
   'address:readItem': false,
-
   'downtime:readList': true,
   'downtime:readItem': true,
-
   'scheduleNote:readList': true,
   'scheduleNote:readItem': true,
-
   'partner:readList': true,
   'partner:readItem': true,
   'crew:readList': true,
   'crew:readItem': true,
-
   'truck:readList': true,
   'truck:readItem': true,
   'truck:write': true,
-
   'driver:readList': true,
   'driver:readItem': true,
   'driver:write': true,
-
   'orderTemplate:readList': true,
   'orderTemplate:readItem': true,
 }
@@ -140,7 +133,6 @@ export const accountant = {
   'order:daysForWrite': -1,
   'order:daysForReadPrice': -1,
   'order:daysForWritePrice': -1,
-
   'agreement:readList': true,
   'agreement:readItem': true,
   'agreement:write': true,
@@ -151,16 +143,12 @@ export const mechanic = {
   'order:daysForRead': 10,
   'address:readList': true,
   'address:readItem': true,
-
   'downtime:readList': true,
   'downtime:readItem': true,
-
   'scheduleNote:readList': true,
   'scheduleNote:readItem': true,
-
   'crew:readList': true,
   'crew:readItem': true,
-
   'truck:readList': true,
   'truck:readItem': true,
   'driver:readList': true,

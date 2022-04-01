@@ -29,11 +29,13 @@ class PermissionService {
     const resMap = new Map()
     roles.forEach((role) => {
       const entries = Object.entries(this.defaultRoles[role] || {})
-      if (entries) {
-        entries.forEach((e) => {
-          resMap.set(e[0], e[1])
-        })
-      }
+
+      entries.forEach((e) => {
+        if (resMap.has(e[0]) && e[1] !== -1) {
+          const existedVal = resMap.get(e[0])
+          if (existedVal < e[1]) resMap.set(e[0], e[1])
+        } else resMap.set(e[0], e[1])
+      })
     })
     return resMap
   }
