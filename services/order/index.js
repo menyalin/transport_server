@@ -78,6 +78,7 @@ class OrderService {
           },
           startPositionDate: route[0].plannedDate,
           route,
+          analytics: template.analytics,
           company: template.company,
           reqTransport: template.reqTransport,
           confirmedCrew: {

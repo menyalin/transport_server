@@ -31,5 +31,5 @@ export {
   ChangeLog,
   OrderTemplate,
   ScheduleNote,
-  Agreement
+  Agreement,
 }
