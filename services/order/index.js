@@ -80,6 +80,9 @@ class OrderService {
           route,
           company: template.company,
           reqTransport: template.reqTransport,
+          confirmedCrew: {
+            outsourceAgreement: null,
+          },
           cargoParams: template.cargoParams,
           state: {
             status: 'needGet',

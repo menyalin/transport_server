@@ -6,12 +6,12 @@ export default ({ profile, client }) => {
 
   const pointInProgress = {
     arrivalDate: {
-      $ne: null
+      $ne: null,
     },
     $or: [
       { departureDate: { $eq: null } },
-      { departureDate: { $gte: currentMoment } }
-    ]
+      { departureDate: { $gte: currentMoment } },
+    ],
   }
 
   const matcher = {
@@ -19,13 +19,13 @@ export default ({ profile, client }) => {
       isActive: true,
       company: Types.ObjectId(profile),
       route: {
-        $elemMatch: pointInProgress
-      }
-    }
+        $elemMatch: pointInProgress,
+      },
+    },
   }
 
   const unwindRoute = {
-    $unwind: '$route'
+    $unwind: '$route',
   }
 
   const lookupAddresses = [
@@ -34,31 +34,31 @@ export default ({ profile, client }) => {
         from: 'addresses',
         localField: 'route.address',
         foreignField: '_id',
-        as: 'route.addressObj'
-      }
+        as: 'route.addressObj',
+      },
     },
     {
       $addFields: {
         'route.addressObj': {
-          $first: '$route.addressObj'
-        }
-      }
-    }
+          $first: '$route.addressObj',
+        },
+      },
+    },
   ]
 
   const groupRoute = {
     $group: {
       _id: '$_id',
       route: {
-        $push: '$route'
+        $push: '$route',
       },
       client: {
-        $first: '$client'
+        $first: '$client',
       },
       confirmedCrew: {
-        $first: '$confirmedCrew'
-      }
-    }
+        $first: '$confirmedCrew',
+      },
+    },
   }
 
   const lookupClient = {
@@ -66,8 +66,8 @@ export default ({ profile, client }) => {
       from: 'partners',
       localField: 'client.client',
       foreignField: '_id',
-      as: 'client.client'
-    }
+      as: 'client.client',
+    },
   }
 
   const lookupDriver = {
@@ -75,8 +75,8 @@ export default ({ profile, client }) => {
       from: 'drivers',
       localField: 'confirmedCrew.driver',
       foreignField: '_id',
-      as: 'driver'
-    }
+      as: 'driver',
+    },
   }
 
   const lookupTruck = {
@@ -84,16 +84,16 @@ export default ({ profile, client }) => {
       from: 'trucks',
       localField: 'confirmedCrew.truck',
       foreignField: '_id',
-      as: 'truck'
-    }
+      as: 'truck',
+    },
   }
   const lookupTrailer = {
     $lookup: {
       from: 'trucks',
       localField: 'confirmedCrew.trailer',
       foreignField: '_id',
-      as: 'trailer'
-    }
+      as: 'trailer',
+    },
   }
 
   const finalProject = {
@@ -102,42 +102,42 @@ export default ({ profile, client }) => {
         $getField: {
           field: '_id',
           input: {
-            $first: '$client.client'
-          }
-        }
+            $first: '$client.client',
+          },
+        },
       },
       clientName: {
         $getField: {
           field: 'name',
           input: {
-            $first: '$client.client'
-          }
-        }
+            $first: '$client.client',
+          },
+        },
       },
       driverId: {
         $getField: {
           field: '_id',
           input: {
-            $first: '$driver'
-          }
-        }
+            $first: '$driver',
+          },
+        },
       },
 
       driverPhone: {
         $getField: {
           field: 'phone',
           input: {
-            $first: '$driver'
-          }
-        }
+            $first: '$driver',
+          },
+        },
       },
       driverPhone2: {
         $getField: {
           field: 'phone2',
           input: {
-            $first: '$driver'
-          }
-        }
+            $first: '$driver',
+          },
+        },
       },
       driverName: {
         $trim: {
@@ -147,40 +147,40 @@ export default ({ profile, client }) => {
                 $getField: {
                   field: 'surname',
                   input: {
-                    $first: '$driver'
-                  }
-                }
+                    $first: '$driver',
+                  },
+                },
               },
               ' ',
               {
                 $getField: {
                   field: 'name',
                   input: {
-                    $first: '$driver'
-                  }
-                }
+                    $first: '$driver',
+                  },
+                },
               },
               ' ',
               {
                 $getField: {
                   field: 'patronymic',
                   input: {
-                    $first: '$driver'
-                  }
-                }
+                    $first: '$driver',
+                  },
+                },
               },
-              ' '
-            ]
-          }
-        }
+              ' ',
+            ],
+          },
+        },
       },
       plannedDate: {
         $getField: {
           field: 'plannedDate',
           input: {
-            $first: '$route'
-          }
-        }
+            $first: '$route',
+          },
+        },
       },
       loadingPoints: {
         $map: {
@@ -188,12 +188,12 @@ export default ({ profile, client }) => {
             $filter: {
               input: '$route',
               cond: {
-                $eq: ['$$this.type', 'loading']
-              }
-            }
+                $eq: ['$$this.type', 'loading'],
+              },
+            },
           },
-          in: '$$this.addressObj.shortName'
-        }
+          in: '$$this.addressObj.shortName',
+        },
       },
       unloadingPoints: {
         $map: {
@@ -201,45 +201,45 @@ export default ({ profile, client }) => {
             $filter: {
               input: '$route',
               cond: {
-                $eq: ['$$this.type', 'unloading']
-              }
-            }
+                $eq: ['$$this.type', 'unloading'],
+              },
+            },
           },
-          in: '$$this.addressObj.shortName'
-        }
+          in: '$$this.addressObj.shortName',
+        },
       },
       truckId: {
         $getField: {
           field: '_id',
           input: {
-            $first: '$truck'
-          }
-        }
+            $first: '$truck',
+          },
+        },
       },
 
       truckNum: {
         $getField: {
           field: 'regNum',
           input: {
-            $first: '$truck'
-          }
-        }
+            $first: '$truck',
+          },
+        },
       },
       trailerId: {
         $getField: {
           field: '_id',
           input: {
-            $first: '$trailer'
-          }
-        }
+            $first: '$trailer',
+          },
+        },
       },
       trailerNum: {
         $getField: {
           field: 'regNum',
           input: {
-            $first: '$trailer'
-          }
-        }
+            $first: '$trailer',
+          },
+        },
       },
       state: {
         $getField: {
@@ -256,18 +256,18 @@ export default ({ profile, client }) => {
                         {
                           $eq: [
                             { $ifNull: ['$$this.departureDate', null] },
-                            null
-                          ]
+                            null,
+                          ],
                         },
-                        { $gte: ['$$this.departureDate', currentMoment] }
-                      ]
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
+                        { $gte: ['$$this.departureDate', currentMoment] },
+                      ],
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
       },
 
       currentPoint: {
@@ -285,20 +285,20 @@ export default ({ profile, client }) => {
                         {
                           $eq: [
                             { $ifNull: ['$$this.departureDate', null] },
-                            null
-                          ]
+                            null,
+                          ],
                         },
-                        { $gte: ['$$this.departureDate', currentMoment] }
-                      ]
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                        { $gte: ['$$this.departureDate', currentMoment] },
+                      ],
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   }
 
   if (client) matcher.$match.client.client = Types.ObjectId(client)
@@ -314,8 +314,8 @@ export default ({ profile, client }) => {
     finalProject,
     {
       $sort: {
-        plannedDate: 1
-      }
-    }
+        plannedDate: 1,
+      },
+    },
   ]
 }

@@ -4,23 +4,23 @@ const { Schema, model, Types } = pkg
 const schema = new Schema(
   {
     name: {
-      type: String
+      type: String,
     },
     inn: String,
     company: {
       type: Types.ObjectId,
-      ref: 'Company'
+      ref: 'Company',
     },
     isClient: {
       type: Boolean,
-      default: false
+      default: false,
     },
     isActive: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 )
 
 export default model('Partner', schema, 'partners')

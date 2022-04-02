@@ -17,14 +17,14 @@ const getRouteFromTemplate = ({ template, date }) => {
           .format(),
       })
     } else {
-      // Добавить проверку на отсутвие времени выгрузки
-      tmpRoute.push({
-        ...template.route[i],
-        plannedDate: moment(date)
+      const point = template.route[i]
+      if (point.fixedTime && point.offsetDays >= 0) {
+        point.plannedDate = moment(date)
           .add(template.route[i].fixedTime, 'h')
           .add(template.route[i].offsetDays, 'd')
-          .format(),
-      })
+          .format()
+      }
+      tmpRoute.push({ ...point })
     }
   }
   return tmpRoute
