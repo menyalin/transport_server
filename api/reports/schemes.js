@@ -2,12 +2,26 @@ export const daysControlSchema = {
   type: 'object',
   properties: {
     profile: {
-      type: 'string'
+      type: 'string',
     },
     daysLimit: {
-      type: 'string'
-    }
+      type: 'string',
+    },
   },
   required: ['profile'],
-  additionalProperties: true
+  additionalProperties: true,
+}
+
+export const driversGradesSchema = {
+  type: 'object',
+  properties: {
+    company: {
+      type: 'string',
+    },
+    dateRange: {
+      type: 'array',
+    },
+  },
+  required: ['company', 'dateRange'],
+  additionalProperties: true,
 }

@@ -1,7 +1,9 @@
 import { Driver, Order, Truck } from '../../models/index.js'
+import { FileService } from '../index.js'
 import getReportDaysControlPipeline from '../report/pipelines/reportDaysControlPipeline.js'
 import getInProgressOrdersPipeline from './pipelines/inProgressOrdersPipeline.js'
 import getTruckStateOnDatePipeline from './pipelines/truckStateOnDatePipeline.js'
+import getDriversGradesAppayPipeline from './pipelines/driversGradesArray.js'
 
 class ReportService {
   constructor({ Driver }) {
@@ -27,10 +29,20 @@ class ReportService {
       company,
       date,
       truckType: truckType || 'truck',
-      tkName
+      tkName,
     })
     const res = await Truck.aggregate(pipeline)
     return res
+  }
+
+  async driversGradesGetLink({ company, dateRange }) {
+    const pipeline = getDriversGradesAppayPipeline({ company, dateRange })
+    const array = await Order.aggregate(pipeline)
+    const link = await FileService.createFileLink({
+      data: array.map((i) => ({ ...i, _id: i._id.toString() })),
+      reportName: 'driversGrades',
+    })
+    return link
   }
 }
 

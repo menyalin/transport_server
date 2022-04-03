@@ -1,5 +1,6 @@
 export const admin = {
   fullAccess: true,
+  'report:drivers_grades': true,
 }
 
 export const outsourceCarriersManager = {
@@ -42,6 +43,7 @@ export const director = {
   'orderTemplate:readList': true,
   'orderTemplate:readItem': true,
   orderListForAccountant: true,
+  'report:drivers_grades': true,
 }
 
 export const dispatcher = {

@@ -4,7 +4,7 @@ import express from 'express'
 import { jwtAuth } from '../../utils/auth.middleware.js'
 import { queryValidator, bodyValidator } from '../../utils/validator.js'
 import ctrl from '../../controllers/report.controller.js'
-import { daysControlSchema } from './schemes.js'
+import { daysControlSchema, driversGradesSchema } from './schemes.js'
 
 const router = express.Router()
 
@@ -12,14 +12,20 @@ const router = express.Router()
 router.get(
   '/daysControl',
   [jwtAuth, queryValidator(daysControlSchema)],
-  (...args) => ctrl.daysControl(...args)
+  (...args) => ctrl.daysControl(...args),
 )
 
 router.get('/inProgressOrders', [jwtAuth], (...args) =>
-  ctrl.inProgressOrders(...args)
+  ctrl.inProgressOrders(...args),
 )
 
 router.get('/truckStateOnDate', [jwtAuth], (...args) =>
-  ctrl.truckStateOnDate(...args)
+  ctrl.truckStateOnDate(...args),
+)
+
+router.post(
+  '/drivers_grades',
+  [jwtAuth, bodyValidator(driversGradesSchema)],
+  (...args) => ctrl.driversGradesGetLink(...args),
 )
 export default router

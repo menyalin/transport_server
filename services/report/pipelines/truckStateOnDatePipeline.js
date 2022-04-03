@@ -10,8 +10,8 @@ export default ({ company, date, truckType, tkName }) => {
       company: mongoose.Types.ObjectId(company),
       type: truckType,
       isActive: true,
-      $or: [{ endServiceDate: null }, { endServiceDate: { $gt: inputDate } }]
-    }
+      $or: [{ endServiceDate: null }, { endServiceDate: { $gt: inputDate } }],
+    },
   }
   if (tkName) firstMatcher.$match.tkName = mongoose.Types.ObjectId(tkName)
 
@@ -32,15 +32,15 @@ export default ({ company, date, truckType, tkName }) => {
                   {
                     $or: [
                       { $eq: ['$endDate', null] },
-                      { $gt: ['$endDate', inputDate] }
-                    ]
-                  }
-                ]
-              }
-            }
+                      { $gt: ['$endDate', inputDate] },
+                    ],
+                  },
+                ],
+              },
+            },
           },
           {
-            $unwind: '$transport'
+            $unwind: '$transport',
           },
           {
             $match: {
@@ -51,23 +51,23 @@ export default ({ company, date, truckType, tkName }) => {
                   {
                     $or: [
                       { $eq: ['$transport.endDate', null] },
-                      { $gt: ['$transport.endDate', inputDate] }
-                    ]
-                  }
-                ]
-              }
-            }
-          }
+                      { $gt: ['$transport.endDate', inputDate] },
+                    ],
+                  },
+                ],
+              },
+            },
+          },
         ],
-        as: 'crew'
-      }
+        as: 'crew',
+      },
     },
     {
       $addFields: {
         crew: {
-          $first: '$crew'
-        }
-      }
+          $first: '$crew',
+        },
+      },
     },
     {
       $lookup: {
@@ -82,19 +82,19 @@ export default ({ company, date, truckType, tkName }) => {
                   { $eq: ['$isActive', true] },
 
                   { $lte: ['$startPositionDate', inputDate] },
-                  { $gt: ['$endPositionDate', inputDate] }
-                ]
-              }
-            }
-          }
+                  { $gt: ['$endPositionDate', inputDate] },
+                ],
+              },
+            },
+          },
         ],
-        as: 'downtime'
-      }
+        as: 'downtime',
+      },
     },
     {
       $addFields: {
-        downtime: { $first: '$downtime' }
-      }
-    }
+        downtime: { $first: '$downtime' },
+      },
+    },
   ]
 }

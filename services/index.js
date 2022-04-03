@@ -15,6 +15,7 @@ import OrderTemplateService from './orderTemplate/index.js'
 import ScheduleNoteService from './scheduleNote/index.js'
 import AgreementService from './agreement/index.js'
 import PermissionService from './permission/index.js'
+import FileService from './file/index.js'
 
 export {
   UserService,
@@ -33,5 +34,6 @@ export {
   OrderTemplateService,
   ScheduleNoteService,
   AgreementService,
-  PermissionService
+  PermissionService,
+  FileService,
 }
