@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
 import pkg from 'mongoose'
 import {
-  TRUCK_TYPES,
-  TRUCK_KINDS,
-  TRUCK_LIFT_CAPACITY_TYPES
-} from '../constants/enums.js'
+  TRUCK_TYPES_ENUM,
+  TRUCK_KINDS_ENUM,
+  TRUCK_LIFT_CAPACITY_TYPES,
+} from '../constants/truck.js'
 import additionalNotification from './_additionalNotification.js'
 
 const { Schema, model, Types } = pkg
@@ -21,18 +21,18 @@ const additionalDetails = {
   transponderDate: Date,
   fuelCardNumber: String,
   fuelCardDate: Date,
-  fuelCardNote: String
+  fuelCardNote: String,
 }
 
 const allowedDriver = {
   driver: {
     type: Types.ObjectId,
-    ref: 'Driver'
+    ref: 'Driver',
   },
   isPermanent: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 }
 
 const insurance = {
@@ -42,7 +42,7 @@ const insurance = {
   kaskoNum: String,
   kaskoExpDate: Date,
   kaskoCompany: String,
-  leasingСompany: String
+  leasingСompany: String,
 }
 
 const permits = {
@@ -51,7 +51,7 @@ const permits = {
   dayPermitZone: String,
   nightPermitNumber: String,
   nightPermitExpDate: Date,
-  nightPermitZone: String
+  nightPermitZone: String,
 }
 
 const truckSchema = new Schema(
@@ -61,18 +61,18 @@ const truckSchema = new Schema(
     insurance,
     permits,
     brand: {
-      type: String
+      type: String,
     },
     model: {
-      type: String
+      type: String,
     },
     brigadier: {
       type: Types.ObjectId,
-      ref: 'Driver'
+      ref: 'Driver',
     },
     mechanic: {
       type: Types.ObjectId,
-      ref: 'Driver'
+      ref: 'Driver',
     },
     sanitaryPassportExpDate: Date,
     sanitaryPassportNote: String,
@@ -81,34 +81,34 @@ const truckSchema = new Schema(
     startServiceDate: Date,
     type: {
       type: String,
-      enum: TRUCK_TYPES
+      enum: TRUCK_TYPES_ENUM,
     },
-    kind: { type: String, enum: TRUCK_KINDS },
+    kind: { type: String, enum: TRUCK_KINDS_ENUM },
     liftCapacityType: {
       type: Number,
-      enum: TRUCK_LIFT_CAPACITY_TYPES
+      enum: TRUCK_LIFT_CAPACITY_TYPES,
     },
     tkName: {
       type: Types.ObjectId,
-      ref: 'TkName'
+      ref: 'TkName',
     },
     regNum: {
-      type: String
+      type: String,
     },
     win: String,
     sts: {
-      type: String
+      type: String,
     },
     stsDate: Date,
     pts: {
-      type: String
+      type: String,
     },
     owner: {
-      type: String
+      type: String,
     },
     order: {
       type: Number,
-      default: 50
+      default: 50,
     },
     volumeFuel: { type: Number, default: 0 },
     volumeRef: { type: Number, default: 0 },
@@ -116,20 +116,20 @@ const truckSchema = new Schema(
     pltCount: { type: Number, default: 0 },
     company: {
       type: Types.ObjectId,
-      ref: 'Company'
+      ref: 'Company',
     },
     isActive: {
       type: Boolean,
-      default: true
+      default: true,
     },
     note: String,
     allowUseTrailer: {
       type: Boolean,
-      default: false
+      default: false,
     },
-    allowedDrivers: [allowedDriver]
+    allowedDrivers: [allowedDriver],
   },
-  { timestamps: true }
+  { timestamps: true },
 )
 
 export const Truck = model('Truck', truckSchema, 'trucks')

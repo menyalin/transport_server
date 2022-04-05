@@ -5,52 +5,52 @@ const employeeSchema = new Schema(
   {
     user: {
       type: Types.ObjectId,
-      ref: 'User'
+      ref: 'User',
     },
     roles: [
       {
         type: String,
         required: true,
-      }
+      },
     ],
     position: {
-      type: String
+      type: String,
     },
     tasks: [{ type: Types.ObjectId, ref: 'Task' }],
     isActive: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   {
-    timestamps: true
-  }
+    timestamps: true,
+  },
 )
 
 const companySchema = new Schema(
   {
     name: {
       type: String,
-      require: true
+      require: true,
     },
     fullName: {
-      type: String
+      type: String,
     },
     address: {
-      type: String
+      type: String,
     },
     staff: [employeeSchema],
     inn: {
       type: String,
       unique: true,
-      lowerCase: true
+      lowerCase: true,
     },
     hasOwnDirectories: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 )
 
 export default model('Company', companySchema, 'companies')

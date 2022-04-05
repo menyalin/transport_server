@@ -1,9 +1,10 @@
+import { POINT_TYPES } from '../constants/enums.js'
+
 import {
-  POINT_TYPES,
-  TRUCK_KINDS,
+  TRUCK_KINDS_ENUM,
   TRUCK_LIFT_CAPACITY_TYPES,
-  TRUCK_LOAD_DIRECTION,
-} from '../constants/enums.js'
+  LOAD_DIRECTION_ENUM,
+} from '../constants/truck.js'
 import { ORDER_STATUSES_ENUM } from '../constants/orderStatuses.js'
 import { ORDER_ANALYTIC_TYPES_ENUM } from '../constants/orderAnalyticTypes.js'
 
@@ -59,7 +60,7 @@ const state = {
 const reqTransport = {
   kind: {
     type: String,
-    enum: TRUCK_KINDS,
+    enum: TRUCK_KINDS_ENUM,
   },
   liftCapacity: {
     type: Number,
@@ -67,7 +68,7 @@ const reqTransport = {
   },
   loadDirection: {
     type: String,
-    enum: TRUCK_LOAD_DIRECTION,
+    enum: LOAD_DIRECTION_ENUM,
   },
 }
 
