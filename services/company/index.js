@@ -15,7 +15,7 @@ class CompanyService {
       user: userId,
       coll: 'companies',
       body: JSON.stringify(newCompany.toJSON()),
-      opType: 'create'
+      opType: 'create',
     })
     return newCompany
   }
@@ -23,8 +23,8 @@ class CompanyService {
   async getUserCompanies(userId) {
     const res = await Company.find({
       staff: {
-        $elemMatch: { user: userId, isActive: true }
-      }
+        $elemMatch: { user: userId, isActive: true },
+      },
     }).populate('staff.user', 'name email')
     return res
   }
@@ -44,11 +44,11 @@ class CompanyService {
     company.staff.push(newEmployee)
     await company.save()
     const employee = company.staff.find(
-      (item) => item.user.toString() === newEmployee.user
+      (item) => item.user.toString() === newEmployee.user,
     )
     if (!employee)
       throw new Error(
-        'The employee for some reason is not saved in the database'
+        'The employee for some reason is not saved in the database',
       )
     //  создание задачи для пользователя
     employee.user = user
@@ -58,7 +58,7 @@ class CompanyService {
       executor: user._id,
       room: companyId,
       title: `Предложение присоединиться к компании: ${company.name}`,
-      content: `Должность: ${newEmployee.position} \nРоли: ${newEmployee.roles}`
+      content: `Должность: ${newEmployee.position} \nРоли: ${newEmployee.roles}`,
     })
     employee.tasks.push(task._id)
     await company.save()
@@ -69,7 +69,7 @@ class CompanyService {
   async performTask(taskId, type, result) {
     const company = await Company.findOne({ 'staff.tasks': taskId }).populate(
       'staff.user',
-      'name email'
+      'name email',
     )
     if (!company) throw new Error('CompanyService:task not found')
     const employee = company.staff.find((item) => item.tasks.includes(taskId))
@@ -85,13 +85,13 @@ class CompanyService {
     } else {
       const employeeId = employee._id.toString()
       const employeeInd = company.staff.findIndex(
-        (item) => item._id.toString() === employeeId
+        (item) => item._id.toString() === employeeId,
       )
       if (employeeInd !== -1) company.staff.splice(employeeInd, 1)
       await company.save()
       emitTo(company._id.toString(), 'company:deleteEmployeeById', {
         employeeId,
-        companyId: company._id.toString()
+        companyId: company._id.toString(),
       })
     }
     return true

@@ -39,6 +39,10 @@ const companySchema = new Schema(
     address: {
       type: String,
     },
+    settings: {
+      truckKinds: [String],
+      defaultTruckKind: String,
+    },
     staff: [employeeSchema],
     inn: {
       type: String,

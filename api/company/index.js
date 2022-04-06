@@ -2,35 +2,33 @@ import express from 'express'
 
 import { bodyValidator, queryValidator } from '../../utils/validator.js'
 import { jwtAuth } from '../../utils/auth.middleware.js'
-import {
-  create,
-  getMyCompanies,
-  isExistInn,
-  userByEmail,
-  addEmployee
-} from './handlers.js'
+import ctrl from '../../controllers/company.controller.js'
 import {
   createCompanySchema,
   existInnSchema,
   userByEmailSchema,
-  newEmployeeSchema
+  newEmployeeSchema,
 } from './schemes.js'
 
 const router = express.Router()
 
 // api/companies
-router.get('/', [jwtAuth], getMyCompanies)
-router.get('/exist_inn', [jwtAuth, queryValidator(existInnSchema)], isExistInn)
+router.get('/', [jwtAuth], (...args) => ctrl.getMyCompanies(...args))
+router.get('/exist_inn', [jwtAuth, queryValidator(existInnSchema)], (...args) =>
+  ctrl.isExistInn(...args),
+)
 router.get(
   '/user_by_email',
   [jwtAuth, queryValidator(userByEmailSchema)],
-  userByEmail
+  (...args) => ctrl.userByEmail(...args),
 )
-router.post('/', [jwtAuth, bodyValidator(createCompanySchema)], create)
+router.post('/', [jwtAuth, bodyValidator(createCompanySchema)], (...args) =>
+  ctrl.create(...args),
+)
 router.post(
   '/:companyId/staff',
   [jwtAuth, bodyValidator(newEmployeeSchema)],
-  addEmployee
+  (...args) => ctrl.addEmployee(...args),
 )
 
 export default router

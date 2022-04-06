@@ -10,13 +10,18 @@ import {
   TkNameService,
   TruckService,
   OrderTemplateService,
-  PermissionService
+  PermissionService,
 } from '../index.js'
-import { CALC_METHODS } from '../../constants/calcMethods.js'
 import {
   DOCUMENT_TYPES,
-  DOCUMENT_STATUSES
+  DOCUMENT_STATUSES,
 } from '../../constants/accounting.js'
+import {
+  LOAD_DIRECTION,
+  TRUCK_KINDS,
+  TRUCK_LIFT_CAPACITY_TYPES,
+  TRUCK_TYPES,
+} from '../../constants/truck.js'
 
 class UserService {
   async findById(id, fields = '-password') {
@@ -41,17 +46,23 @@ class UserService {
     const tkNames = await TkNameService.getByProfile(profile)
     const partners = await PartnerService.getByProfile(profile)
     const orderTemplates = await OrderTemplateService.getByProfile(profile)
-    const orderStatuses = ORDER_STATUSES
-    const orderAnalyticTypes = ORDER_ANALYTIC_TYPES
-    const calcMethods = CALC_METHODS
-    const orderPriceTypes = ORDER_PRICE_TYPES
-    const documentTypes = DOCUMENT_TYPES
-    const documentStatuses = DOCUMENT_STATUSES
     const staffRoles = await PermissionService.getAllRoles()
     const permissions = await PermissionService.getUserPermissions({
       userId: id,
-      companyId: profile
+      companyId: profile,
     })
+    const orderStatuses = ORDER_STATUSES
+    const orderAnalyticTypes = ORDER_ANALYTIC_TYPES
+
+    const orderPriceTypes = ORDER_PRICE_TYPES
+    const documentTypes = DOCUMENT_TYPES
+    const documentStatuses = DOCUMENT_STATUSES
+    const allTruckParams = {
+      truckTypes: TRUCK_TYPES,
+      truckKinds: TRUCK_KINDS,
+      loadDirection: LOAD_DIRECTION,
+      liftCapacityTypes: TRUCK_LIFT_CAPACITY_TYPES,
+    }
 
     return {
       user,
@@ -64,12 +75,12 @@ class UserService {
       orderStatuses,
       orderTemplates,
       orderAnalyticTypes,
-      calcMethods,
       orderPriceTypes,
       documentTypes,
       documentStatuses,
       staffRoles,
-      permissions
+      permissions,
+      allTruckParams,
     }
   }
 
@@ -81,7 +92,7 @@ class UserService {
   async findByEmail(email) {
     const user = await User.findOne(
       { email, openForSearch: true },
-      '-password'
+      '-password',
     )
     return user
   }
