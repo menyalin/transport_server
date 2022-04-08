@@ -42,6 +42,10 @@ const companySchema = new Schema(
     settings: {
       truckKinds: [String],
       defaultTruckKind: String,
+      liftCapacityTypes: [Number],
+      defaultLiftCapacity: Number,
+      loadDirections: [String],
+      defaultLoadDirection: String,
     },
     staff: [employeeSchema],
     inn: {

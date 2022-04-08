@@ -22,6 +22,7 @@ router.get(
   [jwtAuth, queryValidator(userByEmailSchema)],
   (...args) => ctrl.userByEmail(...args),
 )
+router.put('/settings/:id', [jwtAuth], ctrl.updateSettings)
 router.post('/', [jwtAuth, bodyValidator(createCompanySchema)], (...args) =>
   ctrl.create(...args),
 )

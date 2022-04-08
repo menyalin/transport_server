@@ -36,18 +36,20 @@ class CompanyService {
 
   async addEmployee(newEmployee, companyId, initiator) {
     const company = await Company.findById(companyId)
-    if (!company) throw new Error('Wrong company id')
+    if (!company) throw new BadRequestError('Wrong company id')
     const user = await User.findById(newEmployee.user, '-password')
-    if (!user) throw new Error('Wrong user id')
+    if (!user) throw new BadRequestError('Wrong user id')
     if (company.staff.find((item) => item.user.toString() === newEmployee.user))
-      throw new Error('The user is already an employee of the company')
+      throw new BadRequestError(
+        'The user is already an employee of the company',
+      )
     company.staff.push(newEmployee)
     await company.save()
     const employee = company.staff.find(
       (item) => item.user.toString() === newEmployee.user,
     )
     if (!employee)
-      throw new Error(
+      throw new BadRequestError(
         'The employee for some reason is not saved in the database',
       )
     //  создание задачи для пользователя
@@ -71,9 +73,10 @@ class CompanyService {
       'staff.user',
       'name email',
     )
-    if (!company) throw new Error('CompanyService:task not found')
+    if (!company) throw new BadRequestError('CompanyService:task not found')
     const employee = company.staff.find((item) => item.tasks.includes(taskId))
-    if (!employee) throw new Error('CompanyService:employee not found')
+    if (!employee)
+      throw new BadRequestError('CompanyService:employee not found')
 
     if (result === 'accepted') {
       employee.isActive = true
@@ -101,6 +104,22 @@ class CompanyService {
     const company = await Company.findById(companyId).lean()
     if (!company) throw new BadRequestError('Почему то нет компании')
     return { ...company?.staff.find((s) => s.user._id.toString() === userId) }
+  }
+
+  async updateSettings({ settings, companyId }) {
+    const company = await Company.findByIdAndUpdate(
+      companyId,
+      { settings: { ...settings } },
+      { returnDocument: 'after' },
+    )
+    if (!company)
+      throw new BadRequestError('Редактируемая компания не найдена')
+
+    emitTo(company._id.toString(), 'company:updateSettings', {
+      companyId,
+      settings: company.settings,
+    })
+    return true
   }
 }
 
