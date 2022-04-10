@@ -17,6 +17,7 @@ import reportRouter from './api/reports/index.js'
 import orderTemplateRouter from './api/orderTemplate/index.js'
 import scheduleNoteRouter from './api/scheduleNote/index.js'
 import agreementRouter from './api/agreement/index.js'
+import tariffRouter from './api/tariff/index.js'
 
 const app = express()
 
@@ -41,5 +42,6 @@ app.use('/api/reports', reportRouter)
 app.use('/api/order_templates', orderTemplateRouter)
 app.use('/api/schedule_notes', scheduleNoteRouter)
 app.use('/api/agreements', agreementRouter)
+app.use('/api/tariffs', tariffRouter)
 
 export default app

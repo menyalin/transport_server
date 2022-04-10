@@ -14,6 +14,7 @@ import ChangeLog from './changeLog.js'
 import OrderTemplate from './orderTemplate.js'
 import ScheduleNote from './scheduleNote.js'
 import Agreement from './agreement.js'
+import Tariff from './tariff.js'
 
 export {
   User,
@@ -32,4 +33,5 @@ export {
   OrderTemplate,
   ScheduleNote,
   Agreement,
+  Tariff,
 }

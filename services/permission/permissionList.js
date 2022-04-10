@@ -15,6 +15,10 @@ export const outsourceCarriersManager = {
   'order:daysForReadOutsourceCosts': -1,
   'order:daysForWriteOutsourceCosts': 14,
   'order:daysForWrite': 14,
+  'tariff:readList': true,
+  'tariff:readItem': true,
+  'tariff:write': true,
+  'tariff:delete': true,
 }
 
 export const director = {
@@ -44,6 +48,8 @@ export const director = {
   'orderTemplate:readItem': true,
   orderListForAccountant: true,
   'report:drivers_grades': true,
+  'tariff:readList': true,
+  'tariff:readItem': true,
 }
 
 export const dispatcher = {
@@ -139,6 +145,10 @@ export const accountant = {
   'agreement:readItem': true,
   'agreement:write': true,
   'partner:write': true,
+  'tariff:readList': true,
+  'tariff:readItem': true,
+  'tariff:write': true,
+  'tariff:delete': true,
 }
 
 export const mechanic = {

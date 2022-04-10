@@ -7,18 +7,16 @@ import {
   // bodyValidator
 } from '../../utils/validator.js'
 
-// import { getListSchema, getListForSchedule } from './schemes.js'
-import ctrl from '../../controllers/scheduleNote.controller.js'
+import { getListSchema } from './schemes.js'
+import ctrl from '../../controllers/tariff.controller.js'
 
 const router = express.Router()
 
-// api/schedule_notes
-router.get('/', [jwtAuth], (...args) => ctrl.getList(...args))
-// router.get(
-//   '/schedule',
-//   [jwtAuth],
-//   (...args) => ctrl.getListForSchedule(...args)
-// )
+// api/tariffs
+router.get('/', [jwtAuth, queryValidator(getListSchema)], (...args) =>
+  ctrl.getList(...args),
+)
+
 router.get('/:id', [jwtAuth], (...args) => ctrl.getById(...args))
 
 router.post('/', [jwtAuth], (...args) => ctrl.create(...args))
