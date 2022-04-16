@@ -21,7 +21,7 @@ class AddressService {
 
   async getSuggestions(query, userId) {
     const {
-      data: { suggestions }
+      data: { suggestions },
     } = await dadataApi.post(URL, { query })
 
     return suggestions
@@ -31,7 +31,7 @@ class AddressService {
     if (body.geo)
       body.geo = {
         type: 'Point',
-        coordinates: this._convertCoordinatesStr(body.geo)
+        coordinates: this._convertCoordinatesStr(body.geo),
       }
 
     const newAddress = await Address.create(body)
@@ -42,7 +42,7 @@ class AddressService {
       user,
       coll: 'addresses',
       body: JSON.stringify(newAddress.toJSON()),
-      opType: 'create'
+      opType: 'create',
     })
     return newAddress
   }
@@ -51,7 +51,7 @@ class AddressService {
     if (body.geo)
       body.geo = {
         type: 'Point',
-        coordinates: this._convertCoordinatesStr(body.geo)
+        coordinates: this._convertCoordinatesStr(body.geo),
       }
     const address = await Address.findByIdAndUpdate(id, body, { new: true })
     emitTo(address.company.toString(), 'address:updated', address)
@@ -61,7 +61,7 @@ class AddressService {
       user,
       coll: 'addresses',
       body: JSON.stringify(address.toJSON()),
-      opType: 'update'
+      opType: 'update',
     })
     return address
   }
@@ -73,10 +73,10 @@ class AddressService {
         isActive: true,
         $text: {
           $search: str,
-          $language: 'russian'
-        }
+          $language: 'russian',
+        },
       },
-      { score: { $meta: 'textScore' } }
+      { score: { $meta: 'textScore' } },
     )
       .sort({ score: { $meta: 'textScore' } })
       .limit(5)
@@ -86,11 +86,11 @@ class AddressService {
   async getByProfile(profile) {
     const addresses = await Address.find({
       isActive: true,
-      company: profile
+      company: profile,
     }).lean()
     const preparedAddresses = addresses.map((item) => ({
       ...item,
-      geo: item.geo.coordinates.reverse().join(', ')
+      geo: item.geo.coordinates.reverse().join(', '),
     }))
     return preparedAddresses
   }
@@ -109,7 +109,7 @@ class AddressService {
       user,
       coll: 'addresses',
       body: JSON.stringify(address.toJSON()),
-      opType: 'delete'
+      opType: 'delete',
     })
     return address
   }

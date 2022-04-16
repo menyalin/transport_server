@@ -8,7 +8,7 @@ export const getListPipeline = ({
   limit,
   skip,
   sortBy,
-  sortDesc
+  sortDesc,
 }) => {
   const sP = new Date(startDate)
   const eP = new Date(endDate)
@@ -32,36 +32,36 @@ export const getListPipeline = ({
       company: mongoose.Types.ObjectId(company),
       $and: [
         { startPositionDate: { $gte: sP } },
-        { startPositionDate: { $lt: eP } }
-      ]
-    }
+        { startPositionDate: { $lt: eP } },
+      ],
+    },
   }
   if (truckFilter)
     firstMatcher.$match.truck = mongoose.Types.ObjectId(truckFilter)
   const group = [
     {
       $sort: {
-        [sortingField]: sortingDirection
-      }
+        [sortingField]: sortingDirection,
+      },
     },
     {
       $group: {
         _id: 'downtimes',
         items: {
-          $push: '$$ROOT'
-        }
-      }
+          $push: '$$ROOT',
+        },
+      },
     },
     {
       $addFields: {
         count: {
-          $size: '$items'
+          $size: '$items',
         },
         items: {
-          $slice: ['$items', +skip, +limit]
-        }
-      }
-    }
+          $slice: ['$items', +skip, +limit],
+        },
+      },
+    },
   ]
   return [firstMatcher, ...group]
 }

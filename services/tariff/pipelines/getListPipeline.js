@@ -1,17 +1,38 @@
 import mongoose from 'mongoose'
 
-export default ({ company, date, limit, skip }) => {
+export default ({ company, date, limit, skip, agreement, client, type }) => {
   const firstMatcher = {
     $match: {
       isActive: true,
       company: mongoose.Types.ObjectId(company),
     },
   }
+  if (type) firstMatcher.$match.type = type
+  if (agreement)
+    firstMatcher.$match.agreement = mongoose.Types.ObjectId(agreement)
 
+  const agreementLookup = [
+    {
+      $lookup: {
+        from: 'agreements',
+        localField: 'agreement',
+        foreignField: '_id',
+        as: 'agreement',
+      },
+    },
+    { $addFields: { agreement: { $first: '$agreement' } } },
+  ]
+  if (client) {
+    agreementLookup.push({
+      $match: {
+        'agreement.clients': mongoose.Types.ObjectId(client),
+      },
+    })
+  }
   const group = [
     {
       $group: {
-        _id: 'agreements',
+        _id: 'tariffs',
         items: {
           $push: '$$ROOT',
         },
@@ -28,5 +49,5 @@ export default ({ company, date, limit, skip }) => {
       },
     },
   ]
-  return [firstMatcher, ...group]
+  return [firstMatcher, ...agreementLookup, ...group]
 }

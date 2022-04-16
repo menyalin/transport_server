@@ -10,28 +10,28 @@ const userSchema = new Schema(
       required: true,
       unique: true,
       lowercase: true,
-      trim: true
+      trim: true,
     },
     password: { type: String, required: true },
     name: String,
     openForSearch: {
       type: Boolean,
-      default: true
+      default: true,
     },
     directoriesProfile: {
-      type: Types.ObjectId
-    }
+      type: Types.ObjectId,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 )
 
 userSchema.methods.createToken = async function () {
   const token = await jwt.sign(
     {
-      userId: this._id
+      userId: this._id,
     },
     process.env.JWT_SECRET || 'secret',
-    { expiresIn: process.env.TOKEN_LIFETIME || '31d' }
+    { expiresIn: process.env.TOKEN_LIFETIME || '31d' },
   )
   return `Bearer ${token}`
 }

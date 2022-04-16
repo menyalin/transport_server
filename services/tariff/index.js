@@ -11,6 +11,49 @@ class TariffService extends IService {
     this.logService = logService
   }
 
+  async create({ body, user, company }) {
+    try {
+      const data = await this.model.create(body)
+      if (Array.isArray(data)) {
+        await this.logService.addArray({
+          array: data,
+          coll: 'tariff',
+          opType: 'create',
+          user,
+          company,
+        })
+      } else
+        await this.logService.add({
+          docId: data._id.toString(),
+          coll: this.modelName,
+          opType: 'create',
+          user,
+          company: data.company.toString(),
+          body: JSON.stringify(data.toJSON()),
+        })
+
+      return data
+    } catch (e) {
+      console.log('create tariff service:', e.message)
+      throw new Error(e.message)
+    }
+  }
+
+  async updateOne({ id, body, user }) {
+    const data = await this.model.findByIdAndUpdate(id, body, { new: true })
+    await data.populate('agreement')
+    if (this.logService)
+      await this.logService.add({
+        docId: data._id.toString(),
+        coll: this.modelName,
+        opType: 'update',
+        user,
+        company: data.company.toString(),
+        body: JSON.stringify(data.toJSON()),
+      })
+    return data
+  }
+
   async getList(params) {
     try {
       const pipeline = getListPipeline(params)

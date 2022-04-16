@@ -9,8 +9,10 @@ import {
   DOCUMENT_TYPES_ENUM,
   DOCUMENT_STATUSES_ENUM,
 } from '../constants/accounting.js'
-import { ORDER_STATUSES_ENUM } from '../constants/orderStatuses.js'
-import { ORDER_ANALYTIC_TYPES_ENUM } from '../constants/orderAnalyticTypes.js'
+import {
+  ORDER_STATUSES_ENUM,
+  ORDER_ANALYTIC_TYPES_ENUM,
+} from '../constants/order.js'
 import pkg from 'mongoose'
 
 const { Schema, model, Types } = pkg

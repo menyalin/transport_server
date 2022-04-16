@@ -5,8 +5,10 @@ import {
   TRUCK_LIFT_CAPACITY_TYPES,
   LOAD_DIRECTION_ENUM,
 } from '../constants/truck.js'
-import { ORDER_STATUSES_ENUM } from '../constants/orderStatuses.js'
-import { ORDER_ANALYTIC_TYPES_ENUM } from '../constants/orderAnalyticTypes.js'
+import {
+  ORDER_STATUSES_ENUM,
+  ORDER_ANALYTIC_TYPES_ENUM,
+} from '../constants/order.js'
 
 import pkg from 'mongoose'
 

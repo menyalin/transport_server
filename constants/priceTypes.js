@@ -1,20 +1,20 @@
 const types = [
   {
     value: 'base',
-    text: 'Тариф'
+    text: 'Тариф',
   },
   {
     value: 'loadingDowntime',
-    text: 'Простой на погрузке'
+    text: 'Простой на погрузке',
   },
   {
     value: 'unloadingDowntime',
-    text: 'Простой на выгрузке'
+    text: 'Простой на выгрузке',
   },
   {
     value: 'return',
-    text: 'Возврат продукции'
-  }
+    text: 'Возврат продукции',
+  },
 ]
 
 export const ORDER_PRICE_TYPES = types

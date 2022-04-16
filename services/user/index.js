@@ -1,7 +1,6 @@
-import { ORDER_STATUSES } from '../../constants/orderStatuses.js'
-import { ORDER_ANALYTIC_TYPES } from '../../constants/orderAnalyticTypes.js'
+import { ORDER_STATUSES, ORDER_ANALYTIC_TYPES } from '../../constants/order.js'
 import { ORDER_PRICE_TYPES } from '../../constants/priceTypes.js'
-import { User, UserActivity } from '../../models/index.js'
+import { User } from '../../models/index.js'
 import {
   AddressService,
   CompanyService,
@@ -16,6 +15,8 @@ import {
   DOCUMENT_TYPES,
   DOCUMENT_STATUSES,
 } from '../../constants/accounting.js'
+import { TARIFF_TYPES } from '../../constants/tariff.js'
+
 import {
   LOAD_DIRECTION,
   TRUCK_KINDS,
@@ -32,8 +33,6 @@ class UserService {
   async getUserData(id, fields = '-password') {
     const user = await User.findById(id, fields).lean()
     if (!user) throw new Error('user not found!')
-
-    UserActivity.create({ user: id, type: 'getUserData' })
     const profile = user.directoriesProfile
     const companies = await CompanyService.getUserCompanies(id)
     if (!profile) {
@@ -51,12 +50,6 @@ class UserService {
       userId: id,
       companyId: profile,
     })
-    const orderStatuses = ORDER_STATUSES
-    const orderAnalyticTypes = ORDER_ANALYTIC_TYPES
-
-    const orderPriceTypes = ORDER_PRICE_TYPES
-    const documentTypes = DOCUMENT_TYPES
-    const documentStatuses = DOCUMENT_STATUSES
     const allTruckParams = {
       truckTypes: TRUCK_TYPES,
       truckKinds: TRUCK_KINDS,
@@ -72,12 +65,13 @@ class UserService {
       trucks,
       tkNames,
       partners,
-      orderStatuses,
+      orderStatuses: ORDER_STATUSES,
       orderTemplates,
-      orderAnalyticTypes,
-      orderPriceTypes,
-      documentTypes,
-      documentStatuses,
+      orderAnalyticTypes: ORDER_ANALYTIC_TYPES,
+      orderPriceTypes: ORDER_PRICE_TYPES,
+      documentTypes: DOCUMENT_TYPES,
+      documentStatuses: DOCUMENT_STATUSES,
+      tariffTypes: TARIFF_TYPES,
       staffRoles,
       permissions,
       allTruckParams,

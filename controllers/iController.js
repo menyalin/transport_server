@@ -18,6 +18,7 @@ export class IController {
       const data = await this.service.create({
         body: req.body,
         user: req.userId,
+        company: req.companyId,
       })
       res.status(201).json(data)
     } catch (e) {
