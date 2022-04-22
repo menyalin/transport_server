@@ -2,56 +2,56 @@ export const getProfileAddressesSchema = {
   type: 'object',
   properties: {
     profile: {
-      type: 'string'
-    }
+      type: 'string',
+    },
   },
   required: ['profile'],
-  additionalProperties: false
+  additionalProperties: false,
 }
 
 export const getSuggestionsSchema = {
   type: 'object',
   properties: {
     address: {
-      type: 'string'
-    }
+      type: 'string',
+    },
   },
   required: ['address'],
-  additionalProperties: false
+  additionalProperties: false,
 }
 
 export const createAddressSchema = {
   type: 'object',
   properties: {
     company: {
-      type: 'string'
+      type: 'string',
     },
     name: {
-      type: 'string'
+      type: 'string',
     },
     shortName: {
-      type: ['string', 'null']
+      type: ['string', 'null'],
     },
     note: {
-      type: ['string', 'null']
+      type: ['string', 'null'],
     },
     geo: {
-      type: 'string'
+      type: 'string',
     },
     label: {
-      type: ['string', 'null']
+      type: ['string', 'null'],
     },
     partner: {
-      type: ['string', 'null']
+      type: ['string', 'null'],
     },
     isShipmentPlace: {
-      type: ['boolean', 'null']
+      type: ['boolean', 'null'],
     },
     isDeliveryPlace: {
-      type: ['boolean', 'null']
-    }
+      type: ['boolean', 'null'],
+    },
   },
   required: ['company', 'name'],
-  additionalProperties: false
+  additionalProperties: true,
 }
 //
