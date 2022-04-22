@@ -11,7 +11,9 @@ export const getOrderListPipeline = ({
   truck,
   accountingMode,
   driver,
-  tkName
+  tkName,
+  trailer,
+  address,
 }) => {
   const sP = new Date(startDate)
   const eP = new Date(endDate)
@@ -19,8 +21,8 @@ export const getOrderListPipeline = ({
   const firstPlannedDate = {
     $getField: {
       field: 'plannedDate',
-      input: { $arrayElemAt: ['$route', 0] }
-    }
+      input: { $arrayElemAt: ['$route', 0] },
+    },
   }
 
   const firstMatcher = {
@@ -30,17 +32,17 @@ export const getOrderListPipeline = ({
       $expr: {
         $and: [
           { $gte: [firstPlannedDate, sP] },
-          { $lt: [firstPlannedDate, eP] }
-        ]
-      }
-    }
+          { $lt: [firstPlannedDate, eP] },
+        ],
+      },
+    },
   }
   if (accountingMode)
     firstMatcher.$match.$expr.$and.push({
       $or: [
         { $eq: ['$state.status', 'inProgress'] },
-        { $eq: ['$state.status', 'completed'] }
-      ]
+        { $eq: ['$state.status', 'completed'] },
+      ],
     })
 
   if (status && !accountingMode) firstMatcher.$match['state.status'] = status
@@ -49,22 +51,28 @@ export const getOrderListPipeline = ({
 
   if (truck)
     firstMatcher.$match['confirmedCrew.truck'] = mongoose.Types.ObjectId(truck)
+  if (trailer)
+    firstMatcher.$match['confirmedCrew.trailer'] = mongoose.Types.ObjectId(
+      trailer,
+    )
+  if (address)
+    firstMatcher.$match['route.address'] = mongoose.Types.ObjectId(address)
   const agreementLookup = [
     {
       $lookup: {
         from: 'agreements',
         localField: 'client.agreement',
         foreignField: '_id',
-        as: 'agreements'
-      }
+        as: 'agreements',
+      },
     },
     {
       $addFields: {
         agreement: {
-          $first: '$agreements'
-        }
-      }
-    }
+          $first: '$agreements',
+        },
+      },
+    },
   ]
   const tkNameLookup = [
     {
@@ -72,51 +80,51 @@ export const getOrderListPipeline = ({
         from: 'trucks',
         localField: 'confirmedCrew.truck',
         foreignField: '_id',
-        as: 'trucks'
-      }
+        as: 'trucks',
+      },
     },
     {
       $addFields: {
         truck: {
-          $first: '$trucks'
-        }
-      }
+          $first: '$trucks',
+        },
+      },
     },
     {
       $match: {
-        'truck.tkName': mongoose.Types.ObjectId(tkName)
-      }
-    }
+        'truck.tkName': mongoose.Types.ObjectId(tkName),
+      },
+    },
   ]
 
   if (driver)
     firstMatcher.$match['confirmedCrew.driver'] = mongoose.Types.ObjectId(
-      driver
+      driver,
     )
   const group = [
     {
       $sort: {
-        createdAt: -1.0
-      }
+        createdAt: -1.0,
+      },
     },
     {
       $group: {
         _id: 'orders',
         items: {
-          $push: '$$ROOT'
-        }
-      }
+          $push: '$$ROOT',
+        },
+      },
     },
     {
       $addFields: {
         count: {
-          $size: '$items'
+          $size: '$items',
         },
         items: {
-          $slice: ['$items', +skip, +limit]
-        }
-      }
-    }
+          $slice: ['$items', +skip, +limit],
+        },
+      },
+    },
   ]
   let pipeline = [firstMatcher]
   if (accountingMode) pipeline = [...pipeline, ...agreementLookup]
