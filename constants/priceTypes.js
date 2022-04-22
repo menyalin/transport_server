@@ -4,6 +4,10 @@ const types = [
     text: 'Тариф',
   },
   {
+    value: 'additionalPoints',
+    text: 'Дополнительные точки',
+  },
+  {
     value: 'loadingDowntime',
     text: 'Простой на погрузке',
   },

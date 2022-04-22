@@ -1,7 +1,10 @@
 import pkg from 'mongoose'
 import { TRUCK_KINDS_ENUM } from '../constants/truck.js'
 import { ORDER_ANALYTIC_TYPES_ENUM } from '../constants/order.js'
-import { TARIFF_TYPES_ENUM } from '../constants/tariff.js'
+import {
+  TARIFF_TYPES_ENUM,
+  TARIFF_ROUND_BY_HOURS_ENUM,
+} from '../constants/tariff.js'
 const { Schema, model, Types } = pkg
 
 const schema = new Schema(
@@ -27,6 +30,15 @@ const schema = new Schema(
     // for 'additionalPoints' type
     orderType: { type: String, enum: ORDER_ANALYTIC_TYPES_ENUM },
     includedPoints: { type: Number },
+    // for 'directDistanceZones' type, and "loading"
+    maxDistance: { type: Number },
+    // for "waiting", "orderType"
+    includeHours: { type: Number },
+    roundByHours: { type: Number, enum: TARIFF_ROUND_BY_HOURS_ENUM }, // Кратность округления по часам
+    tariffBy: { type: String, enum: ['hour', 'day'] },
+
+    // for 'return'
+    percentOfTariff: { type: Number },
   },
   { timestamps: true },
 )

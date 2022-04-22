@@ -5,7 +5,6 @@ import { Address } from './address.js'
 import { Driver } from './driver.js'
 import { Truck } from './truck.js'
 import Crew from './crew.js'
-import { UserActivity } from './userActivity.js'
 import TkName from './tkName.js'
 import Order from './order.js'
 import Partner from './partner.js'
@@ -24,7 +23,6 @@ export {
   Driver,
   Truck,
   Crew,
-  UserActivity,
   TkName,
   Order,
   Partner,

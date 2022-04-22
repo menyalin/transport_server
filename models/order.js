@@ -159,6 +159,7 @@ const schema = new Schema(
     grade,
     docs,
     client,
+    prePrices: prices,
     prices,
     outsourceCosts,
     confirmedCrew,

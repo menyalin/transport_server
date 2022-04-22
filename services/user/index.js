@@ -15,7 +15,7 @@ import {
   DOCUMENT_TYPES,
   DOCUMENT_STATUSES,
 } from '../../constants/accounting.js'
-import { TARIFF_TYPES } from '../../constants/tariff.js'
+import { TARIFF_TYPES, TARIFF_ROUND_BY_HOURS } from '../../constants/tariff.js'
 
 import {
   LOAD_DIRECTION,
@@ -72,6 +72,7 @@ class UserService {
       documentTypes: DOCUMENT_TYPES,
       documentStatuses: DOCUMENT_STATUSES,
       tariffTypes: TARIFF_TYPES,
+      roundingWaitingByHours: TARIFF_ROUND_BY_HOURS,
       staffRoles,
       permissions,
       allTruckParams,
