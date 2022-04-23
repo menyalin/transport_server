@@ -6,6 +6,7 @@ const schema = new Schema(
     name: String,
     inn: String,
     company: { type: Types.ObjectId, ref: 'Company' },
+    contacts: String,
     isClient: { type: Boolean, default: false },
     isService: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
