@@ -1,4 +1,6 @@
+import pkg from 'mongoose'
 import { POINT_TYPES } from '../constants/enums.js'
+import PriceDTO from '../dto/price.dto.js'
 
 import {
   TRUCK_KINDS_ENUM,
@@ -13,22 +15,10 @@ import {
   ORDER_STATUSES_ENUM,
   ORDER_ANALYTIC_TYPES_ENUM,
 } from '../constants/order.js'
-import pkg from 'mongoose'
 
 const { Schema, model, Types } = pkg
 
-const prices = [
-  {
-    type: {
-      type: String,
-      required: true,
-    },
-    priceWOVat: { type: Number },
-    sumVat: { type: Number },
-    price: { type: Number },
-    note: String,
-  },
-]
+const prices = [PriceDTO.modelFields()]
 
 const outsourceCosts = [
   {
@@ -151,16 +141,13 @@ const confirmedCrew = {
 
 const schema = new Schema(
   {
-    startPositionDate: {
-      // дата для отображения в таблице распределения
-      type: Date,
-      required: true,
-    },
+    startPositionDate: { type: Date, required: true },
     grade,
     docs,
     client,
     prePrices: prices,
     prices,
+    finalPrices: prices,
     outsourceCosts,
     confirmedCrew,
     route: [point],
@@ -168,15 +155,8 @@ const schema = new Schema(
     reqTransport: reqTransport,
     state,
     analytics,
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
-    isDisabled: {
-      type: Boolean,
-      default: false,
-    },
-
+    isActive: { type: Boolean, default: true },
+    isDisabled: { type: Boolean, default: false },
     company: { type: Types.ObjectId, ref: 'Company', required: true },
     manager: { type: Types.ObjectId, ref: 'User' },
     note: { type: String },

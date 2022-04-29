@@ -14,3 +14,20 @@ export const getListSchema = {
   required: ['company', 'limit', 'skip'],
   additionalProperties: true,
 }
+
+export const getOrderPrePriceSchema = {
+  type: 'object',
+  properties: {
+    company: {
+      type: 'string',
+    },
+    date: {
+      type: 'string',
+    },
+    agreement: {
+      type: 'string',
+    },
+  },
+  required: ['company', 'date', 'agreement'],
+  additionalProperties: true,
+}

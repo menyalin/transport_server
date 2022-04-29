@@ -104,7 +104,6 @@ class OrderService {
 
   async moveOrderInSchedule({ orderId, truck, startPositionDate }, user) {
     const order = await OrderModel.findById(orderId)
-
     if (!truck) {
       order.confirmedCrew.truck = null
       order.confirmedCrew.outsourceAgreement = null

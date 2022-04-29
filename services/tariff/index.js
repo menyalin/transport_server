@@ -3,6 +3,7 @@ import { Tariff } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 import IService from '../iService.js'
 import getListPipeline from './pipelines/getListPipeline.js'
+import getBasePrice from './getBasePrice.js'
 
 class TariffService extends IService {
   constructor({ model, emitter, modelName, logService }) {
@@ -62,6 +63,13 @@ class TariffService extends IService {
     } catch (e) {
       throw new Error(e.message)
     }
+  }
+
+  async getPrePricesByOrderData(params) {
+    // Возвращаем массив c разными типами дохода
+    const basePrice = await getBasePrice(params)
+
+    return [basePrice]
   }
 }
 
