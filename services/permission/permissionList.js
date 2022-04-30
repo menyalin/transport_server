@@ -1,6 +1,8 @@
 export const admin = {
   fullAccess: true,
   'report:drivers_grades': true,
+  'order:readFinalPrices': true,
+  'order:writeFinalPrices': true,
 }
 
 export const outsourceCarriersManager = {
@@ -15,6 +17,8 @@ export const outsourceCarriersManager = {
   'order:daysForReadOutsourceCosts': -1,
   'order:daysForWriteOutsourceCosts': 14,
   'order:daysForWrite': 14,
+  'order:readFinalPrices': true,
+  'order:writeFinalPrices': false,
   'tariff:readList': true,
   'tariff:readItem': true,
   'tariff:write': true,
@@ -26,6 +30,8 @@ export const director = {
   'order:daysForRead': -1,
   'order:daysForReadPrice': -1,
   'order:daysForReadOutsourceCosts': -1,
+  'order:readFinalPrices': true,
+
   'agreement:readList': true,
   'agreement:readItem': true,
   'tkName:readList': true,
@@ -141,6 +147,9 @@ export const accountant = {
   'order:daysForWrite': -1,
   'order:daysForReadPrice': -1,
   'order:daysForWritePrice': -1,
+  'order:readFinalPrices': true,
+  'order:writeFinalPrices': true,
+
   'agreement:readList': true,
   'agreement:readItem': true,
   'agreement:write': true,

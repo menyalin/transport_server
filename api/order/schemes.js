@@ -2,57 +2,74 @@ export const createSchema = {
   type: 'object',
   properties: {
     company: {
-      type: 'string'
+      type: 'string',
     },
     startPositionDate: {
       type: ['string', 'null'],
-      formats: ['date', 'date-time']
-    }
+      formats: ['date', 'date-time'],
+    },
   },
   required: ['company', 'startPositionDate'],
-  additionalProperties: true
+  additionalProperties: true,
 }
 
 export const getListForScheduleSchema = {
   type: 'object',
   properties: {
     profile: {
-      type: 'string'
+      type: 'string',
     },
     startDate: {
       type: ['string', 'null'],
-      formats: ['date', 'date-time']
+      formats: ['date', 'date-time'],
     },
     endDate: {
       type: ['string', 'null'],
-      formats: ['date', 'date-time']
-    }
+      formats: ['date', 'date-time'],
+    },
   },
   required: ['profile', 'startDate'],
-  additionalProperties: true
+  additionalProperties: true,
 }
 
 export const getListSchema = {
   type: 'object',
   properties: {
     profile: {
-      type: 'string'
+      type: 'string',
     },
     startDate: {
       type: ['string', 'null'],
-      formats: ['date', 'date-time']
+      formats: ['date', 'date-time'],
     },
     endDate: {
       type: ['string', 'null'],
-      formats: ['date', 'date-time']
+      formats: ['date', 'date-time'],
     },
     skip: {
-      type: 'string'
+      type: 'string',
     },
     limit: {
-      type: 'string'
-    }
+      type: 'string',
+    },
   },
   required: ['profile', 'startDate', 'endDate', 'skip', 'limit'],
-  additionalProperties: true
+  additionalProperties: true,
+}
+
+export const saveFinalPricesSchema = {
+  type: 'object',
+  properties: {
+    company: {
+      type: 'string',
+    },
+    orderId: {
+      type: 'string',
+    },
+    finalPrices: {
+      type: 'array',
+    },
+  },
+  required: ['company', 'orderId', 'finalPrices'],
+  additionalProperties: true,
 }

@@ -7,7 +7,8 @@ import ctrl from '../../controllers/order.controller.js'
 import {
   createSchema,
   getListSchema,
-  getListForScheduleSchema
+  getListForScheduleSchema,
+  saveFinalPricesSchema,
 } from './schemes.js'
 
 const router = express.Router()
@@ -17,12 +18,18 @@ router.get('/', [jwtAuth, queryValidator(getListSchema)], ctrl.getList)
 router.get(
   '/schedule',
   [jwtAuth, queryValidator(getListForScheduleSchema)],
-  ctrl.getListForSchedule
+  ctrl.getListForSchedule,
 )
 router.get('/:id', [jwtAuth], ctrl.getById)
 
 router.post('/get_distance', [jwtAuth], ctrl.getDistance)
 router.post('/from_template', [jwtAuth], ctrl.createFromTemplate)
+
+router.post(
+  '/save_final_prices',
+  [jwtAuth, bodyValidator(saveFinalPricesSchema)],
+  ctrl.saveFinalPrices,
+)
 router.post('/', [jwtAuth, bodyValidator(createSchema)], ctrl.create)
 
 router.put('/:id', [jwtAuth], ctrl.updateOne)

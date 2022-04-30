@@ -1,6 +1,6 @@
 import {
   OrderService as service,
-  PermissionService
+  PermissionService,
 } from '../services/index.js'
 
 class OrderController {
@@ -9,7 +9,7 @@ class OrderController {
       await PermissionService.check({
         userId: req.userId,
         companyId: req.companyId,
-        operation: 'order:daysForWrite'
+        operation: 'order:daysForWrite',
       })
 
       const data = await service.create({ body: req.body, user: req.userId })
@@ -24,13 +24,32 @@ class OrderController {
       await PermissionService.check({
         userId: req.userId,
         companyId: req.companyId,
-        operation: 'order:daysForWrite'
+        operation: 'order:daysForWrite',
       })
       const data = await service.createFromTemplate({
         body: req.body,
-        user: req.userId
+        user: req.userId,
       })
       res.status(201).json(data)
+    } catch (e) {
+      res.status(e.statusCode || 500).json(e.message)
+    }
+  }
+
+  async saveFinalPrices(req, res) {
+    try {
+      await PermissionService.check({
+        userId: req.userId,
+        companyId: req.companyId,
+        operation: 'order:writeFinalPrices',
+      })
+      const data = await service.updateFinalPrices({
+        orderId: req.body.orderId,
+        finalPrices: req.body.finalPrices,
+        company: req.body.company,
+        user: req.userId,
+      })
+      res.status(200).json(data)
     } catch (e) {
       res.status(e.statusCode || 500).json(e.message)
     }
@@ -41,12 +60,12 @@ class OrderController {
       await PermissionService.check({
         userId: req.userId,
         companyId: req.companyId,
-        operation: 'order:daysForWrite'
+        operation: 'order:daysForWrite',
       })
       const data = await service.updateOne({
         id: req.params.id,
         body: req.body,
-        user: req.userId
+        user: req.userId,
       })
       res.status(200).json(data)
     } catch (e) {
@@ -62,7 +81,7 @@ class OrderController {
         userId: req.userId,
         companyId: req.companyId,
         startDate: req.query.startDate,
-        operation: 'order:daysForRead'
+        operation: 'order:daysForRead',
       })
       const data = await service.getList(req.query)
       res.status(200).json(data)
@@ -96,11 +115,11 @@ class OrderController {
       await PermissionService.check({
         operation: 'order:delete',
         userId: req.userId,
-        companyId: req.companyId
+        companyId: req.companyId,
       })
       const data = await service.deleteById({
         id: req.params.id,
-        user: req.userId
+        user: req.userId,
       })
       res.status(200).json(data)
     } catch (e) {

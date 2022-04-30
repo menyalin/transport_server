@@ -174,6 +174,22 @@ class OrderService {
     return res
   }
 
+  async updateFinalPrices({ orderId, finalPrices, company, user }) {
+    const order = await OrderModel.findOne({ _id: orderId, company })
+    order.finalPrices = finalPrices
+    await order.save()
+    emitTo(order.company.toString(), 'order:updated', orderId)
+    await ChangeLogService.add({
+      docId: order._id.toString(),
+      company: order.company.toString(),
+      coll: 'order',
+      user,
+      opType: 'updateFinalPrices',
+      body: JSON.stringify(order.toJSON()),
+    })
+    return order
+  }
+
   async updateOne({ id, body, user }) {
     checkRefusedOrder(body)
     if (!body.client.agreement && body.route[0].plannedDate)
