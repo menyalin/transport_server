@@ -178,7 +178,11 @@ class OrderService {
     const order = await OrderModel.findOne({ _id: orderId, company })
     order.finalPrices = finalPrices
     await order.save()
-    emitTo(order.company.toString(), 'order:updated', orderId)
+    emitTo(
+      order.company.toString(),
+      `order:${orderId}:finalPriceUpdated`,
+      order.toJSON(),
+    )
     await ChangeLogService.add({
       docId: order._id.toString(),
       company: order.company.toString(),

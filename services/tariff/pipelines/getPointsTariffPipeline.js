@@ -12,7 +12,6 @@ export default ({
     const orderDate = new Date(date)
     const firstPoint = route[0].address
     const lastPoint = route.filter((i) => !i.isReturn).reverse()[0].address
-    console.log(lastPoint)
     const firstMatcher = {
       $match: {
         isActive: true,
