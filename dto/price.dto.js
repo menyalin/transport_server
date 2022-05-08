@@ -36,4 +36,17 @@ export default class PriceDTO {
       note: tariff.note,
     })
   }
+
+  static prepareOrderForPrePriceQuery(order) {
+    return {
+      company: order.company.toString(),
+      date: new Date(order.route[0].plannedDate).toISOString(),
+      agreement: order.client.agreement,
+      truckKind: order.reqTransport.kind,
+      liftCapacity: order.reqTransport.liftCapacity,
+      route: order.route,
+      orderType: order.analytics.type,
+      prices: order.prices,
+    }
+  }
 }

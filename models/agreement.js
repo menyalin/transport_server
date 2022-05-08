@@ -10,6 +10,8 @@ const schema = new Schema(
     company: { type: Types.ObjectId, ref: 'Company', required: true },
     clients: [{ type: Types.ObjectId, ref: 'Partner' }],
     isOutsourceAgreement: { type: Boolean, default: false },
+    calcWaitingByArrivalDate: { type: Boolean, default: false },
+    noWaitingPaymentForAreLate: { type: Boolean, default: false },
     outsourceCarriers: [{ type: Types.ObjectId, ref: 'TkName' }],
     cashPayment: { type: Boolean, default: false },
     vatRate: { type: Number, required: true },

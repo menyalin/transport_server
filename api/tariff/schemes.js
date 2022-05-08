@@ -27,6 +27,9 @@ export const getOrderPrePriceSchema = {
     agreement: {
       type: 'string',
     },
+    route: {
+      type: 'array',
+    },
   },
   required: ['company', 'date', 'agreement'],
   additionalProperties: true,

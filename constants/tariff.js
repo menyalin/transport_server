@@ -12,6 +12,7 @@ const types = [
 ]
 
 const roundByHours = [
+  { value: 0.01666666, text: '1 минута', disabled: false },
   { value: 0.5, text: '30 минут', disabled: false },
   { value: 1, text: '1 час', disabled: false },
   { value: 12, text: '12 часов', disabled: false },

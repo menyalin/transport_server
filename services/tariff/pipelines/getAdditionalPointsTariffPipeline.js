@@ -13,7 +13,7 @@ export default ({
 }) => {
   if (!orderType || !ORDER_ANALYTIC_TYPES_ENUM.includes(orderType))
     throw new BadRequestError(
-      'orderType is undefinded, please set correct order type!',
+      `orderType is undefinded, please set correct order type! ${orderType}`,
     )
 
   const orderDate = new Date(date)

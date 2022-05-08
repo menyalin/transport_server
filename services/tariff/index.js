@@ -5,6 +5,8 @@ import IService from '../iService.js'
 import getListPipeline from './pipelines/getListPipeline.js'
 import getBasePrice from './getBasePrice.js'
 import getAdditionalPointsPrice from './getAdditionalPointsPrice.js'
+import getWaitingPrices from './getWaitingPrices.js'
+import getReturnPrice from './getReturnPrice.js'
 
 class TariffService extends IService {
   constructor({ model, emitter, modelName, logService }) {
@@ -65,14 +67,27 @@ class TariffService extends IService {
     }
   }
 
-  async getPrePricesByOrderData(params) {
+  async getPrePricesByOrderData(order) {
     const resArray = []
+    const basePrice = await getBasePrice(order)
+    if (basePrice) {
+      resArray.push(basePrice)
+    }
 
-    const basePrice = await getBasePrice(params)
-    if (basePrice) resArray.push(basePrice)
+    const savedBasePrice = order.prices?.find((i) => i.type === 'base')
+    if (savedBasePrice || basePrice) {
+      const returnPrice = await getReturnPrice(
+        order,
+        savedBasePrice || basePrice,
+      )
+      if (returnPrice) resArray.push(returnPrice)
+    }
 
-    const additionalPoints = await getAdditionalPointsPrice(params)
+    const additionalPoints = await getAdditionalPointsPrice(order)
     if (additionalPoints) resArray.push(additionalPoints)
+
+    const waitingPrices = await getWaitingPrices(order)
+    if (waitingPrices) waitingPrices.forEach((price) => resArray.push(price))
 
     return resArray
   }

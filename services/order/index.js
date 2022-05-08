@@ -1,9 +1,14 @@
 import mongoose from 'mongoose'
+import PriceDTO from '../../dto/price.dto.js'
 import { Order as OrderModel, OrderTemplate } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 import { getSchedulePipeline } from './pipelines/getSchedulePipeline.js'
 import { getOrderListPipeline } from './pipelines/getOrderListPipeline.js'
-import { ChangeLogService, PermissionService } from '../index.js'
+import {
+  ChangeLogService,
+  PermissionService,
+  TariffService,
+} from '../index.js'
 import checkCrossItems from './checkCrossItems.js'
 import checkRefusedOrder from './checkRefusedOrder.js'
 import getRouteFromTemplate from './getRouteFromTemplate.js'
@@ -46,7 +51,11 @@ class OrderService {
       body.confirmedCrew.outsourceAgreement = await getOutsourceAgreementId(
         body,
       )
-
+    if (body.client.agreement && body.analytics.type) {
+      body.prePrices = await TariffService.getPrePricesByOrderData(
+        PriceDTO.prepareOrderForPrePriceQuery(body),
+      )
+    }
     const order = await OrderModel.create(body)
     emitTo(order.company.toString(), 'order:created', order.toJSON())
     await ChangeLogService.add({
@@ -198,6 +207,12 @@ class OrderService {
     checkRefusedOrder(body)
     if (!body.client.agreement && body.route[0].plannedDate)
       body.client.agreement = await getClientAgreementId(body)
+
+    if (body.client.agreement && body.analytics.type) {
+      body.prePrices = await TariffService.getPrePricesByOrderData(
+        PriceDTO.prepareOrderForPrePriceQuery(body),
+      )
+    }
 
     if (!body.confirmedCrew.outsourceAgreement && body.confirmedCrew.truck)
       body.confirmedCrew.outsourceAgreement = await getOutsourceAgreementId(
