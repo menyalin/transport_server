@@ -1,7 +1,7 @@
-// import PriceDTO from '../../dto/price.dto.js'
 import { Tariff } from '../../models/index.js'
 import getWaitingTariffPipeline from './pipelines/getWaitingTariffPipeline.js'
 import { AgreementService } from '../index.js'
+import PriceDTO from '../../dto/price.dto.js'
 
 const getDurationInHours = (
   point,
@@ -32,7 +32,6 @@ const getDurationInHours = (
 }
 const getRoundedMinutes = (minutes, roundBy) => {
   const roundByMinutes = roundBy * 60
-  console.log('minutes', minutes - (minutes % roundByMinutes))
   return Math.floor(minutes - (minutes % roundByMinutes))
 }
 
@@ -48,11 +47,10 @@ const getPrice = ({ durationInHours, tariff }) => {
   const sumVatInMinute =
     tariff.sumVat / (tariff.tariffBy === 'hour' ? 60 : 60 * 24)
   const roundedMinutes = getRoundedMinutes(durInMinutes, tariff.roundByHours)
-  console.log(roundedMinutes)
   return {
-    price: Math.round(costByMinute * roundedMinutes),
-    priceWOVat: costByMinuteWOVat * roundedMinutes,
-    sumVat: sumVatInMinute * roundedMinutes,
+    price: Math.round(costByMinute * roundedMinutes * 1000) / 1000,
+    priceWOVat: Math.round(costByMinuteWOVat * roundedMinutes * 1000) / 1000,
+    sumVat: Math.round(sumVatInMinute * roundedMinutes * 1000) / 1000,
   }
 }
 
@@ -65,9 +63,7 @@ const getWaitingTariff = async (params) => {
 export default async (order) => {
   const { route, agreement: agreementId } = order
   const completedPoints = route.filter((i) => i.arrivalDate && i.departureDate)
-
   if (completedPoints.length === 0) return null
-
   if (!agreementId) return null
   const agreement = await AgreementService.getById(agreementId)
   if (!agreement) return null
@@ -84,7 +80,43 @@ export default async (order) => {
     }
   })
 
-  console.log(' --> ', waitinginPoints)
+  const loadingSumPrices = new PriceDTO(
+    waitinginPoints
+      .filter((i) => i.type === 'loadingDowntime')
+      .reduce(
+        (res, item) => ({
+          type: item.type,
+          priceWOVat: res.priceWOVat + item.priceWOVat,
+          price: res.price + item.price,
+          sumVat: res.sumVat + item.sumVat,
+        }),
+        {
+          type: 'loadingDowntime',
+          priceWOVat: 0,
+          price: 0,
+          sumVat: 0,
+        },
+      ),
+  )
 
-  return []
+  const unloadingSumPrices = new PriceDTO(
+    waitinginPoints
+      .filter((i) => i.type === 'unloadingDowntime')
+      .reduce(
+        (res, item) => ({
+          type: item.type || res.type,
+          priceWOVat: res.priceWOVat + item.priceWOVat,
+          price: res.price + item.price,
+          sumVat: res.sumVat + item.sumVat,
+        }),
+        {
+          type: 'unloadingDowntime',
+          priceWOVat: 0,
+          price: 0,
+          sumVat: 0,
+        },
+      ),
+  )
+
+  return [{ ...loadingSumPrices }, { ...unloadingSumPrices }]
 }
