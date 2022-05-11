@@ -3,12 +3,19 @@ import getWaitingTariffPipeline from './pipelines/getWaitingTariffPipeline.js'
 import { AgreementService } from '../index.js'
 import PriceDTO from '../../dto/price.dto.js'
 
+const getWaitingTariff = async (params) => {
+  const pipeline = getWaitingTariffPipeline(params)
+  const res = await Tariff.aggregate(pipeline)
+  return res[0] || null
+}
+
 const getDurationInHours = (
   point,
   { calcWaitingByArrivalDate, noWaitingPaymentForAreLate },
   { includeHours },
 ) => {
   let startDate
+
   const plannedDate = new Date(point.plannedDate)
   const arrivalDate = new Date(point.arrivalDate)
   const departureDate = new Date(point.departureDate)
@@ -30,6 +37,7 @@ const getDurationInHours = (
   const dur = (departureDate - startDate) / (1000 * 60 * 60)
   return dur > includeHours ? dur - includeHours : 0
 }
+
 const getRoundedMinutes = (minutes, roundBy) => {
   const roundByMinutes = roundBy * 60
   return Math.floor(minutes - (minutes % roundByMinutes))
@@ -52,12 +60,6 @@ const getPrice = ({ durationInHours, tariff }) => {
     priceWOVat: Math.round(costByMinuteWOVat * roundedMinutes * 1000) / 1000,
     sumVat: Math.round(sumVatInMinute * roundedMinutes * 1000) / 1000,
   }
-}
-
-const getWaitingTariff = async (params) => {
-  const pipeline = getWaitingTariffPipeline(params)
-  const res = await Tariff.aggregate(pipeline)
-  return res[0] || null
 }
 
 export default async (order) => {
@@ -117,6 +119,9 @@ export default async (order) => {
         },
       ),
   )
-
-  return [{ ...loadingSumPrices }, { ...unloadingSumPrices }]
+  
+  const result = []
+  if (loadingSumPrices.price) result.push({ ...loadingSumPrices })
+  if (unloadingSumPrices.price) result.push({ ...unloadingSumPrices })
+  return result
 }
