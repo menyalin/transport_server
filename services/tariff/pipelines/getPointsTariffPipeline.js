@@ -25,7 +25,11 @@ export default ({
         unloading: mongoose.Types.ObjectId(lastPoint),
       },
     }
-    return [firstMatcher, { $sort: { date: -1 } }, { $limit: 1 }]
+    return [
+      firstMatcher,
+      { $sort: { date: -1, createdAt: -1 } },
+      { $limit: 1 },
+    ]
   } catch (e) {
     throw new Error(e)
   }

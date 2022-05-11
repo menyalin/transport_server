@@ -13,6 +13,5 @@ export default ({ company, date, agreement, truckKind, liftCapacity }) => {
       liftCapacity: liftCapacity,
     },
   }
-  return [firstMatcher, { $sort: { date: -1 } }, { $limit: 1 }]
+  return [firstMatcher, { $sort: { date: -1, createdAt: -1 } }, { $limit: 1 }]
 }
- 

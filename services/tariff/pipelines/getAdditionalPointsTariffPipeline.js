@@ -31,5 +31,5 @@ export default ({
       includedPoints: { $lt: pointsInRoute },
     },
   }
-  return [firstMatcher, { $sort: { date: -1 } }, { $limit: 1 }]
+  return [firstMatcher, { $sort: { date: -1, createdAt: -1 } }, { $limit: 1 }]
 }
