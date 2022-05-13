@@ -10,6 +10,7 @@ export default ({
   type,
   document,
 }) => {
+  const groupByDate = []
   const firstMatcher = {
     $match: {
       isActive: true,
@@ -39,6 +40,33 @@ export default ({
       },
     })
   }
+  if (date) {
+    firstMatcher.$match.date = { $lte: new Date(date) }
+    groupByDate.push({
+      $sort: { date: 1, createdAt: 1 },
+    })
+
+    groupByDate.push({
+      $group: {
+        _id: {
+          type: '$type',
+          truckKind: '$truckKind',
+          liftCapacity: '$liftCapacity',
+          loading: '$loading',
+          unloading: '$unloading',
+          orderType: '$orderType',
+        },
+        tariff: { $last: '$$ROOT' },
+      },
+    })
+
+    groupByDate.push({
+      $replaceRoot: {
+        newRoot: '$tariff',
+      },
+    })
+  }
+
   const group = [
     {
       $group: {
@@ -59,5 +87,7 @@ export default ({
       },
     },
   ]
-  return [firstMatcher, ...agreementLookup, ...group]
+  const pipeline = [firstMatcher, ...agreementLookup]
+  if (date) pipeline.push(...groupByDate)
+  return [...pipeline, ...group]
 }
