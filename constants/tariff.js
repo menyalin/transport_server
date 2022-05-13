@@ -3,7 +3,7 @@ const types = [
   {
     value: 'directDistanceZones',
     text: 'Зоны, по линейке',
-    disabled: false,
+    disabled: true,
     tariffType: 'base',
   },
   { value: 'waiting', text: 'Простой', disabled: false },

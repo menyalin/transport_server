@@ -20,7 +20,7 @@ class DowntimeService extends IService {
       userId: user,
       companyId: body.company,
       operation: 'downtime:daysForWrite',
-      startDate: body.startPositionDate
+      startDate: body.startPositionDate,
     })
 
     await checkCrossItems({ body })
@@ -32,7 +32,7 @@ class DowntimeService extends IService {
         opType: 'create',
         user,
         company: data.company.toString(),
-        body: JSON.stringify(data.toJSON())
+        body: JSON.stringify(data.toJSON()),
       })
     this.emitter(data.company.toString(), `${this.modelName}:created`, data)
     return data
@@ -45,7 +45,7 @@ class DowntimeService extends IService {
       userId: user,
       companyId: body.company,
       operation: 'downtime:daysForWrite',
-      startDate: downtime.endPositionDate
+      startDate: downtime.endPositionDate,
     })
     downtime = Object.assign(downtime, body)
     await downtime.save()
@@ -53,7 +53,7 @@ class DowntimeService extends IService {
     this.emitter(
       downtime.company.toString(),
       `${this.modelName}:updated`,
-      downtime
+      downtime,
     )
 
     if (this.logService)
@@ -63,7 +63,7 @@ class DowntimeService extends IService {
         opType: 'update',
         user,
         company: downtime.company.toString(),
-        body: JSON.stringify(downtime.toJSON())
+        body: JSON.stringify(downtime.toJSON()),
       })
     return downtime
   }
@@ -90,11 +90,11 @@ class DowntimeService extends IService {
       userId: user,
       companyId: data.company.toString(),
       operation: 'downtime:daysForWrite',
-      startDate: data.endPositionDate
+      startDate: data.endPositionDate,
     })
     data.isActive = false
     await data.save()
-    
+
     this.emitter(data.company.toString(), `${this.modelName}:deleted`, id)
     if (this.logService)
       await this.logService.add({
@@ -103,7 +103,7 @@ class DowntimeService extends IService {
         opType: 'delete',
         user,
         company: data.company.toString(),
-        body: JSON.stringify(data.toJSON())
+        body: JSON.stringify(data.toJSON()),
       })
     return data
   }
@@ -113,5 +113,5 @@ export default new DowntimeService({
   model: Downtime,
   emitter: emitTo,
   modelName: 'downtime',
-  logService: ChangeLogService
+  logService: ChangeLogService,
 })

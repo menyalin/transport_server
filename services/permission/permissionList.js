@@ -3,6 +3,10 @@ export const admin = {
   'report:drivers_grades': true,
   'order:readFinalPrices': true,
   'order:writeFinalPrices': true,
+  'document:readList': true,
+  'document:readItem': true,
+  'document:write': true,
+  'document:delete': true,
 }
 
 export const outsourceCarriersManager = {
@@ -56,6 +60,8 @@ export const director = {
   'report:drivers_grades': true,
   'tariff:readList': true,
   'tariff:readItem': true,
+  'document:readList': true,
+  'document:readItem': true,
 }
 
 export const dispatcher = {
@@ -158,6 +164,10 @@ export const accountant = {
   'tariff:readItem': true,
   'tariff:write': true,
   'tariff:delete': true,
+  'document:readList': true,
+  'document:readItem': true,
+  'document:write': true,
+  'document:delete': true,
 }
 
 export const mechanic = {

@@ -1,6 +1,15 @@
 import mongoose from 'mongoose'
 
-export default ({ company, date, limit, skip, agreement, client, type }) => {
+export default ({
+  company,
+  date,
+  limit,
+  skip,
+  agreement,
+  client,
+  type,
+  document,
+}) => {
   const firstMatcher = {
     $match: {
       isActive: true,
@@ -10,7 +19,8 @@ export default ({ company, date, limit, skip, agreement, client, type }) => {
   if (type) firstMatcher.$match.type = type
   if (agreement)
     firstMatcher.$match.agreement = mongoose.Types.ObjectId(agreement)
-
+  if (document)
+    firstMatcher.$match.document = mongoose.Types.ObjectId(document)
   const agreementLookup = [
     {
       $lookup: {

@@ -10,6 +10,7 @@ import {
   TruckService,
   OrderTemplateService,
   PermissionService,
+  DocumentService,
 } from '../index.js'
 import {
   DOCUMENT_TYPES,
@@ -44,6 +45,7 @@ class UserService {
     const trucks = await TruckService.getByProfile(profile)
     const tkNames = await TkNameService.getByProfile(profile)
     const partners = await PartnerService.getByProfile(profile)
+    const documents = await DocumentService.getByProfile(profile)
     const orderTemplates = await OrderTemplateService.getByProfile(profile)
     const staffRoles = await PermissionService.getAllRoles()
     const permissions = await PermissionService.getUserPermissions({
@@ -65,17 +67,18 @@ class UserService {
       trucks,
       tkNames,
       partners,
-      orderStatuses: ORDER_STATUSES,
+      staffRoles,
+      permissions,
+      allTruckParams,
       orderTemplates,
+      documents,
+      orderStatuses: ORDER_STATUSES,
       orderAnalyticTypes: ORDER_ANALYTIC_TYPES,
       orderPriceTypes: ORDER_PRICE_TYPES,
       documentTypes: DOCUMENT_TYPES,
       documentStatuses: DOCUMENT_STATUSES,
       tariffTypes: TARIFF_TYPES,
       roundingWaitingByHours: TARIFF_ROUND_BY_HOURS,
-      staffRoles,
-      permissions,
-      allTruckParams,
     }
   }
 

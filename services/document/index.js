@@ -1,4 +1,4 @@
-import { Partner } from '../../models/index.js'
+import { Document } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 import IService from '../iService.js'
 import ChangeLogService from '../changeLog/index.js'
@@ -10,8 +10,8 @@ class DocumentService extends IService {
 }
 
 export default new DocumentService({
-  model: Partner,
+  model: Document,
   emitter: emitTo,
-  modelName: 'partner',
+  modelName: 'document',
   logService: ChangeLogService,
 })

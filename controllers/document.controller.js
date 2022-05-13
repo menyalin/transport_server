@@ -1,5 +1,5 @@
 import { IController } from './iController.js'
-import PartnerService from '../services/partner/index.js'
+import { DocumentService } from '../services/index.js'
 
 class PartnerController extends IController {
   constructor({ service, permissionName }) {
@@ -9,6 +9,6 @@ class PartnerController extends IController {
 }
 
 export default new PartnerController({
-  service: PartnerService,
-  permissionName: 'partner',
+  service: DocumentService,
+  permissionName: 'document',
 })

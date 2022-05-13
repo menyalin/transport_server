@@ -19,6 +19,7 @@ const schema = new Schema(
     sumVat: { type: Number, required: true },
     price: { type: Number, required: true },
     note: { type: String },
+    document: { type: Types.ObjectId, ref: 'Document' },
     group: { type: String, required: true },
     groupNote: { type: String },
     groupVat: { type: Boolean, required: true },
@@ -36,7 +37,6 @@ const schema = new Schema(
     includeHours: { type: Number },
     roundByHours: { type: Number, enum: TARIFF_ROUND_BY_HOURS_ENUM }, // Кратность округления по часам
     tariffBy: { type: String, enum: ['hour', 'day'] },
-
     // for 'return'
     percentOfTariff: { type: Number },
   },
