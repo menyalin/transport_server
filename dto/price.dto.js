@@ -47,6 +47,7 @@ export default class PriceDTO {
       route: order.route,
       orderType: order.analytics.type,
       prices: order.prices,
+      analytics: order.analytics,
     }
   }
 }
