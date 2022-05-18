@@ -47,18 +47,14 @@ export default ({ dateRange, company }) => {
   const groupRoute = {
     $group: {
       _id: '$_id',
-      grade: {
-        $first: '$grade',
-      },
-      route: {
-        $push: '$route',
-      },
-      client: {
-        $first: '$client',
-      },
-      confirmedCrew: {
-        $first: '$confirmedCrew',
-      },
+      grade: { $first: '$grade' },
+      route: { $push: '$route' },
+      client: { $first: '$client' },
+      confirmedCrew: { $first: '$confirmedCrew' },
+      prePrices: { $first: '$prePrices' },
+      prices: { $first: '$prices' },
+      finalPrices: { $first: '$finalPrices' },
+      outsourceCosts: { $first: '$outsourceCosts' },
     },
   }
 
@@ -140,14 +136,19 @@ export default ({ dateRange, company }) => {
         },
       })
     })
-    console.log('res', res)
-    return { $addFields: { ...res} }
+    return { $addFields: { ...res } }
   }
 
   const sortByPlannedDate = [
     { $addFields: { firstPlannedDate } },
     { $sort: { firstPlannedDate: 1 } },
   ]
+
+  const getTotalPrice = (priceTypes, withVat = true) => ({
+    $add: priceTypes.map((type) => ({
+      $ifNull: [`$${type}.${withVat ? 'price' : 'priceWOVat'}`, 0],
+    })),
+  })
 
   const finalProject = {
     $project: {
@@ -245,7 +246,10 @@ export default ({ dateRange, company }) => {
       },
       Оценка: '$grade.grade',
       'Комментарий к оценке': '$grade.note',
-      base: '$base.price',
+      'Стоимость с НДС': getTotalPrice(ORDER_PRICE_TYPES_ENUM, true),
+      'Стоимость без НДС': getTotalPrice(ORDER_PRICE_TYPES_ENUM, false),
+      // 'Затраты привлеченный с НДС': '0',
+      // 'Затраты привлеченный без НДС': '0',
     },
   }
 
