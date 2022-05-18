@@ -248,8 +248,20 @@ export default ({ dateRange, company }) => {
       'Комментарий к оценке': '$grade.note',
       'Стоимость с НДС': getTotalPrice(ORDER_PRICE_TYPES_ENUM, true),
       'Стоимость без НДС': getTotalPrice(ORDER_PRICE_TYPES_ENUM, false),
-      // 'Затраты привлеченный с НДС': '0',
-      // 'Затраты привлеченный без НДС': '0',
+      'Затраты привлеченный с НДС': {
+        $reduce: {
+          input: '$outsourceCosts',
+          initialValue: 0,
+          in: { $add: ['$$value', { $ifNull: ['$$this.price', 0] }] },
+        },
+      },
+      'Затраты привлеченный без НДС': {
+        $reduce: {
+          input: '$outsourceCosts',
+          initialValue: 0,
+          in: { $add: ['$$value', { $ifNull: ['$$this.priceWOVat', 0] }] },
+        },
+      },
     },
   }
 
