@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { ORDER_PRICE_TYPES_ENUM } from '../../../constants/priceTypes.js'
 
 export default ({ dateRange, company }) => {
   const firstPlannedDate = {
@@ -70,6 +71,15 @@ export default ({ dateRange, company }) => {
     },
   }
 
+  const lookupTkName = {
+    $lookup: {
+      from: 'tknames',
+      localField: 'truck.tkName',
+      foreignField: '_id',
+      as: 'tkName',
+    },
+  }
+
   const lookupTruck = {
     $lookup: {
       from: 'trucks',
@@ -86,6 +96,52 @@ export default ({ dateRange, company }) => {
       foreignField: '_id',
       as: 'trailer',
     },
+  }
+
+  const priceArraysToObjects = {
+    $addFields: {
+      prices: {
+        $arrayToObject: {
+          $map: {
+            input: '$prices',
+            in: { k: '$$this.type', v: '$$this' },
+          },
+        },
+      },
+      prePrices: {
+        $arrayToObject: {
+          $map: {
+            input: '$prePrices',
+            in: { k: '$$this.type', v: '$$this' },
+          },
+        },
+      },
+      finalPrices: {
+        $arrayToObject: {
+          $map: {
+            input: '$finalPrices',
+            in: { k: '$$this.type', v: '$$this' },
+          },
+        },
+      },
+    },
+  }
+
+  const addPriceTypeFieldsBuilder = (priceTypes) => {
+    let res = {}
+    priceTypes.forEach((type) => {
+      res = Object.assign(res, {
+        [type]: {
+          $ifNull: [
+            '$finalPrices.' + type,
+            '$prices.' + type,
+            '$prePrices.' + type,
+          ],
+        },
+      })
+    })
+    console.log('res', res)
+    return { $addFields: { ...res} }
   }
 
   const sortByPlannedDate = [
@@ -144,6 +200,14 @@ export default ({ dateRange, company }) => {
           chars: ', ',
         },
       },
+      ТК: {
+        $getField: {
+          field: 'name',
+          input: {
+            $first: '$tkName',
+          },
+        },
+      },
       Грузовик: {
         $getField: {
           field: 'regNum',
@@ -164,19 +228,9 @@ export default ({ dateRange, company }) => {
         $trim: {
           input: {
             $concat: [
-              {
-                $getField: {
-                  field: 'surname',
-                  input: { $first: '$driver' },
-                },
-              },
+              { $getField: { field: 'surname', input: { $first: '$driver' } } },
               ' ',
-              {
-                $getField: {
-                  field: 'name',
-                  input: { $first: '$driver' },
-                },
-              },
+              { $getField: { field: 'name', input: { $first: '$driver' } } },
               ' ',
               {
                 $getField: {
@@ -189,9 +243,9 @@ export default ({ dateRange, company }) => {
           },
         },
       },
-
       Оценка: '$grade.grade',
       'Комментарий к оценке': '$grade.note',
+      base: '$base.price',
     },
   }
 
@@ -202,7 +256,10 @@ export default ({ dateRange, company }) => {
     groupRoute,
     lookupDriver,
     lookupTruck,
+    lookupTkName,
     lookupTrailer,
+    priceArraysToObjects,
+    addPriceTypeFieldsBuilder(ORDER_PRICE_TYPES_ENUM),
     ...sortByPlannedDate,
     finalProject,
   ]
