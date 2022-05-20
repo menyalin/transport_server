@@ -1,10 +1,52 @@
 import PriceDTO from '../../dto/price.dto.js'
-import { Tariff } from '../../models/index.js'
+import { Tariff, Address } from '../../models/index.js'
 import getPointsTariffPipeline from './pipelines/getPointsTariffPipeline.js'
 import getDistanceZonesPipeline from './pipelines/getDistanceZonesPipeline.js'
+import getZonesTariffPipeline from './pipelines/getZonesTariffPipeline.js'
 
 const getPointsTariff = async (params) => {
   const pipeline = getPointsTariffPipeline(params)
+  const res = await Tariff.aggregate(pipeline)
+  return res[0] || null
+}
+
+const getZonesTariff = async (params) => {
+  const loadingAddressIds = params.route
+    .filter((i) => i.type === 'loading')
+    .map((i) => i.address)
+
+  const unloadingAddressIds = params.route
+    .filter((i) => i.type === 'unloading')
+    .map((i) => i.address)
+
+  const loadingAddresses = await Address.find({
+    _id: loadingAddressIds,
+  }).lean()
+
+  const unloadingAddresses = await Address.find({
+    _id: unloadingAddressIds,
+  }).lean()
+
+  const loadingZones = []
+  const unloadingZones = []
+  loadingAddresses
+    .filter((i) => i.zones && i.zones.length)
+    .forEach((i) => {
+      loadingZones.push(...i.zones.map((z) => z.toString()))
+    })
+
+  unloadingAddresses
+    .filter((i) => i.zones && i.zones.length)
+    .forEach((i) => {
+      unloadingZones.push(...i.zones.map((z) => z.toString()))
+    })
+
+  if (!loadingZones.length || !unloadingZones.length) return null
+  const pipeline = getZonesTariffPipeline({
+    ...params,
+    loadingZones,
+    unloadingZones,
+  })
   const res = await Tariff.aggregate(pipeline)
   return res[0] || null
 }
@@ -35,6 +77,9 @@ export default async (params) => {
         ),
       }),
     }
+
+  tariff = await getZonesTariff(params)
+  if (tariff) return { ...PriceDTO.createFromTariff({ tariff, type: 'base' }) }
 
   return null
 }

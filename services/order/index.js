@@ -112,6 +112,7 @@ class OrderService {
   }
 
   async moveOrderInSchedule({ orderId, truck, startPositionDate }, user) {
+    // TODO: Добавить заполнение водителя и прицепа из экипажа
     const order = await OrderModel.findById(orderId)
     if (!truck) {
       order.confirmedCrew.truck = null

@@ -11,6 +11,7 @@ import {
   OrderTemplateService,
   PermissionService,
   DocumentService,
+  ZoneService,
 } from '../index.js'
 import {
   DOCUMENT_TYPES,
@@ -46,8 +47,10 @@ class UserService {
     const tkNames = await TkNameService.getByProfile(profile)
     const partners = await PartnerService.getByProfile(profile)
     const documents = await DocumentService.getByProfile(profile)
+    const zones = await ZoneService.getByProfile(profile)
     const orderTemplates = await OrderTemplateService.getByProfile(profile)
     const staffRoles = await PermissionService.getAllRoles()
+
     const permissions = await PermissionService.getUserPermissions({
       userId: id,
       companyId: profile,
@@ -72,6 +75,7 @@ class UserService {
       allTruckParams,
       orderTemplates,
       documents,
+      zones,
       orderStatuses: ORDER_STATUSES,
       orderAnalyticTypes: ORDER_ANALYTIC_TYPES,
       orderPriceTypes: ORDER_PRICE_TYPES,

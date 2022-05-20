@@ -54,6 +54,8 @@ export default ({
           liftCapacity: '$liftCapacity',
           loading: '$loading',
           unloading: '$unloading',
+          loadingZone: '$loadingZone',
+          unloadingZone: '$unloadingZone',
           orderType: '$orderType',
         },
         tariff: { $last: '$$ROOT' },

@@ -8,6 +8,8 @@ const addressSchema = new Schema(
     shortName: String,
     note: String,
     label: String,
+    zones: [{ type: Types.ObjectId, ref: 'Zone' }],
+    contacts: String,
     geo: { type: { type: String }, coordinates: [Number] },
     isShipmentPlace: { type: Boolean, default: false },
     isDeliveryPlace: { type: Boolean, default: false },

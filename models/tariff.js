@@ -32,18 +32,23 @@ const schema = new Schema(
     orderType: { type: String, enum: ORDER_ANALYTIC_TYPES_ENUM },
     includedPoints: { type: Number },
     // for 'directDistanceZones' type, and "loading"
-    zones: [{
-      distance: Number,
-      price: Number,
-      priceWOVat: Number,
-      sumVat: Number,
-    }],
+    zones: [
+      {
+        distance: Number,
+        price: Number,
+        priceWOVat: Number,
+        sumVat: Number,
+      },
+    ],
     // for "waiting", "orderType"
     includeHours: { type: Number },
     roundByHours: { type: Number, enum: TARIFF_ROUND_BY_HOURS_ENUM }, // Кратность округления по часам
     tariffBy: { type: String, enum: ['hour', 'day'] },
     // for 'return'
     percentOfTariff: { type: Number },
+
+    loadingZone: { type: Types.ObjectId, ref: 'Zone' },
+    unloadingZone: { type: Types.ObjectId, ref: 'Zone' },
   },
   { timestamps: true },
 )

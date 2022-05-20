@@ -1,5 +1,16 @@
 const types = [
-  { value: 'points', text: 'Маршрут', disabled: false, tariffType: 'base' },
+  {
+    value: 'points',
+    text: 'Маршрут, адреса',
+    disabled: false,
+    tariffType: 'base',
+  },
+  {
+    value: 'zones',
+    text: 'Маршрут, зоны',
+    disabled: false,
+    tariffType: 'base',
+  },
   {
     value: 'directDistanceZones',
     text: 'Зоны, по линейке',

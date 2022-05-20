@@ -19,6 +19,7 @@ import scheduleNoteRouter from './api/scheduleNote/index.js'
 import agreementRouter from './api/agreement/index.js'
 import tariffRouter from './api/tariff/index.js'
 import documentRouter from './api/document/index.js'
+import zoneRouter from './api/zone/index.js'
 
 const app = express()
 
@@ -45,5 +46,6 @@ app.use('/api/schedule_notes', scheduleNoteRouter)
 app.use('/api/agreements', agreementRouter)
 app.use('/api/tariffs', tariffRouter)
 app.use('/api/documents', documentRouter)
+app.use('/api/zones', zoneRouter)
 
 export default app

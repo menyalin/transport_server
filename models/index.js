@@ -15,6 +15,7 @@ import ScheduleNote from './scheduleNote.js'
 import Agreement from './agreement.js'
 import Tariff from './tariff.js'
 import Document from './document.js'
+import Zone from './zone.js'
 
 export {
   User,
@@ -34,4 +35,5 @@ export {
   Agreement,
   Tariff,
   Document,
+  Zone,
 }
