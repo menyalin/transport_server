@@ -18,12 +18,12 @@ export const getOrderListPipeline = ({
   const sP = new Date(startDate)
   const eP = new Date(endDate)
 
-  const firstPlannedDate = {
-    $getField: {
-      field: 'plannedDate',
-      input: { $arrayElemAt: ['$route', 0] },
-    },
-  }
+  // const firstPlannedDate = {
+  //   $getField: {
+  //     field: 'plannedDate',
+  //     input: { $arrayElemAt: ['$route', 0] },
+  //   },
+  // }
 
   const firstMatcher = {
     $match: {
@@ -31,8 +31,8 @@ export const getOrderListPipeline = ({
       company: mongoose.Types.ObjectId(profile),
       $expr: {
         $and: [
-          { $gte: [firstPlannedDate, sP] },
-          { $lt: [firstPlannedDate, eP] },
+          { $gte: ['$startPositionDate', sP] },
+          { $lt: ['$startPositionDate', eP] },
         ],
       },
     },
