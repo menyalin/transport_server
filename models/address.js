@@ -6,6 +6,8 @@ const addressSchema = new Schema(
   {
     name: String,
     shortName: String,
+    region: String,
+    city: String,
     note: String,
     label: String,
     zones: [{ type: Types.ObjectId, ref: 'Zone' }],
