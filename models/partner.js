@@ -1,4 +1,5 @@
 import pkg from 'mongoose'
+import { PARTNER_GROUPS_ENUM } from '../constants/partner.js'
 const { Schema, model, Types } = pkg
 
 const schema = new Schema(
@@ -7,6 +8,7 @@ const schema = new Schema(
     inn: String,
     company: { type: Types.ObjectId, ref: 'Company' },
     contacts: String,
+    group: { type: String, enum: PARTNER_GROUPS_ENUM },
     isClient: { type: Boolean, default: false },
     isService: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },

@@ -1,4 +1,5 @@
 import { ORDER_STATUSES, ORDER_ANALYTIC_TYPES } from '../../constants/order.js'
+import { PARTNER_GROUPS } from '../../constants/partner.js'
 import { ORDER_PRICE_TYPES } from '../../constants/priceTypes.js'
 import { User } from '../../models/index.js'
 import {
@@ -70,6 +71,7 @@ class UserService {
       trucks,
       tkNames,
       partners,
+      partnerGroups: PARTNER_GROUPS,
       staffRoles,
       permissions,
       allTruckParams,
