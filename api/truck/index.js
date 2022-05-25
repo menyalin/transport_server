@@ -11,16 +11,16 @@ const router = express.Router()
 
 // api/truck
 router.get('/', [jwtAuth, queryValidator(getProfileTrucksSchema)], (...args) =>
-  ctrl.getByProfile(...args)
+  ctrl.getByProfile(...args),
 )
 router.get('/search', [jwtAuth], (...args) => ctrl.search(...args))
 router.get('/:id', [jwtAuth], (...args) => ctrl.getById(...args))
 
 router.post('/', [jwtAuth, bodyValidator(createTruckSchema)], (...args) =>
-  ctrl.create(...args)
+  ctrl.create(...args),
 )
 router.put('/:id', [jwtAuth, bodyValidator(createTruckSchema)], (...args) =>
-  ctrl.updateOne(...args)
+  ctrl.updateOne(...args),
 )
 router.delete('/:id', [jwtAuth], (...args) => ctrl.deleteById(...args))
 
