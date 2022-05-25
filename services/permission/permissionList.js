@@ -7,6 +7,15 @@ export const admin = {
   'document:readItem': true,
   'document:write': true,
   'document:delete': true,
+
+  'region:readList': true,
+  'region:readItem': true,
+  'region:write': true,
+  'region:delete': true,
+  'city:readList': true,
+  'city:readItem': true,
+  'city:write': true,
+  'city:delete': true,
 }
 
 export const outsourceCarriersManager = {
@@ -64,6 +73,11 @@ export const director = {
   'tariff:readItem': true,
   'document:readList': true,
   'document:readItem': true,
+
+  'region:readList': true,
+  'region:readItem': true,
+  'city:readList': true,
+  'city:readItem': true,
 }
 
 export const dispatcher = {
@@ -73,6 +87,13 @@ export const dispatcher = {
   'address:readItem': true,
   'zone:readList': true,
   'zone:readItem': true,
+
+  'region:readList': true,
+  'region:readItem': true,
+
+  'city:readList': true,
+  'city:readItem': true,
+
   'downtime:readList': true,
   'downtime:readItem': true,
   'downtime:write': true,
@@ -108,8 +129,16 @@ export const seniorDispatcher = {
   'tkName:delete': true,
   'address:write': true,
   'address:delete': true,
+
   'zone:write': true,
   'zone:delete': true,
+
+  'region:write': true,
+  'region:delete': true,
+
+  'city:write': true,
+  'city:delete': true,
+
   'partner:write': true,
   'partner:delete': true,
   'truck:write': true,
@@ -137,6 +166,13 @@ export const checkman = {
   'address:readItem': true,
   'zone:readList': true,
   'zone:readItem': true,
+
+  'region:readList': true,
+  'region:readItem': true,
+
+  'city:readList': true,
+  'city:readItem': true,
+
   'downtime:readList': true,
   'downtime:readItem': true,
   'scheduleNote:readList': true,
@@ -182,6 +218,13 @@ export const mechanic = {
   'order:daysForRead': 10,
   'address:readList': true,
   'address:readItem': true,
+
+  'region:readList': true,
+  'region:readItem': true,
+
+  'city:readList': true,
+  'city:readItem': true,
+
   'zone:readList': true,
   'zone:readItem': true,
   'downtime:readList': true,

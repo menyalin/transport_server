@@ -20,6 +20,8 @@ import agreementRouter from './api/agreement/index.js'
 import tariffRouter from './api/tariff/index.js'
 import documentRouter from './api/document/index.js'
 import zoneRouter from './api/zone/index.js'
+import regionRouter from './api/region/index.js'
+import cityRouter from './api/city/index.js'
 
 const app = express()
 
@@ -47,5 +49,7 @@ app.use('/api/agreements', agreementRouter)
 app.use('/api/tariffs', tariffRouter)
 app.use('/api/documents', documentRouter)
 app.use('/api/zones', zoneRouter)
+app.use('/api/regions', regionRouter)
+app.use('/api/cities', cityRouter)
 
 export default app

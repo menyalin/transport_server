@@ -13,6 +13,8 @@ import {
   PermissionService,
   DocumentService,
   ZoneService,
+  RegionService,
+  CityService,
 } from '../index.js'
 import {
   DOCUMENT_TYPES,
@@ -49,6 +51,8 @@ class UserService {
     const partners = await PartnerService.getByProfile(profile)
     const documents = await DocumentService.getByProfile(profile)
     const zones = await ZoneService.getByProfile(profile)
+    const regions = await RegionService.getByProfile(profile)
+    const cities = await CityService.getByProfile(profile)
     const orderTemplates = await OrderTemplateService.getByProfile(profile)
     const staffRoles = await PermissionService.getAllRoles()
 
@@ -71,13 +75,15 @@ class UserService {
       trucks,
       tkNames,
       partners,
-      partnerGroups: PARTNER_GROUPS,
       staffRoles,
       permissions,
       allTruckParams,
       orderTemplates,
       documents,
       zones,
+      regions,
+      cities,
+      partnerGroups: PARTNER_GROUPS,
       orderStatuses: ORDER_STATUSES,
       orderAnalyticTypes: ORDER_ANALYTIC_TYPES,
       orderPriceTypes: ORDER_PRICE_TYPES,

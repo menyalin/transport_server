@@ -16,6 +16,8 @@ import Agreement from './agreement.js'
 import Tariff from './tariff.js'
 import Document from './document.js'
 import Zone from './zone.js'
+import Region from './region.js'
+import City from './city.js'
 
 export {
   User,
@@ -36,4 +38,6 @@ export {
   Tariff,
   Document,
   Zone,
+  Region,
+  City,
 }

@@ -18,6 +18,9 @@ import PermissionService from './permission/index.js'
 import TariffService from './tariff/index.js'
 import DocumentService from './document/index.js'
 import ZoneService from './zone/index.js'
+import RegionService from './region/index.js'
+import CityService from './city/index.js'
+
 import FileService from './file/index.js'
 
 export {
@@ -42,4 +45,6 @@ export {
   TariffService,
   DocumentService,
   ZoneService,
+  RegionService,
+  CityService,
 }
