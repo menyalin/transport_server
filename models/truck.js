@@ -70,7 +70,7 @@ const truckSchema = new Schema(
     endServiceDate: Date,
     startServiceDate: Date,
     type: { type: String, enum: TRUCK_TYPES_ENUM },
-    kind: String,
+    kind: { type: String, enum: [...TRUCK_KINDS_ENUM, null] },
     liftCapacityType: { type: Number, enum: TRUCK_LIFT_CAPACITY_TYPES },
     tkName: { type: Types.ObjectId, ref: 'TkName' },
     regNum: String,

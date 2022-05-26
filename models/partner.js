@@ -8,7 +8,7 @@ const schema = new Schema(
     inn: String,
     company: { type: Types.ObjectId, ref: 'Company' },
     contacts: String,
-    group: { type: String, enum: PARTNER_GROUPS_ENUM },
+    group: { type: String, enum: [...PARTNER_GROUPS_ENUM, null] },
     isClient: { type: Boolean, default: false },
     isService: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
