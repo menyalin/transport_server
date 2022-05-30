@@ -10,31 +10,31 @@ const getWaitingTariff = async (params) => {
 }
 
 const getDurationInHours = (
-  point,
-  { calcWaitingByArrivalDate, noWaitingPaymentForAreLate },
+  { plannedDate, arrivalDate, departureDate, type: pointType },
+  agreement,
+
   { includeHours },
 ) => {
-  let startDate
+  let startDate, noWaiting, calcByArrivalDate
 
-  const plannedDate = new Date(point.plannedDate)
-  const arrivalDate = new Date(point.arrivalDate)
-  const departureDate = new Date(point.departureDate)
+  const _plannedDate = new Date(plannedDate)
+  const _arrivalDate = new Date(arrivalDate)
+  const _departureDate = new Date(departureDate)
 
-  if (
-    noWaitingPaymentForAreLate &&
-    !!point.plannedDate &&
-    arrivalDate > plannedDate
-  )
-    return 0
+  if (pointType === 'loading') {
+    noWaiting = agreement.noWaitingPaymentForAreLateLoading
+    calcByArrivalDate = agreement.calcWaitingByArrivalDateLoading
+  } else {
+    noWaiting = agreement.noWaitingPaymentForAreLateUnloading
+    calcByArrivalDate = agreement.calcWaitingByArrivalDateUnloading
+  }
+  if (noWaiting && !!plannedDate && _arrivalDate > _plannedDate) return 0
 
-  if (
-    !point.plannedDate ||
-    calcWaitingByArrivalDate ||
-    arrivalDate > plannedDate
-  )
-    startDate = arrivalDate
-  else startDate = plannedDate
-  const dur = (departureDate - startDate) / (1000 * 60 * 60)
+  if (!plannedDate || calcByArrivalDate || _arrivalDate > _plannedDate)
+    startDate = _arrivalDate
+  else startDate = _plannedDate
+
+  const dur = (_departureDate - startDate) / (1000 * 60 * 60)
   return dur > includeHours ? dur - includeHours : 0
 }
 
@@ -119,7 +119,7 @@ export default async (order) => {
         },
       ),
   )
-  
+
   const result = []
   if (loadingSumPrices.price) result.push({ ...loadingSumPrices })
   if (unloadingSumPrices.price) result.push({ ...unloadingSumPrices })
