@@ -8,14 +8,6 @@ export const admin = {
   'document:write': true,
   'document:delete': true,
 
-  'region:readList': true,
-  'region:readItem': true,
-  'region:write': true,
-  'region:delete': true,
-  'city:readList': true,
-  'city:readItem': true,
-  'city:write': true,
-  'city:delete': true,
 }
 
 export const outsourceCarriersManager = {
@@ -130,15 +122,6 @@ export const seniorDispatcher = {
   'address:write': true,
   'address:delete': true,
 
-  'zone:write': true,
-  'zone:delete': true,
-
-  'region:write': true,
-  'region:delete': true,
-
-  'city:write': true,
-  'city:delete': true,
-
   'partner:write': true,
   'partner:delete': true,
   'truck:write': true,
@@ -157,7 +140,7 @@ export const seniorDispatcher = {
 
 export const checkman = {
   orderListForAccountant: true,
-  'order:daysForRead': 30,
+  'order:daysForRead': -1,
   'order:daysForWrite': 14,
   'order:daysForReadPrice': 14,
   'tkName:readList': true,
