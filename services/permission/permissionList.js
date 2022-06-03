@@ -62,6 +62,7 @@ export const director = {
   'orderTemplate:readItem': true,
   orderListForAccountant: true,
   'report:drivers_grades': true,
+  'report:gross_profit': true,
   'tariff:readList': true,
   'tariff:readItem': true,
   'document:readList': true,
