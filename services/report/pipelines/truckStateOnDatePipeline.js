@@ -96,5 +96,8 @@ export default ({ company, date, truckType, tkName }) => {
         downtime: { $first: '$downtime' },
       },
     },
+    {
+      $sort: { order: 1 },
+    },
   ]
 }
