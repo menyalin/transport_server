@@ -8,26 +8,26 @@ const medBook = {
   issueDate: Date,
   certifiedBeforeDate: Date,
   annualCommisionDate: Date,
-  note: String
+  note: String,
 }
 
 const driverSchema = new Schema(
   {
     name: {
       type: String,
-      required: true
+      required: true,
     },
     surname: {
       type: String,
-      required: true
+      required: true,
     },
     patronymic: {
-      type: String
+      type: String,
     },
     tkName: {
       type: Types.ObjectId,
       ref: 'TkName',
-      required: true
+      required: true,
     },
     additionalNotifications: [additionalNotification],
     passportId: String,
@@ -40,39 +40,39 @@ const driverSchema = new Schema(
     driverCardPeriod: Date,
     hasScans: {
       type: Boolean,
-      default: false
+      default: false,
     },
     medBook,
     employmentDate: Date,
     dismissalDate: Date,
     recommender: String,
     birthday: {
-      type: Date
+      type: Date,
     },
     isBrigadier: {
       type: Boolean,
-      default: false
+      default: false,
     },
     isMechanic: {
       type: Boolean,
-      default: false
+      default: false,
     },
     phone: {
-      type: String
+      type: String,
     },
     phone2: {
-      type: String
+      type: String,
     },
     company: {
       type: Types.ObjectId,
-      ref: 'Company'
+      ref: 'Company',
     },
     isActive: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
-  { timestamps: true, toJSON: { virtuals: true } }
+  { timestamps: true, toJSON: { virtuals: true } },
 )
 
 driverSchema.virtual('fullName').get(function () {

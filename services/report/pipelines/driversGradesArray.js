@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import { ORDER_PRICE_TYPES_ENUM } from '../../../constants/priceTypes.js'
+import routePointsNameBuilder from './fragments/routePointsNameBuilder.js'
 
 export default ({ dateRange, company }) => {
   const firstPlannedDate = {
@@ -12,6 +13,7 @@ export default ({ dateRange, company }) => {
   const firstMatcher = {
     $match: {
       company: mongoose.Types.ObjectId(company),
+      isActive: true,
       $expr: {
         $and: [
           { $eq: ['$state.status', 'completed'] },
@@ -159,55 +161,10 @@ export default ({ dateRange, company }) => {
           timezone: '+03:00',
         },
       },
-      Погрузка: {
-        $rtrim: {
-          input: {
-            $reduce: {
-              input: {
-                $filter: {
-                  input: '$route',
-                  cond: {
-                    $eq: ['$$this.type', 'loading'],
-                  },
-                },
-              },
-              initialValue: '',
-              in: {
-                $concat: ['$$value', '$$this.address.shortName', ', '],
-              },
-            },
-          },
-          chars: ', ',
-        },
-      },
-      Выгрузка: {
-        $rtrim: {
-          input: {
-            $reduce: {
-              input: {
-                $filter: {
-                  input: '$route',
-                  cond: {
-                    $eq: ['$$this.type', 'unloading'],
-                  },
-                },
-              },
-              initialValue: '',
-              in: {
-                $concat: ['$$value', '$$this.address.shortName', ', '],
-              },
-            },
-          },
-          chars: ', ',
-        },
-      },
+      Погрузка: routePointsNameBuilder('loading'),
+      Выгрузка: routePointsNameBuilder('unloading'),
       ТК: {
-        $getField: {
-          field: 'name',
-          input: {
-            $first: '$tkName',
-          },
-        },
+        $getField: { field: 'name', input: { $first: '$tkName' } },
       },
       Грузовик: {
         $getField: {

@@ -4,12 +4,9 @@ import getReportDaysControlPipeline from '../report/pipelines/reportDaysControlP
 import getInProgressOrdersPipeline from './pipelines/inProgressOrdersPipeline.js'
 import getTruckStateOnDatePipeline from './pipelines/truckStateOnDatePipeline.js'
 import getDriversGradesAppayPipeline from './pipelines/driversGradesArray.js'
+import getGrossProfitPipeline from './pipelines/grossProfitPipeline.js'
 
 class ReportService {
-  constructor({ Driver }) {
-    this.DriverModel = Driver
-  }
-
   async inProgressOrders({ profile, client }) {
     const pipeline = getInProgressOrdersPipeline({ profile, client })
     const data = await Order.aggregate(pipeline)
@@ -35,6 +32,12 @@ class ReportService {
     return res
   }
 
+  async grossProfit({ company, dateRange }) {
+    const pipeline = getGrossProfitPipeline({ company, dateRange })
+    const res = await Order.aggregate(pipeline)
+    return res[0] || []
+  }
+
   async driversGradesGetLink({ company, dateRange }) {
     const pipeline = getDriversGradesAppayPipeline({ company, dateRange })
     const array = await Order.aggregate(pipeline)
@@ -46,4 +49,4 @@ class ReportService {
   }
 }
 
-export default new ReportService({ Driver })
+export default new ReportService()

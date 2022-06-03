@@ -8,6 +8,7 @@ export const admin = {
   'document:write': true,
   'document:delete': true,
 
+  'report:gross_profit': true,
 }
 
 export const outsourceCarriersManager = {

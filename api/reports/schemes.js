@@ -25,3 +25,16 @@ export const driversGradesSchema = {
   required: ['company', 'dateRange'],
   additionalProperties: true,
 }
+export const grossProfitSchema = {
+  type: 'object',
+  properties: {
+    company: {
+      type: 'string',
+    },
+    dateRange: {
+      type: 'array',
+    },
+  },
+  required: ['company', 'dateRange'],
+  additionalProperties: true,
+}
