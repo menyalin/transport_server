@@ -4,7 +4,12 @@ import express from 'express'
 import { jwtAuth } from '../../utils/auth.middleware.js'
 import { queryValidator, bodyValidator } from '../../utils/validator.js'
 import ctrl from '../../controllers/report.controller.js'
-import { daysControlSchema, driversGradesSchema, grossProfitSchema } from './schemes.js'
+import {
+  daysControlSchema,
+  driversGradesSchema,
+  grossProfitSchema,
+  grossProfitPivotSchema,
+} from './schemes.js'
 
 const router = express.Router()
 
@@ -34,4 +39,11 @@ router.post(
   [jwtAuth, bodyValidator(grossProfitSchema)],
   (...args) => ctrl.grossProfit(...args),
 )
+
+router.post(
+  '/gross_profit_pivot',
+  [jwtAuth, bodyValidator(grossProfitPivotSchema)],
+  (...args) => ctrl.grossProfitPivot(...args),
+)
+
 export default router

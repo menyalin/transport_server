@@ -5,6 +5,7 @@ import getInProgressOrdersPipeline from './pipelines/inProgressOrdersPipeline.js
 import getTruckStateOnDatePipeline from './pipelines/truckStateOnDatePipeline.js'
 import getDriversGradesAppayPipeline from './pipelines/driversGradesArray.js'
 import getGrossProfitPipeline from './pipelines/grossProfitPipeline.js'
+import getGrossProfitPivotPipeline from './pipelines/grossProfitPivotPipeline.js'
 
 class ReportService {
   async inProgressOrders({ profile, client }) {
@@ -36,6 +37,18 @@ class ReportService {
     const pipeline = getGrossProfitPipeline({ company, dateRange })
     const res = await Order.aggregate(pipeline)
     return res[0] || []
+  }
+
+  async grossProfitPivot({ company, dateRange, groupBy }) {
+    const pipeline = getGrossProfitPivotPipeline({
+      company,
+      dateRange,
+      groupBy,
+    })
+    const res = await Order.aggregate(pipeline)
+    return {
+      pivot: res[0] || {},
+    }
   }
 
   async driversGradesGetLink({ company, dateRange }) {

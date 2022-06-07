@@ -38,3 +38,18 @@ export const grossProfitSchema = {
   required: ['company', 'dateRange'],
   additionalProperties: true,
 }
+
+export const grossProfitPivotSchema = {
+  type: 'object',
+  properties: {
+    company: {
+      type: 'string',
+    },
+    dateRange: {
+      type: 'array',
+    },
+    groupBy: { type: 'string' },
+  },
+  required: ['company', 'dateRange', 'groupBy'],
+  additionalProperties: true,
+}
