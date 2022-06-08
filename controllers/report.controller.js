@@ -73,6 +73,7 @@ class ReportController {
         company: req.body.company,
         dateRange: req.body.dateRange,
         groupBy: req.body.groupBy,
+        mainFilters: req.body.mainFilters,
       })
       res.status(200).json(data)
     } catch (e) {

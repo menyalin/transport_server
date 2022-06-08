@@ -39,11 +39,12 @@ class ReportService {
     return res[0] || []
   }
 
-  async grossProfitPivot({ company, dateRange, groupBy }) {
+  async grossProfitPivot({ company, dateRange, groupBy, mainFilters }) {
     const pipeline = getGrossProfitPivotPipeline({
       company,
       dateRange,
       groupBy,
+      mainFilters,
     })
     const res = await Order.aggregate(pipeline)
     return {

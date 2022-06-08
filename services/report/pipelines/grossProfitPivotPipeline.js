@@ -64,7 +64,7 @@ const addTotalPriceFields = () => ({
   },
 })
 
-export default ({ dateRange, company, groupBy }) => {
+export default ({ dateRange, company, groupBy, mainFilters }) => {
   const firstMatcher = {
     $match: {
       company: mongoose.Types.ObjectId(company),
@@ -79,6 +79,25 @@ export default ({ dateRange, company, groupBy }) => {
     },
   }
 
+  if (mainFilters.clients.values.length) {
+    if (mainFilters.clients.cond === 'in')
+      firstMatcher.$match.$expr.$and.push({
+        $in: [
+          '$client.client',
+          mainFilters.clients.values.map((i) => mongoose.Types.ObjectId(i)),
+        ],
+      })
+    else
+      firstMatcher.$match.$expr.$and.push({
+        $not: {
+          $in: [
+            '$client.client',
+            mainFilters.clients.values.map((i) => mongoose.Types.ObjectId(i)),
+          ],
+        },
+      })
+  }
+
   const project = {
     $project: {
       client: '$client.client',
@@ -86,6 +105,7 @@ export default ({ dateRange, company, groupBy }) => {
       loadingAddressIds: getPointAddressIdsByType('loading'),
       unloadingAddressIds: getPointAddressIdsByType('unloading'),
       truckId: '$confirmedCrew.truck',
+      tkName: '$confirmedCrew.tkName',
       driverId: '$confirmedCrew.driver',
       clientId: '$client.client',
       prices: '$prices',
@@ -112,6 +132,9 @@ export default ({ dateRange, company, groupBy }) => {
         break
       case 'driver':
         groupType = '$driverId'
+        break
+      case 'tkName':
+        groupType = '$tkName'
         break
     }
 
