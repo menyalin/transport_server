@@ -78,7 +78,7 @@ export default ({ dateRange, company, groupBy, mainFilters }) => {
       },
     },
   }
-
+  // Основной отбор по КЛИЕНТАМ
   if (mainFilters.clients.values.length) {
     if (mainFilters.clients.cond === 'in')
       firstMatcher.$match.$expr.$and.push({
@@ -93,6 +93,26 @@ export default ({ dateRange, company, groupBy, mainFilters }) => {
           $in: [
             '$client.client',
             mainFilters.clients.values.map((i) => mongoose.Types.ObjectId(i)),
+          ],
+        },
+      })
+  }
+
+  // Основной отбор по TkNames
+  if (mainFilters.tkNames.values.length) {
+    if (mainFilters.tkNames.cond === 'in')
+      firstMatcher.$match.$expr.$and.push({
+        $in: [
+          '$confirmedCrew.tkName',
+          mainFilters.tkNames.values.map((i) => mongoose.Types.ObjectId(i)),
+        ],
+      })
+    else
+      firstMatcher.$match.$expr.$and.push({
+        $not: {
+          $in: [
+            '$confirmedCrew.tkName',
+            mainFilters.tkNames.values.map((i) => mongoose.Types.ObjectId(i)),
           ],
         },
       })
