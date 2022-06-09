@@ -18,6 +18,19 @@ const getPointAddressIdsByType = (type) => {
   }
 }
 
+const _getMainFilterBlock = ({ field, cond, values }) => {
+  if (cond === 'in')
+    return {
+      $in: [field, values.map((i) => mongoose.Types.ObjectId(i))],
+    }
+  else
+    return {
+      $not: {
+        $in: [field, values.map((i) => mongoose.Types.ObjectId(i))],
+      },
+    }
+}
+
 const addPriceObjByTypes = (priceTypes) => {
   const prices = {}
   priceTypes.forEach((type) => {
@@ -79,44 +92,44 @@ export default ({ dateRange, company, groupBy, mainFilters }) => {
     },
   }
   // Основной отбор по КЛИЕНТАМ
-  if (mainFilters.clients.values.length) {
-    if (mainFilters.clients.cond === 'in')
-      firstMatcher.$match.$expr.$and.push({
-        $in: [
-          '$client.client',
-          mainFilters.clients.values.map((i) => mongoose.Types.ObjectId(i)),
-        ],
-      })
-    else
-      firstMatcher.$match.$expr.$and.push({
-        $not: {
-          $in: [
-            '$client.client',
-            mainFilters.clients.values.map((i) => mongoose.Types.ObjectId(i)),
-          ],
-        },
-      })
-  }
+  if (mainFilters.clients?.values.length)
+    firstMatcher.$match.$expr.$and.push(
+      _getMainFilterBlock({
+        field: '$client.client',
+        cond: mainFilters.clients.cond,
+        values: mainFilters.clients.values,
+      }),
+    )
 
   // Основной отбор по TkNames
-  if (mainFilters.tkNames.values.length) {
-    if (mainFilters.tkNames.cond === 'in')
-      firstMatcher.$match.$expr.$and.push({
-        $in: [
-          '$confirmedCrew.tkName',
-          mainFilters.tkNames.values.map((i) => mongoose.Types.ObjectId(i)),
-        ],
-      })
-    else
-      firstMatcher.$match.$expr.$and.push({
-        $not: {
-          $in: [
-            '$confirmedCrew.tkName',
-            mainFilters.tkNames.values.map((i) => mongoose.Types.ObjectId(i)),
-          ],
-        },
-      })
-  }
+  if (mainFilters.tkNames?.values.length)
+    firstMatcher.$match.$expr.$and.push(
+      _getMainFilterBlock({
+        field: '$confirmedCrew.tkName',
+        cond: mainFilters.tkNames.cond,
+        values: mainFilters.tkNames.values,
+      }),
+    )
+
+  // Основной отбор по грузовикам
+  if (mainFilters.trucks?.values.length)
+    firstMatcher.$match.$expr.$and.push(
+      _getMainFilterBlock({
+        field: '$confirmedCrew.truck',
+        cond: mainFilters.trucks.cond,
+        values: mainFilters.trucks.values,
+      }),
+    )
+
+  // Основной отбор по водителям
+  if (mainFilters.drivers?.values.length)
+    firstMatcher.$match.$expr.$and.push(
+      _getMainFilterBlock({
+        field: '$confirmedCrew.driver',
+        cond: mainFilters.drivers.cond,
+        values: mainFilters.drivers.values,
+      }),
+    )
 
   const project = {
     $project: {
@@ -132,10 +145,6 @@ export default ({ dateRange, company, groupBy, mainFilters }) => {
       prePrices: '$prePrices',
       finalPrices: '$finalPrices',
     },
-  }
-
-  const sortOrdersByTotalPrice = {
-    $sort: { totalWithVat: -1 },
   }
 
   const group = (groupBy) => {
@@ -169,9 +178,6 @@ export default ({ dateRange, company, groupBy, mainFilters }) => {
       },
     }
   }
-  const finalSorting = {
-    $sort: { totalWithVat: -1 },
-  }
 
   const finalGroup = {
     $group: {
@@ -189,9 +195,9 @@ export default ({ dateRange, company, groupBy, mainFilters }) => {
     project,
     addPriceTypeFieldsBuilder(ORDER_PRICE_TYPES_ENUM),
     addTotalPriceFields(),
-    sortOrdersByTotalPrice,
+    { $sort: { totalWithVat: -1 } },
     group(groupBy),
-    finalSorting,
+    { $sort: { totalWithVat: -1 } },
     finalGroup,
   ]
 }
