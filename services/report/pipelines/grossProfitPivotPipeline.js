@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 import { POINT_TYPES } from '../../../constants/enums.js'
 import { ORDER_PRICE_TYPES_ENUM } from '../../../constants/priceTypes.js'
+const { Types, isObjectIdOrHexString } = mongoose
 
 const getPointAddressIdsByType = (type) => {
   if (!type || !POINT_TYPES.includes(type))
@@ -21,12 +22,18 @@ const getPointAddressIdsByType = (type) => {
 const _getMainFilterBlock = ({ field, cond, values }) => {
   if (cond === 'in')
     return {
-      $in: [field, values.map((i) => mongoose.Types.ObjectId(i))],
+      $in: [
+        field,
+        values.map((i) => (isObjectIdOrHexString(i) ? Types.ObjectId(i) : i)),
+      ],
     }
   else
     return {
       $not: {
-        $in: [field, values.map((i) => mongoose.Types.ObjectId(i))],
+        $in: [
+          field,
+          values.map((i) => (isObjectIdOrHexString(i) ? Types.ObjectId(i) : i)),
+        ],
       },
     }
 }
@@ -80,7 +87,7 @@ const addTotalPriceFields = () => ({
 export default ({ dateRange, company, groupBy, mainFilters }) => {
   const firstMatcher = {
     $match: {
-      company: mongoose.Types.ObjectId(company),
+      company: Types.ObjectId(company),
       isActive: true,
       $expr: {
         $and: [
@@ -128,6 +135,15 @@ export default ({ dateRange, company, groupBy, mainFilters }) => {
         field: '$confirmedCrew.driver',
         cond: mainFilters.drivers.cond,
         values: mainFilters.drivers.values,
+      }),
+    )
+
+  if (mainFilters.orderTypes?.values.length)
+    firstMatcher.$match.$expr.$and.push(
+      _getMainFilterBlock({
+        field: '$analytics.type',
+        cond: mainFilters.orderTypes.cond,
+        values: mainFilters.orderTypes.values,
       }),
     )
 
