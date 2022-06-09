@@ -257,13 +257,28 @@ export default ({ dateRange, company, groupBy, mainFilters }) => {
         filter: mainFilters.loadingRegions,
       }),
     )
-
   // Регионы разгрузки
   if (mainFilters.unloadingRegions?.values.length)
     secondMatcher.$match.$expr.$and.push(
       getAddressFilterBlock({
         field: '$unloadingRegions',
         filter: mainFilters.unloadingRegions,
+      }),
+    )
+  // Зоны погрузки
+  if (mainFilters.loadingZones?.values.length)
+    secondMatcher.$match.$expr.$and.push(
+      getAddressFilterBlock({
+        field: '$loadingZones',
+        filter: mainFilters.loadingZones,
+      }),
+    )
+  // Зоны разгрузки
+  if (mainFilters.unloadingZones?.values.length)
+    secondMatcher.$match.$expr.$and.push(
+      getAddressFilterBlock({
+        field: '$unloadingZones',
+        filter: mainFilters.unloadingZones,
       }),
     )
 
