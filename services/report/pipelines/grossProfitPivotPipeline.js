@@ -163,6 +163,110 @@ export default ({ dateRange, company, groupBy, mainFilters }) => {
     },
   }
 
+  const addLoadingZones = [
+    {
+      $lookup: {
+        from: 'addresses',
+        localField: 'loadingAddressIds',
+        foreignField: '_id',
+        as: 'loadingAddresses',
+      },
+    },
+    {
+      $lookup: {
+        from: 'addresses',
+        localField: 'unloadingAddressIds',
+        foreignField: '_id',
+        as: 'unloadingAddresses',
+      },
+    },
+    {
+      $addFields: {
+        loadingRegions: {
+          $map: {
+            input: '$loadingAddresses',
+            in: '$$this.region',
+          },
+        },
+        unloadingRegions: {
+          $map: {
+            input: '$unloadingAddresses',
+            in: '$$this.region',
+          },
+        },
+        loadingZones: {
+          $reduce: {
+            input: '$loadingAddresses',
+            initialValue: [],
+            in: { $concatArrays: ['$$value', '$$this.zones'] },
+          },
+        },
+        unloadingZones: {
+          $reduce: {
+            input: '$unloadingAddresses',
+            initialValue: [],
+            in: { $concatArrays: ['$$value', '$$this.zones'] },
+          },
+        },
+      },
+    },
+  ]
+  const secondMatcher = {
+    $match: {
+      $expr: {
+        $and: [],
+      },
+    },
+  }
+
+  const getAddressFilterBlock = ({ field, filter }) => {
+    if (filter.cond === 'in')
+      return {
+        $anyElementTrue: [
+          {
+            $map: {
+              input: field,
+              in: {
+                $in: ['$$this', filter?.values.map((i) => Types.ObjectId(i))],
+              },
+            },
+          },
+        ],
+      }
+    else
+      return {
+        $not: {
+          $anyElementTrue: [
+            {
+              $map: {
+                input: field,
+                in: {
+                  $in: ['$$this', filter?.values.map((i) => Types.ObjectId(i))],
+                },
+              },
+            },
+          ],
+        },
+      }
+  }
+  // регионы погрузки
+  if (mainFilters.loadingRegions?.values.length)
+    secondMatcher.$match.$expr.$and.push(
+      getAddressFilterBlock({
+        field: '$loadingRegions',
+        filter: mainFilters.loadingRegions,
+      }),
+    )
+
+  // Регионы разгрузки
+  if (mainFilters.unloadingRegions?.values.length)
+    secondMatcher.$match.$expr.$and.push(
+      getAddressFilterBlock({
+        field: '$unloadingRegions',
+        filter: mainFilters.unloadingRegions,
+      }),
+    )
+
   const group = (groupBy) => {
     let groupType
     switch (groupBy) {
@@ -209,6 +313,8 @@ export default ({ dateRange, company, groupBy, mainFilters }) => {
     firstMatcher,
     addPriceObjByTypes(['prices', 'prePrices', 'finalPrices']),
     project,
+    ...addLoadingZones,
+    secondMatcher,
     addPriceTypeFieldsBuilder(ORDER_PRICE_TYPES_ENUM),
     addTotalPriceFields(),
     { $sort: { totalWithVat: -1 } },
