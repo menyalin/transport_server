@@ -80,6 +80,20 @@ class ReportController {
       res.status(e.statusCode || 500).json(e.message)
     }
   }
+
+  async grossProfitDetails(req, res) {
+    try {
+      const data = await this.service.grossProfitDetails({
+        company: req.body.company,
+        dateRange: req.body.dateRange,
+        mainFilters: req.body.mainFilters,
+        listOptions: req.body.listOptions,
+      })
+      res.status(200).json(data)
+    } catch (e) {
+      res.status(e.statusCode || 500).json(e.message)
+    }
+  }
 }
 
 export default new ReportController({ service: ReportService })

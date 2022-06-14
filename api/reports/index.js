@@ -9,6 +9,7 @@ import {
   driversGradesSchema,
   grossProfitSchema,
   grossProfitPivotSchema,
+  grossProfitDetailsSchema,
 } from './schemes.js'
 
 const router = express.Router()
@@ -44,6 +45,12 @@ router.post(
   '/gross_profit_pivot',
   [jwtAuth, bodyValidator(grossProfitPivotSchema)],
   (...args) => ctrl.grossProfitPivot(...args),
+)
+
+router.post(
+  '/gross_profit_details',
+  [jwtAuth, bodyValidator(grossProfitDetailsSchema)],
+  (...args) => ctrl.grossProfitDetails(...args),
 )
 
 export default router

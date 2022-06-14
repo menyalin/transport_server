@@ -6,6 +6,7 @@ import getTruckStateOnDatePipeline from './pipelines/truckStateOnDatePipeline.js
 import getDriversGradesAppayPipeline from './pipelines/driversGradesArray.js'
 import getGrossProfitPipeline from './pipelines/grossProfitPipeline.js'
 import getGrossProfitPivotPipeline from './pipelines/grossProfitPivotPipeline.js'
+import getGrossProfitDetailsPipeline from './pipelines/getGrossProfitDetailsPipeline.js'
 
 class ReportService {
   async inProgressOrders({ profile, client }) {
@@ -50,6 +51,20 @@ class ReportService {
     return {
       pivot: res[0] || {},
     }
+  }
+
+  async grossProfitDetails({ company, dateRange, mainFilters, listOptions }) {
+    const pipeline = getGrossProfitDetailsPipeline({
+      company,
+      dateRange,
+      mainFilters,
+      listOptions,
+    })
+    const res = await Order.aggregate(pipeline)
+    if (!res[0]?.items || !res[0]?.count) {
+      console.log('incorrect format', res[0])
+      throw new Error('aggregation error, wrong response format')
+    } else return res[0]
   }
 
   async driversGradesGetLink({ company, dateRange }) {
