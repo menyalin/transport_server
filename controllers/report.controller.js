@@ -88,6 +88,7 @@ class ReportController {
         dateRange: req.body.dateRange,
         mainFilters: req.body.mainFilters,
         listOptions: req.body.listOptions,
+        additionalFilters: req.body.additionalFilters,
       })
       res.status(200).json(data)
     } catch (e) {

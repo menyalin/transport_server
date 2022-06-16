@@ -1,24 +1,31 @@
-/*
-  --------- list options format
-  page: 1,
-  itemsPerPage: 100,
-  sortBy: [],
-  sortDesc: [ false ],
-  groupBy: [],
-  groupDesc: [],
-  mustSort: false,
-  multiSort: false
-*/
-
 import { firstMatcher } from '../pipelines/grossProfitReportFragments/firstMatcher.js'
 import { addPriceObjByTypes } from '../pipelines/grossProfitReportFragments/addPriceObjByTypes.js'
 import { firstProject } from './grossProfitReportFragments/firstProject.js'
 import { lookupAddressParams } from './grossProfitReportFragments/lookupAddressParams.js'
 import { secondMatcher } from './grossProfitReportFragments/secondMatcher.js'
 import { addTotalPriceFields } from '../pipelines/grossProfitReportFragments/addTotalPriceFields.js'
+import { additionalMatcher } from '../pipelines/grossProfitReportFragments/additionalMatcher.js'
+/*
+{
+  clients: { values: [], cond: 'in' },
+  tkNames: { values: [], cond: 'in' },
+  trucks: { values: [], cond: 'in' },
+  drivers: { values: [], cond: 'in' },
+  orderTypes: { values: [], cond: 'in' },
+  loadingRegions: { values: [], cond: 'in' },
+  unloadingRegions: { values: [], cond: 'in' },
+  loadingZones: { values: [], cond: 'in' },
+  unloadingZones: { values: [], cond: 'in' }
+}
+*/
 
-export default ({ dateRange, company, mainFilters, listOptions }) => {
-  console.log(listOptions)
+export default ({
+  dateRange,
+  company,
+  mainFilters,
+  additionalFilters,
+  listOptions,
+}) => {
   const finalGroup = [
     // {
     //   $sort: {
@@ -54,6 +61,7 @@ export default ({ dateRange, company, mainFilters, listOptions }) => {
     addPriceObjByTypes(['prices', 'prePrices', 'finalPrices']),
     firstProject(),
     ...lookupAddressParams(),
+    additionalMatcher(additionalFilters),
     secondMatcher({ mainFilters }),
     ...addTotalPriceFields(),
     {

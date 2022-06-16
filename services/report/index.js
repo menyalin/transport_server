@@ -53,12 +53,19 @@ class ReportService {
     }
   }
 
-  async grossProfitDetails({ company, dateRange, mainFilters, listOptions }) {
+  async grossProfitDetails({
+    company,
+    dateRange,
+    mainFilters,
+    additionalFilters,
+    listOptions,
+  }) {
     const pipeline = getGrossProfitDetailsPipeline({
       company,
       dateRange,
       mainFilters,
       listOptions,
+      additionalFilters,
     })
     const res = await Order.aggregate(pipeline)
     if (!res[0]?.items || !res[0]?.count) {

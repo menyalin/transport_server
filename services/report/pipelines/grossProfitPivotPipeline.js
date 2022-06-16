@@ -34,6 +34,7 @@ export default ({ dateRange, company, groupBy, mainFilters }) => {
         totalWithVat: { $sum: '$totalWithVat' },
         totalWOVat: { $sum: '$totalWOVat' },
         avgWithVat: { $avg: '$totalWithVat' },
+        avgWOVat: { $avg: '$totalWOVat' },
       },
     }
   }
