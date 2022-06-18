@@ -1,22 +1,17 @@
 import mongoose from 'mongoose'
 const { Types, isObjectIdOrHexString } = mongoose
 
+const getValuesArray = (values) =>
+  values.map((i) => (isObjectIdOrHexString(i) ? Types.ObjectId(i) : i))
+
 const _getMainFilterBlock = ({ field, cond, values }) => {
   if (cond === 'in')
     return {
-      $in: [
-        field,
-        values.map((i) => (isObjectIdOrHexString(i) ? Types.ObjectId(i) : i)),
-      ],
+      $in: [field, getValuesArray(values)],
     }
   else
     return {
-      $not: {
-        $in: [
-          field,
-          values.map((i) => (isObjectIdOrHexString(i) ? Types.ObjectId(i) : i)),
-        ],
-      },
+      $not: { $in: [field, getValuesArray(values)] },
     }
 }
 

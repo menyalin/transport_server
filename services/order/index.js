@@ -123,7 +123,9 @@ class OrderService {
         order,
       )
     }
-
+    order.confirmedCrew.driver = null
+    order.confirmedCrew.trailer = null
+    order.confirmedCrew.tkName = null
     order.startPositionDate = startPositionDate
     order.isDisabled = false
     emitTo(order.company.toString(), 'order:updated', order)
