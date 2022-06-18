@@ -68,9 +68,8 @@ class ReportService {
       additionalFilters,
     })
     const res = await Order.aggregate(pipeline)
-    if (!Array.isArray(res[0]?.items)) {
-      // console.log('incorrect format', res)
-      throw new Error('aggregation error, wrong response format')
+    if (Array.isArray(res) && !Array.isArray(res[0]?.items)) {
+      return { items: [], count: 0 }
     } else return res[0]
   }
 

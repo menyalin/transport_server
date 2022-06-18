@@ -32,7 +32,7 @@ const getAddressFilterBlock = ({ field, filter }) => {
     }
 }
 
-export const secondMatcher = ({ mainFilters }) => {
+export const secondMatcher = ({ filters }) => {
   const secondMatcher = {
     $match: {
       $expr: {
@@ -40,35 +40,35 @@ export const secondMatcher = ({ mainFilters }) => {
       },
     },
   }
-  if (mainFilters.loadingRegions?.values.length)
+  if (filters.loadingRegions?.values.length)
     secondMatcher.$match.$expr.$and.push(
       getAddressFilterBlock({
         field: '$loadingRegions',
-        filter: mainFilters.loadingRegions,
+        filter: filters.loadingRegions,
       }),
     )
   // Регионы разгрузки
-  if (mainFilters.unloadingRegions?.values.length)
+  if (filters.unloadingRegions?.values.length)
     secondMatcher.$match.$expr.$and.push(
       getAddressFilterBlock({
         field: '$unloadingRegions',
-        filter: mainFilters.unloadingRegions,
+        filter: filters.unloadingRegions,
       }),
     )
   // Зоны погрузки
-  if (mainFilters.loadingZones?.values.length)
+  if (filters.loadingZones?.values.length)
     secondMatcher.$match.$expr.$and.push(
       getAddressFilterBlock({
         field: '$loadingZones',
-        filter: mainFilters.loadingZones,
+        filter: filters.loadingZones,
       }),
     )
   // Зоны разгрузки
-  if (mainFilters.unloadingZones?.values.length)
+  if (filters.unloadingZones?.values.length)
     secondMatcher.$match.$expr.$and.push(
       getAddressFilterBlock({
         field: '$unloadingZones',
-        filter: mainFilters.unloadingZones,
+        filter: filters.unloadingZones,
       }),
     )
   return secondMatcher

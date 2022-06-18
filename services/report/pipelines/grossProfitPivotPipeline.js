@@ -4,6 +4,7 @@ import { firstProject } from './grossProfitReportFragments/firstProject.js'
 import { lookupAddressParams } from './grossProfitReportFragments/lookupAddressParams.js'
 import { secondMatcher } from './grossProfitReportFragments/secondMatcher.js'
 import { addTotalPriceFields } from '../pipelines/grossProfitReportFragments/addTotalPriceFields.js'
+import { additionalMatcher } from './grossProfitReportFragments/additionalMatcher.js'
 
 export default ({ dateRange, company, groupBy, mainFilters }) => {
   const group = (groupBy) => {
@@ -23,6 +24,9 @@ export default ({ dateRange, company, groupBy, mainFilters }) => {
         break
       case 'tkName':
         groupType = '$tkName'
+        break
+      case 'loadingRegion':
+        groupType = '$loadingRegions'
         break
     }
 
@@ -54,7 +58,7 @@ export default ({ dateRange, company, groupBy, mainFilters }) => {
     addPriceObjByTypes(['prices', 'prePrices', 'finalPrices']),
     firstProject(),
     ...lookupAddressParams(),
-    secondMatcher({ mainFilters }),
+    secondMatcher({ filters: mainFilters }),
     ...addTotalPriceFields(),
     { $sort: { totalWithVat: -1 } },
     group(groupBy),

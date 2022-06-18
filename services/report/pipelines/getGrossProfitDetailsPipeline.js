@@ -5,19 +5,6 @@ import { lookupAddressParams } from './grossProfitReportFragments/lookupAddressP
 import { secondMatcher } from './grossProfitReportFragments/secondMatcher.js'
 import { addTotalPriceFields } from '../pipelines/grossProfitReportFragments/addTotalPriceFields.js'
 import { additionalMatcher } from '../pipelines/grossProfitReportFragments/additionalMatcher.js'
-/*
-{
-  clients: { values: [], cond: 'in' },
-  tkNames: { values: [], cond: 'in' },
-  trucks: { values: [], cond: 'in' },
-  drivers: { values: [], cond: 'in' },
-  orderTypes: { values: [], cond: 'in' },
-  loadingRegions: { values: [], cond: 'in' },
-  unloadingRegions: { values: [], cond: 'in' },
-  loadingZones: { values: [], cond: 'in' },
-  unloadingZones: { values: [], cond: 'in' }
-}
-*/
 
 export default ({
   dateRange,
@@ -62,7 +49,8 @@ export default ({
     firstProject(),
     ...lookupAddressParams(),
     additionalMatcher(additionalFilters),
-    secondMatcher({ mainFilters }),
+    secondMatcher({ filters: mainFilters }),
+    secondMatcher({ filters: additionalFilters }),
     ...addTotalPriceFields(),
     {
       $sort: {
