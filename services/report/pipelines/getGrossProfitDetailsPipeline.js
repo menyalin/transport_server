@@ -5,6 +5,7 @@ import { lookupAddressParams } from './grossProfitReportFragments/lookupAddressP
 import { secondMatcher } from './grossProfitReportFragments/secondMatcher.js'
 import { addTotalPriceFields } from '../pipelines/grossProfitReportFragments/addTotalPriceFields.js'
 import { additionalMatcher } from '../pipelines/grossProfitReportFragments/additionalMatcher.js'
+import { sortingList } from '../pipelines/grossProfitReportFragments/sortingList.js'
 
 export default ({
   dateRange,
@@ -52,11 +53,7 @@ export default ({
     secondMatcher({ filters: mainFilters }),
     secondMatcher({ filters: additionalFilters }),
     ...addTotalPriceFields(),
-    {
-      $sort: {
-        orderDate: 1,
-      },
-    },
+    ...sortingList(listOptions),
     ...finalGroup,
   ]
 }
