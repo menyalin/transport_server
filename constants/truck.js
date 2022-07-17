@@ -2,12 +2,15 @@ const types = [
   { value: 'truck', text: 'Грузовик' },
   { value: 'trailer', text: 'Прицеп' },
 ]
+
 const kinds = [
+  { value: 'refPodves', text: 'Реф - Подвес' },
   { value: 'refD', text: 'Реф - 2 яруса' },
   { value: 'ref', text: 'Реф' },
   { value: 'isoterm', text: 'Изотерм' },
   { value: 'tent', text: 'Тент' },
 ]
+
 const loadDirection = [
   { value: 'rear', text: 'Задняя' },
   { value: 'side', text: 'Боковая' },
