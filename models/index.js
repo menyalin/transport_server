@@ -18,6 +18,7 @@ import Document from './document.js'
 import Zone from './zone.js'
 import Region from './region.js'
 import City from './city.js'
+import Worker from './worker.js'
 
 export {
   User,
@@ -40,4 +41,5 @@ export {
   Zone,
   Region,
   City,
+  Worker,
 }

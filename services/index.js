@@ -20,6 +20,7 @@ import DocumentService from './document/index.js'
 import ZoneService from './zone/index.js'
 import RegionService from './region/index.js'
 import CityService from './city/index.js'
+import WorkerService from './worker/index.js'
 
 import FileService from './file/index.js'
 
@@ -47,4 +48,5 @@ export {
   ZoneService,
   RegionService,
   CityService,
+  WorkerService,
 }
