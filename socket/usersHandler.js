@@ -5,7 +5,7 @@ const _updateUserList = async (io, socket, room) => {
   for (const [id, socket] of io.of('/').sockets) {
     sockets.push({
       socketId: id,
-      userId: socket.userId
+      userId: socket.userId,
     })
   }
   const userIds = sockets.map((item) => item.userId)
@@ -14,14 +14,22 @@ const _updateUserList = async (io, socket, room) => {
   for (let i = 0; i < sockets.length; i++) {
     users.push({
       ...sockets[i],
-      user: tmpUsers.find((item) => item._id.toString() === sockets[i].userId)
+      user: tmpUsers.find((item) => item._id.toString() === sockets[i].userId),
     })
   }
-  if (!!socket && !!room) io.to(room).emit('activeUsers', users)
-  else io.emit('activeUsers', users)
+  io.emit('activeUsers', users)
+}
+
+const _setUserRooms = async (socket) => {
+  if (!socket?.userId) return null
+  socket.join(socket.userId)
+  const user = await UserService.findById(socket.userId)
+  if (user && user.directoriesProfile)
+    socket.join(user.directoriesProfile.toString())
 }
 
 export default (io, socket) => {
+  _setUserRooms(socket)
   _updateUserList(io)
 
   socket.on('getActiveUsers', () => {

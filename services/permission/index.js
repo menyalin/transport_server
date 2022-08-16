@@ -1,5 +1,7 @@
 import { ForbiddenError } from '../../helpers/errors.js'
 import { CompanyService } from '../index.js'
+import USER_ROLES from './userRoles.js'
+
 import {
   director,
   dispatcher,
@@ -9,6 +11,7 @@ import {
   mechanic,
   admin,
   outsourceCarriersManager,
+  userAdmin,
 } from './permissionList.js'
 
 class PermissionService {
@@ -22,6 +25,7 @@ class PermissionService {
       accountant,
       mechanic,
       outsourceCarriersManager,
+      userAdmin,
     }
   }
 
@@ -84,41 +88,7 @@ class PermissionService {
   }
 
   async getAllRoles() {
-    return [
-      {
-        value: 'admin',
-        text: 'ТОП',
-        note: 'Полный доступ к данным компании',
-      },
-      {
-        value: 'director',
-        text: 'Директор',
-        note: 'Возможен просмотр всех данных, правка запрещена',
-      },
-      {
-        value: 'seniorDispatcher',
-        text: 'Руководитель логистики',
-        note: 'Описание...',
-      },
-      {
-        value: 'dispatcher',
-        text: 'Логист',
-        note: 'Создание рейсов, адресов...',
-      },
-      { value: 'juniorDispatcher', text: 'Диспетчер', note: 'Описание...' },
-      { value: 'mechanic', text: 'Механик', note: 'Описание...' },
-      { value: 'checkman', text: 'Учетчик', note: 'Описание...' },
-      { value: 'brigadier', text: 'Бригадир', note: 'Описание...' },
-      { value: 'trainee', text: 'Стажер', note: 'Описание...' },
-      {
-        value: 'accountant',
-        text: 'Бухгалтер',
-      },
-      {
-        value: 'outsourceCarriersManager',
-        text: 'Менеджер по работе с привлеченными ТК',
-      },
-    ]
+    return USER_ROLES
   }
 }
 

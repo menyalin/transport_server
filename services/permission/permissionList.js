@@ -9,6 +9,7 @@ export const admin = {
   'document:delete': true,
 
   'report:gross_profit': true,
+  'worker:userMatching': true,
 }
 
 export const outsourceCarriersManager = {
@@ -224,6 +225,14 @@ export const mechanic = {
   'driver:readItem': true,
 }
 
+export const userAdmin = {
+  'worker:write': true,
+  'worker:delete': false,
+  'worker:readList': true,
+  'worker:readItem': true,
+  'worker:userAdmin': true,
+}
+
 /*
       { value: 'admin' text: 'ТОП' },
       { value: 'director', text: 'Директор'},
@@ -234,5 +243,6 @@ export const mechanic = {
       { value: 'checkman', text: 'Учетчик', note: 'Описание...' },
       { value: 'brigadier', text: 'Бригадир', note: 'Описание...' },
       { value: 'trainee', text: 'Стажер', note: 'Описание...' },
-      { value: 'accountant',  text: 'Бухгалтер' }
+      { value: 'accountant',  text: 'Бухгалтер' },
+      { value: 'userAdmin', text: 'Администратор пользователей'}
 */

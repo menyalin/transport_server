@@ -15,12 +15,14 @@ import {
   ZoneService,
   RegionService,
   CityService,
+  WorkerService,
 } from '../index.js'
 import {
   DOCUMENT_TYPES,
   DOCUMENT_STATUSES,
 } from '../../constants/accounting.js'
 import { TARIFF_TYPES, TARIFF_ROUND_BY_HOURS } from '../../constants/tariff.js'
+import { emitTo } from '../../socket/index.js'
 
 import {
   LOAD_DIRECTION,
@@ -31,7 +33,7 @@ import {
 
 class UserService {
   async findById(id, fields = '-password') {
-    const user = await User.findById(id, fields)
+    const user = await User.findById(id, fields).lean()
     return user
   }
 
@@ -39,9 +41,13 @@ class UserService {
     const user = await User.findById(id, fields).lean()
     if (!user) throw new Error('user not found!')
     const profile = user.directoriesProfile
+    const companyInvites = await WorkerService.getUserInvites(id)
+    // todo: переписать getUserCompanies для работы с workers
     const companies = await CompanyService.getUserCompanies(id)
+    const staffRoles = await PermissionService.getAllRoles()
+
     if (!profile) {
-      return { user, companies }
+      return { user, companies, companyInvites, staffRoles }
     }
 
     const addresses = await AddressService.getByProfile(profile)
@@ -54,8 +60,6 @@ class UserService {
     const regions = await RegionService.getByProfile(profile)
     const cities = await CityService.getByProfile(profile)
     const orderTemplates = await OrderTemplateService.getByProfile(profile)
-    const staffRoles = await PermissionService.getAllRoles()
-
     const permissions = await PermissionService.getUserPermissions({
       userId: id,
       companyId: profile,
@@ -83,6 +87,7 @@ class UserService {
       zones,
       regions,
       cities,
+      companyInvites,
       partnerGroups: PARTNER_GROUPS,
       orderStatuses: ORDER_STATUSES,
       orderAnalyticTypes: ORDER_ANALYTIC_TYPES,
@@ -109,6 +114,7 @@ class UserService {
 
   async configProfile(userId, { directoriesProfile }) {
     const user = await User.findById(userId)
+    emitTo(userId, 'user:changeDirectoriesProfile')
     if (directoriesProfile !== undefined)
       user.directoriesProfile = directoriesProfile
     await user.save()

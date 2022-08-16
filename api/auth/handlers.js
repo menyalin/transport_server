@@ -17,7 +17,7 @@ export const registration = async (req, res) => {
   try {
     const newUser = await User.create(req.body)
     res.status(201).json({
-      token: await newUser.createToken()
+      token: await newUser.createToken(),
     })
   } catch (e) {
     let status = 500
@@ -35,12 +35,21 @@ export const getMe = async (req, res) => {
   }
 }
 
+export const getById = async (req, res) => {
+  try {
+    const user = await UserService.findById(req.params.id)
+    res.status(200).json(user)
+  } catch (e) {
+    res.status(e.statusCode || 500).json(e.message)
+  }
+}
+
 export const configProfile = async (req, res) => {
   try {
     await UserService.configProfile(req.userId, req.body)
     res.status(200).json('ok')
   } catch (e) {
-    res.status(500).json({ message: e.message })
+    res.status(e.statusCode || 500).json(e.message)
   }
 }
 

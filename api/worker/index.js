@@ -11,9 +11,13 @@ const router = express.Router()
 
 // api/documents
 router.get('/', [jwtAuth], (...args) => ctrl.getByProfile(...args))
+router.get('/user_by_email', [jwtAuth], (...args) =>
+  ctrl.getUserByEmail(...args),
+)
 router.get('/:id', [jwtAuth], (...args) => ctrl.getById(...args))
 
 router.post('/', [jwtAuth], (...args) => ctrl.create(...args))
+router.put('/:id/addUser', [jwtAuth], (...args) => ctrl.addUser(...args))
 router.put('/:id', [jwtAuth], (...args) => ctrl.updateOne(...args))
 router.delete('/:id', [jwtAuth], (...args) => ctrl.deleteById(...args))
 

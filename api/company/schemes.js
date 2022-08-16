@@ -4,28 +4,28 @@ export const createCompanySchema = {
     name: { type: 'string' },
     fullName: { type: 'string' },
     inn: { type: 'string' },
-    hasOwnDirectories: { type: 'boolean' }
+    hasOwnDirectories: { type: 'boolean' },
   },
   required: ['name', 'fullName', 'inn'],
-  additionalProperties: true
+  additionalProperties: true,
 }
 
 export const existInnSchema = {
   type: 'object',
   properties: {
-    inn: { type: 'string' }
+    inn: { type: 'string' },
   },
   required: ['inn'],
-  additionalProperties: false
+  additionalProperties: false,
 }
 
 export const userByEmailSchema = {
   type: 'object',
   properties: {
-    email: { type: 'string', format: 'email' }
+    email: { type: 'string', format: 'email' },
   },
   required: ['email'],
-  additionalProperties: false
+  additionalProperties: false,
 }
 
 export const newEmployeeSchema = {
@@ -36,10 +36,10 @@ export const newEmployeeSchema = {
     roles: {
       type: 'array',
       items: {
-        type: 'string'
-      }
-    }
+        type: 'string',
+      },
+    },
   },
   required: ['user', 'position', 'roles'],
-  additionalProperties: true
+  additionalProperties: true,
 }
