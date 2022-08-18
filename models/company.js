@@ -1,31 +1,5 @@
 import pkg from 'mongoose'
-const { Schema, model, Types } = pkg
-
-const employeeSchema = new Schema(
-  {
-    user: {
-      type: Types.ObjectId,
-      ref: 'User',
-    },
-    roles: [
-      {
-        type: String,
-        required: true,
-      },
-    ],
-    position: {
-      type: String,
-    },
-    tasks: [{ type: Types.ObjectId, ref: 'Task' }],
-    isActive: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  {
-    timestamps: true,
-  },
-)
+const { Schema, model } = pkg
 
 const companySchema = new Schema(
   {
@@ -47,7 +21,6 @@ const companySchema = new Schema(
       loadDirections: [String],
       defaultLoadDirection: String,
     },
-    staff: [employeeSchema],
     inn: {
       type: String,
       unique: true,

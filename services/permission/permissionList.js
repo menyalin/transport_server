@@ -9,7 +9,7 @@ export const admin = {
   'document:delete': true,
 
   'report:gross_profit': true,
-  'worker:userMatching': true,
+  'worker:userAdmin': true,
 }
 
 export const outsourceCarriersManager = {
@@ -33,12 +33,13 @@ export const outsourceCarriersManager = {
 }
 
 export const director = {
+  'worker:readList': true,
+  'worker:readItem': true,
   'order:read': true,
   'order:daysForRead': -1,
   'order:daysForReadPrice': -1,
   'order:daysForReadOutsourceCosts': -1,
   'order:readFinalPrices': true,
-
   'agreement:readList': true,
   'agreement:readItem': true,
   'tkName:readList': true,
@@ -68,7 +69,6 @@ export const director = {
   'tariff:readItem': true,
   'document:readList': true,
   'document:readItem': true,
-
   'region:readList': true,
   'region:readItem': true,
   'city:readList': true,
@@ -82,13 +82,10 @@ export const dispatcher = {
   'address:readItem': true,
   'zone:readList': true,
   'zone:readItem': true,
-
   'region:readList': true,
   'region:readItem': true,
-
   'city:readList': true,
   'city:readItem': true,
-
   'downtime:readList': true,
   'downtime:readItem': true,
   'downtime:write': true,
@@ -226,10 +223,10 @@ export const mechanic = {
 }
 
 export const userAdmin = {
-  'worker:write': true,
-  'worker:delete': false,
   'worker:readList': true,
   'worker:readItem': true,
+  'worker:write': true,
+  'worker:delete': false,
   'worker:userAdmin': true,
 }
 

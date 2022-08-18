@@ -1,8 +1,4 @@
-import {
-  CompanyService,
-  UserService,
-  PermissionService,
-} from '../services/index.js'
+import { CompanyService, PermissionService } from '../services/index.js'
 
 class CompanyController {
   async create(req, res) {
@@ -27,27 +23,6 @@ class CompanyController {
     try {
       const tmp = await CompanyService.isExistInn(req.query.inn)
       res.status(200).json(tmp)
-    } catch (e) {
-      res.status(e.statusCode || 500).json(e.message)
-    }
-  }
-
-  async userByEmail(req, res) {
-    try {
-      const user = await UserService.findByEmail(req.query.email)
-      res.status(200).json(user)
-    } catch (e) {
-      res.status(e.statusCode || 500).json(e.message)
-    }
-  }
-
-  async addEmployee(req, res) {
-    try {
-      const newEmployee = await CompanyService.addEmployee(
-        req.body,
-        req.params.companyId,
-      )
-      res.status(200).json(newEmployee)
     } catch (e) {
       res.status(e.statusCode || 500).json(e.message)
     }

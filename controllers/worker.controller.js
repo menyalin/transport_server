@@ -25,6 +25,19 @@ class WorkerController extends IController {
     }
   }
 
+  async acceptInvite(req, res) {
+    try {
+      const data = await this.service.acceptInvite({
+        userId: req.userId,
+        workerId: req.params.workerId,
+        accepted: req.body.accepted,
+      })
+      res.status(200).json(data)
+    } catch (e) {
+      res.status(e.statusCode || 500).json(e.message)
+    }
+  }
+
   async addUser(req, res) {
     try {
       if (this.permissionName)

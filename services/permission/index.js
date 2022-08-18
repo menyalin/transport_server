@@ -1,5 +1,5 @@
 import { ForbiddenError } from '../../helpers/errors.js'
-import { CompanyService } from '../index.js'
+import { WorkerService } from '../index.js'
 import USER_ROLES from './userRoles.js'
 
 import {
@@ -45,27 +45,26 @@ class PermissionService {
   }
 
   async getUserPermissions({ userId, companyId }) {
-    const employee = await CompanyService.getUserRolesByCompanyIdAndUserId({
+    const roles = await WorkerService.getWorkerRolesByCompanyIdAndUserId({
       userId,
       companyId: companyId.toString() || companyId,
     })
-
-    if (!employee) throw new ForbiddenError('Пользователь не найден')
-    const permissionsMap = this._getPermissionsByRoles(employee.roles)
+    if (!roles) throw new ForbiddenError('У пользователя нет ролей в компании')
+    const permissionsMap = this._getPermissionsByRoles(roles)
     return Object.fromEntries(permissionsMap)
   }
 
   async check({ userId, companyId, operation }) {
     if (!userId) throw new ForbiddenError('Не указан id пользователя')
     if (!companyId) throw new ForbiddenError('Не указан профиль настроек')
-    const employee = await CompanyService.getUserRolesByCompanyIdAndUserId({
+    const roles = await WorkerService.getWorkerRolesByCompanyIdAndUserId({
       userId,
-      companyId,
+      companyId: companyId.toString() || companyId,
     })
-    if (!employee) throw new ForbiddenError('Пользователь не найден')
-    if (Array.isArray(employee.roles) && employee.roles.includes('admin'))
+    if (!roles) throw new ForbiddenError('У пользователя нет ролей')
+    if (Array.isArray(roles) && roles.includes('admin'))
       return true
-    const userPermissionsMap = this._getPermissionsByRoles([...employee.roles])
+    const userPermissionsMap = this._getPermissionsByRoles(roles)
     if (userPermissionsMap.has(operation) && userPermissionsMap.get(operation))
       return true
 

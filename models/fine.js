@@ -4,20 +4,21 @@ const { Schema, model, Types } = pkg
 const schema = new Schema(
   {
     company: { type: Types.ObjectId, ref: 'Company', required: true },
-    number: { type: String, required: true },
-    note: String,
     isActive: { type: Boolean, default: true },
-
-    /*
+    note: String,
+    date: Date,
+    number: { type: String, required: true },
     truck: { type: Types.ObjectId, ref: 'Truck', required: true },
-    type: { type: String, enum: DOWNTIME_TYPES, required: true },
-    title: { type: String, required: true },
-    partner: { type: Types.ObjectId, ref: 'Partner' },
-    address: { type: Types.ObjectId, ref: 'Address' },
-    startPositionDate: { type: Date, required: true },
-    endPositionDate: { type: Date, required: true },
-    inOrderTime: { type: Boolean, default: false },
-    */
+    driver: { type: Types.ObjectId, ref: 'Driver' },
+    totalSum: Number,
+    discountedSum: Number,
+    violationDate: Date,
+    address: String,
+    paymentDate: Date,
+    paymentSum: Number,
+    culprit: { type: Types.ObjectId, ref: 'Worker' },
+    kX: Number,
+    withheldSum: Number,
   },
   { timestamps: true },
 )

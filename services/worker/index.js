@@ -3,10 +3,25 @@ import { emitTo } from '../../socket/index.js'
 import IService from '../iService.js'
 import ChangeLogService from '../changeLog/index.js'
 import { BadRequestError } from '../../helpers/errors.js'
+import getCompaniesByUserIdPipeline from './pipelines/getCompaniesByUserIdPipeline.js'
 
 class WorkerService extends IService {
   constructor({ model, emitter, modelName, logService }) {
     super({ model, emitter, modelName, logService })
+  }
+
+  async getWorkerRolesByCompanyIdAndUserId({ userId, companyId }) {
+    const worker = await this.model
+      .findOne({
+        user: userId,
+        company: companyId,
+        isActive: true,
+        pending: false,
+        disabled: false,
+        accepted: true,
+      })
+      .lean()
+    return worker?.roles || null
   }
 
   async getUserByEmail({ email, companyId }) {
@@ -33,32 +48,38 @@ class WorkerService extends IService {
   }
 
   async updateOne({ id, body, user }) {
-    const data = await this.model.findByIdAndUpdate(id, body, { new: true })
-    this.emitter(data.company.toString(), `${this.modelName}:updated`, data)
+    const worker = await this.model.findByIdAndUpdate(id, body, { new: true })
+    this.emitter(
+      worker.company.toString(),
+      `${this.modelName}:updated`,
+      worker,
+    )
     if (this.logService)
       await this.logService.add({
-        docId: data._id.toString(),
+        docId: worker._id.toString(),
         coll: this.modelName,
         opType: 'update',
         user,
-        company: data.company.toString(),
-        body: JSON.stringify(data.toJSON()),
+        company: worker.company.toString(),
+        body: JSON.stringify(worker.toJSON()),
       })
-    if (data.disabled) {
-      const disabledUser = await UserModel.findOne({
-        _id: data.user,
-        directoriesProfile: data.company,
-      })
-      if (disabledUser) {
+    if (worker.disabled) {
+      const disabledUser = await UserModel.findOne({ _id: worker.user })
+      if (
+        disabledUser &&
+        disabledUser.directoriesProfile.toString() === worker.company.toString()
+      ) {
         disabledUser.directoriesProfile = null
+        await disabledUser.save()
+      }
+      if (disabledUser)
         this.emitter(
           disabledUser._id.toString(),
           'user:clearDirectoriesProfile',
-          null,
+          worker.company.toString(),
         )
-      }
     }
-    return data
+    return worker
   }
 
   async addUser({ userId, roles, workerId, actor }) {
@@ -88,6 +109,21 @@ class WorkerService extends IService {
     return worker
   }
 
+  async acceptInvite({ userId, workerId, accepted }) {
+    const worker = await this.model.findOne({
+      _id: workerId,
+      user: userId,
+      pending: true,
+      disabled: false,
+    })
+    if (!worker)
+      throw new BadRequestError('Соответствующий сотрудник отсутствует!')
+    worker.accepted = accepted
+    worker.pending = false
+    await worker.save()
+    this.emitter(userId, 'worker:updated', worker)
+  }
+
   async getUserInvites(userId) {
     const invites = this.model
       .find({
@@ -99,6 +135,12 @@ class WorkerService extends IService {
       .populate('company', ['name', 'inn', 'fullName'])
       .lean()
     return invites
+  }
+
+  async getUserCompanies(userId) {
+    const pipeline = getCompaniesByUserIdPipeline(userId)
+    const companies = await this.model.aggregate(pipeline)
+    return companies
   }
 }
 

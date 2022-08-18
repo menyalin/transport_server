@@ -19,27 +19,3 @@ export const existInnSchema = {
   additionalProperties: false,
 }
 
-export const userByEmailSchema = {
-  type: 'object',
-  properties: {
-    email: { type: 'string', format: 'email' },
-  },
-  required: ['email'],
-  additionalProperties: false,
-}
-
-export const newEmployeeSchema = {
-  type: 'object',
-  properties: {
-    user: { type: 'string' },
-    position: { type: 'string' },
-    roles: {
-      type: 'array',
-      items: {
-        type: 'string',
-      },
-    },
-  },
-  required: ['user', 'position', 'roles'],
-  additionalProperties: true,
-}

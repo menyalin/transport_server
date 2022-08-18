@@ -18,6 +18,7 @@ router.get('/:id', [jwtAuth], (...args) => ctrl.getById(...args))
 
 router.post('/', [jwtAuth], (...args) => ctrl.create(...args))
 router.put('/:id/addUser', [jwtAuth], (...args) => ctrl.addUser(...args))
+router.put('/:workerId/acceptInvite', [jwtAuth], (...args) => ctrl.acceptInvite(...args))
 router.put('/:id', [jwtAuth], (...args) => ctrl.updateOne(...args))
 router.delete('/:id', [jwtAuth], (...args) => ctrl.deleteById(...args))
 
