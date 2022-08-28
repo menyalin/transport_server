@@ -7,9 +7,12 @@ export const admin = {
   'document:readItem': true,
   'document:write': true,
   'document:delete': true,
-
   'report:gross_profit': true,
   'worker:userAdmin': true,
+
+  'fine:readList': true,
+  'fine:readItem': true,
+  'fine:write': true,
 }
 
 export const outsourceCarriersManager = {
@@ -33,6 +36,8 @@ export const outsourceCarriersManager = {
 }
 
 export const director = {
+  'fine:readList': true,
+  'fine:readItem': true,
   'worker:readList': true,
   'worker:readItem': true,
   'order:read': true,
@@ -139,6 +144,9 @@ export const seniorDispatcher = {
 }
 
 export const checkman = {
+  'fine:readList': true,
+  'fine:readItem': true,
+  'fine:write': true,
   orderListForAccountant: true,
   'order:daysForRead': -1,
   'order:daysForWrite': 14,
@@ -201,6 +209,9 @@ export const mechanic = {
   'order:daysForRead': 10,
   'address:readList': true,
   'address:readItem': true,
+  'fine:readList': true,
+  'fine:readItem': true,
+  'fine:write': true,
 
   'region:readList': true,
   'region:readItem': true,

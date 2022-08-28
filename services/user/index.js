@@ -16,6 +16,7 @@ import {
   RegionService,
   CityService,
   WorkerService,
+  GlobalSettingsService,
 } from '../index.js'
 import {
   DOCUMENT_TYPES,
@@ -30,6 +31,7 @@ import {
   TRUCK_LIFT_CAPACITY_TYPES,
   TRUCK_TYPES,
 } from '../../constants/truck.js'
+import { BadRequestError } from '../../helpers/errors.js'
 
 class UserService {
   async findById(id, fields = '-password') {
@@ -42,12 +44,18 @@ class UserService {
     if (!user) throw new Error('user not found!')
     const profile = user.directoriesProfile
     const companyInvites = await WorkerService.getUserInvites(id)
-    // todo: переписать getUserCompanies для работы с workers
     const companies = await CompanyService.getUserCompanies(id)
     const staffRoles = await PermissionService.getAllRoles()
+    const settings = await GlobalSettingsService.get()
 
     if (!profile) {
-      return { user, companies, companyInvites, staffRoles }
+      return {
+        user,
+        companies,
+        companyInvites,
+        staffRoles,
+        fineCategories: settings?.fineCategories,
+      }
     }
 
     const addresses = await AddressService.getByProfile(profile)
@@ -88,6 +96,7 @@ class UserService {
       regions,
       cities,
       companyInvites,
+      fineCategories: settings?.fineCategories,
       partnerGroups: PARTNER_GROUPS,
       orderStatuses: ORDER_STATUSES,
       orderAnalyticTypes: ORDER_ANALYTIC_TYPES,
@@ -118,6 +127,16 @@ class UserService {
     if (directoriesProfile !== undefined)
       user.directoriesProfile = directoriesProfile
     await user.save()
+  }
+
+  async changePassword({ userId, newPassword, oldPassword }) {
+    if (!userId) throw new BadRequestError('Something went wrong')
+    const user = await User.findById(userId)
+    if (await user.isCorrectPassword(oldPassword)) {
+      user.password = newPassword
+      await user.save()
+      return null
+    } else throw new BadRequestError('Something went wrong')
   }
 }
 

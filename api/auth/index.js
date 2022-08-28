@@ -7,11 +7,13 @@ import {
   getMe,
   configProfile,
   getById,
+  changePassword,
 } from './handlers.js'
 import {
   loginSchema,
   registrationSchema,
   configProfileSchema,
+  changePasswordSchema,
 } from './schemes.js'
 
 const router = express.Router()
@@ -20,6 +22,11 @@ const router = express.Router()
 router.get('/', [jwtAuth], getMe)
 router.get('/:id', [jwtAuth], getById)
 
+router.post(
+  '/change_password',
+  [jwtAuth, bodyValidator(changePasswordSchema)],
+  changePassword,
+)
 router.post('/login', [bodyValidator(loginSchema)], login)
 router.post('/registration', [bodyValidator(registrationSchema)], registration)
 router.post(

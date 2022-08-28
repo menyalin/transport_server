@@ -2,99 +2,99 @@ export const getListSchema = {
   type: 'object',
   properties: {
     profile: {
-      type: 'string'
+      type: 'string',
     },
     limit: {
-      type: 'string'
+      type: 'string',
     },
     skip: {
-      type: 'string'
-    }
+      type: 'string',
+    },
   },
   required: ['profile', 'limit', 'skip'],
-  additionalProperties: true
+  additionalProperties: true,
 }
 
 export const getByDriverScheme = {
   type: 'object',
   properties: {
     driver: {
-      type: 'string'
+      type: 'string',
     },
     date: {
-      type: ['string', 'null']
-    }
+      type: ['string', 'null'],
+    },
   },
   required: ['driver'],
-  additionalProperties: false
+  additionalProperties: false,
 }
 
 export const getByTruckScheme = {
   type: 'object',
   properties: {
     truck: {
-      type: 'string'
+      type: 'string',
     },
     date: {
-      type: ['string', 'null']
-    }
+      type: ['string', 'null'],
+    },
   },
   required: ['truck'],
-  additionalProperties: false
+  additionalProperties: false,
 }
 
 export const getActualCrewsSchema = {
   type: 'object',
   properties: {
     profile: {
-      type: 'string'
-    }
+      type: 'string',
+    },
   },
   required: ['profile'],
-  additionalProperties: true
+  additionalProperties: true,
 }
 
 export const createDocSchema = {
   type: 'object',
   properties: {
     tkName: {
-      type: 'string'
+      type: 'string',
     },
     transport: {
-      type: 'array'
+      type: 'array',
     },
     driver: {
-      type: 'string'
+      type: 'string',
     },
     startDate: {
       type: 'string',
-      formats: ['date', 'date-time']
+      formats: ['date', 'date-time'],
     },
     endDate: {
       type: ['string', 'null'],
-      formats: ['date', 'date-time']
+      formats: ['date', 'date-time'],
     },
     note: {
-      type: ['string', 'null']
+      type: ['string', 'null'],
     },
     company: {
-      type: 'string'
-    }
+      type: 'string',
+    },
   },
-  additionalProperties: false
+  additionalProperties: false,
 }
 
 export const closeCrewSchema = {
   type: 'object',
   properties: {
     type: {
-      type: 'string'
+      type: 'string',
     },
     endDate: {
       type: 'string',
-      formats: ['date', 'date-time']
-    }
+      formats: ['date', 'date-time'],
+    },
   },
   required: ['type', 'endDate'],
-  additionalProperties: false
+  additionalProperties: false,
 }

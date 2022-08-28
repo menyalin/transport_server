@@ -1,5 +1,5 @@
 import { ForbiddenError } from '../../helpers/errors.js'
-import { WorkerService } from '../index.js'
+import { WorkerService, UserService } from '../index.js'
 import USER_ROLES from './userRoles.js'
 
 import {
@@ -44,6 +44,11 @@ class PermissionService {
     return resMap
   }
 
+  async adminCheck(userId) {
+    const user = await UserService.findById(userId)
+    if (!user || !user.isAdmin) throw new ForbiddenError('only global admin!')
+  }
+
   async getUserPermissions({ userId, companyId }) {
     const roles = await WorkerService.getWorkerRolesByCompanyIdAndUserId({
       userId,
@@ -62,8 +67,7 @@ class PermissionService {
       companyId: companyId.toString() || companyId,
     })
     if (!roles) throw new ForbiddenError('У пользователя нет ролей')
-    if (Array.isArray(roles) && roles.includes('admin'))
-      return true
+    if (Array.isArray(roles) && roles.includes('admin')) return true
     const userPermissionsMap = this._getPermissionsByRoles(roles)
     if (userPermissionsMap.has(operation) && userPermissionsMap.get(operation))
       return true

@@ -53,4 +53,13 @@ export const configProfile = async (req, res) => {
   }
 }
 
+export const changePassword = async (req, res) => {
+  try {
+    await UserService.changePassword({ userId: req.userId, ...req.body })
+    res.status(200).json('ok')
+  } catch (e) {
+    res.status(e.statusCode || 500).json(e.message)
+  }
+}
+
 //

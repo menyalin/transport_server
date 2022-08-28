@@ -10,6 +10,26 @@ class WorkerService extends IService {
     super({ model, emitter, modelName, logService })
   }
 
+  async getForAutocomplete({ companyId, params }) {
+    const gettedFielfds = { name: 1, fullName: 1 }
+    if (!companyId) throw new BadRequestError('no company id')
+    if (params?.id)
+      return await this.model
+        .find({ _id: params.id, company: companyId }, gettedFielfds)
+        .lean()
+
+    const query = {
+      isActive: true,
+      company: companyId,
+    }
+    if (params.searchStr) {
+      query.$or = []
+      query.$or.push({ name: { $regex: params.searchStr, $options: 'i' } })
+      query.$or.push({ fullName: { $regex: params.searchStr, $options: 'i' } })
+    }
+    return await this.model.find(query, gettedFielfds).limit(20).lean()
+  }
+
   async getWorkerRolesByCompanyIdAndUserId({ userId, companyId }) {
     const worker = await this.model
       .findOne({

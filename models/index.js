@@ -19,6 +19,8 @@ import Zone from './zone.js'
 import Region from './region.js'
 import City from './city.js'
 import Worker from './worker.js'
+import Fine from './fine.js'
+import GlobalSettings from './globalSettings.js'
 
 export {
   User,
@@ -42,4 +44,6 @@ export {
   Region,
   City,
   Worker,
+  Fine,
+  GlobalSettings,
 }

@@ -7,6 +7,18 @@ class WorkerController extends IController {
     this.service = service
   }
 
+  async getForAutocomplete(req, res) {
+    try {
+      const data = await this.service.getForAutocomplete({
+        companyId: req.companyId,
+        params: req.query,
+      })
+      res.status(200).json(data)
+    } catch (e) {
+      res.status(e.statusCode || 500).json(e.message)
+    }
+  }
+
   async getUserByEmail(req, res) {
     try {
       if (this.permissionName)
