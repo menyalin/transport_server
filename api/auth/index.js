@@ -2,7 +2,6 @@ import express from 'express'
 import { bodyValidator } from '../../utils/validator.js'
 import { jwtAuth } from '../../utils/auth.middleware.js'
 import {
-  login,
   registration,
   getMe,
   configProfile,
@@ -15,6 +14,7 @@ import {
   configProfileSchema,
   changePasswordSchema,
 } from './schemes.js'
+import ctrl from '../../controllers/auth.controller.js'
 
 const router = express.Router()
 
@@ -27,7 +27,9 @@ router.post(
   [jwtAuth, bodyValidator(changePasswordSchema)],
   changePassword,
 )
-router.post('/login', [bodyValidator(loginSchema)], login)
+
+router.post('/login', [bodyValidator(loginSchema)], ctrl.login)
+
 router.post('/registration', [bodyValidator(registrationSchema)], registration)
 router.post(
   '/configProfile',

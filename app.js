@@ -1,6 +1,7 @@
 import express from 'express'
 import logger from 'morgan'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 
 import authRouter from './api/auth/index.js'
 import companiesRouter from './api/company/index.js'
@@ -31,6 +32,7 @@ const app = express()
 app.use(cors(['*']))
 if (process.env.MODE === 'dev') app.use(logger('dev'))
 app.use(express.json())
+app.use(cookieParser())
 app.use(express.urlencoded({ extended: false }))
 app.use('/static', express.static('static'))
 

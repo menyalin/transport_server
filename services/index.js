@@ -24,6 +24,7 @@ import WorkerService from './worker/index.js'
 import FineService from './fine/index.js'
 import GlobalSettingsService from './globalSettings/index.js'
 
+import TokenService from './token/index.js'
 import FileService from './file/index.js'
 
 export {
@@ -53,4 +54,5 @@ export {
   WorkerService,
   FineService,
   GlobalSettingsService,
+  TokenService,
 }

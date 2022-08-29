@@ -1,4 +1,5 @@
 import User from './user.js'
+import Token from './token.js'
 import Company from './company.js'
 import Task from './task.js'
 import { Address } from './address.js'
@@ -46,4 +47,5 @@ export {
   Worker,
   Fine,
   GlobalSettings,
+  Token,
 }

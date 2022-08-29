@@ -1,17 +1,6 @@
 import { User } from '../../models/index.js'
 import { UserService } from '../../services/index.js'
 
-export const login = async (req, res) => {
-  try {
-    const { email, password } = req.body
-    const tmpUser = await User.findOne({ email })
-    if (!!tmpUser && (await tmpUser.isCorrectPassword(password))) {
-      res.status(201).json({ token: await tmpUser.createToken() })
-    } else res.status(404).json({ message: 'user not found' })
-  } catch (e) {
-    res.status(500).json({ message: e.message })
-  }
-}
 
 export const registration = async (req, res) => {
   try {
