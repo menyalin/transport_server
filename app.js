@@ -2,6 +2,7 @@ import express from 'express'
 import logger from 'morgan'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
+import errorMiddleware from './utils/error.middleware.js'
 
 import authRouter from './api/auth/index.js'
 import companiesRouter from './api/company/index.js'
@@ -29,7 +30,16 @@ import adminRouter from './api/admin/index.js'
 
 const app = express()
 
-app.use(cors(['*']))
+app.use(
+  cors({
+    credentials: true,
+    origin: [
+      'http://localhost:8080',
+      'https://s4log.ru',
+      'https://alfa.s4log.ru',
+    ],
+  }),
+)
 if (process.env.MODE === 'dev') app.use(logger('dev'))
 app.use(express.json())
 app.use(cookieParser())
@@ -59,5 +69,5 @@ app.use('/api/cities', cityRouter)
 app.use('/api/workers', workerRouter)
 app.use('/api/fines', fineRouter)
 app.use('/api/admin', adminRouter)
-
+app.use(errorMiddleware)
 export default app

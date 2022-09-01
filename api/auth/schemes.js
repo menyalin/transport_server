@@ -12,7 +12,7 @@ export const registrationSchema = {
   type: 'object',
   properties: {
     email: { type: 'string', format: 'email' },
-    password: { type: 'string', minLength: 4 },
+    password: { type: 'string', minLength: 6 },
     name: { type: 'string', minLength: 1 },
   },
   required: ['email', 'password', 'name'],
