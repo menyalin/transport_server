@@ -12,5 +12,5 @@ const schema = new Schema(
   { timestamps: true },
 )
 
-schema.index({ updatedAt: 1 }, { expireAfterSeconds: 0 })
+schema.index({ expireAt: 1 }, { expireAfterSeconds: 0 })
 export default model('Token', schema, 'tokens')
