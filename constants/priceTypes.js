@@ -19,6 +19,10 @@ const types = [
     value: 'return',
     text: 'Возврат продукции',
   },
+  {
+    value: 'other',
+    text: 'Прочее',
+  },
 ]
 
 export const ORDER_PRICE_TYPES = types
