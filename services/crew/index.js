@@ -23,7 +23,7 @@ class CrewService {
       user: userId,
       coll: 'crews',
       body: JSON.stringify(newCrew.toJSON()),
-      opType: 'create'
+      opType: 'create',
     })
     await newCrew.populate(['tkName', 'driver', 'manager'])
     emitTo(newCrew.company.toString(), 'crew:created', newCrew)
@@ -49,7 +49,7 @@ class CrewService {
       user: userId,
       coll: 'crews',
       body: JSON.stringify(crew.toJSON()),
-      opType: 'update'
+      opType: 'update',
     })
 
     emitTo(crew.company.toString(), 'crew:updated', crew)
@@ -81,7 +81,7 @@ class CrewService {
       user: userId,
       coll: 'crews',
       body: JSON.stringify(crew.toJSON()),
-      opType: 'update'
+      opType: 'update',
     })
     await crew.populate(['tkName', 'driver', 'manager'])
     emitTo(crew.company.toString(), 'crew:updated', crew)
@@ -93,7 +93,7 @@ class CrewService {
 
     if (!crew) return null
     const transportItem = crew.transport.find(
-      (item) => item._id.toString() === id
+      (item) => item._id.toString() === id,
     )
     if (new Date(transportItem.startDate) > new Date(endDate))
       throw new Error('bad query params')
@@ -106,7 +106,7 @@ class CrewService {
       user: userId,
       coll: 'crews',
       body: JSON.stringify(crew.toJSON()),
-      opType: 'update'
+      opType: 'update',
     })
     await crew.populate(['tkName', 'driver', 'manager'])
     emitTo(crew.company.toString(), 'crew:updated', crew)
@@ -167,7 +167,7 @@ class CrewService {
       user: userId,
       coll: 'crews',
       body: JSON.stringify(data.toJSON()),
-      opType: 'delete'
+      opType: 'delete',
     })
 
     return data

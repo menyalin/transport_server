@@ -14,7 +14,7 @@ import {
   getByTruck,
   closeCrew,
   crewDiagramReport,
-  getByTruckAndDate
+  getByTruckAndDate,
 } from '../../controllers/crew.controllers.js'
 import {
   getListSchema,
@@ -22,7 +22,7 @@ import {
   getActualCrewsSchema,
   getByDriverScheme,
   getByTruckScheme,
-  closeCrewSchema
+  closeCrewSchema,
 } from './schemes.js'
 
 const router = express.Router()
@@ -32,19 +32,19 @@ router.get('/', [jwtAuth, queryValidator(getListSchema)], getProfileDocs)
 router.get(
   '/actual',
   [jwtAuth, queryValidator(getActualCrewsSchema)],
-  getActualCrews
+  getActualCrews,
 )
 router.get(
   '/by_driver',
   [jwtAuth, queryValidator(getByDriverScheme)],
-  getByDriver
+  getByDriver,
 )
 router.get('/by_truck', [jwtAuth], getByTruck)
 
 router.get(
   '/by_truck_and_date',
   [jwtAuth, queryValidator(getByTruckScheme)],
-  getByTruckAndDate
+  getByTruckAndDate,
 )
 router.get('/reports/crew_diagram', [], crewDiagramReport)
 
