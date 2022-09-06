@@ -25,6 +25,7 @@ import FineService from './fine/index.js'
 import GlobalSettingsService from './globalSettings/index.js'
 
 import TokenService from './token/index.js'
+import NotificationService from './notification/index.js'
 import FileService from './file/index.js'
 
 export {
@@ -55,4 +56,5 @@ export {
   FineService,
   GlobalSettingsService,
   TokenService,
+  NotificationService,
 }

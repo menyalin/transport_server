@@ -36,3 +36,22 @@ export const changePasswordSchema = {
   required: ['oldPassword', 'newPassword'],
   additionalProperties: false,
 }
+
+export const restorePasswordSchema = {
+  type: 'object',
+  properties: {
+    email: { type: 'string' },
+  },
+  required: ['email'],
+  additionalProperties: false,
+}
+
+export const setPasswordSchema = {
+  type: 'object',
+  properties: {
+    password: { type: 'string' },
+    token: { type: 'string' },
+  },
+  required: ['password', 'token'],
+  additionalProperties: false,
+}

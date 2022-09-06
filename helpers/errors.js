@@ -6,6 +6,14 @@ export class BadRequestError extends Error {
   }
 }
 
+export class NotFoundError extends Error {
+  constructor(error) {
+    super(error)
+    this.data = { error }
+    this.statusCode = 404
+  }
+}
+
 export class ForbiddenError extends Error {
   constructor(error) {
     super(error)

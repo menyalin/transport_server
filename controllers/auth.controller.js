@@ -47,7 +47,6 @@ class AuthController {
           tmpUser._id.toString(),
           req,
         )
-
         res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS)
         // todo: Удалить генерацию token, должен быть только accessToken
         res
@@ -67,7 +66,6 @@ class AuthController {
         newUser._id.toString(),
         req,
       )
-
       res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS)
       // todo: Удалить генерацию token, должен быть только accessToken
       res.status(201).json({
@@ -117,6 +115,30 @@ class AuthController {
       )
       res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS)
       res.status(200).json({ accessToken })
+    } catch (e) {
+      res.status(e.statusCode || 500).json(e.message)
+    }
+  }
+
+  async setPassword(req, res) {
+    try {
+      const user = await UserService.setPassword(req.body)
+      const { accessToken, refreshToken } = await TokenService.generate(
+        user._id.toString(),
+        req,
+      )
+      res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS)
+      res.status(200).json({ accessToken })
+    } catch (e) {
+      res.status(e.statusCode || 500).json(e.message)
+    }
+  }
+
+  async restorePassword(req, res) {
+    try {
+      const { email } = req.body
+      await UserService.sendRestoreLink(email)
+      res.status(200).json('ok')
     } catch (e) {
       res.status(e.statusCode || 500).json(e.message)
     }

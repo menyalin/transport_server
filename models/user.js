@@ -19,6 +19,7 @@ const userSchema = new Schema(
       default: true,
     },
     isAdmin: { type: Boolean, default: false },
+    restorePasswordToken: { type: String, default: null },
     directoriesProfile: {
       type: Types.ObjectId,
     },

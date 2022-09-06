@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken'
 import { ORDER_STATUSES, ORDER_ANALYTIC_TYPES } from '../../constants/order.js'
 import { PARTNER_GROUPS } from '../../constants/partner.js'
 import { ORDER_PRICE_TYPES } from '../../constants/priceTypes.js'
@@ -17,6 +18,7 @@ import {
   CityService,
   WorkerService,
   GlobalSettingsService,
+  NotificationService,
 } from '../index.js'
 import {
   DOCUMENT_TYPES,
@@ -31,7 +33,7 @@ import {
   TRUCK_LIFT_CAPACITY_TYPES,
   TRUCK_TYPES,
 } from '../../constants/truck.js'
-import { BadRequestError } from '../../helpers/errors.js'
+import { BadRequestError, NotFoundError } from '../../helpers/errors.js'
 
 class UserService {
   async findById(id, fields = '-password') {
@@ -137,6 +139,43 @@ class UserService {
       await user.save()
       return null
     } else throw new BadRequestError('Something went wrong')
+  }
+
+  async setPassword({ token, password }) {
+    try {
+      const { userId } = jwt.verify(token, process.env.ACCESS_JWT_SECRET)
+
+      const user = await User.findOne({
+        _id: userId,
+        restorePasswordToken: token,
+      })
+      if (!user)
+        throw new BadRequestError(
+          'Активная ссылка для восстановления пароля не найдена',
+        )
+      user.password = password
+      user.restorePasswordToken = null
+      await user.save()
+      return user
+    } catch (e) {
+      throw new BadRequestError(e.message)
+    }
+  }
+
+  async sendRestoreLink(email) {
+    if (!email) throw new BadRequestError('no email')
+    const user = await User.findOne({ email })
+    if (!user) throw new NotFoundError('user not found')
+    user.restorePasswordToken = jwt.sign(
+      { userId: user._id.toString() },
+      process.env.ACCESS_JWT_SECRET,
+      { expiresIn: '30m' },
+    )
+    await NotificationService.sendRestorePasswordLink({
+      email,
+      token: user.restorePasswordToken,
+    })
+    await user.save()
   }
 }
 
