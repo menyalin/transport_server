@@ -9,6 +9,8 @@ import {
   changePasswordSchema,
   restorePasswordSchema,
   setPasswordSchema,
+  confirmEmailSchema,
+  retryConfirmationEmailSchema,
 } from './schemes.js'
 import ctrl from '../../controllers/auth.controller.js'
 
@@ -23,6 +25,19 @@ router.post(
   [jwtAuth, bodyValidator(changePasswordSchema)],
   ctrl.changePassword,
 )
+
+router.post(
+  '/confirm_email',
+  [bodyValidator(confirmEmailSchema)],
+  ctrl.confirmEmail,
+)
+
+router.post(
+  '/retry_confirmation_email', 
+  [jwtAuth, bodyValidator(retryConfirmationEmailSchema)], 
+  ctrl.retryConfirmationEmail
+)
+
 router.post(
   '/set_password',
   [bodyValidator(setPasswordSchema)],
@@ -43,6 +58,7 @@ router.post(
   [bodyValidator(registrationSchema)],
   ctrl.registration,
 )
+
 router.post(
   '/configProfile',
   [jwtAuth, bodyValidator(configProfileSchema)],

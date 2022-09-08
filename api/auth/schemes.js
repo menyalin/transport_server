@@ -55,3 +55,21 @@ export const setPasswordSchema = {
   required: ['password', 'token'],
   additionalProperties: false,
 }
+
+export const confirmEmailSchema = {
+  type: 'object',
+  properties: {
+    token: { type: 'string' },
+  },
+  required: ['token'],
+  additionalProperties: false,
+}
+
+export const retryConfirmationEmailSchema = {
+  type: 'object',
+  properties: {
+    email: { type: 'string' },
+  },
+  required: ['email'],
+  additionalProperties: false,
+}

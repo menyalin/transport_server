@@ -68,8 +68,9 @@ class AuthController {
       )
       res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS)
       // todo: Удалить генерацию token, должен быть только accessToken
+      await UserService.sendConfirmationEmail(newUser.email)
       res.status(201).json({
-        token: await newUser.createToken(),
+        // token: await newUser.createToken(),
         accessToken,
       })
     } catch (e) {
@@ -138,6 +139,25 @@ class AuthController {
     try {
       const { email } = req.body
       await UserService.sendRestoreLink(email)
+      res.status(200).json('ok')
+    } catch (e) {
+      res.status(e.statusCode || 500).json(e.message)
+    }
+  }
+
+  async retryConfirmationEmail(req, res) {
+    try {
+      await UserService.sendConfirmationEmail(req.body.email)
+      res.status(200).json('ok')
+    } catch (e) {
+      res.status(e.statusCode || 500).json(e.message)
+    }
+  }
+
+  async confirmEmail(req, res) {
+    try {
+      await UserService.confirmEmail(req.body)
+
       res.status(200).json('ok')
     } catch (e) {
       res.status(e.statusCode || 500).json(e.message)

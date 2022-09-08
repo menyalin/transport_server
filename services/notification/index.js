@@ -29,7 +29,23 @@ class NotificationService {
       <small>Ссылка действительна 30 минут</small>
       `,
     }
+    await this.transporter.sendMail(message)
+  }
 
+  async sendConfirmationEmailLink({ email, token }) {
+    const link = process.env.CLIENT_URL + '/auth/confirm_email/' + token
+    const message = {
+      from: 's4log notification<no-reply@s4log.ru>',
+      to: email,
+      subject: 'Подтверждение адреса электронной почты',
+
+      html: `
+      <h2>s4log</h2>
+      <p>Для подтверждения email перейдите по <a target="_blank" href="${link}">ссылке*</a></p>
+      <br/>
+      <small>*Ссылка действительна 24 часа</small>
+      `,
+    }
     await this.transporter.sendMail(message)
   }
 }

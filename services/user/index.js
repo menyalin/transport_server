@@ -144,7 +144,6 @@ class UserService {
   async setPassword({ token, password }) {
     try {
       const { userId } = jwt.verify(token, process.env.ACCESS_JWT_SECRET)
-
       const user = await User.findOne({
         _id: userId,
         restorePasswordToken: token,
@@ -164,7 +163,7 @@ class UserService {
 
   async sendRestoreLink(email) {
     if (!email) throw new BadRequestError('no email')
-    const user = await User.findOne({ email })
+    const user = await User.findOne({ email: email.toLowerCase() })
     if (!user) throw new NotFoundError('user not found')
     user.restorePasswordToken = jwt.sign(
       { userId: user._id.toString() },
@@ -176,6 +175,46 @@ class UserService {
       token: user.restorePasswordToken,
     })
     await user.save()
+  }
+
+  async sendConfirmationEmail(email) {
+    if (!email) throw new BadRequestError('no email')
+    const user = await User.findOne({ email: email.toLowerCase() })
+    if (!user) throw new NotFoundError('user not found')
+    if (user.emailConfirmed)
+      throw new BadRequestError('email already confirmed')
+
+    user.emailConfirmationToken = jwt.sign(
+      { userId: user._id.toString() },
+      process.env.ACCESS_JWT_SECRET,
+      { expiresIn: '1d' },
+    )
+    await NotificationService.sendConfirmationEmailLink({
+      email,
+      token: user.emailConfirmationToken,
+    })
+    await user.save()
+  }
+
+  
+
+  async confirmEmail({ token }) {
+    try {
+      const { userId } = jwt.verify(token, process.env.ACCESS_JWT_SECRET)
+      const user = await User.findOne({
+        _id: userId,
+        emailConfirmationToken: token,
+      })
+      if (!user)
+        throw new BadRequestError(
+          'Активная ссылка подтверждения email не найдена',
+        )
+      user.emailConfirmed = true
+      user.emailConfirmationToken = null
+      await user.save()
+    } catch (e) {
+      throw new BadRequestError(e.message)
+    }
   }
 }
 

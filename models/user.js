@@ -14,24 +14,19 @@ const userSchema = new Schema(
     },
     password: { type: String, required: true },
     name: String,
-    openForSearch: {
-      type: Boolean,
-      default: true,
-    },
-    isAdmin: { type: Boolean, default: false },
+    openForSearch: { type: Boolean, default: true },
+    emailConfirmed: { type: Boolean, default: false },
+    emailConfirmationToken: { type: String, default: null },
     restorePasswordToken: { type: String, default: null },
-    directoriesProfile: {
-      type: Types.ObjectId,
-    },
+    isAdmin: { type: Boolean, default: false },
+    directoriesProfile: { type: Types.ObjectId },
   },
   { timestamps: true },
 )
 
 userSchema.methods.createToken = async function () {
-  const token = await jwt.sign(
-    {
-      userId: this._id,
-    },
+  const token = jwt.sign(
+    { userId: this._id },
     process.env.JWT_SECRET || 'secret',
     { expiresIn: process.env.TOKEN_LIFETIME || '31d' },
   )
