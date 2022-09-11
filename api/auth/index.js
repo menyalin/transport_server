@@ -33,9 +33,9 @@ router.post(
 )
 
 router.post(
-  '/retry_confirmation_email', 
-  [jwtAuth, bodyValidator(retryConfirmationEmailSchema)], 
-  ctrl.retryConfirmationEmail
+  '/retry_confirmation_email',
+  [jwtAuth, bodyValidator(retryConfirmationEmailSchema)],
+  ctrl.retryConfirmationEmail,
 )
 
 router.post(

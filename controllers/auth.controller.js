@@ -48,10 +48,9 @@ class AuthController {
           req,
         )
         res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS)
-        // todo: Удалить генерацию token, должен быть только accessToken
         res
           .status(201)
-          .json({ token: await tmpUser.createToken(), accessToken })
+          .json({ accessToken })
       } else res.status(404).json({ message: 'user not found' })
     } catch (e) {
       res.status(500).json({ message: e.message })
@@ -69,10 +68,7 @@ class AuthController {
       res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS)
       // todo: Удалить генерацию token, должен быть только accessToken
       await UserService.sendConfirmationEmail(newUser.email)
-      res.status(201).json({
-        // token: await newUser.createToken(),
-        accessToken,
-      })
+      res.status(201).json({ accessToken })
     } catch (e) {
       let status = 500
       if (e.code === 11000) status = 406

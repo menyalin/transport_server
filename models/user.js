@@ -1,6 +1,5 @@
 import pkg from 'mongoose'
 import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
 const { Schema, model, Types } = pkg
 
 const userSchema = new Schema(
@@ -23,15 +22,6 @@ const userSchema = new Schema(
   },
   { timestamps: true },
 )
-
-userSchema.methods.createToken = async function () {
-  const token = jwt.sign(
-    { userId: this._id },
-    process.env.JWT_SECRET || 'secret',
-    { expiresIn: process.env.TOKEN_LIFETIME || '31d' },
-  )
-  return `Bearer ${token}`
-}
 
 userSchema.methods.isCorrectPassword = async function (pass) {
   const res = await bcrypt.compare(pass, this.password)

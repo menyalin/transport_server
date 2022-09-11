@@ -13,22 +13,10 @@ const medBook = {
 
 const driverSchema = new Schema(
   {
-    name: {
-      type: String,
-      required: true,
-    },
-    surname: {
-      type: String,
-      required: true,
-    },
-    patronymic: {
-      type: String,
-    },
-    tkName: {
-      type: Types.ObjectId,
-      ref: 'TkName',
-      required: true,
-    },
+    name: { type: String, required: true },
+    surname: { type: String, required: true },
+    patronymic: String,
+    tkName: { type: Types.ObjectId, ref: 'TkName', required: true },
     additionalNotifications: [additionalNotification],
     passportId: String,
     passportIssued: String,
@@ -38,39 +26,19 @@ const driverSchema = new Schema(
     licenseCategory: String,
     driverCardId: String,
     driverCardPeriod: Date,
-    hasScans: {
-      type: Boolean,
-      default: false,
-    },
+    hasScans: { type: Boolean, default: false },
     medBook,
     employmentDate: Date,
     dismissalDate: Date,
     recommender: String,
-    birthday: {
-      type: Date,
-    },
-    isBrigadier: {
-      type: Boolean,
-      default: false,
-    },
-    isMechanic: {
-      type: Boolean,
-      default: false,
-    },
-    phone: {
-      type: String,
-    },
-    phone2: {
-      type: String,
-    },
-    company: {
-      type: Types.ObjectId,
-      ref: 'Company',
-    },
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
+    birthday: Date,
+    isBrigadier: { type: Boolean, default: false },
+    isMechanic: { type: Boolean, default: false },
+    phone: String,
+    phone2: String,
+    company: { type: Types.ObjectId, ref: 'Company' },
+    hideInFines: { type: Boolean, default: false },
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true, toJSON: { virtuals: true } },
 )
