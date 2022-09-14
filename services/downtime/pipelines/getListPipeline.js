@@ -5,6 +5,7 @@ export const getListPipeline = ({
   startDate,
   endDate,
   truckFilter,
+  partner,
   limit,
   skip,
   sortBy,
@@ -38,6 +39,8 @@ export const getListPipeline = ({
   }
   if (truckFilter)
     firstMatcher.$match.truck = mongoose.Types.ObjectId(truckFilter)
+  if (partner) firstMatcher.$match.partner = mongoose.Types.ObjectId(partner)
+
   const group = [
     {
       $sort: {

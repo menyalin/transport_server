@@ -48,9 +48,7 @@ class AuthController {
           req,
         )
         res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS)
-        res
-          .status(201)
-          .json({ accessToken })
+        res.status(201).json({ accessToken })
       } else res.status(404).json({ message: 'user not found' })
     } catch (e) {
       res.status(500).json({ message: e.message })
