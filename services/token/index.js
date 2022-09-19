@@ -4,12 +4,8 @@ import { Token } from '../../models/index.js'
 import { BadRequestError, UnauthorizedError } from '../../helpers/errors.js'
 
 class TokenService {
-  _createToken(userId, secret = 'secret', lifetime) {
-    return jwt.sign(
-      { userId },
-      secret,
-      lifetime ? { expiresIn: lifetime } : {},
-    )
+  _createToken(userId, secret = 'secret', lifetime = '30d') {
+    return jwt.sign({ userId }, secret, { expiresIn: lifetime })
   }
 
   async generate(userId, req) {
@@ -36,7 +32,8 @@ class TokenService {
   }
 
   async refresh(token) {
-    const existedToken = await Token.findOne({ token })
+    const existedToken = await Token.findOne({ token: token })
+
     if (!existedToken) {
       throw new UnauthorizedError('bad refresh token')
     }

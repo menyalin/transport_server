@@ -87,7 +87,8 @@ class WorkerService extends IService {
       const disabledUser = await UserModel.findOne({ _id: worker.user })
       if (
         disabledUser &&
-        disabledUser.directoriesProfile.toString() === worker.company.toString()
+        disabledUser?.directoriesProfile?.toString() ===
+          worker.company.toString()
       ) {
         disabledUser.directoriesProfile = null
         await disabledUser.save()
