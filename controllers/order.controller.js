@@ -135,6 +135,20 @@ class OrderController {
       res.status(e.statusCode || 500).json(e.message)
     }
   }
+
+  async setDocs(req, res) {
+    try {
+      await PermissionService.check({
+        operation: 'order:setDocs',
+        userId: req.userId,
+        companyId: req.companyId,
+      })
+      const updatedOrder = await service.setDocs(req.params.id, req.body.docs)
+      res.status(200).json(updatedOrder)
+    } catch (e) {
+      res.status(e.statusCode || 500).json(e.message)
+    }
+  }
 }
 
 export default new OrderController()

@@ -9,6 +9,7 @@ import {
   getListSchema,
   getListForScheduleSchema,
   saveFinalPricesSchema,
+  setDocsSchema,
 } from './schemes.js'
 
 const router = express.Router()
@@ -32,6 +33,11 @@ router.post(
 )
 router.post('/', [jwtAuth, bodyValidator(createSchema)], ctrl.create)
 
+router.put(
+  '/:id/setDocs',
+  [jwtAuth, bodyValidator(setDocsSchema)],
+  ctrl.setDocs,
+)
 router.put('/:id', [jwtAuth], ctrl.updateOne)
 router.delete('/:id', [jwtAuth], ctrl.deleteById)
 

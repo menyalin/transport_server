@@ -13,6 +13,7 @@ export const admin = {
   'fine:readList': true,
   'fine:readItem': true,
   'fine:write': true,
+  'order:setDocs': true,
 }
 
 export const outsourceCarriersManager = {
@@ -203,6 +204,7 @@ export const accountant = {
   'document:readItem': true,
   'document:write': true,
   'document:delete': true,
+  'order:setDocs': true,
 }
 
 export const mechanic = {

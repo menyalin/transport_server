@@ -1,6 +1,9 @@
 import mongoose from 'mongoose'
 import PriceDTO from '../../dto/price.dto.js'
-import { Order as OrderModel, OrderTemplate } from '../../models/index.js'
+import {
+  Order as OrderModel,
+  OrderTemplate as OrderTemplateModel,
+} from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 import { getSchedulePipeline } from './pipelines/getSchedulePipeline.js'
 import { getOrderListPipeline } from './pipelines/getOrderListPipeline.js'
@@ -73,7 +76,9 @@ class OrderService {
     if (!Array.isArray(body) || body.length === 0)
       throw new BadRequestError('Не верный формат данных')
     const templateIds = body.map((i) => i.template)
-    const templates = await OrderTemplate.find({ _id: templateIds }).lean()
+    const templates = await OrderTemplateModel.find({
+      _id: templateIds,
+    }).lean()
     for (let i = 0; i < body.length; i++) {
       const template = templates.find(
         (t) => t._id.toString() === body[i].template,
@@ -280,6 +285,15 @@ class OrderService {
     } catch (e) {
       return null
     }
+  }
+
+  async setDocs(id, docs) {
+    const order = await OrderModel.findById(id)
+    if (!order) throw new BadRequestError('order not found')
+    order.docs = docs
+    await order.save()
+    emitTo(order.company.toString(), 'order:updated', order)
+    return order
   }
 }
 

@@ -48,6 +48,10 @@ const docs = [
       type: String,
       enum: DOCUMENT_STATUSES_ENUM,
     },
+    date: {
+      type: Date,
+      default: Date.now,
+    },
   },
 ]
 

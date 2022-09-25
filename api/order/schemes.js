@@ -73,3 +73,15 @@ export const saveFinalPricesSchema = {
   required: ['company', 'orderId', 'finalPrices'],
   additionalProperties: true,
 }
+
+
+export const setDocsSchema = {
+  type: 'object',
+  properties: {
+    docs: {
+      type: 'array',
+    },
+  },
+  required: ['docs'],
+  additionalProperties: false,
+}

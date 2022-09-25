@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import dayjs from 'dayjs'
+import { v4 as uuidv4 } from 'uuid'
 import { Token } from '../../models/index.js'
 import { BadRequestError, UnauthorizedError } from '../../helpers/errors.js'
 
@@ -15,10 +16,7 @@ class TokenService {
       process.env.ACCESS_TOKEN_LIFETIME,
     )
 
-    const refreshToken = this._createToken(
-      userId,
-      process.env.REFRESH_JWT_SECRET,
-    )
+    const refreshToken = uuidv4()
 
     await Token.create({
       userId,
@@ -44,10 +42,7 @@ class TokenService {
       process.env.ACCESS_TOKEN_LIFETIME,
     )
 
-    const refreshToken = this._createToken(
-      existedToken.userId.toString(),
-      process.env.REFRESH_JWT_SECRET,
-    )
+    const refreshToken = uuidv4()
 
     existedToken.token = refreshToken
     existedToken.expireAt = dayjs().add(15, 'd')
@@ -67,4 +62,6 @@ class TokenService {
     return null
   }
 }
+
+
 export default new TokenService()
