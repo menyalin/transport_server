@@ -3,6 +3,7 @@ const _docTypes = [
   { value: 'trn', text: 'ТрН' },
   { value: 'torg', text: 'ТОРГ-12' },
   { value: 'waybill', text: 'Путевой лист' },
+  { value: 'upd', text: 'УПД' },
   { value: 'shippingReceipt', text: 'Экспедиторская расписка' },
   { value: 'returnAct', text: 'Акт возврата' },
 ]
