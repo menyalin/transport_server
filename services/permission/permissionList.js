@@ -14,6 +14,8 @@ export const admin = {
   'fine:readItem': true,
   'fine:write': true,
   'order:setDocs': true,
+  'order:showDocDates': true,
+  'order:writeDocDates': true,
 }
 
 export const outsourceCarriersManager = {
@@ -79,6 +81,7 @@ export const director = {
   'region:readItem': true,
   'city:readList': true,
   'city:readItem': true,
+  'order:showDocDates': true,
 }
 
 export const dispatcher = {
@@ -205,6 +208,8 @@ export const accountant = {
   'document:write': true,
   'document:delete': true,
   'order:setDocs': true,
+  'order:showDocDates': true,
+  'order:writeDocDates': true,
 }
 
 export const mechanic = {

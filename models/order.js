@@ -88,6 +88,9 @@ const point = {
   plannedDate: Date,
   arrivalDate: Date,
   departureDate: Date,
+  plannedDateDoc: Date,
+  arrivalDateDoc: Date,
+  departureDateDoc: Date,
   isReturn: {
     type: Boolean,
     default: false,
