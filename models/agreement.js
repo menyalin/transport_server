@@ -1,5 +1,4 @@
 import pkg from 'mongoose'
-// import { CALC_METHODS_ENUM } from '../constants/calcMethods.js'
 const { Schema, model, Types } = pkg
 
 const schema = new Schema(
@@ -21,6 +20,8 @@ const schema = new Schema(
     useCustomPrices: { type: Boolean },
     // нужно для определения типа (с/без НДС) при выгрузке в excel
     usePriceWithVAT: { type: Boolean, default: false },
+    priceRequired: { type: Boolean, default: false },
+    clientNumRequired: { type: Boolean, default: false },
     note: String,
   },
   { timestamps: true },
