@@ -14,6 +14,7 @@ export const admin = {
   'fine:readItem': true,
   'fine:write': true,
   'order:setDocs': true,
+  'order:readDocs': true,
   'order:showDocDates': true,
   'order:writeDocDates': true,
 }
@@ -208,6 +209,7 @@ export const accountant = {
   'document:write': true,
   'document:delete': true,
   'order:setDocs': true,
+  'order:readDocs': true,
   'order:showDocDates': true,
   'order:writeDocDates': true,
 }
