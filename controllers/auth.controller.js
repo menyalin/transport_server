@@ -5,7 +5,7 @@ import { TokenService, UserService } from '../services/index.js'
 const COOKIE_OPTIONS = {
   httpOnly: true,
   maxAge: 30 * 24 * 60 * 60 * 1000,
-  sameSite: 'Strict',
+  sameSite: 'Lax',
   secure: true,
 }
 

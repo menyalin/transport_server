@@ -61,6 +61,7 @@ const client = {
     ref: 'Partner',
   },
   num: String,
+  auctionNum: String,
   agreement: {
     type: Types.ObjectId,
     ref: 'Agreement',

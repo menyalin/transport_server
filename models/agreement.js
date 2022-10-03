@@ -22,6 +22,7 @@ const schema = new Schema(
     usePriceWithVAT: { type: Boolean, default: false },
     priceRequired: { type: Boolean, default: false },
     clientNumRequired: { type: Boolean, default: false },
+    auctionNumRequired: { type: Boolean, default: false },
     note: String,
   },
   { timestamps: true },

@@ -1,6 +1,8 @@
 import mongoose from 'mongoose'
 import { ORDER_PRICE_TYPES_ENUM } from '../../../constants/priceTypes.js'
 import routePointsNameBuilder from './fragments/routePointsNameBuilder.js'
+import truckKindTextBuilder from './fragments/truckKindText.js'
+import docsNumbersByTypesBuilder from './fragments/docsNumbersByTypes.js'
 
 export default ({ dateRange, company }) => {
   const firstPlannedDate = {
@@ -53,6 +55,8 @@ export default ({ dateRange, company }) => {
       route: { $push: '$route' },
       client: { $first: '$client' },
       confirmedCrew: { $first: '$confirmedCrew' },
+      reqTransport: { $first: '$reqTransport' },
+      docs: { $first: '$docs' },
       prePrices: { $first: '$prePrices' },
       prices: { $first: '$prices' },
       finalPrices: { $first: '$finalPrices' },
@@ -95,6 +99,22 @@ export default ({ dateRange, company }) => {
       as: 'trailer',
     },
   }
+
+  const lookupClient = [
+    {
+      $lookup: {
+        from: 'partners',
+        localField: 'client.client',
+        foreignField: '_id',
+        as: 'clientDoc',
+      },
+    },
+    {
+      $addFields: {
+        clientDoc: { $first: '$clientDoc' },
+      },
+    },
+  ]
 
   const priceArraysToObjects = {
     $addFields: {
@@ -219,6 +239,25 @@ export default ({ dateRange, company }) => {
           in: { $add: ['$$value', { $ifNull: ['$$this.priceWOVat', 0] }] },
         },
       },
+      Клиент: '$clientDoc.name',
+      'Тип ТС': {
+        $concat: [
+          { $toString: '$reqTransport.liftCapacity' },
+          ' ',
+          truckKindTextBuilder('$reqTransport.kind'),
+        ],
+      },
+      'Номер рейса': '$client.num',
+      'Номер аукциона': '$client.auctionNum',
+      ТТН: docsNumbersByTypesBuilder('ttn'),
+      ТрН: docsNumbersByTypesBuilder('trn'),
+      'Торг-12': docsNumbersByTypesBuilder('torg'),
+      'Путевой лист': docsNumbersByTypesBuilder('waybill'),
+      'Экспедиторская расписка': docsNumbersByTypesBuilder('shippingReceipt'),
+      'Акт возврата': docsNumbersByTypesBuilder('returnAct'),
+      'УПД':docsNumbersByTypesBuilder('upd'),
+      
+
     },
   }
 
@@ -230,6 +269,7 @@ export default ({ dateRange, company }) => {
     lookupDriver,
     lookupTruck,
     lookupTkName,
+    ...lookupClient,
     lookupTrailer,
     priceArraysToObjects,
     addPriceTypeFieldsBuilder(ORDER_PRICE_TYPES_ENUM),
