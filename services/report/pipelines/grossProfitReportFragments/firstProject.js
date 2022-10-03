@@ -17,6 +17,14 @@ const getPointAddressIdsByType = (type) => {
   }
 }
 
+const getOutsourceCosts = (withVat) => ({
+  $reduce: {
+    input: '$outsourceCosts',
+    initialValue: 0,
+    in: { $add: ['$$value', withVat ? '$$this.price' : '$$this.priceWOVat'] },
+  },
+})
+
 export const firstProject = () => ({
   $project: {
     status: '$state.status',
@@ -32,6 +40,8 @@ export const firstProject = () => ({
     tkName: '$confirmedCrew.tkName',
     driverId: '$confirmedCrew.driver',
     clientId: '$client.client',
+    outsourceCostsWithVat: getOutsourceCosts(true),
+    outsourceCostsWOVat: getOutsourceCosts(false),
     prices: '$prices',
     prePrices: '$prePrices',
     finalPrices: '$finalPrices',
