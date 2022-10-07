@@ -1,11 +1,16 @@
 const _docTypes = [
-  { value: 'ttn', text: 'ТТН' },
+  { value: 'routeCard', text: 'Маршрутная карта' },
   { value: 'trn', text: 'ТрН' },
-  { value: 'torg', text: 'ТОРГ-12' },
-  { value: 'waybill', text: 'Путевой лист' },
+  { value: 'ttn', text: 'ТТН' },
+  { value: 'torg', text: 'ТОРГ-12/13' },
   { value: 'upd', text: 'УПД' },
+  { value: 'goodsTrn', text: 'Товарный раздел ТРН' },
+  { value: 'invoice', text: 'Счет Фактура' },
   { value: 'shippingReceipt', text: 'Экспедиторская расписка' },
+  { value: 'goodsAcceptAct', text: 'Акт приемки товаров' },
+  { value: 'discrepancyAct', text: 'Акт расхождений' },
   { value: 'returnAct', text: 'Акт возврата' },
+  { value: 'waybill', text: 'Путевой лист' },
 ]
 
 const _docStatuses = [

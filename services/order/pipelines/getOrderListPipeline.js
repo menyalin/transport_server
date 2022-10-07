@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { getDocFragmentBuilder } from './fragments/docStatusFragment.js'
 
 export const getOrderListPipeline = ({
   profile,
@@ -7,6 +8,7 @@ export const getOrderListPipeline = ({
   endDate,
   limit,
   skip,
+  docStatus,
   status,
   truck,
   accountingMode,
@@ -17,13 +19,6 @@ export const getOrderListPipeline = ({
 }) => {
   const sP = new Date(startDate)
   const eP = new Date(endDate)
-
-  // const firstPlannedDate = {
-  //   $getField: {
-  //     field: 'plannedDate',
-  //     input: { $arrayElemAt: ['$route', 0] },
-  //   },
-  // }
 
   const firstMatcher = {
     $match: {
@@ -37,6 +32,7 @@ export const getOrderListPipeline = ({
       },
     },
   }
+
   if (accountingMode)
     firstMatcher.$match.$expr.$and.push({
       $or: [
@@ -53,7 +49,8 @@ export const getOrderListPipeline = ({
     firstMatcher.$match['confirmedCrew.truck'] = mongoose.Types.ObjectId(truck)
   if (trailer)
     firstMatcher.$match['confirmedCrew.trailer'] = mongoose.Types.ObjectId(
-      trailer,
+      // eslint-disable-next-line comma-dangle
+      trailer
     )
   if (address)
     firstMatcher.$match['route.address'] = mongoose.Types.ObjectId(address)
@@ -99,8 +96,12 @@ export const getOrderListPipeline = ({
 
   if (driver)
     firstMatcher.$match['confirmedCrew.driver'] = mongoose.Types.ObjectId(
-      driver,
+      // eslint-disable-next-line comma-dangle
+      driver
     )
+  if (docStatus)
+    firstMatcher.$match.$expr.$and.push(getDocFragmentBuilder(docStatus))
+
   const group = [
     {
       $sort: {
