@@ -14,8 +14,8 @@ const _docTypes = [
 ]
 
 const _docStatuses = [
-  { value: 'accepted', text: 'Принят' },
-  { value: 'needFix', text: 'Требуется исправление' },
+  { value: 'accepted', text: 'Проверен' },
+  { value: 'needFix', text: 'На исправлении' },
   { value: 'missing', text: 'Отсутсвует' },
 ]
 

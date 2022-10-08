@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { getDocsGettedFragmentBuilder } from './fragments/docsGettedFragment.js'
 import { getDocFragmentBuilder } from './fragments/docStatusFragment.js'
 
 export const getOrderListPipeline = ({
@@ -9,6 +10,7 @@ export const getOrderListPipeline = ({
   limit,
   skip,
   docStatus,
+  docsGetted,
   status,
   truck,
   accountingMode,
@@ -99,9 +101,13 @@ export const getOrderListPipeline = ({
       // eslint-disable-next-line comma-dangle
       driver
     )
-  if (docStatus)
+  if (docStatus && accountingMode)
     firstMatcher.$match.$expr.$and.push(getDocFragmentBuilder(docStatus))
 
+  if (docsGetted && accountingMode)
+    firstMatcher.$match.$expr.$and.push(
+      getDocsGettedFragmentBuilder(docsGetted)
+    )
   const group = [
     {
       $sort: {

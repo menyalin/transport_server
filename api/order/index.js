@@ -10,6 +10,7 @@ import {
   getListForScheduleSchema,
   saveFinalPricesSchema,
   setDocsSchema,
+  setDocsStateSchema,
 } from './schemes.js'
 
 const router = express.Router()
@@ -19,7 +20,7 @@ router.get('/', [jwtAuth, queryValidator(getListSchema)], ctrl.getList)
 router.get(
   '/schedule',
   [jwtAuth, queryValidator(getListForScheduleSchema)],
-  ctrl.getListForSchedule,
+  ctrl.getListForSchedule
 )
 router.get('/:id', [jwtAuth], ctrl.getById)
 
@@ -29,14 +30,20 @@ router.post('/from_template', [jwtAuth], ctrl.createFromTemplate)
 router.post(
   '/save_final_prices',
   [jwtAuth, bodyValidator(saveFinalPricesSchema)],
-  ctrl.saveFinalPrices,
+  ctrl.saveFinalPrices
 )
 router.post('/', [jwtAuth, bodyValidator(createSchema)], ctrl.create)
 
 router.put(
+  '/:id/setDocsState',
+  [jwtAuth, bodyValidator(setDocsStateSchema)],
+  ctrl.setDocsState
+)
+
+router.put(
   '/:id/setDocs',
   [jwtAuth, bodyValidator(setDocsSchema)],
-  ctrl.setDocs,
+  ctrl.setDocs
 )
 router.put('/:id', [jwtAuth], ctrl.updateOne)
 router.delete('/:id', [jwtAuth], ctrl.deleteById)

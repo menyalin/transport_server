@@ -11,7 +11,7 @@ export default async (io, socket) => {
     const orders = await service.getListForSchedule({
       profile,
       startDate,
-      endDate
+      endDate,
     })
     socket.emit('ordersForSchedule', orders)
   })

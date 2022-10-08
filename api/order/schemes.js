@@ -74,7 +74,6 @@ export const saveFinalPricesSchema = {
   additionalProperties: true,
 }
 
-
 export const setDocsSchema = {
   type: 'object',
   properties: {
@@ -83,5 +82,16 @@ export const setDocsSchema = {
     },
   },
   required: ['docs'],
+  additionalProperties: false,
+}
+
+export const setDocsStateSchema = {
+  type: 'object',
+  properties: {
+    state: {
+      type: 'boolean',
+    },
+  },
+  required: ['state'],
   additionalProperties: false,
 }

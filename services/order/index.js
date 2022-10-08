@@ -1,3 +1,4 @@
+/* eslint-disable comma-dangle */
 import mongoose from 'mongoose'
 import PriceDTO from '../../dto/price.dto.js'
 import {
@@ -7,11 +8,7 @@ import {
 import { emitTo } from '../../socket/index.js'
 import { getSchedulePipeline } from './pipelines/getSchedulePipeline.js'
 import { getOrderListPipeline } from './pipelines/getOrderListPipeline.js'
-import {
-  ChangeLogService,
-  PermissionService,
-  TariffService,
-} from '../index.js'
+import { ChangeLogService, PermissionService, TariffService } from '../index.js'
 import checkCrossItems from './checkCrossItems.js'
 import checkRefusedOrder from './checkRefusedOrder.js'
 import getRouteFromTemplate from './getRouteFromTemplate.js'
@@ -24,11 +21,11 @@ const _isEqualDatesOfRoute = ({ oldRoute, newRoute }) => {
   const oldArrivalDate = new Date(oldRoute[0].arrivalDate).toLocaleString()
   const newArrivalDate = new Date(newRoute[0].arrivalDate).toLocaleString()
   const oldDepartureDate = new Date(
-    oldRoute[oldRoute.length - 1].departureDate,
+    oldRoute[oldRoute.length - 1].departureDate
   ).toLocaleString()
 
   const newDepartureDate = new Date(
-    newRoute[newRoute.length - 1].departureDate,
+    newRoute[newRoute.length - 1].departureDate
   ).toLocaleString()
   return (
     oldArrivalDate === newArrivalDate && oldDepartureDate === newDepartureDate
@@ -52,11 +49,11 @@ class OrderService {
 
     if (!body.confirmedCrew.outsourceAgreement && body.route[0].plannedDate)
       body.confirmedCrew.outsourceAgreement = await getOutsourceAgreementId(
-        body,
+        body
       )
     if (body.client.agreement && body.analytics.type) {
       body.prePrices = await TariffService.getPrePricesByOrderData(
-        PriceDTO.prepareOrderForPrePriceQuery(body),
+        PriceDTO.prepareOrderForPrePriceQuery(body)
       )
     }
     const order = await OrderModel.create(body)
@@ -81,7 +78,7 @@ class OrderService {
     }).lean()
     for (let i = 0; i < body.length; i++) {
       const template = templates.find(
-        (t) => t._id.toString() === body[i].template,
+        (t) => t._id.toString() === body[i].template
       )
       const startDate = body[i].date
       const route = getRouteFromTemplate({ template, date: startDate })
@@ -125,7 +122,7 @@ class OrderService {
     } else {
       order.confirmedCrew.truck = mongoose.Types.ObjectId(truck)
       order.confirmedCrew.outsourceAgreement = await getOutsourceAgreementId(
-        order,
+        order
       )
     }
     order.confirmedCrew.driver = null
@@ -198,7 +195,7 @@ class OrderService {
     emitTo(
       order.company.toString(),
       `order:${orderId}:finalPriceUpdated`,
-      order.toJSON(),
+      order.toJSON()
     )
     await ChangeLogService.add({
       docId: order._id.toString(),
@@ -218,13 +215,13 @@ class OrderService {
 
     if (body.client.agreement && body.analytics.type) {
       body.prePrices = await TariffService.getPrePricesByOrderData(
-        PriceDTO.prepareOrderForPrePriceQuery(body),
+        PriceDTO.prepareOrderForPrePriceQuery(body)
       )
     }
 
     if (!body.confirmedCrew.outsourceAgreement && body.confirmedCrew.truck)
       body.confirmedCrew.outsourceAgreement = await getOutsourceAgreementId(
-        body,
+        body
       )
     let order = await OrderModel.findById(id)
     if (!order) return null
@@ -239,6 +236,7 @@ class OrderService {
       })
       if (!datesNotChanged) await checkCrossItems({ body, id })
     }
+
     // контроль разрешения на редактирвоание выполненного рейса
     if (order.state.status === 'completed')
       await PermissionService.checkPeriod({
@@ -247,6 +245,14 @@ class OrderService {
         operation: 'order:daysForWrite',
         startDate: order.route.reverse()[0].departureDate,
       })
+
+    // если в рейсе есть массив с документами, то заполняю признак получения документов
+    if (body.docs && body.docs.length && !body.docsState?.getted) {
+      body.docsState = {
+        getted: true,
+        date: new Date(),
+      }
+    }
 
     order = Object.assign(order, { ...body, manager: user })
     order.isDisabled = false
@@ -287,10 +293,24 @@ class OrderService {
     }
   }
 
+  async setDocsState(id, state) {
+    const order = await OrderModel.findById(id)
+    if (!order) throw new BadRequestError('order not found')
+    order.docsState.getted = state
+    order.docsState.date = state ? new Date() : null
+    await order.save()
+    emitTo(order.company.toString(), 'order:updated', order)
+    return order
+  }
+
   async setDocs(id, docs) {
     const order = await OrderModel.findById(id)
     if (!order) throw new BadRequestError('order not found')
     order.docs = docs
+    if (docs.length && !order?.docsState.getted) {
+      order.docsState.getted = true
+      order.docsState.date = new Date()
+    }
     await order.save()
     emitTo(order.company.toString(), 'order:updated', order)
     return order

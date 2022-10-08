@@ -33,6 +33,16 @@ const outsourceCosts = [
     cashPayment: Boolean,
   },
 ]
+const docsState = {
+  getted: {
+    type: Boolean,
+    default: false,
+  },
+  date: {
+    type: Date,
+    default: null,
+  },
+}
 
 const docs = [
   {
@@ -164,13 +174,15 @@ const schema = new Schema(
     reqTransport: reqTransport,
     state,
     analytics,
+    docsState,
     isActive: { type: Boolean, default: true },
     isDisabled: { type: Boolean, default: false },
     company: { type: Types.ObjectId, ref: 'Company', required: true },
     manager: { type: Types.ObjectId, ref: 'User' },
     note: { type: String },
   },
-  { timestamps: true },
+  // eslint-disable-next-line comma-dangle
+  { timestamps: true }
 )
 
 export default model('Order', schema, 'orders')
