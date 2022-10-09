@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 import { getDocsGettedFragmentBuilder } from './fragments/docsGettedFragment.js'
 import { getDocFragmentBuilder } from './fragments/docStatusFragment.js'
+import { getLoadingZoneFragment } from './fragments/loadingZoneragment.js'
 
 export const getOrderListPipeline = ({
   profile,
@@ -17,10 +18,14 @@ export const getOrderListPipeline = ({
   driver,
   tkName,
   trailer,
+  searchNum,
+  loadingZone,
   address,
 }) => {
   const sP = new Date(startDate)
   const eP = new Date(endDate)
+
+  console.log(!!searchNum)
 
   const firstMatcher = {
     $match: {
@@ -56,6 +61,7 @@ export const getOrderListPipeline = ({
     )
   if (address)
     firstMatcher.$match['route.address'] = mongoose.Types.ObjectId(address)
+
   const agreementLookup = [
     {
       $lookup: {
@@ -96,6 +102,8 @@ export const getOrderListPipeline = ({
     },
   ]
 
+  const loadingZoneLookup = getLoadingZoneFragment()
+
   if (driver)
     firstMatcher.$match['confirmedCrew.driver'] = mongoose.Types.ObjectId(
       // eslint-disable-next-line comma-dangle
@@ -108,6 +116,37 @@ export const getOrderListPipeline = ({
     firstMatcher.$match.$expr.$and.push(
       getDocsGettedFragmentBuilder(docsGetted)
     )
+  if (searchNum) {
+    firstMatcher.$match.$expr.$and.push({
+      $or: [
+        {
+          $regexMatch: { input: '$client.num', regex: searchNum, options: 'i' },
+        },
+        {
+          $regexMatch: {
+            input: '$client.auctionNum',
+            regex: searchNum,
+            options: 'i',
+          },
+        },
+      ],
+    })
+  }
+
+  const secondMatcher = {
+    $match: {
+      $expr: {
+        $and: [],
+      },
+    },
+  }
+
+  if (loadingZone) {
+    secondMatcher.$match.$expr.$and.push({
+      $in: [mongoose.Types.ObjectId(loadingZone), '$_loadingZoneIds'],
+    })
+  }
+
   const group = [
     {
       $sort: {
@@ -133,7 +172,7 @@ export const getOrderListPipeline = ({
       },
     },
   ]
-  let pipeline = [firstMatcher]
+  let pipeline = [firstMatcher, ...loadingZoneLookup, secondMatcher]
   if (accountingMode) pipeline = [...pipeline, ...agreementLookup]
   if (tkName) pipeline = [...pipeline, ...tkNameLookup]
   return [...pipeline, ...group]
