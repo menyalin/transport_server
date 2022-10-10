@@ -2,25 +2,31 @@ import { BadRequestError } from '../../../../helpers/errors.js'
 
 /* 
 const _docStatuses = [
-  { value: 'accepted', text: 'Принят' },
-  { value: 'needFix', text: 'Требуется исправление' },
-  { value: 'missing', text: 'Отсутсвует' },
+  { value: 'accepted', text: 'Приняты' },
+      { value: 'needFix', text: 'На исправлении' },
+      { value: 'onCheck', text: 'На проверке' },
+      { value: 'missing', text: 'Не получены' },
 ]
 */
 
-export const getDocFragmentBuilder = (docStatus) => {
+export const getDocFragmentBuilder = (
+  docStatus,
+  docsFieldName = '$docs',
+  docStateField = '$docsState.getted'
+) => {
   switch (docStatus) {
     case 'accepted':
       return {
         $and: [
-          { $isArray: '$docs' },
-          { $gt: [{ $size: '$docs' }, 0] },
+          { $eq: [docStateField, true] },
+          { $isArray: docsFieldName },
+          { $gt: [{ $size: docsFieldName }, 0] },
           {
             $eq: [
               {
                 $size: {
                   $filter: {
-                    input: '$docs',
+                    input: docsFieldName,
                     cond: {
                       $ne: ['$$this.status', 'accepted'],
                     },
@@ -35,8 +41,9 @@ export const getDocFragmentBuilder = (docStatus) => {
     case 'needFix':
       return {
         $and: [
-          { $isArray: '$docs' },
-          { $gt: [{ $size: '$docs' }, 0] },
+          { $eq: [docStateField, true] },
+          { $isArray: docsFieldName },
+          { $gt: [{ $size: docsFieldName }, 0] },
           {
             $or: [
               {
@@ -44,7 +51,7 @@ export const getDocFragmentBuilder = (docStatus) => {
                   {
                     $size: {
                       $filter: {
-                        input: '$docs',
+                        input: docsFieldName,
                         cond: {
                           $eq: ['$$this.status', 'needFix'],
                         },
@@ -59,7 +66,7 @@ export const getDocFragmentBuilder = (docStatus) => {
                   {
                     $size: {
                       $filter: {
-                        input: '$docs',
+                        input: docsFieldName,
                         cond: {
                           $eq: ['$$this.status', 'missing'],
                         },
@@ -73,11 +80,29 @@ export const getDocFragmentBuilder = (docStatus) => {
           },
         ],
       }
+
+    case 'onCheck':
+      return {
+        $and: [
+          { $eq: [docStateField, true] },
+          {
+            $or: [
+              { $not: { $isArray: docsFieldName } },
+              { $eq: [{ $size: docsFieldName }, 0] },
+            ],
+          },
+        ],
+      }
     case 'missing':
       return {
-        $or: [
-          { $not: { $isArray: '$docs' } },
-          { $eq: [{ $size: '$docs' }, 0] },
+        $and: [
+          { $ne: [docStateField, true] },
+          {
+            $or: [
+              { $not: { $isArray: docsFieldName } },
+              { $eq: [{ $size: docsFieldName }, 0] },
+            ],
+          },
         ],
       }
 

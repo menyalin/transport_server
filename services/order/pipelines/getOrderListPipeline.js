@@ -1,5 +1,4 @@
 import mongoose from 'mongoose'
-import { getDocsGettedFragmentBuilder } from './fragments/docsGettedFragment.js'
 import { getDocFragmentBuilder } from './fragments/docStatusFragment.js'
 import { getLoadingZoneFragment } from './fragments/loadingZoneragment.js'
 
@@ -11,7 +10,6 @@ export const getOrderListPipeline = ({
   limit,
   skip,
   docStatus,
-  docsGetted,
   status,
   truck,
   accountingMode,
@@ -24,8 +22,6 @@ export const getOrderListPipeline = ({
 }) => {
   const sP = new Date(startDate)
   const eP = new Date(endDate)
-
-  console.log(!!searchNum)
 
   const firstMatcher = {
     $match: {
@@ -112,10 +108,6 @@ export const getOrderListPipeline = ({
   if (docStatus && accountingMode)
     firstMatcher.$match.$expr.$and.push(getDocFragmentBuilder(docStatus))
 
-  if (docsGetted && accountingMode)
-    firstMatcher.$match.$expr.$and.push(
-      getDocsGettedFragmentBuilder(docsGetted)
-    )
   if (searchNum) {
     firstMatcher.$match.$expr.$and.push({
       $or: [
@@ -163,6 +155,63 @@ export const getOrderListPipeline = ({
     },
     {
       $addFields: {
+        acceptedDocs: {
+          $size: {
+            $filter: {
+              input: '$items',
+              cond: {
+                ...getDocFragmentBuilder(
+                  'accepted',
+                  '$$this.docs',
+                  '$$this.docsState.getted'
+                ),
+              },
+            },
+          },
+        },
+        needFixDocs: {
+          $size: {
+            $filter: {
+              input: '$items',
+              cond: {
+                ...getDocFragmentBuilder(
+                  'needFix',
+                  '$$this.docs',
+                  '$$this.docsState.getted'
+                ),
+              },
+            },
+          },
+        },
+        onCheckDocs: {
+          $size: {
+            $filter: {
+              input: '$items',
+              cond: {
+                ...getDocFragmentBuilder(
+                  'onCheck',
+                  '$$this.docs',
+                  '$$this.docsState.getted'
+                ),
+              },
+            },
+          },
+        },
+        missingDocs: {
+          $size: {
+            $filter: {
+              input: '$items',
+              cond: {
+                ...getDocFragmentBuilder(
+                  'missing',
+                  '$$this.docs',
+                  '$$this.docsState.getted'
+                ),
+              },
+            },
+          },
+        },
+
         count: {
           $size: '$items',
         },
