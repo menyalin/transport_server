@@ -18,7 +18,7 @@ const _getDatesFromBody = ({ body }) => {
 
 const _checkUnfinishedOrder = async ({ body, id }) => {
   const truckId = mongoose.Types.ObjectId(
-    body.confirmedCrew?.truck || body.truck,
+    body.confirmedCrew?.truck || body.truck
   )
   const matcher = {
     $match: {
@@ -58,7 +58,7 @@ const _checkSequenceOfDates = (dates) => {
     for (let i = 1; i < dates.length; i++) {
       if (dates[i] < dates[i - 1])
         throw new BadRequestError(
-          'Не правильная последовательность дат в маршруте',
+          'Не правильная последовательность дат в маршруте'
         )
     }
   }
@@ -67,7 +67,7 @@ const _checkSequenceOfDates = (dates) => {
 const _checkCrossDowntimes = async ({ body, dates, id }) => {
   const sDate = new Date(dates[0])
   const truckId = mongoose.Types.ObjectId(
-    body.confirmedCrew?.truck || body.truck,
+    body.confirmedCrew?.truck || body.truck
   )
   const matcher = {
     $match: {
@@ -113,7 +113,7 @@ const _checkCrossDowntimes = async ({ body, dates, id }) => {
   const res = await Downtime.aggregate([matcher])
   if (res.length)
     throw new BadRequestError(
-      'Сохранение не возможно! Имеется пересечение с "сервисом"',
+      'Сохранение не возможно! Имеется пересечение с "сервисом"'
     )
   return null
 }
@@ -121,7 +121,7 @@ const _checkCrossDowntimes = async ({ body, dates, id }) => {
 const _checkCrossOrders = async ({ body, dates, id }) => {
   const sDate = new Date(dates[0])
   const truckId = mongoose.Types.ObjectId(
-    body.confirmedCrew?.truck || body.truck,
+    body.confirmedCrew?.truck || body.truck
   )
   const matcher = {
     $match: {
@@ -225,7 +225,7 @@ const _checkCrossOrders = async ({ body, dates, id }) => {
   const orders = await Order.aggregate([matcher])
   if (orders.length > 0)
     throw new BadRequestError(
-      'Сохранение невозможно! Имеется пересечение с рейсами',
+      'Сохранение невозможно! Имеется пересечение с рейсами'
     )
 }
 
@@ -237,6 +237,9 @@ export default async ({ body, id }) => {
   if (dates.length === 0) return null
 
   _checkSequenceOfDates(dates)
+
+  if (body.isAdmin) return null
+
   if (!body.type) await _checkUnfinishedOrder({ body, id })
   await _checkCrossDowntimes({ body, dates, id })
   if (!body.type) await _checkCrossOrders({ body, dates, id })

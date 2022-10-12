@@ -1,5 +1,6 @@
 export const admin = {
   fullAccess: true,
+  'modules:accounting':true, // Для отображения вкладки "Учет"
   'report:drivers_grades': true,
   'order:readFinalPrices': true,
   'order:writeFinalPrices': true,
@@ -40,6 +41,7 @@ export const outsourceCarriersManager = {
 }
 
 export const director = {
+  'modules:accounting':true,
   'fine:readList': true,
   'fine:readItem': true,
   'worker:readList': true,
@@ -189,6 +191,7 @@ export const checkman = {
 
 export const accountant = {
   ...checkman,
+  'modules:accounting':true,
   'order:daysForRead': -1,
   'order:daysForWrite': -1,
   'order:daysForReadPrice': -1,
@@ -215,6 +218,7 @@ export const accountant = {
 }
 
 export const mechanic = {
+  'modules:accounting':true,
   'order:daysForRead': 10,
   'address:readList': true,
   'address:readItem': true,
