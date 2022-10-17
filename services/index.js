@@ -16,6 +16,7 @@ import ScheduleNoteService from './scheduleNote/index.js'
 import AgreementService from './agreement/index.js'
 import PermissionService from './permission/index.js'
 import TariffService from './tariff/index.js'
+import SalaryTariffService from './salaryTariff/index.js'
 import DocumentService from './document/index.js'
 import ZoneService from './zone/index.js'
 import RegionService from './region/index.js'
@@ -57,4 +58,5 @@ export {
   GlobalSettingsService,
   TokenService,
   NotificationService,
+  SalaryTariffService,
 }

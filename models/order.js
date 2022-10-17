@@ -44,6 +44,15 @@ const docsState = {
   },
 }
 
+const paymentToDriver = {
+  sum: Number,
+  note: String,
+  worker: {
+    type: Types.ObjectId,
+    ref: 'Worker',
+  },
+}
+
 const docs = [
   {
     type: {
@@ -175,6 +184,7 @@ const schema = new Schema(
     state,
     analytics,
     docsState,
+    paymentToDriver,
     isActive: { type: Boolean, default: true },
     isDisabled: { type: Boolean, default: false },
     company: { type: Types.ObjectId, ref: 'Company', required: true },

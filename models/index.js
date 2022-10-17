@@ -22,6 +22,7 @@ import City from './city.js'
 import Worker from './worker.js'
 import Fine from './fine.js'
 import GlobalSettings from './globalSettings.js'
+import SalaryTariff from './salaryTariff.js'
 
 export {
   User,
@@ -48,4 +49,5 @@ export {
   Fine,
   GlobalSettings,
   Token,
+  SalaryTariff,
 }

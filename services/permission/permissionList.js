@@ -1,6 +1,6 @@
 export const admin = {
   fullAccess: true,
-  'modules:accounting':true, // Для отображения вкладки "Учет"
+  'modules:accounting': true, // Для отображения вкладки "Учет"
   'report:drivers_grades': true,
   'order:readFinalPrices': true,
   'order:writeFinalPrices': true,
@@ -18,9 +18,17 @@ export const admin = {
   'order:readDocs': true,
   'order:showDocDates': true,
   'order:writeDocDates': true,
+  'order:readPaymentToDriver': true,
+  'order:writePaymentToDriver': true,
+  'salaryTariff:readList':true,
+  'salaryTariff:readItem':true,
+  'salaryTariff:write':true,
+  'salaryTariff:delete':true,
 }
 
 export const outsourceCarriersManager = {
+  'order:readPaymentToDriver': true,
+  'order:writePaymentToDriver': true,
   'agreement:readList': true,
   'agreement:readItem': true,
   'agreement:write': true,
@@ -41,7 +49,11 @@ export const outsourceCarriersManager = {
 }
 
 export const director = {
-  'modules:accounting':true,
+  'salaryTariff:readList':true,
+  'salaryTariff:readItem':true,
+  'order:readPaymentToDriver': true,
+  'order:writePaymentToDriver': true,
+  'modules:accounting': true,
   'fine:readList': true,
   'fine:readItem': true,
   'worker:readList': true,
@@ -148,6 +160,8 @@ export const seniorDispatcher = {
   'order:daysForReadPrice': 15,
   'order:daysForWritePrice': 15,
   'downtime:daysForWrite': 30,
+  'order:readPaymentToDriver': true,
+  'order:writePaymentToDriver': true,
 }
 
 export const checkman = {
@@ -191,13 +205,19 @@ export const checkman = {
 
 export const accountant = {
   ...checkman,
-  'modules:accounting':true,
+  'salaryTariff:readList':true,
+  'salaryTariff:readItem':true,
+  'salaryTariff:write':true,
+  
+  'modules:accounting': true,
   'order:daysForRead': -1,
   'order:daysForWrite': -1,
   'order:daysForReadPrice': -1,
   'order:daysForWritePrice': -1,
   'order:readFinalPrices': true,
   'order:writeFinalPrices': true,
+  'order:readPaymentToDriver': true,
+  'order:writePaymentToDriver': true,
 
   'agreement:readList': true,
   'agreement:readItem': true,
@@ -218,13 +238,17 @@ export const accountant = {
 }
 
 export const mechanic = {
-  'modules:accounting':true,
+  'modules:accounting': true,
   'order:daysForRead': 10,
   'address:readList': true,
   'address:readItem': true,
   'fine:readList': true,
   'fine:readItem': true,
   'fine:write': true,
+  'order:readPaymentToDriver': true,
+  'order:writePaymentToDriver': true,
+  'salaryTariff:readList':true,
+  'salaryTariff:readItem':true,
 
   'region:readList': true,
   'region:readItem': true,
@@ -254,6 +278,13 @@ export const userAdmin = {
   'worker:userAdmin': true,
 }
 
+export const hr = {
+  'salaryTariff:readList':true,
+  'salaryTariff:readItem':true,
+  'salaryTariff:write':true,
+  'salaryTariff:delete':true,
+}
+
 /*
       { value: 'admin' text: 'ТОП' },
       { value: 'director', text: 'Директор'},
@@ -265,5 +296,6 @@ export const userAdmin = {
       { value: 'brigadier', text: 'Бригадир', note: 'Описание...' },
       { value: 'trainee', text: 'Стажер', note: 'Описание...' },
       { value: 'accountant',  text: 'Бухгалтер' },
-      { value: 'userAdmin', text: 'Администратор пользователей'}
+      { value: 'userAdmin', text: 'Администратор пользователей'},
+      { value: 'hr', text: 'Кадровик' },
 */
