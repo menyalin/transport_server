@@ -23,6 +23,7 @@ import {
 import {
   DOCUMENT_TYPES,
   DOCUMENT_STATUSES,
+  SALARY_TARIFF_TYPES,
 } from '../../constants/accounting.js'
 import { TARIFF_TYPES, TARIFF_ROUND_BY_HOURS } from '../../constants/tariff.js'
 import { emitTo } from '../../socket/index.js'
@@ -106,6 +107,7 @@ class UserService {
       documentTypes: DOCUMENT_TYPES,
       documentStatuses: DOCUMENT_STATUSES,
       tariffTypes: TARIFF_TYPES,
+      salaryTariffTypes: SALARY_TARIFF_TYPES,
       roundingWaitingByHours: TARIFF_ROUND_BY_HOURS,
     }
   }
@@ -116,10 +118,7 @@ class UserService {
   }
 
   async findByEmail(email) {
-    const user = await User.findOne(
-      { email, openForSearch: true },
-      '-password',
-    )
+    const user = await User.findOne({ email, openForSearch: true }, '-password')
     return user
   }
 
@@ -150,7 +149,7 @@ class UserService {
       })
       if (!user)
         throw new BadRequestError(
-          'Активная ссылка для восстановления пароля не найдена',
+          'Активная ссылка для восстановления пароля не найдена'
         )
       user.password = password
       user.restorePasswordToken = null
@@ -168,7 +167,7 @@ class UserService {
     user.restorePasswordToken = jwt.sign(
       { userId: user._id.toString() },
       process.env.ACCESS_JWT_SECRET,
-      { expiresIn: '30m' },
+      { expiresIn: '30m' }
     )
     await NotificationService.sendRestorePasswordLink({
       email,
@@ -187,7 +186,7 @@ class UserService {
     user.emailConfirmationToken = jwt.sign(
       { userId: user._id.toString() },
       process.env.ACCESS_JWT_SECRET,
-      { expiresIn: '1d' },
+      { expiresIn: '1d' }
     )
     await NotificationService.sendConfirmationEmailLink({
       email,
@@ -195,8 +194,6 @@ class UserService {
     })
     await user.save()
   }
-
-  
 
   async confirmEmail({ token }) {
     try {
@@ -207,7 +204,7 @@ class UserService {
       })
       if (!user)
         throw new BadRequestError(
-          'Активная ссылка подтверждения email не найдена',
+          'Активная ссылка подтверждения email не найдена'
         )
       user.emailConfirmed = true
       user.emailConfirmationToken = null

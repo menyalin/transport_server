@@ -21,6 +21,20 @@ class SalaryTariffController extends IController {
     }
   }
 
+  async getDriversSalaryByPeriod(req, res) {
+    try {
+      await PermissionService.check({
+        userId: req.userId,
+        companyId: req.companyId,
+        operation: this.permissionName + ':readList',
+      })
+      
+      const data = await this.service.getDriversSalaryByPeriod(req.body)
+      res.status(200).json(data)
+    } catch (e) {
+      res.status(e.statusCode || 500).json(e.message)
+    }
+  }
 }
 
 export default new SalaryTariffController({

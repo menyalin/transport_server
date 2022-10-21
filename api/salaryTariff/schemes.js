@@ -14,3 +14,15 @@ export const getListSchema = {
   required: ['company', 'limit', 'skip'],
   additionalProperties: true,
 }
+
+export const getDriverSalarySchema = {
+  type: 'object',
+  properties: {
+    company: {
+      type: 'string',
+    },
+  },
+  required: ['company'],
+  additionalProperties: true,
+}
+

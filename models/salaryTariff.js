@@ -1,10 +1,8 @@
 import pkg from 'mongoose'
-// import { TRUCK_KINDS_ENUM } from '../constants/truck.js'
+
 // import { ORDER_ANALYTIC_TYPES_ENUM } from '../constants/order.js'
-import {
-  TARIFF_TYPES_ENUM,
-  // TARIFF_ROUND_BY_HOURS_ENUM,
-} from '../constants/tariff.js'
+import { SALARY_TARIFF_TYPES_ENUM } from '../constants/accounting.js'
+
 const { Schema, model, Types } = pkg
 
 const schema = new Schema(
@@ -13,7 +11,7 @@ const schema = new Schema(
     company: { type: Types.ObjectId, ref: 'Company', required: true },
     note: { type: String },
     date: { type: Date, required: true },
-    type: { type: String, enum: TARIFF_TYPES_ENUM },
+    type: { type: String, enum: SALARY_TARIFF_TYPES_ENUM },
     tks: [{ type: Types.ObjectId, ref: 'TkName' }],
     liftCapacity: [{ type: Number, required: true }],
     sum: Number,
@@ -21,6 +19,8 @@ const schema = new Schema(
     unloading: { type: Types.ObjectId, ref: 'Address' },
     loadingZone: { type: Types.ObjectId, ref: 'Zone' },
     unloadingZone: { type: Types.ObjectId, ref: 'Zone' },
+    loadingRegion: { type: Types.ObjectId, ref: 'Region' },
+    unloadingRegion: { type: Types.ObjectId, ref: 'Region' },
   },
   { timestamps: true }
 )

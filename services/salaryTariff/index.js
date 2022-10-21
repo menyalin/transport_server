@@ -1,10 +1,11 @@
 import ChangeLogService from '../changeLog/index.js'
-import { SalaryTariff } from '../../models/index.js'
+import { SalaryTariff, Order as OrderModel } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 import IService from '../iService.js'
 import getListPipeline from './pipelines/getListPipeline.js'
+import getDriverSalaryByPeriodPipeline from './pipelines/getDriverSalaryByPeriodPipeline.js'
 
-class TariffService extends IService {
+class SalaryTariffService extends IService {
   constructor({ model, emitter, modelName, logService }) {
     super({ model, emitter, modelName, logService })
     this.model = model
@@ -38,20 +39,19 @@ class TariffService extends IService {
     }
   }
 
-  // async updateOne({ id, body, user }) {
-  //   const data = await this.model.findByIdAndUpdate(id, body, { new: true })
-  //   await data.populate('agreement')
-  //   if (this.logService)
-  //     await this.logService.add({
-  //       docId: data._id.toString(),
-  //       coll: this.modelName,
-  //       opType: 'update',
-  //       user,
-  //       company: data.company.toString(),
-  //       body: JSON.stringify(data.toJSON()),
-  //     })
-  //   return data
-  // }
+  async updateOne({ id, body, user }) {
+    const data = await this.model.findByIdAndUpdate(id, body, { new: true })
+    if (this.logService)
+      await this.logService.add({
+        docId: data._id.toString(),
+        coll: this.modelName,
+        opType: 'update',
+        user,
+        company: data.company.toString(),
+        body: JSON.stringify(data.toJSON()),
+      })
+    return data
+  }
 
   async getList(params) {
     try {
@@ -62,9 +62,19 @@ class TariffService extends IService {
       throw new Error(e.message)
     }
   }
+
+  async getDriversSalaryByPeriod(params) {
+    try {
+      const pipeline = getDriverSalaryByPeriodPipeline(params)
+      const res = await OrderModel.aggregate(pipeline)
+      return res
+    } catch (e) {
+      throw new Error(e.message)
+    }
+  }
 }
 
-export default new TariffService({
+export default new SalaryTariffService({
   model: SalaryTariff,
   emitter: emitTo,
   modelName: 'salaryTariff',

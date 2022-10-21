@@ -16,7 +16,31 @@ const _docTypes = [
 const _docStatuses = [
   { value: 'accepted', text: 'Принято' },
   { value: 'needFix', text: 'На исправлении' },
-  // { value: 'missing', text: 'Не принят' },
+]
+
+const _salaryTariffTypes = [
+  {
+    value: 'points',
+    text: 'Маршрут, адреса',
+    disabled: false,
+    tariffType: 'base',
+  },
+  {
+    value: 'zones',
+    text: 'Маршрут, зоны',
+    disabled: false,
+    tariffType: 'base',
+  },
+  {
+    value: 'regions',
+    text: 'Маршрут, регионы',
+    disabled: false,
+    tariffType: 'base',
+  },
+
+  { value: 'waiting', text: 'Простой', disabled: true },
+  { value: 'additionalPoints', text: 'Дополнительные точки', disabled: true },
+  { value: 'return', text: 'Возврат', disabled: true },
 ]
 
 export const DOCUMENT_TYPES = _docTypes
@@ -24,3 +48,6 @@ export const DOCUMENT_TYPES_ENUM = _docTypes.map((t) => t.value)
 
 export const DOCUMENT_STATUSES = _docStatuses
 export const DOCUMENT_STATUSES_ENUM = _docStatuses.map((t) => t.value)
+
+export const SALARY_TARIFF_TYPES = _salaryTariffTypes
+export const SALARY_TARIFF_TYPES_ENUM = _salaryTariffTypes.map((t) => t.value)
