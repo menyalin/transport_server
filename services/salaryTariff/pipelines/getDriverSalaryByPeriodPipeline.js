@@ -1,6 +1,9 @@
 import mongoose from 'mongoose'
+import getAddressesLookupFragment from './fragments/getAddressesLookupFragment.js'
+import getBaseSalaryTariffFragment from './fragments/getBaseSalaryTariffFragment.js'
+import getDriverOrdersFragment from './fragments/getDriverOrdersFragment.js'
 
-export default ({ company, period }) => {
+export default ({ company, period, driver }) => {
   const startPeriod = new Date(period[0])
   const endPeriod = new Date(period[1])
 
@@ -26,6 +29,10 @@ export default ({ company, period }) => {
       },
     },
   }
+  if (driver)
+    firstMatcher.$match.$expr.$and.push({
+      $eq: ['$confirmedCrew.driver', mongoose.Types.ObjectId(driver)],
+    })
 
   const driverFilter = [
     {
@@ -49,6 +56,20 @@ export default ({ company, period }) => {
         as: '_truck',
       },
     },
+    {
+      $lookup: {
+        from: 'trucks',
+        localField: 'confirmedCrew.trailer',
+        foreignField: '_id',
+        as: '_trailer',
+      },
+    },
+    {
+      $addFields: {
+        _truck: { $first: '$_truck' },
+        _trailer: { $first: '$_trailer' },
+      },
+    },
   ]
 
   const addFields = [
@@ -56,182 +77,51 @@ export default ({ company, period }) => {
       $addFields: {
         _orderTKNameId: '$confirmedCrew.tkName',
         _orderPeriodDate: orderPeriodDate,
-        _truck: {
-          $first: '$_truck',
-        },
-        _loadingAddressId: {
-          $getField: {
-            field: 'address',
-            input: { $first: '$route' },
-          },
-        },
-        _lastAddressId: {
-          $getField: {
-            field: 'address',
-            input: {
-              $last: {
-                $filter: {
-                  input: '$route',
-                  cond: { $ne: ['$$this.isReturn', true] },
-                },
-              },
-            },
-          },
-        },
       },
     },
   ]
 
-  const addressesLookup = [
+  const addressesLookup = getAddressesLookupFragment()
+
+  const baseTariffs = getBaseSalaryTariffFragment(company)
+  const driverOrdersDetailes = getDriverOrdersFragment()
+
+  const group = [
     {
-      $lookup: {
-        from: 'addresses',
-        localField: '_loadingAddressId',
-        foreignField: '_id',
-        as: '_loadingAddress',
-      },
-    },
-    {
-      $lookup: {
-        from: 'addresses',
-        localField: '_lastAddressId',
-        foreignField: '_id',
-        as: '_lastAddress',
+      $group: {
+        _id: '$confirmedCrew.driver',
+        payment: {
+          $sum: '$paymentToDriver.sum',
+        },
+        // items: {
+        //   $push: '$$ROOT._id',
+        // },
+        totalCount: {
+          $count: {},
+        },
+        base: { $sum: '$_baseTariff.tariff.sum' },
+        avgGrade: { $avg: '$grade.grade' },
       },
     },
     {
       $addFields: {
-        _loadingAddress: { $first: '$_loadingAddress' },
-        _lastAddress: { $first: '$_lastAddress' },
+        avgGrade: { $round: ['$avgGrade', 2] },
       },
     },
+    { $sort: { base: -1 } },
   ]
 
-  const baseTariffs = [
-    {
-      $lookup: {
-        from: 'salaryTariffs',
-        let: {
-          orderDate: '$_orderPeriodDate',
-          liftCapacity: '$_truck.liftCapacityType',
-          loadingPoint: '$_loadingAddressId',
-          lastAddress: '$_lastAddressId',
-          loadingZones: '$_loadingAddress.zones',
-          unloadingZones: '$_lastAddress.zones',
-          loadingRegion: '$_loadingAddress.region',
-          unloadingRegion: '$_lastAddress.region',
-        },
-        pipeline: [
-          {
-            $match: {
-              company: mongoose.Types.ObjectId(company),
-              isActive: true,
-              $expr: {
-                $and: [
-                  { $gte: ['$$orderDate', '$date'] },
-                  { $in: ['$$liftCapacity', '$liftCapacity'] },
-                  {
-                    $or: [
-                      {
-                        $and: [
-                          { $eq: ['points', '$type'] },
-                          { $eq: ['$$loadingPoint', '$loading'] },
-                          { $eq: ['$$lastAddress', '$unloading'] },
-                        ],
-                      },
-                      {
-                        $and: [
-                          { $eq: ['zones', '$type'] },
-                          { $in: ['$loadingZone', '$$loadingZones'] },
-                          { $in: ['$unloadingZone', '$$unloadingZones'] },
-                        ],
-                      },
-                      {
-                        $and: [
-                          { $eq: ['regions', '$type'] },
-                          { $eq: ['$loadingRegion', '$$loadingRegion'] },
-                          { $eq: ['$unloadingRegion', '$$unloadingRegion'] },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-            },
-          },
-          { $sort: { date: -1, sum: 1 } },
-          {
-            $group: {
-              _id: '$type',
-              tariff: {
-                $first: '$$ROOT',
-              },
-            },
-          },
-        ],
-        as: '_baseTariffs',
-      },
-    },
-    {
-      $addFields: {
-        _baseTariff: {
-          $ifNull: [
-            {
-              $first: {
-                $filter: {
-                  input: '$_baseTariffs',
-                  cond: {
-                    $eq: ['$$this._id', 'points'],
-                  },
-                },
-              },
-            },
-            {
-              $first: {
-                $filter: {
-                  input: '$_baseTariffs',
-                  cond: { $eq: ['$$this._id', 'zones'] },
-                },
-              },
-            },
-            {
-              $first: {
-                $filter: {
-                  input: '$_baseTariffs',
-                  cond: { $eq: ['$$this._id', 'regions'] },
-                },
-              },
-            },
-            { tariff: { sum: 0 } },
-          ],
-        },
-      },
-    },
-  ]
-
-  const group = {
-    $group: {
-      _id: '$confirmedCrew.driver',
-      payment: {
-        $sum: '$paymentToDriver.sum',
-      },
-      items: {
-        $push: '$$ROOT._id',
-      },
-      totalCount: {
-        $count: {},
-      },
-      base: { $sum: '$_baseTariff.tariff.sum' },
-    },
-  }
-  return [
+  const pipeline = [
     firstMatcher,
     ...driverFilter,
     ...truckLookup,
     ...addFields,
     ...addressesLookup,
     ...baseTariffs,
-    group,
-    { $sort: { base: -1 } },
   ]
+
+  if (driver) pipeline.push(...driverOrdersDetailes)
+  else pipeline.push(...group)
+
+  return pipeline
 }
