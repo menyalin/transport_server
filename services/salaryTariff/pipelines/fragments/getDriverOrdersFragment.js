@@ -28,6 +28,28 @@ const getTariffTypeStr = (tariffTypeFieldPath) => ({
   },
 })
 
+const getRouteDuration = () => ({
+  $dateDiff: {
+    startDate: {
+      $getField: {
+        field: 'arrivalDate',
+        input: {
+          $first: '$route',
+        },
+      },
+    },
+    endDate: {
+      $getField: {
+        field: 'departureDate',
+        input: {
+          $last: '$route',
+        },
+      },
+    },
+    unit: 'hour',
+  },
+})
+
 export default () => {
   return [
     {
@@ -48,6 +70,7 @@ export default () => {
         _trailerRegNum: '$_trailer.regNum',
         _baseTariffTypeStr: getTariffTypeStr('$_baseTariff._id'),
         _paymentSum: '$paymentToDriver.sum',
+        _routeDuration: getRouteDuration(),
         route: '$route',
         docsState: '$docsState.getted',
         truckId: '$_truck._id',
