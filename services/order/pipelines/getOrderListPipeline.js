@@ -105,7 +105,7 @@ export const getOrderListPipeline = ({
       // eslint-disable-next-line comma-dangle
       driver
     )
-  if (docStatus && accountingMode)
+  if (docStatus)
     firstMatcher.$match.$expr.$and.push(getDocFragmentBuilder(docStatus))
 
   if (searchNum) {
@@ -221,8 +221,13 @@ export const getOrderListPipeline = ({
       },
     },
   ]
-  let pipeline = [firstMatcher, ...loadingZoneLookup, secondMatcher]
-  if (accountingMode) pipeline = [...pipeline, ...agreementLookup]
+  let pipeline = [
+    firstMatcher,
+    ...loadingZoneLookup,
+    secondMatcher,
+    ...agreementLookup,
+  ]
+  // if (accountingMode) pipeline = [...pipeline, ...agreementLookup]
   if (tkName) pipeline = [...pipeline, ...tkNameLookup]
   return [...pipeline, ...group]
 }

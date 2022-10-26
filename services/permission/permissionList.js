@@ -20,10 +20,10 @@ export const admin = {
   'order:writeDocDates': true,
   'order:readPaymentToDriver': true,
   'order:writePaymentToDriver': true,
-  'salaryTariff:readList':true,
-  'salaryTariff:readItem':true,
-  'salaryTariff:write':true,
-  'salaryTariff:delete':true,
+  'salaryTariff:readList': true,
+  'salaryTariff:readItem': true,
+  'salaryTariff:write': true,
+  'salaryTariff:delete': true,
 }
 
 export const outsourceCarriersManager = {
@@ -42,6 +42,7 @@ export const outsourceCarriersManager = {
   'order:daysForWrite': -1,
   'order:readFinalPrices': true,
   'order:writeFinalPrices': false,
+  'order:readDocs': true,
   'tariff:readList': true,
   'tariff:readItem': true,
   'tariff:write': true,
@@ -49,8 +50,8 @@ export const outsourceCarriersManager = {
 }
 
 export const director = {
-  'salaryTariff:readList':true,
-  'salaryTariff:readItem':true,
+  'salaryTariff:readList': true,
+  'salaryTariff:readItem': true,
   'order:readPaymentToDriver': true,
   'order:writePaymentToDriver': true,
   'modules:accounting': true,
@@ -137,6 +138,7 @@ export const dispatcher = {
   'order:daysForReadPrice': 4,
   'order:daysForWritePrice': 4,
   'order:groupCreate': true,
+  'order:readDocs': true,
 }
 
 export const seniorDispatcher = {
@@ -201,14 +203,15 @@ export const checkman = {
   'driver:write': true,
   'orderTemplate:readList': true,
   'orderTemplate:readItem': true,
+  'order:readDocs': true,
 }
 
 export const accountant = {
   ...checkman,
-  'salaryTariff:readList':true,
-  'salaryTariff:readItem':true,
-  'salaryTariff:write':true,
-  
+  'salaryTariff:readList': true,
+  'salaryTariff:readItem': true,
+  'salaryTariff:write': true,
+
   'modules:accounting': true,
   'order:daysForRead': -1,
   'order:daysForWrite': -1,
@@ -247,8 +250,9 @@ export const mechanic = {
   'fine:write': true,
   'order:readPaymentToDriver': true,
   'order:writePaymentToDriver': true,
-  'salaryTariff:readList':true,
-  'salaryTariff:readItem':true,
+  'order:readDocs': true,
+  'salaryTariff:readList': true,
+  'salaryTariff:readItem': true,
 
   'region:readList': true,
   'region:readItem': true,
@@ -279,10 +283,10 @@ export const userAdmin = {
 }
 
 export const hr = {
-  'salaryTariff:readList':true,
-  'salaryTariff:readItem':true,
-  'salaryTariff:write':true,
-  'salaryTariff:delete':true,
+  'salaryTariff:readList': true,
+  'salaryTariff:readItem': true,
+  'salaryTariff:write': true,
+  'salaryTariff:delete': true,
 }
 
 /*
