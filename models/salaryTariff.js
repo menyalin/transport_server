@@ -1,7 +1,8 @@
 import pkg from 'mongoose'
 
-// import { ORDER_ANALYTIC_TYPES_ENUM } from '../constants/order.js'
+import { ORDER_ANALYTIC_TYPES_ENUM } from '../constants/order.js'
 import { SALARY_TARIFF_TYPES_ENUM } from '../constants/accounting.js'
+import { TARIFF_ROUND_BY_HOURS_ENUM } from '../constants/tariff.js'
 
 const { Schema, model, Types } = pkg
 
@@ -21,6 +22,12 @@ const schema = new Schema(
     unloadingZone: { type: Types.ObjectId, ref: 'Zone' },
     loadingRegion: { type: Types.ObjectId, ref: 'Region' },
     unloadingRegion: { type: Types.ObjectId, ref: 'Region' },
+
+    orderType: { type: String, enum: ORDER_ANALYTIC_TYPES_ENUM },
+    includeHours: { type: Number },
+    roundByHours: { type: Number, enum: TARIFF_ROUND_BY_HOURS_ENUM }, // Кратность округления по часам
+    tariffBy: { type: String, enum: ['hour', 'day'] },
+    clients: [{ type: Types.ObjectId, ref: 'Partner', required: true }],
   },
   { timestamps: true }
 )
@@ -28,7 +35,6 @@ const schema = new Schema(
 export default model('SalaryTariff', schema, 'salaryTariffs')
 
 // truckKind: { type: String, enum: TRUCK_KINDS_ENUM, required: true },
-// orderType: { type: String, enum: ORDER_ANALYTIC_TYPES_ENUM },
 // includedPoints: { type: Number },
 // // for 'directDistanceZones' type, and "loading"
 // zones: [
@@ -40,8 +46,6 @@ export default model('SalaryTariff', schema, 'salaryTariffs')
 //   },
 // ],
 // // for "waiting", "orderType"
-// includeHours: { type: Number },
-// roundByHours: { type: Number, enum: TARIFF_ROUND_BY_HOURS_ENUM }, // Кратность округления по часам
-// tariffBy: { type: String, enum: ['hour', 'day'] },
+
 // // for 'return'
 // percentOfTariff: { type: Number },

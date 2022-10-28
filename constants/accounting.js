@@ -38,7 +38,7 @@ const _salaryTariffTypes = [
     tariffType: 'base',
   },
 
-  { value: 'waiting', text: 'Простой', disabled: true },
+  { value: 'waiting', text: 'Простой', disabled: false },
   { value: 'additionalPoints', text: 'Дополнительные точки', disabled: true },
   { value: 'return', text: 'Возврат', disabled: true },
 ]

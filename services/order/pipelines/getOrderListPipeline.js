@@ -2,6 +2,19 @@ import mongoose from 'mongoose'
 import { getDocFragmentBuilder } from './fragments/docStatusFragment.js'
 import { getLoadingZoneFragment } from './fragments/loadingZoneragment.js'
 
+const getSortingStage = (sortBy = [], sortDesc = []) => {
+  if (!Array.isArray(sortBy) || !sortBy.length)
+    return [{ $sort: { createdAt: -1 } }]
+
+  const result = {}
+
+  sortBy.forEach((item, idx) => {
+    result[item] = sortDesc[idx] === 'true' ? -1 : 1
+  })
+
+  return [{ $sort: result }]
+}
+
 export const getOrderListPipeline = ({
   profile,
   client,
@@ -19,6 +32,8 @@ export const getOrderListPipeline = ({
   searchNum,
   loadingZone,
   address,
+  sortBy,
+  sortDesc,
 }) => {
   const sP = new Date(startDate)
   const eP = new Date(endDate)
@@ -98,6 +113,21 @@ export const getOrderListPipeline = ({
     },
   ]
 
+  const addSortFields = [
+    {
+      $addFields: {
+        plannedDate: {
+          $getField: {
+            field: 'plannedDate',
+            input: { $first: '$route' },
+          },
+        },
+        driver: '$confirmedCrew.driver',
+        truck: '$confirmedCrew.truck',
+      },
+    },
+  ]
+
   const loadingZoneLookup = getLoadingZoneFragment()
 
   if (driver)
@@ -140,11 +170,7 @@ export const getOrderListPipeline = ({
   }
 
   const group = [
-    {
-      $sort: {
-        createdAt: -1.0,
-      },
-    },
+    ...getSortingStage(sortBy, sortDesc),
     {
       $group: {
         _id: 'orders',
@@ -224,6 +250,7 @@ export const getOrderListPipeline = ({
   let pipeline = [
     firstMatcher,
     ...loadingZoneLookup,
+    ...addSortFields,
     secondMatcher,
     ...agreementLookup,
   ]
