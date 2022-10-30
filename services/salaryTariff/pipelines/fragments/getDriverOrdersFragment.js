@@ -31,20 +31,20 @@ const getTariffTypeStr = (tariffTypeFieldPath) => ({
 const getRouteDuration = () => ({
   $dateDiff: {
     startDate: {
-      $getField: {
-        field: 'arrivalDate',
-        input: {
-          $first: '$route',
-        },
-      },
+      $ifNull: [
+        { $getField: { field: 'arrivalDateDoc', input: { $first: '$route' } } },
+        { $getField: { field: 'arrivalDate', input: { $first: '$route' } } },
+      ],
     },
     endDate: {
-      $getField: {
-        field: 'departureDate',
-        input: {
-          $last: '$route',
+      $ifNull: [
+        {
+          $getField: { field: 'departureDateDoc', input: { $last: '$route' } },
         },
-      },
+        {
+          $getField: { field: 'departureDate', input: { $last: '$route' } },
+        },
+      ],
     },
     unit: 'hour',
   },
@@ -75,7 +75,13 @@ export default () => {
         docsState: '$docsState.getted',
         truckId: '$_truck._id',
         baseTariff: '$_baseTariff',
+        waitingTariff: '$_waitingTariff',
+        waitingSum: '$_waitingSum',
+        _waitingInMinutes: '$_waitingInMinutes',
+        _unloadingDurationsMinutes: '$_unloadingDurationsMinutes',
+        _roundedMinutes: '$_roundedMinutes',
         grade: '$grade',
+        _clientAgreemenent: '$_clientAgreement',
       },
     },
     {

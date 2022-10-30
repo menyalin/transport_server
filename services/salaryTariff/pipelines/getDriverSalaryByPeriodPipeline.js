@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 import getAddressesLookupFragment from './fragments/getAddressesLookupFragment.js'
 import getBaseSalaryTariffFragment from './fragments/getBaseSalaryTariffFragment.js'
 import getDriverOrdersFragment from './fragments/getDriverOrdersFragment.js'
+import getWaitingSalaryTariffFragment from './fragments/getWaitingSalaryTariffFragment.js'
 
 export default ({ company, period, driver }) => {
   const startPeriod = new Date(period[0])
@@ -47,6 +48,21 @@ export default ({ company, period, driver }) => {
     { $match: { '_driver.isCalcSalary': true, isActive: true } },
   ]
 
+  const agreementLookup = [
+    {
+      $lookup: {
+        from: 'agreements',
+        localField: 'client.agreement',
+        foreignField: '_id',
+        as: '_agreement',
+      },
+    },
+    {
+      $addFields: {
+        _clientAgreement: { $first: '$_agreement' },
+      },
+    },
+  ]
   const truckLookup = [
     {
       $lookup: {
@@ -84,6 +100,7 @@ export default ({ company, period, driver }) => {
   const addressesLookup = getAddressesLookupFragment()
 
   const baseTariffs = getBaseSalaryTariffFragment(company)
+  const waitingTariff = getWaitingSalaryTariffFragment(company)
   const driverOrdersDetailes = getDriverOrdersFragment()
 
   const group = [
@@ -100,6 +117,7 @@ export default ({ company, period, driver }) => {
           $count: {},
         },
         base: { $sum: '$_baseTariff.tariff.sum' },
+        waiting: { $sum: '$_waitingSum' },
         avgGrade: { $avg: '$grade.grade' },
       },
     },
@@ -117,7 +135,9 @@ export default ({ company, period, driver }) => {
     ...truckLookup,
     ...addFields,
     ...addressesLookup,
+    ...agreementLookup,
     ...baseTariffs,
+    ...waitingTariff,
   ]
 
   if (driver) pipeline.push(...driverOrdersDetailes)

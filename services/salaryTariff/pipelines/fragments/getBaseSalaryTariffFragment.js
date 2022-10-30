@@ -8,6 +8,7 @@ export default (company) => {
         let: {
           orderDate: '$_orderPeriodDate',
           liftCapacity: '$_truck.liftCapacityType',
+          tkName: '$confirmedCrew.tkName',
           loadingPoint: '$_loadingAddressId',
           lastAddress: '$_lastAddressId',
           loadingZones: '$_loadingAddress.zones',
@@ -24,6 +25,7 @@ export default (company) => {
                 $and: [
                   { $gte: ['$$orderDate', '$date'] },
                   { $in: ['$$liftCapacity', '$liftCapacity'] },
+                  { $in: ['$$tkName', '$tks'] },
                   {
                     $or: [
                       {
