@@ -100,15 +100,13 @@ export const getDurutationInPoints = (pointType) => {
             },
           },
           in: {
-            $abs: {
-              $switch: {
-                branches: [
-                  { case: noPaymentForAreLateCondition(pointType), then: 0 }, // если запрет оплаты простоя при опоздании и есть опоздание
-                  { case: actualTimeCond(), then: actualTimeDiff() }, // если расчет простоя по фактическому времени или опоздание без запрета оплаты
-                  { case: inTimeArrivalCond(), then: timeDiff() }, // если нет опоздания
-                ],
-                default: 0,
-              },
+            $switch: {
+              branches: [
+                { case: noPaymentForAreLateCondition(pointType), then: 0 }, // если запрет оплаты простоя при опоздании и есть опоздание
+                { case: actualTimeCond(), then: actualTimeDiff() }, // если расчет простоя по фактическому времени или опоздание без запрета оплаты
+                { case: inTimeArrivalCond(), then: timeDiff() }, // если нет опоздания
+              ],
+              default: 0,
             },
           },
         },
