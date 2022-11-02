@@ -81,8 +81,8 @@ const inTimeArrivalCond = () => ({
 })
 
 // если расчет простоя по фактическому времени или опоздание без запрета оплаты
-const actualTimeCond = () => ({
-  $or: [{ $eq: [getAgreementField(), true] }],
+const actualTimeCond = (pointType) => ({
+  $or: [{ $eq: [getAgreementField(pointType), true] }],
 })
 
 export const getDurutationInPoints = (pointType) => {
@@ -103,7 +103,7 @@ export const getDurutationInPoints = (pointType) => {
             $switch: {
               branches: [
                 { case: noPaymentForAreLateCondition(pointType), then: 0 }, // если запрет оплаты простоя при опоздании и есть опоздание
-                { case: actualTimeCond(), then: actualTimeDiff() }, // если расчет простоя по фактическому времени или опоздание без запрета оплаты
+                { case: actualTimeCond(pointType), then: actualTimeDiff() }, // если расчет простоя по фактическому времени или опоздание без запрета оплаты
                 { case: inTimeArrivalCond(), then: timeDiff() }, // если нет опоздания
               ],
               default: 0,

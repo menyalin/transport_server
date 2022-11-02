@@ -111,10 +111,8 @@ const point = {
   plannedDateDoc: Date,
   arrivalDateDoc: Date,
   departureDateDoc: Date,
-  isReturn: {
-    type: Boolean,
-    default: false,
-  },
+  isReturn: { type: Boolean, default: false },
+  isPltReturn: { type: Boolean, default: false },
   note: String,
 }
 
