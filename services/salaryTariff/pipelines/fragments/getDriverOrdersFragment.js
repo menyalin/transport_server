@@ -82,6 +82,18 @@ export default () => {
         _roundedMinutes: '$_roundedMinutes',
         grade: '$grade',
         _clientAgreemenent: '$_clientAgreement',
+        _consigneeType: '$_consigneeType',
+      },
+    },
+    {
+      $addFields: {
+        totalSum: {
+          $add: [
+            '$baseTariff.tariff.sum',
+            { $ifNull: ['$waitingSum', 0] },
+            { $ifNull: ['$_paymentSum', 0] },
+          ],
+        },
       },
     },
     {

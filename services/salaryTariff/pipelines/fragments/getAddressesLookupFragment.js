@@ -1,3 +1,5 @@
+import { PARTNER_GROUPS } from '../../../../constants/partner.js'
+
 export default () => [
   { $unwind: { path: '$route' } },
   {
@@ -71,6 +73,24 @@ export default () => [
     $addFields: {
       _loadingAddressId: '$_loadingAddress._id',
       _lastAddressId: '$_lastAddress._id',
+      _consigneeType: getConsigneeType(),
     },
   },
 ]
+
+const getConsigneeType = () => ({
+  $switch: {
+    branches: PARTNER_GROUPS.map((groupItem) => ({
+      case: { $in: [groupItem.value, getPartnersGroup()] },
+      then: groupItem,
+    })),
+    default: PARTNER_GROUPS[PARTNER_GROUPS.length - 1],
+  },
+})
+
+const getPartnersGroup = () => ({
+  $map: {
+    input: '$route',
+    in: '$$this._address._partner.group',
+  },
+})

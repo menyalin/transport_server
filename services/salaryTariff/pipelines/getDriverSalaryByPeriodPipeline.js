@@ -4,9 +4,12 @@ import getBaseSalaryTariffFragment from './fragments/getBaseSalaryTariffFragment
 import getDriverOrdersFragment from './fragments/getDriverOrdersFragment.js'
 import getWaitingSalaryTariffFragment from './fragments/getWaitingSalaryTariffFragment.js'
 
-export default ({ company, period, driver, client }) => {
+export default ({ company, period, driver, client, consigneeType }) => {
   const startPeriod = new Date(period[0])
   const endPeriod = new Date(period[1])
+  const partnerFilter = []
+
+  console.log('consignee type: ', consigneeType)
 
   const orderPeriodDate = {
     $getField: {
@@ -104,7 +107,12 @@ export default ({ company, period, driver, client }) => {
   ]
 
   const addressesLookup = getAddressesLookupFragment()
-
+  if (consigneeType)
+    partnerFilter.push({
+      $match: {
+        '_consigneeType.value': consigneeType,
+      },
+    })
   const baseTariffs = getBaseSalaryTariffFragment(company)
   const waitingTariff = getWaitingSalaryTariffFragment(company)
   const driverOrdersDetailes = getDriverOrdersFragment()
@@ -116,9 +124,6 @@ export default ({ company, period, driver, client }) => {
         payment: {
           $sum: '$paymentToDriver.sum',
         },
-        // items: {
-        //   $push: '$$ROOT._id',
-        // },
         totalCount: {
           $count: {},
         },
@@ -130,6 +135,7 @@ export default ({ company, period, driver, client }) => {
     {
       $addFields: {
         avgGrade: { $round: ['$avgGrade', 2] },
+        totalSum: { $add: ['$payment', '$base', '$waiting'] },
       },
     },
     { $sort: { base: -1 } },
@@ -141,6 +147,7 @@ export default ({ company, period, driver, client }) => {
     ...truckLookup,
     ...addFields,
     ...addressesLookup,
+    ...partnerFilter,
     ...agreementLookup,
     ...baseTariffs,
     ...waitingTariff,
