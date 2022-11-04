@@ -4,7 +4,7 @@ import getBaseSalaryTariffFragment from './fragments/getBaseSalaryTariffFragment
 import getDriverOrdersFragment from './fragments/getDriverOrdersFragment.js'
 import getWaitingSalaryTariffFragment from './fragments/getWaitingSalaryTariffFragment.js'
 
-export default ({ company, period, driver }) => {
+export default ({ company, period, driver, client }) => {
   const startPeriod = new Date(period[0])
   const endPeriod = new Date(period[1])
 
@@ -30,6 +30,12 @@ export default ({ company, period, driver }) => {
       },
     },
   }
+
+  if (client)
+    firstMatcher.$match.$expr.$and.push({
+      $eq: ['$client.client', mongoose.Types.ObjectId(client)],
+    })
+
   if (driver)
     firstMatcher.$match.$expr.$and.push({
       $eq: ['$confirmedCrew.driver', mongoose.Types.ObjectId(driver)],
