@@ -15,6 +15,7 @@ export default (company) => {
           unloadingZones: '$_lastAddress.zones',
           loadingRegion: '$_loadingAddress.region',
           unloadingRegion: '$_lastAddress.region',
+          consigneeType: '$_consigneeType.value',
         },
         pipeline: [
           {
@@ -26,6 +27,12 @@ export default (company) => {
                   { $gte: ['$$orderDate', '$date'] },
                   { $in: ['$$liftCapacity', '$liftCapacity'] },
                   { $in: ['$$tkName', '$tks'] },
+                  {
+                    $in: [
+                      '$$consigneeType',
+                      { $ifNull: ['$consigneeTypes', []] },
+                    ],
+                  },
                   {
                     $or: [
                       {

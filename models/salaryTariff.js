@@ -30,6 +30,9 @@ const schema = new Schema(
     clients: [{ type: Types.ObjectId, ref: 'Partner' }],
     consigneeTypes: [{ type: String, enum: PARTNER_GROUPS_ENUM }],
     isPltReturn: { type: Boolean, default: false },
+
+    includedPoints: { type: Number },
+
   },
 
   { timestamps: true }

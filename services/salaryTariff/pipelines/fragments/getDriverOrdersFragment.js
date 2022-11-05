@@ -95,7 +95,7 @@ export default () => {
             { $ifNull: ['$baseTariff.tariff.sum', 0] },
             { $ifNull: ['$waitingSum', 0] },
             { $ifNull: ['$_paymentSum', 0] },
-            { $ifNull: ['$_returnSum', 0] },
+            { $ifNull: ['$returnSum', 0] },
           ],
         },
       },

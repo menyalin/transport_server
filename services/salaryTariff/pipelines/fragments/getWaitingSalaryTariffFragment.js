@@ -18,6 +18,7 @@ export default (company) => {
           client: '$client.client',
           tkName: '$confirmedCrew.tkName',
           liftCapacity: '$_truck.liftCapacityType',
+          consigneeType: '$_consigneeType.value',
 
           // loadingPoint: '$_loadingAddressId',
           // lastAddress: '$_lastAddressId',
@@ -39,6 +40,12 @@ export default (company) => {
                   { $in: ['$$client', { $ifNull: ['$clients', []] }] },
                   { $in: ['$$tkName', '$tks'] },
                   { $in: ['$$liftCapacity', '$liftCapacity'] },
+                  {
+                    $in: [
+                      '$$consigneeType',
+                      { $ifNull: ['$consigneeTypes', []] },
+                    ],
+                  },
                 ],
               },
             },

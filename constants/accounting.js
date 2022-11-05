@@ -40,7 +40,7 @@ const _salaryTariffTypes = [
   { value: 'return', text: 'Возврат', disabled: false },
 
   { value: 'waiting', text: 'Простой', disabled: false },
-  { value: 'additionalPoints', text: 'Дополнительные точки', disabled: true },
+  { value: 'additionalPoints', text: 'Дополнительные точки', disabled: false },
 ]
 
 export const DOCUMENT_TYPES = _docTypes

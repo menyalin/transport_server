@@ -49,8 +49,14 @@ const noPaymentForAreLateCondition = (pointType) => ({
       eq: [
         pointType === 'loading'
           ? '$_clientAgreement.noWaitingPaymentForAreLateLoading'
-          : '$_clientAgreement.noWaitingPaymentForAreLateLoading',
+          : '$_clientAgreement.noWaitingPaymentForAreLateUnloading',
         true,
+      ],
+    },
+    {
+      $ne: [
+        { $ifNull: ['$$this.plannedDateDoc', '$$this.plannedDate', null] },
+        null,
       ],
     },
     {
@@ -82,7 +88,15 @@ const inTimeArrivalCond = () => ({
 
 // если расчет простоя по фактическому времени или опоздание без запрета оплаты
 const actualTimeCond = (pointType) => ({
-  $or: [{ $eq: [getAgreementField(pointType), true] }],
+  $or: [
+    { $eq: [getAgreementField(pointType), true] },
+    {
+      $eq: [
+        { $ifNull: ['$$this.plannedDateDoc', '$$this.plannedDate', null] },
+        null,
+      ],
+    },
+  ],
 })
 
 export const getDurutationInPoints = (pointType) => {
