@@ -3,13 +3,12 @@ import getAddressesLookupFragment from './fragments/getAddressesLookupFragment.j
 import getBaseSalaryTariffFragment from './fragments/getBaseSalaryTariffFragment.js'
 import getDriverOrdersFragment from './fragments/getDriverOrdersFragment.js'
 import getWaitingSalaryTariffFragment from './fragments/getWaitingSalaryTariffFragment.js'
+import getReturnSalaryTariff from './fragments/getReturnSalaryTariff.js'
 
 export default ({ company, period, driver, client, consigneeType }) => {
   const startPeriod = new Date(period[0])
   const endPeriod = new Date(period[1])
   const partnerFilter = []
-
-  console.log('consignee type: ', consigneeType)
 
   const orderPeriodDate = {
     $getField: {
@@ -107,6 +106,7 @@ export default ({ company, period, driver, client, consigneeType }) => {
   ]
 
   const addressesLookup = getAddressesLookupFragment()
+
   if (consigneeType)
     partnerFilter.push({
       $match: {
@@ -115,6 +115,7 @@ export default ({ company, period, driver, client, consigneeType }) => {
     })
   const baseTariffs = getBaseSalaryTariffFragment(company)
   const waitingTariff = getWaitingSalaryTariffFragment(company)
+  const returnTariff = getReturnSalaryTariff(company)
   const driverOrdersDetailes = getDriverOrdersFragment()
 
   const group = [
@@ -130,12 +131,13 @@ export default ({ company, period, driver, client, consigneeType }) => {
         base: { $sum: '$_baseTariff.tariff.sum' },
         waiting: { $sum: '$_waitingSum' },
         avgGrade: { $avg: '$grade.grade' },
+        returnSum: { $sum: { $ifNull: ['$_returnSum', 0] } },
       },
     },
     {
       $addFields: {
         avgGrade: { $round: ['$avgGrade', 2] },
-        totalSum: { $add: ['$payment', '$base', '$waiting'] },
+        totalSum: { $add: ['$payment', '$base', '$waiting', '$returnSum'] },
       },
     },
     { $sort: { base: -1 } },
@@ -151,6 +153,7 @@ export default ({ company, period, driver, client, consigneeType }) => {
     ...agreementLookup,
     ...baseTariffs,
     ...waitingTariff,
+    ...returnTariff,
   ]
 
   if (driver) pipeline.push(...driverOrdersDetailes)

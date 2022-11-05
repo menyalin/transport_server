@@ -77,21 +77,25 @@ export default () => {
         baseTariff: '$_baseTariff',
         waitingTariff: '$_waitingTariff',
         waitingSum: '$_waitingSum',
+
         _waitingInMinutes: '$_waitingInMinutes',
         _unloadingDurationsMinutes: '$_unloadingDurationsMinutes',
         _roundedMinutes: '$_roundedMinutes',
         grade: '$grade',
         _clientAgreemenent: '$_clientAgreement',
         _consigneeType: '$_consigneeType',
+        returnSum: '$_returnSum',
+        returnTariff: '$_returnTariff',
       },
     },
     {
       $addFields: {
         totalSum: {
           $add: [
-            '$baseTariff.tariff.sum',
+            { $ifNull: ['$baseTariff.tariff.sum', 0] },
             { $ifNull: ['$waitingSum', 0] },
             { $ifNull: ['$_paymentSum', 0] },
+            { $ifNull: ['$_returnSum', 0] },
           ],
         },
       },

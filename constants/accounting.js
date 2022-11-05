@@ -37,10 +37,10 @@ const _salaryTariffTypes = [
     disabled: false,
     tariffType: 'base',
   },
+  { value: 'return', text: 'Возврат', disabled: false },
 
   { value: 'waiting', text: 'Простой', disabled: false },
   { value: 'additionalPoints', text: 'Дополнительные точки', disabled: true },
-  { value: 'return', text: 'Возврат', disabled: true },
 ]
 
 export const DOCUMENT_TYPES = _docTypes

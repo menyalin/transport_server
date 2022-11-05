@@ -3,7 +3,7 @@ import pkg from 'mongoose'
 import { ORDER_ANALYTIC_TYPES_ENUM } from '../constants/order.js'
 import { SALARY_TARIFF_TYPES_ENUM } from '../constants/accounting.js'
 import { TARIFF_ROUND_BY_HOURS_ENUM } from '../constants/tariff.js'
-
+import { PARTNER_GROUPS_ENUM } from '../constants/partner.js'
 const { Schema, model, Types } = pkg
 
 const schema = new Schema(
@@ -27,25 +27,12 @@ const schema = new Schema(
     includeHours: { type: Number },
     roundByHours: { type: Number, enum: TARIFF_ROUND_BY_HOURS_ENUM }, // Кратность округления по часам
     tariffBy: { type: String, enum: ['hour', 'day'] },
-    clients: [{ type: Types.ObjectId, ref: 'Partner', required: true }],
+    clients: [{ type: Types.ObjectId, ref: 'Partner' }],
+    consigneeTypes: [{ type: String, enum: PARTNER_GROUPS_ENUM }],
+    isPltReturn: { type: Boolean, default: false },
   },
+
   { timestamps: true }
 )
 
 export default model('SalaryTariff', schema, 'salaryTariffs')
-
-// truckKind: { type: String, enum: TRUCK_KINDS_ENUM, required: true },
-// includedPoints: { type: Number },
-// // for 'directDistanceZones' type, and "loading"
-// zones: [
-//   {
-//     distance: Number,
-//     price: Number,
-//     priceWOVat: Number,
-//     sumVat: Number,
-//   },
-// ],
-// // for "waiting", "orderType"
-
-// // for 'return'
-// percentOfTariff: { type: Number },
