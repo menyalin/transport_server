@@ -28,28 +28,6 @@ const getTariffTypeStr = (tariffTypeFieldPath) => ({
   },
 })
 
-const getRouteDuration = () => ({
-  $dateDiff: {
-    startDate: {
-      $ifNull: [
-        { $getField: { field: 'arrivalDateDoc', input: { $first: '$route' } } },
-        { $getField: { field: 'arrivalDate', input: { $first: '$route' } } },
-      ],
-    },
-    endDate: {
-      $ifNull: [
-        {
-          $getField: { field: 'departureDateDoc', input: { $last: '$route' } },
-        },
-        {
-          $getField: { field: 'departureDate', input: { $last: '$route' } },
-        },
-      ],
-    },
-    unit: 'hour',
-  },
-})
-
 export default () => {
   return [
     {
@@ -70,7 +48,7 @@ export default () => {
         _trailerRegNum: '$_trailer.regNum',
         _baseTariffTypeStr: getTariffTypeStr('$_baseTariff._id'),
         _paymentSum: '$paymentToDriver.sum',
-        _routeDuration: getRouteDuration(),
+        _routeDuration: '$_routeDuration',
         route: '$route',
         docsState: '$docsState.getted',
         truckId: '$_truck._id',
@@ -86,6 +64,7 @@ export default () => {
         _consigneeType: '$_consigneeType',
         returnSum: '$_returnSum',
         returnTariff: '$_returnTariff',
+        additionalPointsSum: '$_additionalPointsSum',
       },
     },
     {
@@ -96,6 +75,7 @@ export default () => {
             { $ifNull: ['$waitingSum', 0] },
             { $ifNull: ['$_paymentSum', 0] },
             { $ifNull: ['$returnSum', 0] },
+            { $ifNull: ['$additionalPointsSum', 0] },
           ],
         },
       },

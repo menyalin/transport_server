@@ -4,8 +4,16 @@ import getBaseSalaryTariffFragment from './fragments/getBaseSalaryTariffFragment
 import getDriverOrdersFragment from './fragments/getDriverOrdersFragment.js'
 import getWaitingSalaryTariffFragment from './fragments/getWaitingSalaryTariffFragment.js'
 import getReturnSalaryTariff from './fragments/getReturnSalaryTariff.js'
+import getAdditionalPointsTariff from './fragments/getAdditionPointsSalaryTariff.js'
 
-export default ({ company, period, driver, client, consigneeType }) => {
+export default ({
+  company,
+  period,
+  driver,
+  client,
+  consigneeType,
+  orderType,
+}) => {
   const startPeriod = new Date(period[0])
   const endPeriod = new Date(period[1])
   const partnerFilter = []
@@ -33,6 +41,11 @@ export default ({ company, period, driver, client, consigneeType }) => {
     },
   }
 
+  if (orderType)
+    firstMatcher.$match.$expr.$and.push({
+      $eq: ['$analytics.type', orderType],
+    })
+
   if (client)
     firstMatcher.$match.$expr.$and.push({
       $eq: ['$client.client', mongoose.Types.ObjectId(client)],
@@ -54,6 +67,13 @@ export default ({ company, period, driver, client, consigneeType }) => {
     },
     { $addFields: { _driver: { $first: '$_driver' } } },
     { $match: { '_driver.isCalcSalary': true, isActive: true } },
+    {
+      $addFields: {
+        _driverFullName: {
+          $concat: ['$_driver.surname', '$_driver.name', '$_driver.patronymic'],
+        },
+      },
+    },
   ]
 
   const agreementLookup = [
@@ -116,12 +136,14 @@ export default ({ company, period, driver, client, consigneeType }) => {
   const baseTariffs = getBaseSalaryTariffFragment(company)
   const waitingTariff = getWaitingSalaryTariffFragment(company)
   const returnTariff = getReturnSalaryTariff(company)
+  const additionalPointsTariff = getAdditionalPointsTariff(company)
   const driverOrdersDetailes = getDriverOrdersFragment()
 
   const group = [
     {
       $group: {
         _id: '$confirmedCrew.driver',
+        _driverFullName: { $first: '$_driverFullName' },
         payment: {
           $sum: '$paymentToDriver.sum',
         },
@@ -131,7 +153,9 @@ export default ({ company, period, driver, client, consigneeType }) => {
         base: { $sum: '$_baseTariff.tariff.sum' },
         waiting: { $sum: '$_waitingSum' },
         avgGrade: { $avg: '$grade.grade' },
+        duration: { $sum: '$_routeDuration' },
         returnSum: { $sum: { $ifNull: ['$_returnSum', 0] } },
+        additionalPointsSum: { $sum: '$_additionalPointsSum' },
       },
     },
     {
@@ -140,7 +164,7 @@ export default ({ company, period, driver, client, consigneeType }) => {
         totalSum: { $add: ['$payment', '$base', '$waiting', '$returnSum'] },
       },
     },
-    { $sort: { base: -1 } },
+    { $sort: { _driverFullName: 1 } },
   ]
 
   const pipeline = [
@@ -154,6 +178,7 @@ export default ({ company, period, driver, client, consigneeType }) => {
     ...baseTariffs,
     ...waitingTariff,
     ...returnTariff,
+    ...additionalPointsTariff,
   ]
 
   if (driver) pipeline.push(...driverOrdersDetailes)
