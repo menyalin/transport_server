@@ -1,5 +1,5 @@
 import { SALARY_TARIFF_TYPES } from '../../../../constants/accounting.js'
-
+import { ORDER_ANALYTIC_TYPES } from '../../../../constants/order.js'
 const getAddressShortName = (pointType) => ({
   $trim: {
     chars: ', ',
@@ -47,7 +47,15 @@ export default () => {
         _truckRegNum: '$_truck.regNum',
         _trailerRegNum: '$_trailer.regNum',
         _baseTariffTypeStr: getTariffTypeStr('$_baseTariff._id'),
-
+        orderTypeStr: {
+          $switch: {
+            branches: ORDER_ANALYTIC_TYPES.map((item) => ({
+              case: { $eq: [item.value, '$analytics.type'] },
+              then: item.text,
+            })),
+            default: 'Ошибка',
+          },
+        },
         route: '$route',
         docsState: '$docsState.getted',
         truckId: '$_truck._id',
