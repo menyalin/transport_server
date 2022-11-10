@@ -39,7 +39,7 @@ const driverSchema = new Schema(
     company: { type: Types.ObjectId, ref: 'Company' },
     hideInFines: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
-    isCalcSalary: { type: Boolean, default: false },
+    isCalcSalary: { type: Boolean, default: true },
   },
   { timestamps: true, toJSON: { virtuals: true } }
 )

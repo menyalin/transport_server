@@ -13,6 +13,7 @@ export default ({
   client,
   consigneeType,
   orderType,
+  tk,
 }) => {
   const startPeriod = new Date(period[0])
   const endPeriod = new Date(period[1])
@@ -40,7 +41,10 @@ export default ({
       },
     },
   }
-
+  if (tk)
+    firstMatcher.$match.$expr.$and.push({
+      $eq: ['$confirmedCrew.tkName', mongoose.Types.ObjectId(tk)],
+    })
   if (orderType)
     firstMatcher.$match.$expr.$and.push({
       $eq: ['$analytics.type', orderType],
@@ -155,13 +159,23 @@ export default ({
         avgGrade: { $avg: '$grade.grade' },
         duration: { $sum: '$_routeDuration' },
         returnSum: { $sum: { $ifNull: ['$_returnSum', 0] } },
-        additionalPointsSum: { $sum: '$_additionalPointsSum' },
+        additionalPointsSum: {
+          $sum: { $ifNull: ['$_additionalPointsSum', 0] },
+        },
       },
     },
     {
       $addFields: {
         avgGrade: { $round: ['$avgGrade', 2] },
-        totalSum: { $add: ['$payment', '$base', '$waiting', '$returnSum'] },
+        totalSum: {
+          $add: [
+            '$payment',
+            '$base',
+            '$waiting',
+            '$returnSum',
+            '$additionalPointsSum',
+          ],
+        },
       },
     },
     { $sort: { _driverFullName: 1 } },
