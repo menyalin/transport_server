@@ -12,6 +12,7 @@ export const getListPipeline = ({
   category,
   sortBy,
   sortDesc,
+  searchStr,
 }) => {
   const sP = new Date(startDate)
   const eP = new Date(endDate)
@@ -26,7 +27,7 @@ export const getListPipeline = ({
 
   if (status === 'notPaid')
     firstMatcher.$match.$and.push(
-      ...[{ isPaydByDriver: false }, { paymentDate: null }],
+      ...[{ isPaydByDriver: false }, { paymentDate: null }]
     )
 
   if (status === 'paid')
@@ -78,5 +79,53 @@ export const getListPipeline = ({
       },
     },
   ]
-  return [firstMatcher, ...group]
+  const workerLookup = [
+    {
+      $lookup: {
+        from: 'workers',
+        localField: 'payingByWorker',
+        foreignField: '_id',
+        as: '_worker',
+      },
+    },
+    {
+      $addFields: {
+        _worker: { $first: '$_worker' },
+      },
+    },
+  ]
+  const pipeline = [firstMatcher, ...workerLookup]
+  if (searchStr) {
+    pipeline.push({
+      $match: {
+        $expr: {
+          $or: [
+            {
+              $regexMatch: {
+                input: '$number',
+                regex: new RegExp(searchStr),
+                options: 'i',
+              },
+            },
+            {
+              $regexMatch: {
+                input: '$note',
+                regex: new RegExp(searchStr),
+                options: 'i',
+              },
+            },
+            {
+              $regexMatch: {
+                input: '$_worker.name',
+                regex: new RegExp(searchStr),
+                options: 'i',
+              },
+            },
+          ],
+        },
+      },
+    })
+  }
+
+  return [...pipeline, ...group]
 }
