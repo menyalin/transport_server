@@ -67,3 +67,14 @@ export const grossProfitDetailsSchema = {
   required: ['company', 'dateRange'],
   additionalProperties: true,
 }
+
+export const orderDocsSchema = {
+  type: 'object',
+  properties: {
+    company: {
+      type: 'string',
+    },
+  },
+  required: ['company'],
+  additionalProperties: true,
+}

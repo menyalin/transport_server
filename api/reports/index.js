@@ -10,6 +10,7 @@ import {
   grossProfitSchema,
   grossProfitPivotSchema,
   grossProfitDetailsSchema,
+  orderDocsSchema,
 } from './schemes.js'
 
 const router = express.Router()
@@ -18,39 +19,45 @@ const router = express.Router()
 router.get(
   '/daysControl',
   [jwtAuth, queryValidator(daysControlSchema)],
-  (...args) => ctrl.daysControl(...args),
+  (...args) => ctrl.daysControl(...args)
 )
 
 router.get('/inProgressOrders', [jwtAuth], (...args) =>
-  ctrl.inProgressOrders(...args),
+  ctrl.inProgressOrders(...args)
 )
 
 router.get('/truckStateOnDate', [jwtAuth], (...args) =>
-  ctrl.truckStateOnDate(...args),
+  ctrl.truckStateOnDate(...args)
 )
 
 router.post(
   '/drivers_grades',
   [jwtAuth, bodyValidator(driversGradesSchema)],
-  (...args) => ctrl.driversGradesGetLink(...args),
+  (...args) => ctrl.driversGradesGetLink(...args)
 )
 
 router.post(
   '/gross_profit',
   [jwtAuth, bodyValidator(grossProfitSchema)],
-  (...args) => ctrl.grossProfit(...args),
+  (...args) => ctrl.grossProfit(...args)
 )
 
 router.post(
   '/gross_profit_pivot',
   [jwtAuth, bodyValidator(grossProfitPivotSchema)],
-  (...args) => ctrl.grossProfitPivot(...args),
+  (...args) => ctrl.grossProfitPivot(...args)
 )
 
 router.post(
   '/gross_profit_details',
   [jwtAuth, bodyValidator(grossProfitDetailsSchema)],
-  (...args) => ctrl.grossProfitDetails(...args),
+  (...args) => ctrl.grossProfitDetails(...args)
+)
+
+router.post(
+  '/order_docs',
+  [jwtAuth, bodyValidator(orderDocsSchema)],
+  (...args) => ctrl.orderDocs(...args)
 )
 
 export default router

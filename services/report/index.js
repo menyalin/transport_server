@@ -7,6 +7,7 @@ import getDriversGradesAppayPipeline from './pipelines/driversGradesArray.js'
 import getGrossProfitPipeline from './pipelines/grossProfitPipeline.js'
 import getGrossProfitPivotPipeline from './pipelines/grossProfitPivotPipeline.js'
 import getGrossProfitDetailsPipeline from './pipelines/getGrossProfitDetailsPipeline.js'
+import getOrderDocsPipeline from './pipelines/getOrderDocs/index.js'
 
 class ReportService {
   async inProgressOrders({ profile, client }) {
@@ -31,6 +32,12 @@ class ReportService {
       tkName,
     })
     const res = await Truck.aggregate(pipeline)
+    return res
+  }
+
+  async orderDocs(params) {
+    const pipeline = getOrderDocsPipeline(params)
+    const res = await Order.aggregate(pipeline)
     return res
   }
 
