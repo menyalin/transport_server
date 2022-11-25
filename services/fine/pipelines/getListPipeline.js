@@ -21,18 +21,26 @@ export const getListPipeline = ({
     $match: {
       isActive: true,
       company: mongoose.Types.ObjectId(company),
-      $and: [{ date: { $gte: sP } }, { date: { $lt: eP } }],
+      $expr: {
+        $and: [{ $gte: ['$date', sP] }, { $lt: ['$date', eP] }],
+      },
     },
   }
 
   if (status === 'notPaid')
-    firstMatcher.$match.$and.push(
-      ...[{ isPaydByDriver: false }, { paymentDate: null }]
-    )
+    firstMatcher.$match.$expr.$and.push({
+      $and: [
+        { $eq: [{ $ifNull: ['$isPaydByDriver', false] }, false] },
+        { $not: '$paymentDate' },
+      ],
+    })
 
   if (status === 'paid')
-    firstMatcher.$match.$and.push({
-      $or: [{ isPaydByDriver: true }, { paymentDate: { $ne: null } }],
+    firstMatcher.$match.$expr.$and.push({
+      $or: [
+        { $eq: ['$isPaydByDriver', true] },
+        { $ne: ['$paymentDate', null] },
+      ],
     })
 
   if (truck)
