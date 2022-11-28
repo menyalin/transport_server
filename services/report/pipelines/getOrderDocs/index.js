@@ -7,9 +7,19 @@ import {
   switchCondition as switchConditionByDocsState,
 } from '../fragments/orderDocsStatus.js'
 
-import {getAddressDetails} from '../fragments/addressDetails.js'
+import { getAddressDetails } from '../fragments/addressDetails.js'
 
-export default ({ company, groupBy, tks, clients, state, date, driver }) => {
+export default ({
+  company,
+  groupBy,
+  tks,
+  clients,
+  state,
+  date,
+  driver,
+  getDocsDays,
+  reviewDocsDays,
+}) => {
   if (!company)
     throw new BadRequestError('get orderDocs pipeline: no company id!')
   const firstMatcher = {
@@ -136,6 +146,44 @@ export default ({ company, groupBy, tks, clients, state, date, driver }) => {
           },
         },
         _docsStatusObj: getOrderDocsStatus(),
+        getDocsDays: {
+          $dateDiff: {
+            startDate: {
+              $getField: {
+                field: 'plannedDate',
+                input: { $first: '$route' },
+              },
+            },
+            endDate: { $ifNull: ['$docsState.date', '$$NOW'] },
+            unit: 'day',
+          },
+        },
+        reviewDocsDays: {
+          $cond: {
+            if: { $ne: [{ $ifNull: ['$docsState.date', null] }, null] },
+            then: {
+              $dateDiff: {
+                startDate: '$docsState.date',
+                endDate: {
+                  $ifNull: [
+                    {
+                      $getField: { field: 'date', input: { $first: '$docs' } },
+                    },
+                    '$$NOW',
+                  ],
+                },
+                unit: 'day',
+              },
+            },
+            else: null,
+          },
+        },
+        reviewDate: {
+          $getField: {
+            input: { $first: '$docs' },
+            field: 'date',
+          },
+        },
         orderTypeStr: {
           $switch: {
             branches: ORDER_ANALYTIC_TYPES.map((item) => ({
@@ -149,11 +197,97 @@ export default ({ company, groupBy, tks, clients, state, date, driver }) => {
     },
   ]
 
+  const secondMatcher = {
+    $match: {
+      $expr: {
+        $and: [],
+      },
+    },
+  }
+  if (getDocsDays)
+    secondMatcher.$match.$expr.$and.push(
+      daysCondition(getDocsDays, '$getDocsDays')
+    )
+
+  if (reviewDocsDays)
+    secondMatcher.$match.$expr.$and.push(
+      daysCondition(reviewDocsDays, '$reviewDocsDays')
+    )
+
+  const group = [
+    {
+      $group: {
+        _id: 'reportData',
+        items: { $push: '$$ROOT' },
+        totalCount: { $count: {} },
+      },
+    },
+    {
+      $addFields: {
+        notGettedCount: {
+          $size: {
+            $filter: {
+              input: '$items',
+              cond: { $eq: ['$$this._docsStatusObj.value', 'notGetted'] },
+            },
+          },
+        },
+        reviewCount: {
+          $size: {
+            $filter: {
+              input: '$items',
+              cond: { $eq: ['$$this._docsStatusObj.value', 'review'] },
+            },
+          },
+        },
+        correctionCount: {
+          $size: {
+            $filter: {
+              input: '$items',
+              cond: { $eq: ['$$this._docsStatusObj.value', 'correction'] },
+            },
+          },
+        },
+      },
+    },
+  ]
+
   return [
     firstMatcher,
     ...addFields,
     ...getAddressDetails(),
+    secondMatcher,
     { $limit: 300 },
     { $sort: { orderDate: 1 } },
+    ...group,
   ]
+}
+
+const daysCondition = (intervalVariant, fieldName) => {
+  // const daysIntervalItems = [
+  //   { text: '< 10', value: 1 },
+  //   { text: '10 - 20', value: 2 },
+  //   { text: '20 - 30', value: 3 },
+  //   { text: ' > 30 ', value: 4 },
+  // ]
+  switch (intervalVariant) {
+    case 1:
+      return {
+        $and: [{ $lt: [fieldName, 10] }, { $ne: [fieldName, null] }],
+      }
+    case 2:
+      return {
+        $and: [{ $gte: [fieldName, 10] }, { $lt: [fieldName, 20] }],
+      }
+    case 3:
+      return {
+        $and: [{ $gte: [fieldName, 20] }, { $lt: [fieldName, 30] }],
+      }
+    case 4:
+      return {
+        $gte: [fieldName, 30],
+      }
+    default:
+      return null
+  }
 }

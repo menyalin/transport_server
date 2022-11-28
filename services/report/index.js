@@ -38,13 +38,13 @@ class ReportService {
   async orderDocs(params) {
     const pipeline = getOrderDocsPipeline(params)
     const res = await Order.aggregate(pipeline)
-    return res
+    return res[0] || {}
   }
 
   async grossProfit({ company, dateRange }) {
     const pipeline = getGrossProfitPipeline({ company, dateRange })
     const res = await Order.aggregate(pipeline)
-    return res[0] || []
+    return res[0] || {}
   }
 
   async grossProfitPivot({ company, dateRange, groupBy, mainFilters }) {

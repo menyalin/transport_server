@@ -41,7 +41,7 @@ const docsCorrectionCond = () => ({
 export const switchCondition = (state) => {
   if (!state)
     return {
-      $or: [docsNotGettedCond(), docsReviewCond(), docsCorrectionCond],
+      $or: [docsNotGettedCond(), docsReviewCond(), docsCorrectionCond()],
     }
   else
     switch (state) {
@@ -87,24 +87,29 @@ export const getOrderDocsStatus = () => {
       branches: [
         {
           case: docsNotGettedCond(),
-          then: { text: 'Не получены', color: 'red' },
+          then: { text: 'Не получены', color: 'red', value: 'notGetted' },
         },
         {
           case: docsReviewCond(),
-          then: { text: 'На проверке', color: 'orange' },
+          then: { text: 'На проверке', color: 'blue', value: 'review' },
         },
         {
           case: docsCorrectionCond(),
-          then: { text: 'На исправлении', color: 'blue' },
+          then: {
+            text: 'На исправлении',
+            color: 'orange',
+            value: 'correction',
+          },
         },
         {
           case: docsAcceptedCond(),
-          then: { text: 'Приняты', color: 'green' },
+          then: { text: 'Приняты', color: 'green', value: 'accepted' },
         },
       ],
       default: {
         text: 'Ошибка',
         color: 'red',
+        value: 'error',
       },
     },
   }
