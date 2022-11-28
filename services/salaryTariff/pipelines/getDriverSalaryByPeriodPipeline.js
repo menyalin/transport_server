@@ -10,10 +10,10 @@ export default ({
   company,
   period,
   driver,
-  client,
+  clients,
   consigneeType,
   orderType,
-  tk,
+  tks,
 }) => {
   const startPeriod = new Date(period[0])
   const endPeriod = new Date(period[1])
@@ -41,18 +41,24 @@ export default ({
       },
     },
   }
-  if (tk)
+  if (tks && tks.length)
     firstMatcher.$match.$expr.$and.push({
-      $eq: ['$confirmedCrew.tkName', mongoose.Types.ObjectId(tk)],
+      $in: [
+        '$confirmedCrew.tkName',
+        tks.map((tk) => mongoose.Types.ObjectId(tk)),
+      ],
     })
   if (orderType)
     firstMatcher.$match.$expr.$and.push({
       $eq: ['$analytics.type', orderType],
     })
 
-  if (client)
+  if (clients && clients.length)
     firstMatcher.$match.$expr.$and.push({
-      $eq: ['$client.client', mongoose.Types.ObjectId(client)],
+      $in: [
+        '$client.client',
+        clients.map((client) => mongoose.Types.ObjectId(client)),
+      ],
     })
 
   if (driver)
