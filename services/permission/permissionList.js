@@ -2,6 +2,7 @@ export const admin = {
   fullAccess: true,
   'modules:accounting': true, // Для отображения вкладки "Учет"
   'report:drivers_grades': true,
+  'report:orderDocs': true,
   'order:readFinalPrices': true,
   'order:writeFinalPrices': true,
   'document:readList': true,
@@ -29,6 +30,7 @@ export const admin = {
 export const outsourceCarriersManager = {
   'order:readPaymentToDriver': true,
   'order:writePaymentToDriver': true,
+  'report:orderDocs': true,
   'agreement:readList': true,
   'agreement:readItem': true,
   'agreement:write': true,
@@ -56,6 +58,7 @@ export const director = {
   'order:writePaymentToDriver': true,
   'modules:accounting': true,
   'fine:readList': true,
+  'report:orderDocs': true,
   'fine:readItem': true,
   'worker:readList': true,
   'worker:readItem': true,
@@ -139,6 +142,7 @@ export const dispatcher = {
   'order:daysForWritePrice': 4,
   'order:groupCreate': true,
   'order:readDocs': true,
+  'report:orderDocs': true,
 }
 
 export const seniorDispatcher = {
@@ -204,6 +208,8 @@ export const checkman = {
   'orderTemplate:readList': true,
   'orderTemplate:readItem': true,
   'order:readDocs': true,
+
+  'report:orderDocs': true,
 }
 
 export const accountant = {
@@ -272,6 +278,7 @@ export const mechanic = {
   'truck:readItem': true,
   'driver:readList': true,
   'driver:readItem': true,
+  'report:orderDocs': true,
 }
 
 export const userAdmin = {
