@@ -19,13 +19,13 @@ const schema = new Schema(
     address: String,
     paymentDate: { type: Date, default: null },
     paymentSum: Number,
-    isPaydByDriver: Boolean,
+    isPaydByDriver: { type: Boolean, default: false },
     payingByWorker: { type: Types.ObjectId, ref: 'Worker' },
-    isCulpritDriver: Boolean,
+    isCulpritDriver: { type: Boolean, default: false },
     kX: Number,
     withheldSum: Number,
   },
-  { timestamps: true },
+  { timestamps: true }
 )
 
 export default model('Fine', schema, 'fines')
