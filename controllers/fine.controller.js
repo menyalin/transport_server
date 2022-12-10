@@ -7,6 +7,18 @@ class FineController extends IController {
     this.service = service
   }
 
+  async getByNumber(req, res) {
+    try {
+      const data = await this.service.getByNumber(
+        req.params.number,
+        req.companyId
+      )
+      res.status(200).json(data)
+    } catch (e) {
+      res.status(500).json({ message: e.message })
+    }
+  }
+
   async getList(req, res) {
     try {
       await PermissionService.check({

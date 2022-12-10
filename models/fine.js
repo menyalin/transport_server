@@ -7,7 +7,7 @@ const schema = new Schema(
     isActive: { type: Boolean, default: true },
     note: String,
     date: Date,
-    number: { type: String, required: true, unique: true },
+    number: { type: String, required: true },
     category: { type: String },
     violationDate: Date,
     violation: { type: String },
