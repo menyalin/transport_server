@@ -53,13 +53,11 @@ class FineService extends IService {
     try {
       const pipeline = getListPipeline(params)
       const res = await this.model.aggregate(pipeline)
-      return res[0]
+      return res[0] || []
     } catch (e) {
       throw new Error(e.message)
     }
   }
-
-  
 }
 
 export default new FineService({

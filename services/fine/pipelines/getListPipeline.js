@@ -16,7 +16,6 @@ export const getListPipeline = ({
 }) => {
   const sP = new Date(startDate)
   const eP = new Date(endDate)
-
   const firstMatcher = {
     $match: {
       isActive: true,
@@ -43,13 +42,12 @@ export const getListPipeline = ({
       ],
     })
 
-  if (truck)
-    firstMatcher.$match.$and.push({ truck: mongoose.Types.ObjectId(truck) })
+  if (truck) firstMatcher.$match.truck = mongoose.Types.ObjectId(truck)
 
-  if (driver)
-    firstMatcher.$match.$and.push({ driver: mongoose.Types.ObjectId(driver) })
+  if (driver) firstMatcher.$match.driver = mongoose.Types.ObjectId(driver)
 
-  if (category) firstMatcher.$match.$and.push({ category })
+  if (category)
+    firstMatcher.$match.$expr.$and.push({ $eq: ['$category', category] })
 
   const sorting = (sortBy, sortDesc) => {
     const res = { $sort: {} }
