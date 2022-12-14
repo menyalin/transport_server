@@ -2,7 +2,9 @@ import jwt from 'jsonwebtoken'
 import { ORDER_STATUSES, ORDER_ANALYTIC_TYPES } from '../../constants/order.js'
 import { PARTNER_GROUPS } from '../../constants/partner.js'
 import { ORDER_PRICE_TYPES } from '../../constants/priceTypes.js'
+import { DOCS_REGISTRY_STATUSES } from '../../constants/docsRegistry.js'
 import { User } from '../../models/index.js'
+
 import {
   AddressService,
   CompanyService,
@@ -109,6 +111,7 @@ class UserService {
       tariffTypes: TARIFF_TYPES,
       salaryTariffTypes: SALARY_TARIFF_TYPES,
       roundingWaitingByHours: TARIFF_ROUND_BY_HOURS,
+      docsRegistryStatuses: DOCS_REGISTRY_STATUSES,
     }
   }
 
