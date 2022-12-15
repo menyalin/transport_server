@@ -10,7 +10,7 @@ const schema = new Schema(
     status: { type: String, enum: DOCS_REGISTRY_STATUSES_ENUM },
     isActive: { type: Boolean, default: true },
     note: String,
-  },
+  },    
   { timestamps: true }
 )
 
