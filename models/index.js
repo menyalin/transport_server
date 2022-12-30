@@ -21,6 +21,7 @@ import Region from './region.js'
 import City from './city.js'
 import Worker from './worker.js'
 import Fine from './fine.js'
+import DocsRegistry from './docsRegistry.js'
 import GlobalSettings from './globalSettings.js'
 import SalaryTariff from './salaryTariff.js'
 
@@ -50,4 +51,5 @@ export {
   GlobalSettings,
   Token,
   SalaryTariff,
+  DocsRegistry,
 }

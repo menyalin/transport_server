@@ -20,12 +20,12 @@ const addressSchema = new Schema(
     isActive: { type: Boolean, default: true },
     partner: { type: Types.ObjectId, ref: 'Partner' },
   },
-  { timestamps: true },
+  { timestamps: true }
 )
 
 addressSchema.index(
   { name: 'text', label: 'text', shortName: 'text' },
-  { default_language: 'russian' },
+  { default_language: 'russian' }
 )
 addressSchema.index({ geo: '2dsphere' })
 

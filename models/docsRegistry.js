@@ -14,4 +14,4 @@ const schema = new Schema(
   { timestamps: true }
 )
 
-export default model('Fine', schema, 'fines')
+export default model('DocsRegistry', schema, 'docsRegistries')

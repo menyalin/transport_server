@@ -23,6 +23,8 @@ import RegionService from './region/index.js'
 import CityService from './city/index.js'
 import WorkerService from './worker/index.js'
 import FineService from './fine/index.js'
+import DocsRegistryService from './docsRegistry/index.js'
+
 import GlobalSettingsService from './globalSettings/index.js'
 
 import TokenService from './token/index.js'
@@ -59,4 +61,5 @@ export {
   TokenService,
   NotificationService,
   SalaryTariffService,
+  DocsRegistryService,
 }

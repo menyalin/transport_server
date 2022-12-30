@@ -1,3 +1,4 @@
+import { BadRequestError } from '../../helpers/errors.js'
 import { Partner } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 import IService from '../iService.js'
@@ -6,6 +7,33 @@ import ChangeLogService from '../changeLog/index.js'
 class DocumentService extends IService {
   constructor({ model, emitter, modelName, logService }) {
     super({ model, emitter, modelName, logService })
+  }
+
+  async addPlaceForTransferDocs(partnerId, place, user) {
+    const partner = await this.model.findById(partnerId)
+    if (!partner)
+      throw new BadRequestError(
+        'partner:addPlaceForTransferDocs: partner not found'
+      )
+
+    partner.placesForTransferDocs.push(place)
+    await partner.save()
+
+    if (this.logService)
+      await this.logService.add({
+        docId: partner._id.toString(),
+        coll: this.modelName,
+        opType: 'add place for transfer documents',
+        user,
+        company: partner.company.toString(),
+        body: JSON.stringify(place),
+      })
+    this.emitter(
+      partner.company.toString(),
+      `${this.modelName}:updated`,
+      partner
+    )
+    return partner
   }
 }
 

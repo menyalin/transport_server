@@ -26,7 +26,9 @@ import zoneRouter from './api/zone/index.js'
 import regionRouter from './api/region/index.js'
 import cityRouter from './api/city/index.js'
 import workerRouter from './api/worker/index.js'
+import docsRegistryRouter from './api/docsRegistry/index.js'
 import fineRouter from './api/fine/index.js'
+
 import adminRouter from './api/admin/index.js'
 
 const app = express()
@@ -70,6 +72,8 @@ app.use('/api/regions', regionRouter)
 app.use('/api/cities', cityRouter)
 app.use('/api/workers', workerRouter)
 app.use('/api/fines', fineRouter)
+app.use('/api/docs_registry', docsRegistryRouter)
+
 app.use('/api/admin', adminRouter)
 app.use(errorMiddleware)
 export default app
