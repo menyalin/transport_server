@@ -3,7 +3,6 @@ import { Partner } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 import IService from '../iService.js'
 import ChangeLogService from '../changeLog/index.js'
-// import { PlaceForTransferDocsDTO } from './place.dto.js'
 
 class DocumentService extends IService {
   constructor({ model, emitter, modelName, logService }) {

@@ -18,7 +18,7 @@ router.delete('/:id', [jwtAuth], (...args) => ctrl.deleteById(...args))
 
 
 
-// places
+// places for transfer docs
 router.post('/:partnerId/places', [jwtAuth], (...args) =>
   ctrl.addPlaceForTransferDocs(...args)
 )

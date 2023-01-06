@@ -55,6 +55,10 @@ const paymentToDriver = {
 
 const docs = [
   {
+    addToRegistry: {
+      type: Boolean,
+      default: true,
+    },
     type: {
       type: String,
       enum: DOCUMENT_TYPES_ENUM,
