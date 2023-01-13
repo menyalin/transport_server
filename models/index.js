@@ -24,6 +24,7 @@ import Fine from './fine.js'
 import DocsRegistry from './docsRegistry.js'
 import GlobalSettings from './globalSettings.js'
 import SalaryTariff from './salaryTariff.js'
+import OrderInDocsRegistry from './orderInDocsRegistry.js'
 
 export {
   User,
@@ -52,4 +53,5 @@ export {
   Token,
   SalaryTariff,
   DocsRegistry,
+  OrderInDocsRegistry,
 }

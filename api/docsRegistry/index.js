@@ -12,6 +12,7 @@ const router = express.Router()
 router.get('/', [jwtAuth, queryValidator(getListSchema)], (...args) =>
   ctrl.getList(...args)
 )
+router.get('/pick_orders', [jwtAuth], (...args) => ctrl.pickOrders(...args))
 router.get('/:id', [jwtAuth], (...args) => ctrl.getById(...args))
 router.post('/', [jwtAuth], (...args) => ctrl.create(...args))
 router.put('/:id', [jwtAuth], (...args) => ctrl.updateOne(...args))

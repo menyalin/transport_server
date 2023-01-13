@@ -1,10 +1,14 @@
 import mongoose from 'mongoose'
 import ChangeLogService from '../changeLog/index.js'
-import { DocsRegistry as DocsRegistryModel } from '../../models/index.js'
+import {
+  DocsRegistry as DocsRegistryModel,
+  Order as OrderModel,
+} from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 import IService from '../iService.js'
 import { BadRequestError } from '../../helpers/errors.js'
 import { getListPipeline } from './pipelines/getListPipeline.js'
+import { getPickOrdersPipeline } from './pipelines/pickOrdersPipeline.js'
 
 class DocsRegistryService extends IService {
   constructor({ model, emitter, modelName, logService }) {
@@ -48,6 +52,21 @@ class DocsRegistryService extends IService {
     } catch (e) {
       throw new Error(e.message)
     }
+  }
+
+  async pickOrdersForRegistry({ company, client, allowedLoadingPonts }) {
+    if (!company || !client)
+      throw new BadRequestError(
+        'DocsRegistryService:pickOrdersForRegistry. missing required params'
+      )
+
+    const pipeline = getPickOrdersPipeline({
+      company,
+      client,
+      allowedLoadingPonts,
+    })
+    const orders = await OrderModel.aggregate(pipeline)
+    return orders
   }
 }
 

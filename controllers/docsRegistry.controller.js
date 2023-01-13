@@ -20,6 +20,18 @@ class FineController extends IController {
       res.status(e.statusCode || 500).json(e.message)
     }
   }
+
+  async pickOrders(req, res) {
+    try {
+      const data = await this.service.pickOrders({
+        company: req.company,
+        ...req.query,
+      })
+      res.status(200).json(data)
+    } catch (e) {
+      res.status(e.statusCode || 500).json(e.message)
+    }
+  }
 }
 
 export default new FineController({

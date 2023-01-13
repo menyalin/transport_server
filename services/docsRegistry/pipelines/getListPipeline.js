@@ -65,9 +65,23 @@ export const getListPipeline = ({ clients, company, limit, skip, status }) => {
     },
     { $addFields: { _client: { $first: '$_client' } } },
   ]
+
   const additionalFields = [
     {
       $addFields: {
+        _placeName: {
+          $getField: {
+            field: 'title',
+            input: {
+              $first: {
+                $filter: {
+                  input: '$_client.placesForTransferDocs',
+                  cond: { $eq: ['$$this.address', '$placeForTransferDocs'] },
+                },
+              },
+            },
+          },
+        },
         statusStr: {
           $switch: {
             branches: DOCS_REGISTRY_STATUSES.map((i) => ({
@@ -80,7 +94,7 @@ export const getListPipeline = ({ clients, company, limit, skip, status }) => {
       },
     },
   ]
-  const pipeline = [firstMatcher, ...additionalFields, ...clientLookup]
+  const pipeline = [firstMatcher, ...clientLookup, ...additionalFields]
 
   // if (searchStr) {
   //   pipeline.push({
