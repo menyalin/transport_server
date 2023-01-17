@@ -54,7 +54,7 @@ class DocsRegistryService extends IService {
     }
   }
 
-  async pickOrdersForRegistry({ company, client, allowedLoadingPonts }) {
+  async pickOrdersForRegistry({ company, client, allowedLoadingPoints }) {
     if (!company || !client)
       throw new BadRequestError(
         'DocsRegistryService:pickOrdersForRegistry. missing required params'
@@ -63,7 +63,7 @@ class DocsRegistryService extends IService {
     const pipeline = getPickOrdersPipeline({
       company,
       client,
-      allowedLoadingPonts,
+      allowedLoadingPoints,
     })
     const orders = await OrderModel.aggregate(pipeline)
     return orders

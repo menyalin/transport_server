@@ -15,6 +15,7 @@ export default ({
   tks,
   clients,
   state,
+  truck,
   date,
   driver,
   getDocsDays,
@@ -33,6 +34,10 @@ export default ({
     },
   }
 
+  if (truck)
+    firstMatcher.$match.$expr.$and.push({
+      $eq: ['$confirmedCrew.truck', mongoose.Types.ObjectId(truck)],
+    })
   if (driver)
     firstMatcher.$match.$expr.$and.push({
       $eq: ['$confirmedCrew.driver', mongoose.Types.ObjectId(driver)],
