@@ -3,6 +3,7 @@ export const admin = {
   'modules:accounting': true, // Для отображения вкладки "Учет"
   'report:drivers_grades': true,
   'report:orderDocs': true,
+  'order:showReturnCheckbox': true,
   'order:readFinalPrices': true,
   'order:writeFinalPrices': true,
   'document:readList': true,
@@ -168,6 +169,7 @@ export const seniorDispatcher = {
   'downtime:daysForWrite': 30,
   'order:readPaymentToDriver': true,
   'order:writePaymentToDriver': true,
+  'order:showReturnCheckbox': true,
 }
 
 export const checkman = {
