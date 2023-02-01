@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
-import { getDocFragmentBuilder } from './fragments/docStatusFragment.js'
-import { getLoadingZoneFragment } from './fragments/loadingZoneragment.js'
+import { orderDocsStatusConditionBuilder } from '../../_pipelineFragments/orderDocsStatusConditionBuilder.js'
+import { orderLoadingZoneFragmentBuilder } from '../../_pipelineFragments/orderLoadingZoneFragmentBuilder.js'
 
 const getSortingStage = (sortBy = [], sortDesc = []) => {
   if (!Array.isArray(sortBy) || !sortBy.length)
@@ -107,9 +107,7 @@ export const getOrderListPipeline = ({
       },
     },
     {
-      $match: {
-        'truck.tkName': mongoose.Types.ObjectId(tkName),
-      },
+      $match: { 'truck.tkName': mongoose.Types.ObjectId(tkName) },
     },
   ]
 
@@ -128,7 +126,7 @@ export const getOrderListPipeline = ({
     },
   ]
 
-  const loadingZoneLookup = getLoadingZoneFragment()
+  const loadingZoneLookup = orderLoadingZoneFragmentBuilder()
 
   if (driver)
     firstMatcher.$match['confirmedCrew.driver'] = mongoose.Types.ObjectId(
@@ -136,7 +134,9 @@ export const getOrderListPipeline = ({
       driver
     )
   if (docStatus)
-    firstMatcher.$match.$expr.$and.push(getDocFragmentBuilder(docStatus))
+    firstMatcher.$match.$expr.$and.push(
+      orderDocsStatusConditionBuilder(docStatus)
+    )
 
   if (searchNum) {
     firstMatcher.$match.$expr.$and.push({
@@ -186,7 +186,7 @@ export const getOrderListPipeline = ({
             $filter: {
               input: '$items',
               cond: {
-                ...getDocFragmentBuilder(
+                ...orderDocsStatusConditionBuilder(
                   'accepted',
                   '$$this.docs',
                   '$$this.docsState.getted'
@@ -200,7 +200,7 @@ export const getOrderListPipeline = ({
             $filter: {
               input: '$items',
               cond: {
-                ...getDocFragmentBuilder(
+                ...orderDocsStatusConditionBuilder(
                   'needFix',
                   '$$this.docs',
                   '$$this.docsState.getted'
@@ -214,7 +214,7 @@ export const getOrderListPipeline = ({
             $filter: {
               input: '$items',
               cond: {
-                ...getDocFragmentBuilder(
+                ...orderDocsStatusConditionBuilder(
                   'onCheck',
                   '$$this.docs',
                   '$$this.docsState.getted'
@@ -228,7 +228,7 @@ export const getOrderListPipeline = ({
             $filter: {
               input: '$items',
               cond: {
-                ...getDocFragmentBuilder(
+                ...orderDocsStatusConditionBuilder(
                   'missing',
                   '$$this.docs',
                   '$$this.docsState.getted'
@@ -254,7 +254,7 @@ export const getOrderListPipeline = ({
     secondMatcher,
     ...agreementLookup,
   ]
-  // if (accountingMode) pipeline = [...pipeline, ...agreementLookup]
+
   if (tkName) pipeline = [...pipeline, ...tkNameLookup]
   return [...pipeline, ...group]
 }

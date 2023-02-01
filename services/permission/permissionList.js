@@ -26,6 +26,11 @@ export const admin = {
   'salaryTariff:readItem': true,
   'salaryTariff:write': true,
   'salaryTariff:delete': true,
+
+  'docsRegistry:readList': true,
+  'docsRegistry:readItem': true,
+  'docsRegistry:write': true,
+  'docsRegistry:delete': true,
 }
 
 export const outsourceCarriersManager = {
@@ -102,6 +107,8 @@ export const director = {
   'city:readList': true,
   'city:readItem': true,
   'order:showDocDates': true,
+  'docsRegistry:readList': true,
+  'docsRegistry:readItem': true,
 }
 
 export const dispatcher = {
@@ -156,9 +163,7 @@ export const seniorDispatcher = {
   'partner:write': true,
   'partner:delete': true,
   'truck:write': true,
-  'truck:delete': true,
   'driver:write': true,
-  'driver:delete': true,
   'orderTemplate:write': true,
   'orderTemplate:delete': true,
   'order:delete': true,
@@ -170,6 +175,8 @@ export const seniorDispatcher = {
   'order:readPaymentToDriver': true,
   'order:writePaymentToDriver': true,
   'order:showReturnCheckbox': true,
+  'docsRegistry:readList': true,
+  'docsRegistry:readItem': true,
 }
 
 export const checkman = {
@@ -246,6 +253,10 @@ export const accountant = {
   'order:readDocs': true,
   'order:showDocDates': true,
   'order:writeDocDates': true,
+
+  'docsRegistry:readList': true,
+  'docsRegistry:readItem': true,
+  'docsRegistry:write': true,
 }
 
 export const mechanic = {

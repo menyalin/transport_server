@@ -192,6 +192,7 @@ const schema = new Schema(
     company: { type: Types.ObjectId, ref: 'Company', required: true },
     manager: { type: Types.ObjectId, ref: 'User' },
     note: { type: String },
+    noteAccountant: { type: String },
   },
   // eslint-disable-next-line comma-dangle
   { timestamps: true }

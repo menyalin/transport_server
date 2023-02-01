@@ -3,18 +3,56 @@ import ChangeLogService from '../changeLog/index.js'
 import {
   DocsRegistry as DocsRegistryModel,
   Order as OrderModel,
+  OrderInDocsRegistry as OrderInDocsRegistryModel,
 } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 import IService from '../iService.js'
 import { BadRequestError } from '../../helpers/errors.js'
 import { getListPipeline } from './pipelines/getListPipeline.js'
 import { getPickOrdersPipeline } from './pipelines/pickOrdersPipeline.js'
+import getOrdersForRegistry from './getOrdersForRegistry.js'
 
 class DocsRegistryService extends IService {
   constructor({ model, emitter, modelName, logService }) {
     super({ model, emitter, modelName, logService })
     this.model = model
     this.logService = logService
+  }
+
+  async deleteById({ id, user, company }) {
+    const ordersInRegistry = await OrderInDocsRegistryModel.find({
+      docsRegistry: id,
+    }).lean()
+
+    if (ordersInRegistry.length > 0)
+      throw new BadRequestError(
+        'Delete is not possible. orders refer to registry'
+      )
+
+    const data = await this.model.findByIdAndDelete(id)
+
+    this.emitter(company, `${this.modelName}:deleted`, id)
+
+    if (this.logService)
+      await this.logService.add({
+        docId: id,
+        coll: this.modelName,
+        opType: 'delete',
+        user,
+        company: company,
+      })
+    return data
+  }
+
+  async getById(id) {
+    const docsRegistry = await this.model.findById(id).lean()
+
+    const orders = await getOrdersForRegistry({
+      docsRegistryId: docsRegistry._id.toString(),
+    })
+
+    docsRegistry.orders = orders
+    return docsRegistry
   }
 
   async create({ body, user, company }) {
@@ -54,19 +92,91 @@ class DocsRegistryService extends IService {
     }
   }
 
-  async pickOrdersForRegistry({ company, client, allowedLoadingPoints }) {
-    if (!company || !client)
+  async addOrdersToRegistry({ company, orders, docsRegistryId }) {
+    if (!orders || orders.length === 0)
+      throw new BadRequestError(
+        'DocsRegistryService:addOrdersToRegistry. missing required params'
+      )
+    const newObjectItems = orders.map((order) => ({
+      order,
+      docsRegistry: docsRegistryId,
+      company,
+    }))
+
+    const newDocs = await OrderInDocsRegistryModel.create(newObjectItems)
+
+    const addedOrders = await getOrdersForRegistry({
+      orderIds: newDocs.map((i) => i.order.toString()),
+    })
+
+    // todo: получить рейсы в формате реестра рейсов и отправить сокетом
+    this.emitter(company, 'orders:addedToRegistry', {
+      orders: addedOrders,
+      docsRegistry: docsRegistryId,
+    })
+    return newDocs
+  }
+
+  async removeOrdersFromRegistry({ company, orders, docsRegistryId }) {
+    if (!orders || orders.length === 0)
+      throw new BadRequestError(
+        'DocsRegistryService:removeOrdersFromRegistry. missing required params'
+      )
+    const removedOrders = await OrderInDocsRegistryModel.deleteMany({
+      company,
+      order: { $in: orders },
+      docsRegistry: docsRegistryId,
+    })
+    this.emitter(company, 'orders:removedFromRegistry', {
+      orders,
+      docsRegistry: docsRegistryId,
+    })
+    return removedOrders
+  }
+
+  async pickOrdersForRegistry({
+    company,
+    client,
+    docStatus,
+    allowedLoadingPoints,
+    docsRegistryId,
+    truck,
+    driver,
+  }) {
+    if (!company || !docsRegistryId)
       throw new BadRequestError(
         'DocsRegistryService:pickOrdersForRegistry. missing required params'
+      )
+    const docsRegistry = await this.model
+      .findById(docsRegistryId)
+      .populate('client')
+      .populate('client.placesForTransferDocs')
+
+    const placeForTransferDocs = docsRegistry?.client?.placesForTransferDocs.find(
+      (i) =>
+        i.address.toString() === docsRegistry.placeForTransferDocs.toString()
+    )
+    const allowedAddresses = placeForTransferDocs?.allowedLoadingPoints.map(
+      (i) => i.toString()
+    )
+    console.log('addresses: ', allowedAddresses)
+
+    if (!docsRegistry)
+      throw new BadRequestError(
+        'DocsRegistryService:pickOrdersForRegistry. docsRegistry not found'
       )
 
     const pipeline = getPickOrdersPipeline({
       company,
       client,
-      allowedLoadingPoints,
+      docStatus,
+      truck,
+      driver,
+      allowedLoadingPoints: allowedAddresses,
     })
-    const orders = await OrderModel.aggregate(pipeline)
-    return orders
+
+    const ordersForRegistry = await OrderModel.aggregate(pipeline)
+    return ordersForRegistry
   }
 }
 

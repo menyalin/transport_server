@@ -1,4 +1,4 @@
-import { BadRequestError } from '../../../../helpers/errors.js'
+import { BadRequestError } from '../../helpers/errors.js'
 
 /* 
 const _docStatuses = [
@@ -9,7 +9,7 @@ const _docStatuses = [
 ]
 */
 
-export const getDocFragmentBuilder = (
+export const orderDocsStatusConditionBuilder = (
   docStatus,
   docsFieldName = '$docs',
   docStateField = '$docsState.getted'
@@ -107,6 +107,8 @@ export const getDocFragmentBuilder = (
       }
 
     default:
-      throw new BadRequestError('getDocFragmentBuilder: unexpected doc status')
+      throw new BadRequestError(
+        'orderDocsStatusConditionBuilder: unexpected doc status'
+      )
   }
 }

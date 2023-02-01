@@ -1,4 +1,4 @@
-export const getLoadingZoneFragment = () => {
+export const orderLoadingZoneFragmentBuilder = () => {
   return [
     {
       $addFields: {
