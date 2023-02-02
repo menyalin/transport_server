@@ -21,7 +21,19 @@ export const getPickOrdersPipeline = ({
       company: mongoose.Types.ObjectId(company),
       'client.client': mongoose.Types.ObjectId(client),
       $expr: {
-        $and: [],
+        $and: [
+          {
+            $gte: [
+              {
+                $getField: {
+                  field: 'plannedDate',
+                  input: { $first: '$route' },
+                },
+              },
+              new Date('2023-01-01'),
+            ],
+          },
+        ],
       },
     },
   }
@@ -61,11 +73,53 @@ export const getPickOrdersPipeline = ({
       $match: { $expr: { $eq: [{ $size: '$docsRegistries' }, 0] } },
     },
   ]
+  const addFields = [
+    {
+      $addFields: {
+        isSelectable: {
+          $and: [
+            {
+              $gt: [
+                {
+                  $size: {
+                    $filter: {
+                      input: '$docs',
+                      cond: { $ne: ['$$this.addToRegistry', false] },
+                    },
+                  },
+                },
+                0,
+              ],
+            },
+            {
+              $eq: [
+                {
+                  $size: {
+                    $filter: {
+                      input: '$docs',
+                      cond: {
+                        $and: [
+                          { $ne: ['$$this.status', 'accepted'] },
+                          { $ne: ['$$this.addToRegistry', false] },
+                        ],
+                      },
+                    },
+                  },
+                },
+                0,
+              ],
+            },
+          ],
+        },
+      },
+    },
+  ]
 
   return [
     firstMatcher,
     ...docsRegistryFilter,
     { $limit: 20 },
     ...orderLoadingZoneFragmentBuilder(),
+    ...addFields,
   ]
 }

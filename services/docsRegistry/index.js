@@ -159,8 +159,6 @@ class DocsRegistryService extends IService {
     const allowedAddresses = placeForTransferDocs?.allowedLoadingPoints.map(
       (i) => i.toString()
     )
-    console.log('addresses: ', allowedAddresses)
-
     if (!docsRegistry)
       throw new BadRequestError(
         'DocsRegistryService:pickOrdersForRegistry. docsRegistry not found'
