@@ -19,3 +19,13 @@ export const existInnSchema = {
   additionalProperties: false,
 }
 
+export const updateCompanySchema = {
+  type: 'object',
+  properties: {
+    name: { type: 'string' },
+    fullName: { type: 'string' },
+    inn: { type: 'string' },
+    hasOwnDirectories: { type: 'boolean' },
+  },
+  additionalProperties: false,
+}

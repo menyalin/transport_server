@@ -1,3 +1,4 @@
+import { BadRequestError } from '../helpers/errors.js'
 import { CompanyService, PermissionService } from '../services/index.js'
 
 class CompanyController {
@@ -23,6 +24,24 @@ class CompanyController {
     try {
       const tmp = await CompanyService.isExistInn(req.query.inn)
       res.status(200).json(tmp)
+    } catch (e) {
+      res.status(e.statusCode || 500).json(e.message)
+    }
+  }
+
+  async updateOne(req, res) {
+    try {
+      await PermissionService.check({
+        operation: 'fullAccess',
+        userId: req.userId,
+        companyId: req.companyId,
+      })
+      if (req.params.id !== req.companyId)
+        throw new BadRequestError(
+          'access denied! change your directories profile '
+        )
+      const data = await CompanyService.updateOne(req.params.id, req.body)
+      res.status(200).json(data)
     } catch (e) {
       res.status(e.statusCode || 500).json(e.message)
     }

@@ -51,20 +51,27 @@ class CompanyService {
     return !!res
   }
 
-  // async getUserRolesByCompanyIdAndUserId({ userId, companyId }) {
-  //   const company = await Company.findById(companyId).lean()
-  //   if (!company) throw new BadRequestError('Почему то нет компании')
-  //   return { ...company?.staff.find((s) => s.user._id.toString() === userId) }
-  // }
+  async updateOne(companyId, body) {
+    const updatedCompany = await Company.findByIdAndUpdate(companyId, body, {
+      returnDocument: 'after',
+    })
+    if (!updatedCompany)
+      throw new BadRequestError('Редактируемая компания не найдена')
+    emitTo(
+      updatedCompany._id.toString(),
+      'company:updated',
+      updatedCompany.toJSON()
+    )
+    return true
+  }
 
   async updateSettings({ settings, companyId }) {
     const company = await Company.findByIdAndUpdate(
       companyId,
       { settings: { ...settings } },
-      { returnDocument: 'after' },
+      { returnDocument: 'after' }
     )
-    if (!company)
-      throw new BadRequestError('Редактируемая компания не найдена')
+    if (!company) throw new BadRequestError('Редактируемая компания не найдена')
 
     emitTo(company._id.toString(), 'company:updateSettings', {
       companyId,
