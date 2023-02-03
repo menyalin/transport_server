@@ -142,6 +142,7 @@ class DocsRegistryService extends IService {
     docsRegistryId,
     truck,
     driver,
+    loadingZone,
   }) {
     if (!company || !docsRegistryId)
       throw new BadRequestError(
@@ -173,6 +174,7 @@ class DocsRegistryService extends IService {
       driver,
       onlySelectable: onlySelectable === 'true',
       allowedLoadingPoints: allowedAddresses,
+      loadingZone,
     })
 
     const ordersForRegistry = await OrderModel.aggregate(pipeline)

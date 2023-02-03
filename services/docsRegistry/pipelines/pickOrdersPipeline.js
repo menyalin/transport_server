@@ -16,6 +16,7 @@ export const getPickOrdersPipeline = ({
   onlySelectable,
   truck,
   driver,
+  loadingZone,
 }) => {
   if (!company || !client)
     throw new BadRequestError('getPickOrdersPipeline: bad request params')
@@ -120,14 +121,26 @@ export const getPickOrdersPipeline = ({
       },
     },
   ]
+  const secondMatcher = {
+    $match: {
+      $expr: {
+        $and: [],
+      },
+    },
+  }
+  if (loadingZone) {
+    secondMatcher.$match.$expr.$and.push({
+      $in: [mongoose.Types.ObjectId(loadingZone), '$_loadingZoneIds'],
+    })
+  }
 
   return [
     firstMatcher,
     ...docsRegistryFilter,
-
     ...orderLoadingZoneFragmentBuilder(),
+    secondMatcher,
     ...addFields,
     ...selectableOrdersFilter(onlySelectable),
-    { $limit: 20 },
+    { $limit: 30 },
   ]
 }
