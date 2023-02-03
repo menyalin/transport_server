@@ -13,6 +13,7 @@ const placeForTransferDocs = {
 const schema = new Schema(
   {
     name: String,
+    fullName: String,
     inn: String,
     company: { type: Types.ObjectId, ref: 'Company' },
     contacts: String,

@@ -3,11 +3,17 @@ import { BadRequestError } from '../../../helpers/errors.js'
 import { orderLoadingZoneFragmentBuilder } from '../../_pipelineFragments/orderLoadingZoneFragmentBuilder.js'
 import { orderDocsStatusConditionBuilder } from '../../_pipelineFragments/orderDocsStatusConditionBuilder.js'
 
+function selectableOrdersFilter(onlySelectable) {
+  if (!onlySelectable) return []
+  return [{ $match: { isSelectable: true } }]
+}
+
 export const getPickOrdersPipeline = ({
   company,
   client,
   allowedLoadingPoints,
   docStatus,
+  onlySelectable,
   truck,
   driver,
 }) => {
@@ -118,8 +124,10 @@ export const getPickOrdersPipeline = ({
   return [
     firstMatcher,
     ...docsRegistryFilter,
-    { $limit: 20 },
+
     ...orderLoadingZoneFragmentBuilder(),
     ...addFields,
+    ...selectableOrdersFilter(onlySelectable),
+    { $limit: 20 },
   ]
 }
