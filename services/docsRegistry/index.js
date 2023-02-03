@@ -143,12 +143,12 @@ class DocsRegistryService extends IService {
     truck,
     driver,
     loadingZone,
+    period,
   }) {
     if (!company || !docsRegistryId)
       throw new BadRequestError(
         'DocsRegistryService:pickOrdersForRegistry. missing required params'
       )
-    console.log('onlySelectable: ', onlySelectable === 'true')
     const docsRegistry = await this.model
       .findById(docsRegistryId)
       .populate('client')
@@ -175,6 +175,7 @@ class DocsRegistryService extends IService {
       onlySelectable: onlySelectable === 'true',
       allowedLoadingPoints: allowedAddresses,
       loadingZone,
+      period,
     })
 
     const ordersForRegistry = await OrderModel.aggregate(pipeline)

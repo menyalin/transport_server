@@ -17,9 +17,17 @@ export const getPickOrdersPipeline = ({
   truck,
   driver,
   loadingZone,
+  period,
 }) => {
   if (!company || !client)
     throw new BadRequestError('getPickOrdersPipeline: bad request params')
+
+  const orderPlannedDateFragment = {
+    $getField: {
+      field: 'plannedDate',
+      input: { $first: '$route' },
+    },
+  }
 
   const firstMatcher = {
     $match: {
@@ -28,22 +36,20 @@ export const getPickOrdersPipeline = ({
       company: mongoose.Types.ObjectId(company),
       'client.client': mongoose.Types.ObjectId(client),
       $expr: {
-        $and: [
-          {
-            $gte: [
-              {
-                $getField: {
-                  field: 'plannedDate',
-                  input: { $first: '$route' },
-                },
-              },
-              new Date('2023-01-01'),
-            ],
-          },
-        ],
+        $and: [],
       },
     },
   }
+
+  if (period.length === 2) {
+    firstMatcher.$match.$expr.$and.push({
+      $and: [
+        { $gte: [orderPlannedDateFragment, new Date(period[0])] },
+        { $lt: [orderPlannedDateFragment, new Date(period[1])] },
+      ],
+    })
+  }
+
   if (allowedLoadingPoints && allowedLoadingPoints.length > 0)
     firstMatcher.$match.$expr.$and.push({
       $in: [
