@@ -6,17 +6,18 @@ import {
   OrderInDocsRegistry as OrderInDocsRegistryModel,
 } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
-import IService from '../iService.js'
+
 import { BadRequestError } from '../../helpers/errors.js'
 import { getListPipeline } from './pipelines/getListPipeline.js'
 import { getPickOrdersPipeline } from './pipelines/pickOrdersPipeline.js'
 import getOrdersForRegistry from './getOrdersForRegistry.js'
 
-class DocsRegistryService extends IService {
+class DocsRegistryService {
   constructor({ model, emitter, modelName, logService }) {
-    super({ model, emitter, modelName, logService })
     this.model = model
     this.logService = logService
+    this.emitter = emitter
+    this.modelName = modelName
   }
 
   async deleteById({ id, user, company }) {
@@ -52,6 +53,34 @@ class DocsRegistryService extends IService {
     })
 
     docsRegistry.orders = orders
+    return docsRegistry
+  }
+
+  async updateOne({ id, body, user }) {
+    const docsRegistry = await this.model.findByIdAndUpdate(id, body, {
+      new: true,
+    })
+    if (this.logService)
+      await this.logService.add({
+        docId: docsRegistry._id.toString(),
+        coll: this.modelName,
+        opType: 'update',
+        user,
+        company: docsRegistry.company.toString(),
+        body: JSON.stringify(docsRegistry.toJSON()),
+      })
+
+    const orders = await getOrdersForRegistry({
+      docsRegistryId: docsRegistry._id.toString(),
+    })
+
+    docsRegistry.orders = orders
+
+    this.emitter(
+      docsRegistry.company.toString(),
+      `${this.modelName}:updated`,
+      docsRegistry
+    )
     return docsRegistry
   }
 
