@@ -94,29 +94,41 @@ export function getOrdersByDocsRegistryId({ docsRegistryId, orderIds }) {
             $reduce: {
               initialValue: '',
               input: {
-                $filter: {
-                  cond: {
-                    $and: [
-                      { $ne: ['$$this.addToRegistry', false] },
-                      {
-                        $ne: [
-                          {
-                            $strLenCP: {
-                              $trim: {
-                                chars: ' ',
-                                input: { $ifNull: ['$$this.number', ' '] },
-                              },
-                            },
-                          },
-                          0,
-                        ],
-                      },
+                $reduce: {
+                  initialValue: [],
+                  in: {
+                    $cond: [
+                      { $in: ['$$this.number', '$$value'] },
+                      '$$value',
+                      { $concatArrays: ['$$value', ['$$this.number']] },
                     ],
                   },
-                  input: '$order.docs',
+                  input: {
+                    $filter: {
+                      cond: {
+                        $and: [
+                          { $ne: ['$$this.addToRegistry', false] },
+                          {
+                            $ne: [
+                              {
+                                $strLenCP: {
+                                  $trim: {
+                                    chars: ' ',
+                                    input: { $ifNull: ['$$this.number', ' '] },
+                                  },
+                                },
+                              },
+                              0,
+                            ],
+                          },
+                        ],
+                      },
+                      input: '$order.docs',
+                    },
+                  },
                 },
               },
-              in: { $concat: ['$$value', '$$this.number', ', '] },
+              in: { $concat: ['$$value', '$$this', ', '] },
             },
           },
         },
