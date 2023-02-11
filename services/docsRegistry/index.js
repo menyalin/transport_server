@@ -57,9 +57,11 @@ class DocsRegistryService {
   }
 
   async updateOne({ id, body, user }) {
-    const docsRegistry = await this.model.findByIdAndUpdate(id, body, {
-      new: true,
-    })
+    const docsRegistry = await this.model
+      .findByIdAndUpdate(id, body, {
+        new: true,
+      })
+      .lean()
     if (this.logService)
       await this.logService.add({
         docId: docsRegistry._id.toString(),
@@ -67,13 +69,12 @@ class DocsRegistryService {
         opType: 'update',
         user,
         company: docsRegistry.company.toString(),
-        body: JSON.stringify(docsRegistry.toJSON()),
+        body: JSON.stringify(docsRegistry),
       })
 
     const orders = await getOrdersForRegistry({
       docsRegistryId: docsRegistry._id.toString(),
     })
-
     docsRegistry.orders = orders
 
     this.emitter(
