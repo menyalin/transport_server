@@ -48,6 +48,7 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(express.urlencoded({ extended: false }))
 app.use('/static', express.static('static'))
+app.use('/templates', express.static('templates'))
 
 app.use('/api/auth', authRouter)
 app.use('/api/companies', companiesRouter)
