@@ -18,6 +18,7 @@ export const getPickOrdersPipeline = ({
   driver,
   loadingZone,
   period,
+  search,
 }) => {
   if (!company || !client)
     throw new BadRequestError('getPickOrdersPipeline: bad request params')
@@ -46,6 +47,23 @@ export const getPickOrdersPipeline = ({
       $and: [
         { $gte: [orderPlannedDateFragment, new Date(period[0])] },
         { $lt: [orderPlannedDateFragment, new Date(period[1])] },
+      ],
+    })
+  }
+
+  if (search) {
+    firstMatcher.$match.$expr.$and.push({
+      $or: [
+        {
+          $regexMatch: { input: '$client.num', regex: search, options: 'i' },
+        },
+        {
+          $regexMatch: {
+            input: '$client.auctionNum',
+            regex: search,
+            options: 'i',
+          },
+        },
       ],
     })
   }

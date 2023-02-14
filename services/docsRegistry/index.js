@@ -174,6 +174,7 @@ class DocsRegistryService {
     driver,
     loadingZone,
     period,
+    search,
   }) {
     if (!company || !docsRegistryId)
       throw new BadRequestError(
@@ -206,6 +207,7 @@ class DocsRegistryService {
       allowedLoadingPoints: allowedAddresses,
       loadingZone,
       period,
+      search,
     })
 
     const ordersForRegistry = await OrderModel.aggregate(pipeline)
