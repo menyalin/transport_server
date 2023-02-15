@@ -9,6 +9,7 @@ export const getDocsRegistryByOrderId = async (orderId) => {
   const tmpItem = await OrderInDocsRegistryModel.findOne({
     order: orderId,
   }).lean()
+  if (!tmpItem) return null
 
   const docsRegistry = await DocsRegistryModel.findOne({
     _id: tmpItem.docsRegistry.toString(),
