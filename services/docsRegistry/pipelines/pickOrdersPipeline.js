@@ -64,6 +64,25 @@ export const getPickOrdersPipeline = ({
             options: 'i',
           },
         },
+        {
+          $gte: [
+            {
+              $size: {
+                $filter: {
+                  input: '$docs',
+                  cond: {
+                    $regexMatch: {
+                      input: '$$this.number',
+                      regex: search,
+                      options: 'i',
+                    },
+                  },
+                },
+              },
+            },
+            1,
+          ],
+        },
       ],
     })
   }
