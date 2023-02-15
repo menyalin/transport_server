@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { orderDocNumbersStringFragment } from '../../_pipelineFragments/orderDocNumbersStringBuilder.js'
 import { orderDocsStatusConditionBuilder } from '../../_pipelineFragments/orderDocsStatusConditionBuilder.js'
 import { orderLoadingZoneFragmentBuilder } from '../../_pipelineFragments/orderLoadingZoneFragmentBuilder.js'
 
@@ -122,6 +123,10 @@ export const getOrderListPipeline = ({
         },
         driver: '$confirmedCrew.driver',
         truck: '$confirmedCrew.truck',
+        docNumbers: orderDocNumbersStringFragment({
+          docsFieldName: '$docs',
+          onlyForAddToRegistry: false,
+        }),
       },
     },
   ]
@@ -150,6 +155,25 @@ export const getOrderListPipeline = ({
             regex: searchNum,
             options: 'i',
           },
+        },
+        {
+          $gte: [
+            {
+              $size: {
+                $filter: {
+                  input: '$docs',
+                  cond: {
+                    $regexMatch: {
+                      input: '$$this.number',
+                      regex: searchNum,
+                      options: 'i',
+                    },
+                  },
+                },
+              },
+            },
+            1,
+          ],
         },
       ],
     })

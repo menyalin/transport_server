@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 import { BadRequestError } from '../../../helpers/errors.js'
 import { DOCUMENT_TYPES } from '../../../constants/accounting.js'
-
+import { orderDocNumbersStringFragment } from '../../_pipelineFragments/orderDocNumbersStringBuilder.js'
 export function getOrdersByDocsRegistryId({ docsRegistryId, orderIds }) {
   if (!docsRegistryId && !orderIds)
     throw new BadRequestError(
@@ -87,52 +87,10 @@ export function getOrdersByDocsRegistryId({ docsRegistryId, orderIds }) {
           },
         },
       },
-      docNumbers: {
-        $trim: {
-          chars: ', ',
-          input: {
-            $reduce: {
-              initialValue: '',
-              input: {
-                $reduce: {
-                  initialValue: [],
-                  in: {
-                    $cond: [
-                      { $in: ['$$this.number', '$$value'] },
-                      '$$value',
-                      { $concatArrays: ['$$value', ['$$this.number']] },
-                    ],
-                  },
-                  input: {
-                    $filter: {
-                      cond: {
-                        $and: [
-                          { $ne: ['$$this.addToRegistry', false] },
-                          {
-                            $ne: [
-                              {
-                                $strLenCP: {
-                                  $trim: {
-                                    chars: ' ',
-                                    input: { $ifNull: ['$$this.number', ' '] },
-                                  },
-                                },
-                              },
-                              0,
-                            ],
-                          },
-                        ],
-                      },
-                      input: '$order.docs',
-                    },
-                  },
-                },
-              },
-              in: { $concat: ['$$value', '$$this', ', '] },
-            },
-          },
-        },
-      },
+      docNumbers: orderDocNumbersStringFragment({
+        docsFieldName: '$order.docs',
+        onlyForAddToRegistry: true,
+      }),
       driverName: {
         $trim: {
           input: {
