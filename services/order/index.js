@@ -16,6 +16,7 @@ import getClientAgreementId from './getClientAgreement.js'
 import getOutsourceAgreementId from './getOutsourceAgreementId.js'
 import { orsDirections } from '../../helpers/orsClient.js'
 import { BadRequestError } from '../../helpers/errors.js'
+import { getDocsRegistryByOrderId } from './getDocsRegistryByOrderId.js'
 
 const _isEqualDatesOfRoute = ({ oldRoute, newRoute }) => {
   const oldArrivalDate = new Date(oldRoute[0].arrivalDate).toLocaleString()
@@ -114,7 +115,6 @@ class OrderService {
   }
 
   async moveOrderInSchedule({ orderId, truck, startPositionDate }, user) {
-    // TODO: Добавить заполнение водителя и прицепа из экипажа
     const order = await OrderModel.findById(orderId)
     if (!truck) {
       order.confirmedCrew.truck = null
@@ -184,8 +184,11 @@ class OrderService {
   }
 
   async getById(id) {
-    const res = await OrderModel.findById(id).lean()
-    return res
+    const allowedStatusesForGetDocsRegistry = ['completed']
+    const order = await OrderModel.findById(id).lean()
+    if (order && allowedStatusesForGetDocsRegistry.includes(order.state.status))
+      order.docsRegistry = await getDocsRegistryByOrderId(order._id.toString())
+    return order
   }
 
   async updateFinalPrices({ orderId, finalPrices, company, user }) {
