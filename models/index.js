@@ -25,6 +25,7 @@ import DocsRegistry from './docsRegistry.js'
 import GlobalSettings from './globalSettings.js'
 import SalaryTariff from './salaryTariff.js'
 import OrderInDocsRegistry from './orderInDocsRegistry.js'
+import PaymentInvoice from './paymentInvoice.js'
 
 export {
   User,
@@ -54,4 +55,5 @@ export {
   SalaryTariff,
   DocsRegistry,
   OrderInDocsRegistry,
+  PaymentInvoice,
 }

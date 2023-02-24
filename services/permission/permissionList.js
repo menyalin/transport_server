@@ -31,6 +31,11 @@ export const admin = {
   'docsRegistry:readItem': true,
   'docsRegistry:write': true,
   'docsRegistry:delete': true,
+
+  'paymentInvoice:readList': true,
+  'paymentInvoice:readItem': true,
+  'paymentInvoice:write': true,
+  'paymentInvoice:delete': true,
 }
 
 export const outsourceCarriersManager = {
@@ -109,6 +114,9 @@ export const director = {
   'order:showDocDates': true,
   'docsRegistry:readList': true,
   'docsRegistry:readItem': true,
+
+  'paymentInvoice:readList': true,
+  'paymentInvoice:readItem': true,
 }
 
 export const dispatcher = {
@@ -257,6 +265,11 @@ export const accountant = {
   'docsRegistry:readList': true,
   'docsRegistry:readItem': true,
   'docsRegistry:write': true,
+  
+  'paymentInvoice:readList': true,
+  'paymentInvoice:readItem': true,
+  'paymentInvoice:write': true,
+  
 }
 
 export const mechanic = {

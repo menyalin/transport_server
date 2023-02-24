@@ -24,12 +24,14 @@ import CityService from './city/index.js'
 import WorkerService from './worker/index.js'
 import FineService from './fine/index.js'
 import DocsRegistryService from './docsRegistry/index.js'
+import PaymentInvoiceService from './paymentInvoice/index.js'
 
 import GlobalSettingsService from './globalSettings/index.js'
 
 import TokenService from './token/index.js'
 import NotificationService from './notification/index.js'
 import FileService from './file/index.js'
+
 
 export {
   UserService,
@@ -62,4 +64,5 @@ export {
   NotificationService,
   SalaryTariffService,
   DocsRegistryService,
+  PaymentInvoiceService,
 }
