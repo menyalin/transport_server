@@ -1,32 +1,40 @@
 import mongoose from 'mongoose'
 
-export default ({ company, date, limit, skip }) => {
+export default ({ company, date, limit, skip, client }) => {
   const firstMatcher = {
     $match: {
       isActive: true,
-      company: mongoose.Types.ObjectId(company)
-    }
+      company: mongoose.Types.ObjectId(company),
+      $expr: {
+        $and: [],
+      },
+    },
   }
+
+  if (client)
+    firstMatcher.$match.$expr.$and.push({
+      $in: [mongoose.Types.ObjectId(client), '$clients'],
+    })
 
   const group = [
     {
       $group: {
         _id: 'agreements',
         items: {
-          $push: '$$ROOT'
-        }
-      }
+          $push: '$$ROOT',
+        },
+      },
     },
     {
       $addFields: {
         count: {
-          $size: '$items'
+          $size: '$items',
         },
         items: {
-          $slice: ['$items', +skip, +limit]
-        }
-      }
-    }
+          $slice: ['$items', +skip, +limit],
+        },
+      },
+    },
   ]
   return [firstMatcher, ...group]
 }
