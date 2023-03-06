@@ -20,6 +20,13 @@ const { Schema, model, Types } = pkg
 
 const prices = [PriceDTO.modelFields()]
 
+const paymentPart = {
+  client: { type: Types.ObjectId, ref: 'Partner', required: true },
+  agreement: { type: Types.ObjectId, ref: 'Agreement', required: true },
+  note: String,
+  ...PriceDTO.modelFields(),
+}
+
 const outsourceCosts = [
   {
     type: {
@@ -184,6 +191,7 @@ const schema = new Schema(
     cargoParams: cargoParams,
     reqTransport: reqTransport,
     state,
+    paymentParts: [paymentPart],
     analytics,
     docsState,
     paymentToDriver,
