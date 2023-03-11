@@ -18,14 +18,13 @@ const schema = new Schema(
     vatRate: { type: Number, required: true },
     closed: { type: Boolean, default: false },
     useCustomPrices: { type: Boolean },
-    // нужно для определения типа (с/без НДС) при выгрузке в excel
-    usePriceWithVAT: { type: Boolean, default: false },
+    usePriceWithVAT: { type: Boolean, default: false }, // нужно для определения типа (с/без НДС) при выгрузке в excel
     priceRequired: { type: Boolean, default: false },
     clientNumRequired: { type: Boolean, default: false },
     auctionNumRequired: { type: Boolean, default: false },
     note: String,
   },
-  { timestamps: true },
+  { timestamps: true }
 )
 
 export default model('Agreement', schema, 'agreements')

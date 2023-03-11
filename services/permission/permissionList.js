@@ -265,16 +265,15 @@ export const accountant = {
   'docsRegistry:readList': true,
   'docsRegistry:readItem': true,
   'docsRegistry:write': true,
-  
+
   'paymentInvoice:readList': true,
   'paymentInvoice:readItem': true,
   'paymentInvoice:write': true,
-  
 }
 
 export const mechanic = {
   'modules:accounting': true,
-  'order:daysForRead': 10,
+  'order:daysForRead': 30,
   'address:readList': true,
   'address:readItem': true,
   'fine:readList': true,
