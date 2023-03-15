@@ -1,15 +1,12 @@
 // import mongoose from 'mongoose'
 import ChangeLogService from '../changeLog/index.js'
-import {
-  PaymentInvoice as PaymentInvoiceModel,
-  // Order as OrderModel,
-} from '../../models/index.js'
+import { PaymentInvoice as PaymentInvoiceModel } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 
 import { BadRequestError } from '../../helpers/errors.js'
 import { getListPipeline } from './pipelines/getListPipeline.js'
+import { pickOrdersForPaymentInvoice } from './pickOrdersForPaymentInvoice.js'
 // import { getPickOrdersPipeline } from './pipelines/pickOrdersPipeline.js'
-// import getOrdersForRegistry from './getOrdersForPaymentInvoice.js'
 
 class PaymentInvoiceService {
   constructor({ model, emitter, modelName, logService }) {
@@ -160,56 +157,45 @@ class PaymentInvoiceService {
   //   return removedOrders
   // }
 
-  // TODO:
-  //   async pickOrdersForRegistry({
-  //     company,
-  //     client,
-  //     docStatus,
-  //     onlySelectable,
-  //     docsRegistryId,
-  //     truck,
-  //     driver,
-  //     loadingZone,
-  //     period,
-  //     search,
-  //   }) {
-  //     if (!company || !docsRegistryId)
-  //       throw new BadRequestError(
-  //         'DocsRegistryService:pickOrdersForRegistry. missing required params'
-  //       )
-  //     const docsRegistry = await this.model
-  //       .findById(docsRegistryId)
-  //       .populate('client')
-  //       .populate('client.placesForTransferDocs')
+  async pickOrders({
+    paymentInvoiceId,
+    company,
+    client,
+    docStatus,
+    onlySelectable,
+    truck,
+    driver,
+    loadingZone,
+    period,
+    search,
+  }) {
+    if (!company || !paymentInvoiceId)
+      throw new BadRequestError(
+        'PaymentInvoiceService:pickOrders. missing required params'
+      )
+    const paymentInvoice = await this.model
+      .findById(paymentInvoiceId)
+      .populate('client')
 
-  //     const placeForTransferDocs = docsRegistry?.client?.placesForTransferDocs.find(
-  //       (i) =>
-  //         i.address.toString() === docsRegistry.placeForTransferDocs.toString()
-  //     )
-  //     const allowedAddresses = placeForTransferDocs?.allowedLoadingPoints.map(
-  //       (i) => i.toString()
-  //     )
-  //     if (!docsRegistry)
-  //       throw new BadRequestError(
-  //         'DocsRegistryService:pickOrdersForRegistry. docsRegistry not found'
-  //       )
+    if (!paymentInvoice)
+      throw new BadRequestError(
+        'PaymentInvoiceService:pickOrders. paymentInvoice not found'
+      )
+    const orders = await pickOrdersForPaymentInvoice({
+      paymentInvoiceId,
+      company,
+      client,
+      docStatus,
+      onlySelectable,
+      truck,
+      driver,
+      loadingZone,
+      period,
+      search,
+    })
 
-  //     const pipeline = getPickOrdersPipeline({
-  //       company,
-  //       client,
-  //       docStatus,
-  //       truck,
-  //       driver,
-  //       onlySelectable: onlySelectable === 'true',
-  //       allowedLoadingPoints: allowedAddresses,
-  //       loadingZone,
-  //       period,
-  //       search,
-  //     })
-
-  //     const ordersForRegistry = await OrderModel.aggregate(pipeline)
-  //     return ordersForRegistry
-  //   }
+    return orders || []
+  }
 }
 
 export default new PaymentInvoiceService({

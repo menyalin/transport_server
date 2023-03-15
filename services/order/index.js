@@ -183,6 +183,8 @@ class OrderService {
     } else throw new BadRequestError('Рейс нельзя удалить')
   }
 
+
+
   async getById(id) {
     const allowedStatusesForGetDocsRegistry = ['completed']
     const order = await OrderModel.findById(id).lean()

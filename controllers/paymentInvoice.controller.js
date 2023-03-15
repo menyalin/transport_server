@@ -40,18 +40,18 @@ class PaymentInvoiceController extends IController {
     }
   }
 
-  // async pickOrders(req, res) {
-  //   try {
-  //     const data = await this.service.pickOrdersForRegistry({
-  //       docsRegistryId: req.query.docsRegistryId,
-  //       company: req.companyId,
-  //       ...req.query,
-  //     })
-  //     res.status(200).json(data)
-  //   } catch (e) {
-  //     res.status(e.statusCode || 500).json(e.message)
-  //   }
-  // }
+  async pickOrders(req, res) {
+    try {
+      const data = await this.service.pickOrders({
+        paymentInvoiceId: req.query.paymentInvoiceId,
+        company: req.companyId,
+        ...req.query,
+      })
+      res.status(200).json(data)
+    } catch (e) {
+      res.status(e.statusCode || 500).json(e.message)
+    }
+  }
 
   // async addOrdersToRegistry(req, res) {
   //   try {

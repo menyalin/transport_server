@@ -25,6 +25,7 @@ import DocsRegistry from './docsRegistry.js'
 import GlobalSettings from './globalSettings.js'
 import SalaryTariff from './salaryTariff.js'
 import OrderInDocsRegistry from './orderInDocsRegistry.js'
+import OrderInPaymentInvoice from './orderInPaymentInvoice.js'
 import PaymentInvoice from './paymentInvoice.js'
 
 export {
@@ -56,4 +57,5 @@ export {
   DocsRegistry,
   OrderInDocsRegistry,
   PaymentInvoice,
+  OrderInPaymentInvoice,
 }
