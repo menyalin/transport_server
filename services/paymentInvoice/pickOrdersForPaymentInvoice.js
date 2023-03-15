@@ -6,6 +6,7 @@ import {
   totalSumFragmentBuilder,
 } from '../_pipelineFragments/orderFinalPricesFragmentBuilder.js'
 import { orderLoadingZoneFragmentBuilder } from '../_pipelineFragments/orderLoadingZoneFragmentBuilder.js'
+import { orderSearchByNumberFragmentBuilder } from '../_pipelineFragments/orderSearchByNumberFragmentBuilder.js'
 
 export async function pickOrdersForPaymentInvoice({
   company,
@@ -42,6 +43,21 @@ export async function pickOrdersForPaymentInvoice({
       },
     },
   }
+  if (search) {
+    firstMatcher.$match.$expr.$and.push(
+      orderSearchByNumberFragmentBuilder(search)
+    )
+  }
+
+  if (truck)
+    firstMatcher.$match.$expr.$and.push({
+      $eq: ['$confirmedCrew.truck', mongoose.Types.ObjectId(truck)],
+    })
+
+  if (driver)
+    firstMatcher.$match.$expr.$and.push({
+      $eq: ['$confirmedCrew.driver', mongoose.Types.ObjectId(driver)],
+    })
 
   const paymentInvoiceFilter = [
     {
@@ -66,6 +82,7 @@ export async function pickOrdersForPaymentInvoice({
   const addFields = [
     {
       $addFields: {
+        isSelectable: true,
         plannedDate: orderPlannedDateFragment,
         totalByTypes: { ...finalPricesFragmentBuilder() },
       },
@@ -83,7 +100,7 @@ export async function pickOrdersForPaymentInvoice({
     ...paymentInvoiceFilter,
     ...loadingZoneFragment,
     ...addFields,
-    { $limit: 10 },
+    { $limit: 30 },
   ])
 
   return [...orders]

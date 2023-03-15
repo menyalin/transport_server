@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 import { BadRequestError } from '../../../helpers/errors.js'
 import { orderLoadingZoneFragmentBuilder } from '../../_pipelineFragments/orderLoadingZoneFragmentBuilder.js'
 import { orderDocsStatusConditionBuilder } from '../../_pipelineFragments/orderDocsStatusConditionBuilder.js'
+import { orderSearchByNumberFragmentBuilder } from '../../_pipelineFragments/orderSearchByNumberFragmentBuilder.js'
 
 function selectableOrdersFilter(onlySelectable) {
   if (!onlySelectable) return []
@@ -52,37 +53,9 @@ export const getPickOrdersPipeline = ({
   }
 
   if (search) {
-    firstMatcher.$match.$expr.$and.push({
-      $or: [
-        { $regexMatch: { input: '$client.num', regex: search, options: 'i' } },
-        {
-          $regexMatch: {
-            input: '$client.auctionNum',
-            regex: search,
-            options: 'i',
-          },
-        },
-        {
-          $gte: [
-            {
-              $size: {
-                $filter: {
-                  input: '$docs',
-                  cond: {
-                    $regexMatch: {
-                      input: '$$this.number',
-                      regex: search,
-                      options: 'i',
-                    },
-                  },
-                },
-              },
-            },
-            1,
-          ],
-        },
-      ],
-    })
+    firstMatcher.$match.$expr.$and.push(
+      orderSearchByNumberFragmentBuilder(search)
+    )
   }
 
   if (allowedLoadingPoints && allowedLoadingPoints.length > 0)
