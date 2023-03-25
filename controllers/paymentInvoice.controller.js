@@ -53,24 +53,24 @@ class PaymentInvoiceController extends IController {
     }
   }
 
-  // async addOrdersToRegistry(req, res) {
-  //   try {
-  //     await PermissionService.check({
-  //       userId: req.userId,
-  //       companyId: req.companyId,
-  //       operation: this.permissionName + ':write',
-  //     })
+  async addOrdersToInvoice(req, res) {
+    try {
+      await PermissionService.check({
+        userId: req.userId,
+        companyId: req.companyId,
+        operation: this.permissionName + ':write',
+      })
 
-  //     const data = await this.service.addOrdersToRegistry({
-  //       docsRegistryId: req.body.docsRegistryId,
-  //       orders: req.body.orders,
-  //       company: req.companyId,
-  //     })
-  //     res.status(200).json(data)
-  //   } catch (e) {
-  //     res.status(e.statusCode || 500).json(e.message)
-  //   }
-  // }
+      const data = await this.service.addOrdersToInvoice({
+        paymentInvoiceId: req.body.paymentInvoiceId,
+        orders: req.body.orders,
+        company: req.companyId,
+      })
+      res.status(200).json(data)
+    } catch (e) {
+      res.status(e.statusCode || 500).json(e.message)
+    }
+  }
 
   // async removeOrdersFromRegistry(req, res) {
   //   try {

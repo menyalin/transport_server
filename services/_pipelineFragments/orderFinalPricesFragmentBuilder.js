@@ -9,7 +9,7 @@ const getTotalPriceByType = (type) => ({
           {
             $size: {
               $filter: {
-                input: group,
+                input: { $ifNull: [group, []] },
                 cond: { $eq: ['$$this.type', type] },
               },
             },
@@ -18,22 +18,26 @@ const getTotalPriceByType = (type) => ({
         ],
       },
       then: {
-        $first: {
-          $filter: {
-            input: group,
-            cond: { $eq: ['$$this.type', type] },
+        $getField: {
+          field: 'priceWOVat',
+          input: {
+            $first: {
+              $filter: {
+                input: group,
+                cond: { $eq: ['$$this.type', type] },
+              },
+            },
           },
         },
       },
     })),
 
-    default: { price: 0, priceWOVat: 0, sumVat: 0 },
+    default: 0,
   },
 })
 
 export const finalPricesFragmentBuilder = () => {
   const res = {}
-
   ORDER_PRICE_TYPES_ENUM.forEach((priceType) => {
     res[priceType] = getTotalPriceByType(priceType)
   })
@@ -44,11 +48,20 @@ export const finalPricesFragmentBuilder = () => {
 export const totalSumFragmentBuilder = () => ({
   $reduce: {
     input: { $objectToArray: '$totalByTypes' },
-    initialValue: { price: 0, priceWOVat: 0, sumVat: 0 },
+    initialValue: { price: 0, priceWOVat: 0 },
     in: {
-      price: { $add: ['$$value.price', '$$this.v.price'] },
-      priceWOVat: { $add: ['$$value.priceWOVat', '$$this.v.priceWOVat'] },
-      sumVat: { $add: ['$$value.sumVat', '$$this.v.sumVat'] },
+      price: {
+        $add: [
+          '$$value.price',
+          {
+            $add: [
+              '$$this.v',
+              { $multiply: ['$$this.v', '$agreementVatRate', 0.01] },
+            ],
+          },
+        ],
+      },
+      priceWOVat: { $add: ['$$value.priceWOVat', '$$this.v'] },
     },
   },
 })

@@ -1,14 +1,8 @@
 import express from 'express'
 import { jwtAuth } from '../../utils/auth.middleware.js'
-import {
-  // bodyValidator,
-  queryValidator,
-} from '../../utils/validator.js'
+import { bodyValidator, queryValidator } from '../../utils/validator.js'
 
-import {
-  getListSchema,
-  // addOrdersToRegistrySchema
-} from './schemes.js'
+import { getListSchema, addOrdersToInvoiceSchema } from './schemes.js'
 import ctrl from '../../controllers/paymentInvoice.controller.js'
 
 const router = express.Router()
@@ -20,11 +14,11 @@ router.get('/', [jwtAuth, queryValidator(getListSchema)], (...args) =>
 router.get('/pick_orders', [jwtAuth], (...args) => ctrl.pickOrders(...args))
 router.get('/:id', [jwtAuth], (...args) => ctrl.getById(...args))
 
-// router.post(
-//   '/add_orders_to_registry',
-//   [jwtAuth, bodyValidator(addOrdersToRegistrySchema)],
-//   (...args) => ctrl.addOrdersToRegistry(...args)
-// )
+router.post(
+  '/add_orders_to_invoice',
+  [jwtAuth, bodyValidator(addOrdersToInvoiceSchema)],
+  (...args) => ctrl.addOrdersToInvoice(...args)
+)
 
 // router.post(
 //   '/remove_orders_from_registry',

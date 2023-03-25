@@ -7,6 +7,15 @@ import {
 } from '../_pipelineFragments/orderFinalPricesFragmentBuilder.js'
 import { orderLoadingZoneFragmentBuilder } from '../_pipelineFragments/orderLoadingZoneFragmentBuilder.js'
 import { orderSearchByNumberFragmentBuilder } from '../_pipelineFragments/orderSearchByNumberFragmentBuilder.js'
+import { orderPlannedDateBuilder } from '../_pipelineFragments/orderPlannedDateBuilder.js'
+
+const paymentPartsSumWOVatFragemt = {
+  $reduce: {
+    initialValue: 0,
+    input: '$paymentParts',
+    in: { $add: ['$$value', '$$this.priceWOVat'] },
+  },
+}
 
 export async function pickOrdersForPaymentInvoice({
   company,
@@ -24,46 +33,46 @@ export async function pickOrdersForPaymentInvoice({
     throw new BadRequestError(
       'getOrdersForPaymentInvoice. required args is missing!!'
     )
-  const orderPlannedDateFragment = {
-    $getField: {
-      field: 'plannedDate',
-      input: { $first: '$route' },
-    },
-  }
 
-  const firstMatcher = {
+  const firstMatcherBuilder = (filtersExpressions = []) => ({
     $match: {
       company: mongoose.Types.ObjectId(company),
       isActive: true,
       $expr: {
         $and: [
           { $eq: ['$state.status', 'completed'] },
-          { $eq: ['$client.client', mongoose.Types.ObjectId(client)] },
+          {
+            $and: [
+              { $gte: [orderPlannedDateBuilder(), new Date(period[0])] },
+              { $lt: [orderPlannedDateBuilder(), new Date(period[1])] },
+            ],
+          },
+          ...filtersExpressions,
         ],
       },
     },
-  }
+  })
+
+  const filters = []
   if (search) {
-    firstMatcher.$match.$expr.$and.push(
-      orderSearchByNumberFragmentBuilder(search)
-    )
+    filters.push(orderSearchByNumberFragmentBuilder(search))
   }
 
   if (truck)
-    firstMatcher.$match.$expr.$and.push({
+    filters.push({
       $eq: ['$confirmedCrew.truck', mongoose.Types.ObjectId(truck)],
     })
 
   if (driver)
-    firstMatcher.$match.$expr.$and.push({
+    filters.push({
       $eq: ['$confirmedCrew.driver', mongoose.Types.ObjectId(driver)],
     })
 
-  const paymentInvoiceFilter = [
+  const paymentInvoiceFilterBuilder = (orderIdField = '_id') => [
     {
       $lookup: {
         from: 'ordersInPaymentInvoices',
-        localField: '_id',
+        localField: orderIdField,
         foreignField: 'order',
         as: 'paymentInvoices',
       },
@@ -71,36 +80,106 @@ export async function pickOrdersForPaymentInvoice({
     { $match: { $expr: { $eq: [{ $size: '$paymentInvoices' }, 0] } } },
   ]
 
-  if (period.length === 2) {
-    firstMatcher.$match.$expr.$and.push({
-      $and: [
-        { $gte: [orderPlannedDateFragment, new Date(period[0])] },
-        { $lt: [orderPlannedDateFragment, new Date(period[1])] },
-      ],
-    })
-  }
+  const addAgreementBuilder = (localField = 'client.agreement') => [
+    {
+      $lookup: {
+        from: 'agreements',
+        localField: localField,
+        foreignField: '_id',
+        as: '_agreement',
+      },
+    },
+    { $addFields: { _agreement: { $first: '$_agreement' } } },
+  ]
+
   const addFields = [
     {
       $addFields: {
+        plannedDate: orderPlannedDateBuilder(),
+        orderId: '$_id',
         isSelectable: true,
-        plannedDate: orderPlannedDateFragment,
+        agreementVatRate: '$_agreement.vatRate',
+        paymentPartsSumWOVat: paymentPartsSumWOVatFragemt,
         totalByTypes: { ...finalPricesFragmentBuilder() },
       },
     },
     {
       $addFields: {
-        total: { ...totalSumFragmentBuilder() },
+        'totalByTypes.base': {
+          $subtract: [
+            '$totalByTypes.base',
+            { $ifNull: ['$paymentPartsSumWOVat', 0] },
+          ],
+        },
+      },
+    },
+    {
+      $addFields: {
+        total: totalSumFragmentBuilder(),
+      },
+    },
+  ]
+
+  const unionWithPaymentPartsOrders = [
+    {
+      $unionWith: {
+        coll: 'orders',
+        pipeline: [
+          firstMatcherBuilder([
+            ...filters,
+            {
+              $in: [
+                mongoose.Types.ObjectId(client),
+                {
+                  $ifNull: [
+                    { $map: { input: '$paymentParts', in: '$$this.client' } },
+                    [],
+                  ],
+                },
+              ],
+            },
+          ]),
+          { $unwind: { path: '$paymentParts' } },
+          {
+            $match: { 'paymentParts.client': mongoose.Types.ObjectId(client) },
+          },
+          ...paymentInvoiceFilterBuilder('paymentParts._id'),
+          ...addAgreementBuilder('paymentParts.agreement'),
+          {
+            $addFields: {
+              orderId: '$_id',
+              _id: '$paymentParts._id',
+              plannedDate: orderPlannedDateBuilder(),
+              isSelectable: true,
+              agreementVatRate: '$_agreement.vatRate',
+              totalByTypes: {
+                base: '$paymentParts.priceWOVat',
+              },
+            },
+          },
+          {
+            $addFields: {
+              total: totalSumFragmentBuilder(),
+            },
+          },
+          { $limit: 20 },
+        ],
       },
     },
   ]
 
   const loadingZoneFragment = orderLoadingZoneFragmentBuilder()
   const orders = await OrderModel.aggregate([
-    firstMatcher,
-    ...paymentInvoiceFilter,
-    ...loadingZoneFragment,
+    firstMatcherBuilder([
+      { $eq: ['$client.client', mongoose.Types.ObjectId(client)] },
+      ...filters,
+    ]),
+    ...paymentInvoiceFilterBuilder('_id'),
+    ...addAgreementBuilder('client.agreement'),
     ...addFields,
-    { $limit: 30 },
+    ...unionWithPaymentPartsOrders,
+    ...loadingZoneFragment,
+    { $limit: 10 },
   ])
 
   return [...orders]

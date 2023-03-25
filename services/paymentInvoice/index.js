@@ -1,11 +1,14 @@
 // import mongoose from 'mongoose'
 import ChangeLogService from '../changeLog/index.js'
-import { PaymentInvoice as PaymentInvoiceModel } from '../../models/index.js'
+import {
+  OrderInPaymentInvoice as OrderInPaymentInvoiceModel,
+  PaymentInvoice as PaymentInvoiceModel,
+} from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
-
 import { BadRequestError } from '../../helpers/errors.js'
 import { getListPipeline } from './pipelines/getListPipeline.js'
 import { pickOrdersForPaymentInvoice } from './pickOrdersForPaymentInvoice.js'
+import getOrdersForInvoice from './getOrdersForInvoice.js'
 // import { getPickOrdersPipeline } from './pipelines/pickOrdersPipeline.js'
 
 class PaymentInvoiceService {
@@ -45,13 +48,10 @@ class PaymentInvoiceService {
   //
   async getById(id) {
     const paymentInvoice = await this.model.findById(id).lean()
-
-    // TODO:
-    // const orders = await getOrdersForRegistry({
-    //   docsRegistryId: docsRegistry._id.toString(),
-    // })
-
-    // docsRegistry.orders = orders
+    const orders = await getOrdersForInvoice({
+      paymentInvoiceId: paymentInvoice._id.toString(),
+    })
+    paymentInvoice.orders = orders
     return paymentInvoice
   }
 
@@ -113,33 +113,33 @@ class PaymentInvoiceService {
     }
   }
 
-  // TODO:
-  // async addOrdersToRegistry({ company, orders, docsRegistryId }) {
-  //   if (!orders || orders.length === 0)
-  //     throw new BadRequestError(
-  //       'DocsRegistryService:addOrdersToRegistry. missing required params'
-  //     )
-  //   const newObjectItems = orders.map((order) => ({
-  //     order,
-  //     docsRegistry: docsRegistryId,
-  //     company,
-  //   }))
+  async addOrdersToInvoice({ company, orders, paymentInvoiceId }) {
+    if (!orders || orders.length === 0)
+      throw new BadRequestError(
+        'PaymentInvoiceService:addOrdersToInvoice. missing required params'
+      )
 
-  //   const newDocs = await OrderInDocsRegistryModel.create(newObjectItems)
+    const newObjectItems = orders.map((order) => ({
+      order,
+      paymentInvoice: paymentInvoiceId,
+      company,
+    }))
 
-  //   const addedOrders = await getOrdersForRegistry({
-  //     orderIds: newDocs.map((i) => i.order.toString()),
-  //   })
+    const newDocs = await OrderInPaymentInvoiceModel.create(newObjectItems)
 
-  //   // todo: получить рейсы в формате реестра рейсов и отправить сокетом
-  //   this.emitter(company, 'orders:addedToRegistry', {
-  //     orders: addedOrders,
-  //     docsRegistry: docsRegistryId,
-  //   })
-  //   return newDocs
-  // }
+    // TODO:
+    // const addedOrders = await getOrdersForInvoice({
+    //   orderIds: newDocs.map((i) => i.order.toString()),
+    // })
 
-  // TODO:
+    // // todo: получить рейсы в формате реестра рейсов и отправить сокетом
+    // this.emitter(company, 'orders:addedToPaymentInvoice', {
+    //   orders: addedOrders,
+    //   paymentInvoice: paymentInvoiceId,
+    // })
+    return newDocs
+  }
+
   // async removeOrdersFromRegistry({ company, orders, docsRegistryId }) {
   //   if (!orders || orders.length === 0)
   //     throw new BadRequestError(

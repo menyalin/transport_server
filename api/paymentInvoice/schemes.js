@@ -12,16 +12,16 @@ export const getListSchema = {
   additionalProperties: true,
 }
 
-export const addOrdersToRegistrySchema = {
+export const addOrdersToInvoiceSchema = {
   type: 'object',
   properties: {
     orders: {
       type: 'array',
     },
-    docsRegistryId: {
+    paymentInvoiceId: {
       type: 'string',
     },
   },
-  required: ['orders', 'docsRegistryId'],
+  required: ['orders', 'paymentInvoiceId'],
   additionalProperties: true,
 }

@@ -2,6 +2,8 @@ import mongoose from 'mongoose'
 import { BadRequestError } from '../../../helpers/errors.js'
 import { DOCUMENT_TYPES } from '../../../constants/accounting.js'
 import { orderDocNumbersStringFragment } from '../../_pipelineFragments/orderDocNumbersStringBuilder.js'
+import { orderDriverFullNameBuilder } from '../../_pipelineFragments/orderDriverFullNameBuilder.js'
+
 export function getOrdersByDocsRegistryId({ docsRegistryId, orderIds }) {
   if (!docsRegistryId && !orderIds)
     throw new BadRequestError(
@@ -91,19 +93,7 @@ export function getOrdersByDocsRegistryId({ docsRegistryId, orderIds }) {
         docsFieldName: '$order.docs',
         onlyForAddToRegistry: true,
       }),
-      driverName: {
-        $trim: {
-          input: {
-            $concat: [
-              '$driver.surname',
-              ' ',
-              '$driver.name',
-              ' ',
-              '$driver.patronymic',
-            ],
-          },
-        },
-      },
+      driverName: orderDriverFullNameBuilder(),
       routeNumber: '$order.client.num',
       docTypesStr: {
         $trim: {
