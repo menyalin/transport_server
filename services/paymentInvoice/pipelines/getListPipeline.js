@@ -40,10 +40,10 @@ export const getListPipeline = ({ clients, company, limit, skip, status }) => {
   // }
 
   const group = [
-    // sorting(sortBy, sortDesc),
+    { $sort: { createdAt: -1 } },
     {
       $group: {
-        _id: 'docsRegistries',
+        _id: 'paymentInvoices',
         items: { $push: '$$ROOT' },
       },
     },

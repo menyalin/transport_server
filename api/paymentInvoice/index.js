@@ -20,11 +20,11 @@ router.post(
   (...args) => ctrl.addOrdersToInvoice(...args)
 )
 
-// router.post(
-//   '/remove_orders_from_registry',
-//   [jwtAuth, bodyValidator(addOrdersToRegistrySchema)],
-//   (...args) => ctrl.removeOrdersFromRegistry(...args)
-// )
+router.post(
+  '/remove_orders_from_invoice',
+  [jwtAuth, bodyValidator(addOrdersToInvoiceSchema)],
+  (...args) => ctrl.removeOrdersFromPaymentInvoice(...args)
+)
 
 router.post('/', [jwtAuth], (...args) => ctrl.create(...args))
 router.put('/:id', [jwtAuth], (...args) => ctrl.updateOne(...args))

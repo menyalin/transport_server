@@ -14,6 +14,10 @@ export default async function getOrdersForPaymentInvoice({
       $eq: ['$paymentInvoice', mongoose.Types.ObjectId(paymentInvoiceId)],
     })
 
+  if (orderIds && orderIds.length)
+    filters.push({
+      $in: ['$order', orderIds.map((i) => mongoose.Types.ObjectId(i))],
+    })
   const firstMatchBuilder = (filters = []) => ({
     $match: {
       $expr: {

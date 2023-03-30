@@ -9,7 +9,6 @@ import { BadRequestError } from '../../helpers/errors.js'
 import { getListPipeline } from './pipelines/getListPipeline.js'
 import { pickOrdersForPaymentInvoice } from './pickOrdersForPaymentInvoice.js'
 import getOrdersForInvoice from './getOrdersForInvoice.js'
-// import { getPickOrdersPipeline } from './pipelines/pickOrdersPipeline.js'
 
 class PaymentInvoiceService {
   constructor({ model, emitter, modelName, logService }) {
@@ -19,33 +18,31 @@ class PaymentInvoiceService {
     this.modelName = modelName
   }
 
-  // TODO:
-  // async deleteById({ id, user, company }) {
-  //   const ordersInRegistry = await OrderInDocsRegistryModel.find({
-  //     docsRegistry: id,
-  //   }).lean()
+  async deleteById({ id, user, company }) {
+    const ordersInInvoice = await OrderInPaymentInvoiceModel.find({
+      paymentInvoice: id,
+    }).lean()
 
-  //   if (ordersInRegistry.length > 0)
-  //     throw new BadRequestError(
-  //       'Delete is not possible. orders refer to registry'
-  //     )
+    if (ordersInInvoice.length > 0)
+      throw new BadRequestError(
+        'Delete is not possible. orders refer to registry'
+      )
 
-  //   const data = await this.model.findByIdAndDelete(id)
+    const data = await this.model.findByIdAndDelete(id)
 
-  //   this.emitter(company, `${this.modelName}:deleted`, id)
+    this.emitter(company, `${this.modelName}:deleted`, id)
 
-  //   if (this.logService)
-  //     await this.logService.add({
-  //       docId: id,
-  //       coll: this.modelName,
-  //       opType: 'delete',
-  //       user,
-  //       company: company,
-  //     })
-  //   return data
-  // }
+    if (this.logService)
+      await this.logService.add({
+        docId: id,
+        coll: this.modelName,
+        opType: 'delete',
+        user,
+        company: company,
+      })
+    return data
+  }
 
-  //
   async getById(id) {
     const paymentInvoice = await this.model.findById(id).lean()
     const orders = await getOrdersForInvoice({
@@ -71,11 +68,10 @@ class PaymentInvoiceService {
         body: JSON.stringify(paymentInvoice),
       })
 
-    // TODO:
-    // const orders = await getOrdersForRegistry({
-    //   docsRegistryId: docsRegistry._id.toString(),
-    // })
-    // docsRegistry.orders = orders
+    const orders = await getOrdersForInvoice({
+      paymentInvoiceId: paymentInvoice._id.toString(),
+    })
+    paymentInvoice.orders = orders
 
     this.emitter(
       paymentInvoice.company.toString(),
@@ -89,7 +85,7 @@ class PaymentInvoiceService {
     if (!company) throw new BadRequestError('bad request params')
 
     const data = await this.model.create({ ...body, company })
-
+    data.orders = []
     if (this.logService)
       await this.logService.add({
         docId: data._id.toString(),
@@ -127,35 +123,34 @@ class PaymentInvoiceService {
 
     const newDocs = await OrderInPaymentInvoiceModel.create(newObjectItems)
 
-    // TODO:
-    // const addedOrders = await getOrdersForInvoice({
-    //   orderIds: newDocs.map((i) => i.order.toString()),
-    // })
+    const addedOrders = await getOrdersForInvoice({
+      orderIds: newDocs.map((i) => i.order.toString()),
+    })
 
-    // // todo: получить рейсы в формате реестра рейсов и отправить сокетом
-    // this.emitter(company, 'orders:addedToPaymentInvoice', {
-    //   orders: addedOrders,
-    //   paymentInvoice: paymentInvoiceId,
-    // })
+    this.emitter(company, 'orders:addedToPaymentInvoice', {
+      orders: addedOrders,
+      paymentInvoiceId,
+    })
     return newDocs
   }
 
-  // async removeOrdersFromRegistry({ company, orders, docsRegistryId }) {
-  //   if (!orders || orders.length === 0)
-  //     throw new BadRequestError(
-  //       'DocsRegistryService:removeOrdersFromRegistry. missing required params'
-  //     )
-  //   const removedOrders = await OrderInDocsRegistryModel.deleteMany({
-  //     company,
-  //     order: { $in: orders },
-  //     docsRegistry: docsRegistryId,
-  //   })
-  //   this.emitter(company, 'orders:removedFromRegistry', {
-  //     orders,
-  //     docsRegistry: docsRegistryId,
-  //   })
-  //   return removedOrders
-  // }
+  async removeOrdersFromPaymentInvoice({ company, orders, paymentInvoiceId }) {
+    if (!orders || orders.length === 0)
+      throw new BadRequestError(
+        'PaymentInvoiceService:removeOrdersFromInvoice. missing required params'
+      )
+    const removedOrders = await OrderInPaymentInvoiceModel.deleteMany({
+      company,
+      order: { $in: orders },
+      paymentInvoice: paymentInvoiceId,
+    })
+
+    this.emitter(company, 'orders:removedFromPaimentInvoice', {
+      orders,
+      paymentInvoiceId: paymentInvoiceId,
+    })
+    return removedOrders
+  }
 
   async pickOrders({
     paymentInvoiceId,

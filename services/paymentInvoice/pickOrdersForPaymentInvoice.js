@@ -179,7 +179,7 @@ export async function pickOrdersForPaymentInvoice({
     ...addFields,
     ...unionWithPaymentPartsOrders,
     ...loadingZoneFragment,
-    { $limit: 10 },
+    { $limit: 30 },
   ])
 
   return [...orders]
