@@ -114,24 +114,36 @@ class PaymentInvoiceService {
       throw new BadRequestError(
         'PaymentInvoiceService:addOrdersToInvoice. missing required params'
       )
-
+    // Формирую новые объекты в коллекции
     const newObjectItems = orders.map((order) => ({
       order,
       paymentInvoice: paymentInvoiceId,
       company,
     }))
-
-    const newDocs = await OrderInPaymentInvoiceModel.create(newObjectItems)
+    const newOrdersInInvoice = await OrderInPaymentInvoiceModel.create(
+      newObjectItems
+    )
 
     const addedOrders = await getOrdersForInvoice({
-      orderIds: newDocs.map((i) => i.order.toString()),
+      orderIds: orders,
+    })
+
+    newOrdersInInvoice.forEach(async (invoiceRow) => {
+      const order = addedOrders.find(
+        (ord) => ord._id.toString() === invoiceRow.order.toString()
+      )
+      if (!order) return null
+      invoiceRow.total = order.total
+      invoiceRow.totalByTypes = order.totalByTypes
+      await invoiceRow.save()
     })
 
     this.emitter(company, 'orders:addedToPaymentInvoice', {
       orders: addedOrders,
       paymentInvoiceId,
     })
-    return newDocs
+
+    return newOrdersInInvoice
   }
 
   async removeOrdersFromPaymentInvoice({ company, orders, paymentInvoiceId }) {
@@ -190,6 +202,24 @@ class PaymentInvoiceService {
     })
 
     return orders || []
+  }
+
+  async updateOrderPrices({ orderId }) {
+    const [order] = await getOrdersForInvoice({
+      orderIds: [orderId],
+    })
+    if (!order) return null
+    const paymentInvoiceRow = await OrderInPaymentInvoiceModel.findOne({
+      order: orderId,
+    })
+    paymentInvoiceRow.total = order.total
+    paymentInvoiceRow.totalByTypes = order.totalByTypes
+    order.savedTotal = order.total
+    order.savedTotalByTypes = order.totalByTypes
+    order.needUpdate = false
+    await paymentInvoiceRow.save()
+
+    return order
   }
 }
 

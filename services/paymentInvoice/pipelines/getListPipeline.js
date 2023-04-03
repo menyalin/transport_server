@@ -13,31 +13,12 @@ export const getListPipeline = ({ clients, company, limit, skip, status }) => {
       },
     },
   }
-
   if (clients && clients.length) {
     firstMatcher.$match.$expr.$and.push({
       $in: ['$client', clients.map((i) => mongoose.Types.ObjectId(i))],
     })
   }
-
-  // if (driver) firstMatcher.$match.driver = mongoose.Types.ObjectId(driver)
-
   if (status) firstMatcher.$match.$expr.$and.push({ $eq: ['$status', status] })
-
-  // const sorting = (sortBy, sortDesc) => {
-  //   const res = { $sort: {} }
-  //   if (!sortBy || sortBy.length === 0)
-  //     return {
-  //       $sort: {
-  //         date: 1,
-  //       },
-  //     }
-  //   else
-  //     sortBy.forEach((val, idx) => {
-  //       res.$sort[val] = sortDesc[idx] === 'true' ? -1 : 1
-  //     })
-  //   return res
-  // }
 
   const group = [
     { $sort: { createdAt: -1 } },
@@ -64,6 +45,7 @@ export const getListPipeline = ({ clients, company, limit, skip, status }) => {
       },
     },
     { $addFields: { _client: { $first: '$_client' } } },
+    { $addFields: { clientName: '$_client.name' } },
   ]
 
   const additionalFields = [
@@ -81,8 +63,41 @@ export const getListPipeline = ({ clients, company, limit, skip, status }) => {
       },
     },
   ]
-  const pipeline = [firstMatcher, ...clientLookup, ...additionalFields]
 
+  const priceLookup = [
+    {
+      $lookup: {
+        from: 'ordersInPaymentInvoices',
+        localField: '_id',
+        foreignField: 'paymentInvoice',
+        as: '_orders',
+      },
+    },
+    {
+      $addFields: {
+        total: {
+          $reduce: {
+            initialValue: { price: 0, priceWOVat: 0 },
+            input: '$_orders',
+            in: {
+              price: { $add: ['$$this.total.price', '$$value.price'] },
+              priceWOVat: {
+                $add: ['$$this.total.priceWOVat', '$$value.priceWOVat'],
+              },
+            },
+          },
+        },
+        count: { $size: '$_orders' },
+      },
+    },
+  ]
+
+  const pipeline = [
+    firstMatcher,
+    ...clientLookup,
+    ...additionalFields,
+    ...priceLookup,
+  ]
 
   return [...pipeline, ...group]
 }

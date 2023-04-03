@@ -163,6 +163,15 @@ export default async function getOrdersForPaymentInvoice({
       },
     },
     { $addFields: { order: { $first: '$order' } } },
+    {
+      $addFields: {
+        order: {
+          savedTotal: '$total',
+          savedTotalByTypes: '$totalByTypes',
+          needUpdate: { $ne: ['$total.price', '$order.total.price'] },
+        },
+      },
+    },
     { $replaceRoot: { newRoot: '$order' } },
   ]
 
@@ -170,6 +179,5 @@ export default async function getOrdersForPaymentInvoice({
     firstMatchBuilder(filters),
     ...ordersLookup,
   ])
-
   return ordersInPaymentInvoice
 }

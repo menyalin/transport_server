@@ -1,6 +1,11 @@
 import pkg from 'mongoose'
 const { Schema, model, Types } = pkg
 
+const PriceType = {
+  price: Number,
+  priceWOVat: Number,
+}
+
 const schema = new Schema(
   {
     order: { type: Types.ObjectId, unique: true }, // orderID of paymentPartId
@@ -10,6 +15,11 @@ const schema = new Schema(
       required: true,
     },
     company: { type: Types.ObjectId, ref: 'Company' },
+    total: PriceType,
+    totalByTypes: {
+      type: Map,
+      of: PriceType,
+    },
   },
   { timestamps: true }
 )

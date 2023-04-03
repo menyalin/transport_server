@@ -28,6 +28,11 @@ router.post(
 
 router.post('/', [jwtAuth], (...args) => ctrl.create(...args))
 router.put('/:id', [jwtAuth], (...args) => ctrl.updateOne(...args))
+router.put('/update_prices/:orderId', [jwtAuth], (...args) =>
+  ctrl.updateOrderPrices(...args)
+)
+
+// update_prices/
 router.delete('/:id', [jwtAuth], (...args) => ctrl.deleteById(...args))
 
 export default router
