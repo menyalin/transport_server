@@ -6,6 +6,7 @@ const schema = new Schema(
   {
     company: { type: Types.ObjectId, ref: 'Company', required: true },
     number: { type: String },
+    sendDate: Date,
     client: { type: Types.ObjectId, ref: 'Partner', required: true },
     agreement: { type: Types.ObjectId, ref: 'Agreement', required: true },
     status: { type: String, enum: PAIMENT_INVOICE_STATUSES_ENUM },

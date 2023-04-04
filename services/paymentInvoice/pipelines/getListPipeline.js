@@ -2,7 +2,14 @@ import mongoose from 'mongoose'
 import { PAIMENT_INVOICE_STATUSES } from '../../../constants/paymentInvoice.js'
 import { BadRequestError } from '../../../helpers/errors.js'
 
-export const getListPipeline = ({ clients, company, limit, skip, status }) => {
+export const getListPipeline = ({
+  clients,
+  company,
+  limit,
+  skip,
+  status,
+  search,
+}) => {
   if (!company) throw new BadRequestError('docsRegistry: bad request params')
   const firstMatcher = {
     $match: {
@@ -13,6 +20,13 @@ export const getListPipeline = ({ clients, company, limit, skip, status }) => {
       },
     },
   }
+
+  if (search) {
+    firstMatcher.$match.$expr.$and.push({
+      $or: [{ $regexMatch: { input: '$number', regex: search, options: 'i' } }],
+    })
+  }
+
   if (clients && clients.length) {
     firstMatcher.$match.$expr.$and.push({
       $in: ['$client', clients.map((i) => mongoose.Types.ObjectId(i))],

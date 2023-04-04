@@ -135,6 +135,9 @@ class PaymentInvoiceService {
       if (!order) return null
       invoiceRow.total = order.total
       invoiceRow.totalByTypes = order.totalByTypes
+      order.savedTotal = order.total
+      order.savedTotalByTypes = order.totalByTypes
+      order.needUpdate = false
       await invoiceRow.save()
     })
 
