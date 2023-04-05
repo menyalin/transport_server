@@ -135,6 +135,7 @@ class PaymentInvoiceService {
       if (!order) return null
       invoiceRow.total = order.total
       invoiceRow.totalByTypes = order.totalByTypes
+      invoiceRow.itemType = order.itemType
       order.savedTotal = order.total
       order.savedTotalByTypes = order.totalByTypes
       order.needUpdate = false

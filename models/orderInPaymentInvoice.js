@@ -15,6 +15,7 @@ const schema = new Schema(
       required: true,
     },
     company: { type: Types.ObjectId, ref: 'Company' },
+    itemType: { type: String, enum: ['order', 'paymentPart'] },
     total: PriceType,
     totalByTypes: {
       type: Map,

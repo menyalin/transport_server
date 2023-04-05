@@ -101,7 +101,14 @@ export const getListPipeline = ({
             },
           },
         },
-        count: { $size: '$_orders' },
+        count: {
+          $size: {
+            $filter: {
+              input: '$_orders',
+              cond: { $ne: ['$$this.itemType', 'paymentPart'] },
+            },
+          },
+        },
       },
     },
   ]
