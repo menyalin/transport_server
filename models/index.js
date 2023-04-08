@@ -27,6 +27,7 @@ import SalaryTariff from './salaryTariff.js'
 import OrderInDocsRegistry from './orderInDocsRegistry.js'
 import OrderInPaymentInvoice from './orderInPaymentInvoice.js'
 import PaymentInvoice from './paymentInvoice.js'
+import DocTemplate from './docTemplate.js'
 
 export {
   User,
@@ -58,4 +59,5 @@ export {
   OrderInDocsRegistry,
   PaymentInvoice,
   OrderInPaymentInvoice,
+  DocTemplate,
 }

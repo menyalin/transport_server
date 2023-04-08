@@ -29,6 +29,7 @@ import workerRouter from './api/worker/index.js'
 import docsRegistryRouter from './api/docsRegistry/index.js'
 import fineRouter from './api/fine/index.js'
 import paymentInvoiceRouter from './api/paymentInvoice/index.js'
+import docTemplateRouter from './api/docTemplate/index.js'
 import adminRouter from './api/admin/index.js'
 
 const app = express()
@@ -75,6 +76,7 @@ app.use('/api/workers', workerRouter)
 app.use('/api/fines', fineRouter)
 app.use('/api/docs_registry', docsRegistryRouter)
 app.use('/api/payment_invoice', paymentInvoiceRouter)
+app.use('/api/doc_templates', docTemplateRouter)
 
 app.use('/api/admin', adminRouter)
 app.use(errorMiddleware)

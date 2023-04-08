@@ -31,7 +31,7 @@ import GlobalSettingsService from './globalSettings/index.js'
 import TokenService from './token/index.js'
 import NotificationService from './notification/index.js'
 import FileService from './file/index.js'
-
+import DocTemplateService from './docTemplate/docTemplate.service.js'
 
 export {
   UserService,
@@ -65,4 +65,5 @@ export {
   SalaryTariffService,
   DocsRegistryService,
   PaymentInvoiceService,
+  DocTemplateService,
 }
