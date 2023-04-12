@@ -54,14 +54,35 @@ class UserService {
     const staffRoles = await PermissionService.getAllRoles()
     const settings = await GlobalSettingsService.get()
 
+    const allTruckParams = {
+      truckTypes: TRUCK_TYPES,
+      truckKinds: TRUCK_KINDS,
+      loadDirection: LOAD_DIRECTION,
+      liftCapacityTypes: TRUCK_LIFT_CAPACITY_TYPES,
+    }
+
+    const settingsWithoutProfile = {
+      user,
+      companies,
+      companyInvites,
+      staffRoles,
+      fineCategories: settings?.fineCategories,
+      partnerGroups: PARTNER_GROUPS,
+      orderStatuses: ORDER_STATUSES,
+      orderAnalyticTypes: ORDER_ANALYTIC_TYPES,
+      orderPriceTypes: ORDER_PRICE_TYPES,
+      documentTypes: DOCUMENT_TYPES,
+      documentStatuses: DOCUMENT_STATUSES,
+      tariffTypes: TARIFF_TYPES,
+      salaryTariffTypes: SALARY_TARIFF_TYPES,
+      roundingWaitingByHours: TARIFF_ROUND_BY_HOURS,
+      docsRegistryStatuses: DOCS_REGISTRY_STATUSES,
+      paymentInvoiceStatuses: PAIMENT_INVOICE_STATUSES,
+      allTruckParams: allTruckParams,
+    }
+
     if (!profile) {
-      return {
-        user,
-        companies,
-        companyInvites,
-        staffRoles,
-        fineCategories: settings?.fineCategories,
-      }
+      return { ...settingsWithoutProfile }
     }
 
     const addresses = await AddressService.getByProfile(profile)
@@ -78,42 +99,20 @@ class UserService {
       userId: id,
       companyId: profile,
     })
-    const allTruckParams = {
-      truckTypes: TRUCK_TYPES,
-      truckKinds: TRUCK_KINDS,
-      loadDirection: LOAD_DIRECTION,
-      liftCapacityTypes: TRUCK_LIFT_CAPACITY_TYPES,
-    }
 
     return {
-      user,
-      companies,
+      ...settingsWithoutProfile,
       addresses,
       drivers,
       trucks,
       tkNames,
       partners,
-      staffRoles,
       permissions,
-      allTruckParams,
       orderTemplates,
       documents,
       zones,
       regions,
       cities,
-      companyInvites,
-      fineCategories: settings?.fineCategories,
-      partnerGroups: PARTNER_GROUPS,
-      orderStatuses: ORDER_STATUSES,
-      orderAnalyticTypes: ORDER_ANALYTIC_TYPES,
-      orderPriceTypes: ORDER_PRICE_TYPES,
-      documentTypes: DOCUMENT_TYPES,
-      documentStatuses: DOCUMENT_STATUSES,
-      tariffTypes: TARIFF_TYPES,
-      salaryTariffTypes: SALARY_TARIFF_TYPES,
-      roundingWaitingByHours: TARIFF_ROUND_BY_HOURS,
-      docsRegistryStatuses: DOCS_REGISTRY_STATUSES,
-      paymentInvoiceStatuses: PAIMENT_INVOICE_STATUSES,
     }
   }
 

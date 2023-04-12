@@ -51,12 +51,11 @@ class WorkerService extends IService {
     const user = await UserModel.findOne(
       {
         email,
-        isActive: true,
         openForSearch: true,
         // todo: emailConfirmed:true - поиск только по подтвержденным email
       },
-      { email: 1, name: 1 },
-    ).lean()
+      { email: 1, name: 1 }
+    )
     if (!user) return null
 
     const existedUser = await this.model
@@ -69,11 +68,7 @@ class WorkerService extends IService {
 
   async updateOne({ id, body, user }) {
     const worker = await this.model.findByIdAndUpdate(id, body, { new: true })
-    this.emitter(
-      worker.company.toString(),
-      `${this.modelName}:updated`,
-      worker,
-    )
+    this.emitter(worker.company.toString(), `${this.modelName}:updated`, worker)
     if (this.logService)
       await this.logService.add({
         docId: worker._id.toString(),
@@ -97,7 +92,7 @@ class WorkerService extends IService {
         this.emitter(
           disabledUser._id.toString(),
           'user:clearDirectoriesProfile',
-          worker.company.toString(),
+          worker.company.toString()
         )
     }
     return worker
@@ -106,9 +101,7 @@ class WorkerService extends IService {
   async addUser({ userId, roles, workerId, actor }) {
     const worker = await this.model.findById(workerId)
     if (!worker || worker.pending || worker.accepted)
-      throw new BadRequestError(
-        'bad worker params: _id || accepted || pending',
-      )
+      throw new BadRequestError('bad worker params: _id || accepted || pending')
     worker.user = userId
     worker.roles = roles
     worker.accepted = true
