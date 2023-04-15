@@ -10,6 +10,13 @@ class WorkerService extends IService {
     super({ model, emitter, modelName, logService })
   }
 
+  async getById(id) {
+    const data = await this.model
+      .findById(id)
+      .populate('user', ['name', 'email'])
+    return data
+  }
+
   async getForAutocomplete({ companyId, params }) {
     const gettedFielfds = { name: 1, fullName: 1 }
     if (!companyId) throw new BadRequestError('no company id')
@@ -95,6 +102,7 @@ class WorkerService extends IService {
           worker.company.toString()
         )
     }
+    await worker.populate('user', ['name', 'email'])
     return worker
   }
 
@@ -108,7 +116,6 @@ class WorkerService extends IService {
     worker.pending = true
     await worker.save()
 
-    this.emitter(worker.company.toString(), 'worker:updated', worker)
 
     await this.logService.add({
       docId: worker._id.toString(),
@@ -118,23 +125,37 @@ class WorkerService extends IService {
       company: worker.company.toString(),
       body: JSON.stringify(worker.toJSON()),
     })
+    
     await worker.populate('company', ['name', 'inn', 'fullName'])
+    await worker.populate('user', ['name', 'email'])
+    
     this.emitter(userId, 'worker:inviteGetted', worker)
+    this.emitter(worker.company.toString(), 'worker:updated', worker)
+
     return worker
   }
 
   async acceptInvite({ userId, workerId, accepted }) {
-    const worker = await this.model.findOne({
-      _id: workerId,
-      user: userId,
-      pending: true,
-      disabled: false,
-    })
+    const worker = await this.model
+      .findOne({
+        _id: workerId,
+        user: userId,
+        pending: true,
+        disabled: false,
+      })
+      .populate('user', ['email', 'name'])
     if (!worker)
       throw new BadRequestError('Соответствующий сотрудник отсутствует!')
     worker.accepted = accepted
     worker.pending = false
     await worker.save()
+    if (worker.accepted) {
+      const user = await UserModel.findById(worker.user._id)
+      if (user && !user.directoriesProfile) {
+        user.directoriesProfile = worker.company
+        await user.save()
+      }
+    }
     this.emitter(userId, 'worker:updated', worker)
   }
 
