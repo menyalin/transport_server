@@ -269,6 +269,7 @@ export const accountant = {
   'paymentInvoice:readList': true,
   'paymentInvoice:readItem': true,
   'paymentInvoice:write': true,
+  'paymentInvoice:delete': true,
 }
 
 export const mechanic = {
