@@ -150,19 +150,19 @@ class PaymentInvoiceService {
     return newOrdersInInvoice
   }
 
-  async removeOrdersFromPaymentInvoice({ company, orders, paymentInvoiceId }) {
-    if (!orders || orders.length === 0)
+  async removeOrdersFromPaymentInvoice({ company, rowIds, paymentInvoiceId }) {
+    if (!rowIds || rowIds.length === 0)
       throw new BadRequestError(
         'PaymentInvoiceService:removeOrdersFromInvoice. missing required params'
       )
     const removedOrders = await OrderInPaymentInvoiceModel.deleteMany({
       company,
-      order: { $in: orders },
+      _id: { $in: rowIds },
       paymentInvoice: paymentInvoiceId,
     })
 
     this.emitter(company, 'orders:removedFromPaimentInvoice', {
-      orders,
+      rowIds,
       paymentInvoiceId: paymentInvoiceId,
     })
     return removedOrders

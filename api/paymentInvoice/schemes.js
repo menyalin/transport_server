@@ -18,10 +18,13 @@ export const addOrdersToInvoiceSchema = {
     orders: {
       type: 'array',
     },
+    rowIds: {
+      type: 'array',
+    },
     paymentInvoiceId: {
       type: 'string',
     },
   },
-  required: ['orders', 'paymentInvoiceId'],
+  required: ['paymentInvoiceId'],
   additionalProperties: true,
 }

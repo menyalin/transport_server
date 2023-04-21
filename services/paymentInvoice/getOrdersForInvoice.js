@@ -166,6 +166,7 @@ export default async function getOrdersForPaymentInvoice({
     {
       $addFields: {
         order: {
+          rowId: '$_id',
           savedTotal: '$total',
           savedTotalByTypes: '$totalByTypes',
           needUpdate: { $ne: ['$total.price', '$order.total.price'] },

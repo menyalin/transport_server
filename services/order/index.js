@@ -17,6 +17,7 @@ import getOutsourceAgreementId from './getOutsourceAgreementId.js'
 import { orsDirections } from '../../helpers/orsClient.js'
 import { BadRequestError } from '../../helpers/errors.js'
 import { getDocsRegistryByOrderId } from './getDocsRegistryByOrderId.js'
+import { getPaymentInvoicesByOrderIds } from './getPaymentInvoicesByOrderIds.js'
 
 const _isEqualDatesOfRoute = ({ oldRoute, newRoute }) => {
   const oldArrivalDate = new Date(oldRoute[0].arrivalDate).toLocaleString()
@@ -183,13 +184,20 @@ class OrderService {
     } else throw new BadRequestError('Рейс нельзя удалить')
   }
 
-
-
   async getById(id) {
     const allowedStatusesForGetDocsRegistry = ['completed']
     const order = await OrderModel.findById(id).lean()
-    if (order && allowedStatusesForGetDocsRegistry.includes(order.state.status))
+    if (
+      order &&
+      allowedStatusesForGetDocsRegistry.includes(order.state.status)
+    ) {
       order.docsRegistry = await getDocsRegistryByOrderId(order._id.toString())
+      order.paymentInvoices = await getPaymentInvoicesByOrderIds([
+        order._id.toString(),
+        ...order.paymentParts.map((i) => i._id.toString()),
+      ])
+    }
+
     return order
   }
 

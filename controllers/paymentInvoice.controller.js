@@ -99,7 +99,7 @@ class PaymentInvoiceController extends IController {
 
       const data = await this.service.removeOrdersFromPaymentInvoice({
         paymentInvoiceId: req.body.paymentInvoiceId,
-        orders: req.body.orders,
+        rowIds: req.body.rowIds,
         company: req.companyId,
       })
       res.status(200).json(data)
