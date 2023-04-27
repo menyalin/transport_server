@@ -194,7 +194,7 @@ class OrderService {
       order.docsRegistry = await getDocsRegistryByOrderId(order._id.toString())
       order.paymentInvoices = await getPaymentInvoicesByOrderIds([
         order._id.toString(),
-        ...order.paymentParts.map((i) => i._id.toString()),
+        ...(order.paymentParts?.map((i) => i._id.toString()) || []),
       ])
     }
 
