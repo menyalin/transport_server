@@ -23,6 +23,7 @@ const schema = new Schema(
     clientNumRequired: { type: Boolean, default: false },
     auctionNumRequired: { type: Boolean, default: false },
     note: String,
+    commission: { type: Number, default: 0 },
   },
   { timestamps: true }
 )
