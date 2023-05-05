@@ -24,6 +24,7 @@ export const getOrderListPipeline = ({
   limit,
   skip,
   docStatus,
+  invoiceStatus,
   status,
   truck,
   accountingMode,
@@ -91,6 +92,7 @@ export const getOrderListPipeline = ({
       },
     },
   ]
+
   const tkNameLookup = [
     {
       $lookup: {
@@ -271,6 +273,28 @@ export const getOrderListPipeline = ({
       },
     },
   ]
+
+  const paymentInvoiceLookup = [
+    {
+      $lookup: {
+        from: 'ordersInPaymentInvoices',
+        let: { orderId: '$_id' },
+        pipeline: [{ $match: { $expr: { $eq: ['$order', '$$orderId'] } } }],
+        as: '_invoices',
+      },
+    },
+    {
+      $match: {
+        $expr: {
+          $eq: [{ $size: '$_invoices' }, invoiceStatus === 'included' ? 1 : 0],
+        },
+      },
+    },
+    {
+      $unset: ['_invoices', 'agreements'],
+    },
+  ]
+
   let pipeline = [
     firstMatcher,
     ...loadingZoneLookup,
@@ -280,5 +304,7 @@ export const getOrderListPipeline = ({
   ]
 
   if (tkName) pipeline = [...pipeline, ...tkNameLookup]
+  if (invoiceStatus) pipeline = [...pipeline, ...paymentInvoiceLookup]
+
   return [...pipeline, ...group]
 }

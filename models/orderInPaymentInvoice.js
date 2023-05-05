@@ -8,7 +8,7 @@ const PriceType = {
 
 const schema = new Schema(
   {
-    order: { type: Types.ObjectId, unique: true }, // orderID of paymentPartId
+    order: { type: Types.ObjectId, unique: true }, // orderID or paymentPartId
     paymentInvoice: {
       type: Types.ObjectId,
       ref: 'PaymentInvoice',
