@@ -42,7 +42,7 @@ class OrderService {
       operation: 'order:daysForWrite',
       startDate: body.route[0].plannedDate,
     })
-
+    
     checkRefusedOrder(body)
     await checkCrossItems({ body })
 
@@ -75,9 +75,11 @@ class OrderService {
     if (!Array.isArray(body) || body.length === 0)
       throw new BadRequestError('Не верный формат данных')
     const templateIds = body.map((i) => i.template)
+
     const templates = await OrderTemplateModel.find({
       _id: templateIds,
     }).lean()
+    
     for (let i = 0; i < body.length; i++) {
       const template = templates.find(
         (t) => t._id.toString() === body[i].template
