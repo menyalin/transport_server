@@ -330,6 +330,10 @@ class OrderService {
     emitTo(order.company.toString(), 'order:updated', order)
     return order
   }
+
+  async autoSetRoutesDates(inputData, company) {
+    
+  }
 }
 
 export default new OrderService()
