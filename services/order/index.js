@@ -332,7 +332,11 @@ class OrderService {
   }
 
   async autoSetRoutesDates(inputData, company) {
+    // Получить список рейсов по грузовикам с учетом периода и компании
     
+
+    return inputData.toString()
+    // 
   }
 }
 

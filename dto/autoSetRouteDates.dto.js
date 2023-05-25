@@ -45,4 +45,13 @@ export class AutoSetRouteDatesDTO {
     get unloadingDurationInMinutes() {
         return this._unloadingDurationInMinutes
     }
+
+    toString() {
+        return{
+            truckIds: this.truckIds, 
+            period: this.period, 
+            tripDurationInMinutes: this.tripDurationInMinutes,  
+            unloadingDurationInMinutes: this.unloadingDurationInMinutes
+        }
+    }
 }
