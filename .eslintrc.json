@@ -1,10 +1,10 @@
 {
   "env": {
-    "browser": true,
-    "commonjs": true,
+    "browser": false,
     "es2021": true
   },
-  "extends": ["standard", "prettier"],
+  "extends": ["eslint:recommended", "plugin:prettier/recommended"],
+  "plugins": ["prettier"],
   "parserOptions": {
     "ecmaVersion": 12
   },
