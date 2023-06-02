@@ -175,8 +175,11 @@ class OrderController {
         userId: req.userId,
         companyId: req.companyId,
       })
-      const result = await service.autoSetRoutesDates(new AutoSetRouteDatesDTO(req.body), req.companyId)
-      res.status(200).json({hello: 'hello', result})
+      const result = await service.autoSetRoutesDates(
+        new AutoSetRouteDatesDTO(req.body),
+        req.companyId
+      )
+      res.status(200).json(result)
     } catch (e) {
       res.status(e.statusCode || 500).json(e.message)
     }

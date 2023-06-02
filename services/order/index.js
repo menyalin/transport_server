@@ -18,6 +18,8 @@ import { orsDirections } from '../../helpers/orsClient.js'
 import { BadRequestError } from '../../helpers/errors.js'
 import { getDocsRegistryByOrderId } from './getDocsRegistryByOrderId.js'
 import { getPaymentInvoicesByOrderIds } from './getPaymentInvoicesByOrderIds.js'
+import OrderRepository from '../../repositories/order/order.repository.js'
+import { Order as OrderDomain } from '../../domain/order/order.domain.js'
 
 const _isEqualDatesOfRoute = ({ oldRoute, newRoute }) => {
   const oldArrivalDate = new Date(oldRoute[0].arrivalDate).toLocaleString()
@@ -42,7 +44,7 @@ class OrderService {
       operation: 'order:daysForWrite',
       startDate: body.route[0].plannedDate,
     })
-    
+
     checkRefusedOrder(body)
     await checkCrossItems({ body })
 
@@ -79,7 +81,7 @@ class OrderService {
     const templates = await OrderTemplateModel.find({
       _id: templateIds,
     }).lean()
-    
+
     for (let i = 0; i < body.length; i++) {
       const template = templates.find(
         (t) => t._id.toString() === body[i].template
@@ -333,10 +335,51 @@ class OrderService {
 
   async autoSetRoutesDates(inputData, company) {
     // Получить список рейсов по грузовикам с учетом периода и компании
-    
+    const orders = await OrderRepository.getOrdersByTrucksAndPeriod({
+      truckIds: inputData.truckIds,
+      period: inputData.period,
+      orderStatuses: ['inProgress', 'completed'],
+      company,
+    })
 
-    return inputData.toString()
-    // 
+    const needSaveOrdes = []
+    for (let truck of inputData.truckIds) {
+      const ordersByTruck = orders.filter((order) => order.truckId === truck)
+      if (ordersByTruck.length === 0) continue
+
+      const { updatedOrders, events } = OrderDomain.autoCompleteOrders(
+        ordersByTruck,
+        inputData.tripDurationInMinutes,
+        inputData.unloadingDurationInMinutes
+      )
+      if (events.length) {
+        emitTo(company.toString(), 'order:autoFillDatesError', {
+          token: inputData.operationToken,
+          message: `overlapping orders`,
+          truck,
+        })
+      } else if (updatedOrders.length > 0) needSaveOrdes.push(...updatedOrders)
+    }
+
+    if (needSaveOrdes.length) {
+      const savedOrders = await OrderRepository.save(needSaveOrdes)
+      if (savedOrders && savedOrders.length) {
+        savedOrders.forEach((order) => {
+          emitTo(company.toString(), 'order:updated', order.toJSON())
+        })
+        if (inputData.operationToken) {
+          emitTo(company.toString(), 'order:autoFillDatesSuccessful', {
+            token: inputData.operationToken,
+            message: `count of successfully updated orders: ${savedOrders.length}`,
+          })
+        }
+      }
+    }
+    emitTo(company.toString(), 'order:autoFillDatesCompleted', {
+      token: inputData.operationToken,
+      message: `operation completed`,
+    })
+    return
   }
 }
 
