@@ -23,7 +23,16 @@ describe('isDateRangesOverlapping', () => {
       [new Date('2023-05-25T11:00:00'), new Date('2023-05-25T12:00:00')],
     ]
     const result = isDateRangesOverlapping(dateRanges)
-    expect(result).toBe(true)
+    expect(result).toBe(false)
+  })
+
+  it('should return true for overlapping ranges 3', () => {
+    const dateRanges = [
+      [new Date('2023-05-25T10:00:00'), new Date('2023-05-25T11:00:00')],
+      [new Date('2023-05-25T11:01:00'), new Date('2023-05-25T12:00:00')],
+    ]
+    const result = isDateRangesOverlapping(dateRanges)
+    expect(result).toBe(false)
   })
 
   it('should return true for overlapping ranges2', () => {

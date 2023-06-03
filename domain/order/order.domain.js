@@ -98,7 +98,7 @@ export class Order {
     unloadingDurationInMinutes = 15
   ) {
     const updatedOrders = []
-    const skippedOrders = []
+
     const events = []
 
     if (!Array.isArray(orders))
@@ -118,7 +118,6 @@ export class Order {
       let updated = false
       if (order.isCompleted) {
         minDate = order.lastDate
-        skippedOrders.push(order)
       } else if (order.isInProgress) {
         ;[minDate, updated] = order.fillRouteDatesAndComplete({
           minDate,
@@ -140,7 +139,6 @@ export class Order {
     return {
       events,
       updatedOrders,
-      skippedOrders,
     }
   }
 }
