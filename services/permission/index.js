@@ -12,6 +12,7 @@ import {
   admin,
   outsourceCarriersManager,
   userAdmin,
+  autoFillRouteDates,
 } from './permissionList.js'
 
 class PermissionService {
@@ -26,6 +27,7 @@ class PermissionService {
       mechanic,
       outsourceCarriersManager,
       userAdmin,
+      autoFillRouteDates,
     }
   }
 
@@ -83,7 +85,7 @@ class PermissionService {
     if (!permissions || !permissions[operation])
       throw new ForbiddenError('Нет доступа!')
     const dayCount = Math.floor(
-      (new Date() - new Date(startDate)) / (1000 * 60 * 60 * 24),
+      (new Date() - new Date(startDate)) / (1000 * 60 * 60 * 24)
     )
     if (dayCount > permissions[operation])
       throw new ForbiddenError('Период закрыт')

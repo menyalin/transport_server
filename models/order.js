@@ -1,5 +1,4 @@
 import pkg from 'mongoose'
-import { POINT_TYPES } from '../constants/enums.js'
 import PriceDTO from '../dto/price.dto.js'
 
 import {
@@ -17,6 +16,7 @@ import {
 } from '../constants/order.js'
 
 const { Schema, model, Types } = pkg
+import { RoutePoint } from '../values/routePoint.js'
 
 const prices = [PriceDTO.modelFields()]
 
@@ -107,25 +107,6 @@ const analytics = {
   distanceRoad: { type: Number },
   distanceDirect: { type: Number },
 }
-const point = {
-  type: {
-    type: String,
-    enum: POINT_TYPES,
-  },
-  address: {
-    type: Types.ObjectId,
-    ref: 'Address',
-  },
-  plannedDate: Date,
-  arrivalDate: Date,
-  departureDate: Date,
-  plannedDateDoc: Date,
-  arrivalDateDoc: Date,
-  departureDateDoc: Date,
-  isReturn: { type: Boolean, default: false },
-  isPltReturn: { type: Boolean, default: false },
-  note: String,
-}
 
 const cargoParams = {
   weight: Number,
@@ -187,7 +168,7 @@ const schema = new Schema(
     finalPrices: prices,
     outsourceCosts,
     confirmedCrew,
-    route: [point],
+    route: [RoutePoint.getDbSchema()],
     cargoParams: cargoParams,
     reqTransport: reqTransport,
     state,

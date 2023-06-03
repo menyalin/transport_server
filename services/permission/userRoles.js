@@ -34,4 +34,8 @@ export default [
   },
   { value: 'userAdmin', text: 'Администратор пользователей' },
   { value: 'hr', text: 'Кадровик' },
+  {
+    value: 'autoFillRouteDates',
+    text: '(Функиця) Быстрое заполнение временных меток в рейсах',
+  },
 ]

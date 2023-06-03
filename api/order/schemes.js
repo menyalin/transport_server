@@ -95,3 +95,21 @@ export const setDocsStateSchema = {
   required: ['state'],
   additionalProperties: false,
 }
+
+export const autoSetRouteDatesSchema = {
+  type: 'object',
+  properties: {
+    truckIds: { type: 'array' },
+    period: { type: 'array' },
+    tripDurationInMinutes: { type: 'number' },
+    unloadingDurationInMinutes: { type: 'number' },
+    operationToken: { type: 'string' },
+  },
+  required: [
+    'truckIds',
+    'period',
+    'tripDurationInMinutes',
+    'unloadingDurationInMinutes',
+  ],
+  additionalProperties: false,
+}
