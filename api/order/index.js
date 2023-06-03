@@ -11,6 +11,7 @@ import {
   saveFinalPricesSchema,
   setDocsSchema,
   setDocsStateSchema,
+  autoSetRouteDatesSchema,
 } from './schemes.js'
 
 const router = express.Router()
@@ -26,6 +27,7 @@ router.get('/:id', [jwtAuth], ctrl.getById)
 
 router.post('/get_distance', [jwtAuth], ctrl.getDistance)
 router.post('/from_template', [jwtAuth], ctrl.createFromTemplate)
+router.post('/auto_set_route_dates', [jwtAuth, bodyValidator(autoSetRouteDatesSchema)], ctrl.autoSetRouteDates)
 
 router.post(
   '/save_final_prices',

@@ -1,3 +1,4 @@
+import { AutoSetRouteDatesDTO } from '../dto/autoSetRouteDates.dto.js'
 import {
   OrderService as service,
   PermissionService,
@@ -162,6 +163,23 @@ class OrderController {
       })
       const updatedOrder = await service.setDocs(req.params.id, req.body.docs)
       res.status(200).json(updatedOrder)
+    } catch (e) {
+      res.status(e.statusCode || 500).json(e.message)
+    }
+  }
+
+  async autoSetRouteDates(req, res) {
+    try {
+      await PermissionService.check({
+        operation: 'order:autoFillRouteDates',
+        userId: req.userId,
+        companyId: req.companyId,
+      })
+      const result = await service.autoSetRoutesDates(
+        new AutoSetRouteDatesDTO(req.body),
+        req.companyId
+      )
+      res.status(200).json(result)
     } catch (e) {
       res.status(e.statusCode || 500).json(e.message)
     }

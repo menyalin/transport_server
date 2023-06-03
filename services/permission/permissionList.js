@@ -321,6 +321,9 @@ export const hr = {
   'salaryTariff:write': true,
   'salaryTariff:delete': true,
 }
+export const autoFillRouteDates = {
+  'order:autoFillRouteDates': true,
+}
 
 /*
       { value: 'admin' text: 'ТОП' },
