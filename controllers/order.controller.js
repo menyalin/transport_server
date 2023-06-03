@@ -171,7 +171,7 @@ class OrderController {
   async autoSetRouteDates(req, res) {
     try {
       await PermissionService.check({
-        operation: 'order:autoSetRouteDates',
+        operation: 'order:autoFillRouteDates',
         userId: req.userId,
         companyId: req.companyId,
       })
