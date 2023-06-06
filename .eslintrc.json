@@ -3,6 +3,7 @@
     "browser": false,
     "es2021": true
   },
+  "sourceType": "module",
   "extends": ["eslint:recommended", "plugin:prettier/recommended"],
   "plugins": ["prettier"],
   "parserOptions": {
