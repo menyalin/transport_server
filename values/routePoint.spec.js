@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import { describe, it, expect } from '@jest/globals'
 import { RoutePoint } from './routePoint.js'
 
-describe('RoutePoint value-Object', () => {
+describe('RoutePoint value-object', () => {
   const unloadingDurationInMinutes = 15
   const fixedMinDate = new Date('2023-05-27')
   const arrivalDate = new Date('2023-05-27')
@@ -88,5 +88,31 @@ describe('RoutePoint value-Object', () => {
         unloadingDurationInMinutes: 'some string',
       })
     }).toThrowError()
+  })
+
+  it('getDurationInMinutes: should return 0, if dates is missing', () => {
+    const point = new RoutePoint({
+      type: 'loading',
+      address: 'id',
+    })
+    expect(point.getDurationInMinutes).toBe(0)
+  })
+
+  it('getDurationInMinutes: should return 60', () => {
+    const point = new RoutePoint({
+      type: 'loading',
+      address: 'id',
+      arrivalDateDoc: new Date('2023-06-06T08:00:00.000Z'),
+      departureDateDoc: new Date('2023-06-06T09:00:00.000Z'),
+    })
+    expect(point.getDurationInMinutes).toBe(60)
+  })
+  it('getDurationInMinutes: should return 0, departure date is missing', () => {
+    const point = new RoutePoint({
+      type: 'loading',
+      address: 'id',
+      arrivalDateDoc: new Date('2023-06-06T08:00:00.000Z'),
+    })
+    expect(point.getDurationInMinutes).toBe(0)
   })
 })
