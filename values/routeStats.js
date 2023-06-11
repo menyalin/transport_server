@@ -33,7 +33,7 @@ export class RouteStats {
     const maxDate = Math.max(...dates)
     return dayjs(maxDate).diff(minDate, unit)
   }
-
+  // TODO: Переписать с учетом того что Route это объект-значение
   constructor(route) {
     if (!route || route.length === 0)
       throw new Error('RouteStats : constructor : route is missing!')
