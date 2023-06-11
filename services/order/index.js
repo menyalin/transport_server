@@ -20,6 +20,7 @@ import { getDocsRegistryByOrderId } from './getDocsRegistryByOrderId.js'
 import { getPaymentInvoicesByOrderIds } from './getPaymentInvoicesByOrderIds.js'
 import OrderRepository from '../../repositories/order/order.repository.js'
 import { Order as OrderDomain } from '../../domain/order/order.domain.js'
+import { EventBus, Events } from '../../eventBus/index.js'
 
 const _isEqualDatesOfRoute = ({ oldRoute, newRoute }) => {
   const oldArrivalDate = new Date(oldRoute[0].arrivalDate).toLocaleString()
@@ -226,7 +227,8 @@ class OrderService {
   }
 
   async updateOne({ id, body, user }) {
-    checkRefusedOrder(body)
+    checkRefusedOrder(body) // TODO: Удалить после перехода на использование OrderDomain
+
     if (!body.client.agreement && body.route[0].plannedDate)
       body.client.agreement = await getClientAgreementId(body)
 
@@ -241,6 +243,7 @@ class OrderService {
         body
       )
     let order = await OrderModel.findById(id)
+
     if (!order) return null
     if (order.company.toString() !== body.company)
       throw new BadRequestError('The order is owned by another company')
@@ -271,20 +274,21 @@ class OrderService {
       }
     }
 
-    order = Object.assign(order, { ...body, manager: user })
-    order.isDisabled = false
-    await order.save()
+    const orderDomain = new OrderDomain({ ...order, ...body, _id: order._id })
+    orderDomain.unlock()
 
-    emitTo(order.company.toString(), 'order:updated', order.toJSON())
+    await OrderRepository.save([orderDomain])
+
+    emitTo(orderDomain.company.toString(), 'order:updated', orderDomain)
     await ChangeLogService.add({
-      docId: order._id.toString(),
-      company: order.company.toString(),
+      docId: mongoose.Types.ObjectId(orderDomain.id),
+      company: orderDomain.company,
       coll: 'order',
       user,
       opType: 'update',
-      body: JSON.stringify(order.toObject({ flattenMaps: true })),
+      body: JSON.stringify(orderDomain),
     })
-    return order
+    return orderDomain
   }
 
   async getDistance({ coords }) {
@@ -362,17 +366,15 @@ class OrderService {
     }
 
     if (needSaveOrdes.length) {
-      const savedOrders = await OrderRepository.save(needSaveOrdes)
-      if (savedOrders && savedOrders.length) {
-        savedOrders.forEach((order) => {
-          emitTo(company.toString(), 'order:updated', order.toJSON())
+      await OrderRepository.save(needSaveOrdes)
+      needSaveOrdes.forEach((order) => {
+        emitTo(company.toString(), 'order:updated', order)
+      })
+      if (inputData.operationToken) {
+        emitTo(company.toString(), 'order:autoFillDatesSuccessful', {
+          token: inputData.operationToken,
+          message: `count of successfully updated orders: ${needSaveOrdes.length}`,
         })
-        if (inputData.operationToken) {
-          emitTo(company.toString(), 'order:autoFillDatesSuccessful', {
-            token: inputData.operationToken,
-            message: `count of successfully updated orders: ${savedOrders.length}`,
-          })
-        }
       }
     }
     emitTo(company.toString(), 'order:autoFillDatesCompleted', {

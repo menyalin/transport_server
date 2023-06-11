@@ -179,7 +179,6 @@ const schema = new Schema(
     isActive: { type: Boolean, default: true },
     isDisabled: { type: Boolean, default: false },
     company: { type: Types.ObjectId, ref: 'Company', required: true },
-    manager: { type: Types.ObjectId, ref: 'User' },
     note: { type: String },
     noteAccountant: { type: String },
   },
