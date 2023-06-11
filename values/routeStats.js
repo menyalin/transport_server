@@ -1,5 +1,5 @@
-import dayjs from 'dayjs'
-import { RoutePoint } from './routePoint.js'
+
+import { Route } from './route.js'
 
 export class RouteStats {
   static getDbSchema() {
@@ -12,46 +12,19 @@ export class RouteStats {
     }
   }
 
-  static getTripTimes(route, unit = 'minutes') {
-    const res = []
-    for (let i = 1; i < route.length; i++) {
-      const prev = route[i - 1]
-      const current = route[i]
-      if (prev.datesFilled && !!current.firstDate)
-        res.push(dayjs(current.firstDate).diff(dayjs(prev.lastDate), unit))
-      else res.push(0)
-    }
-    return res
-  }
-
-  static getDuration(route, unit = 'minutes') {
-    const dates = route
-      .reduce((arr, item) => [...arr, item.firstDate, item.lastDate], [])
-      .filter((i) => !!i)
-    if (dates.length <= 1) return 0
-    const minDate = Math.min(...dates)
-    const maxDate = Math.max(...dates)
-    return dayjs(maxDate).diff(minDate, unit)
-  }
   // TODO: Переписать с учетом того что Route это объект-значение
   constructor(route) {
-    if (!route || route.length === 0)
-      throw new Error('RouteStats : constructor : route is missing!')
-    if (route.some((i) => !i instanceof RoutePoint))
-      throw new Error('RouteStats : constructor : route is missing!')
+    if (!route || !route instanceof Route)
+      throw new Error('RouteStats : constructor : invalid route!')
 
-    this.countPoints = route.filter((i) => !i.isReturnPoint).length
+    this.countPoints = route.countOfPoints
 
-    this.loadingTimesInMinutes = route
-      .filter((i) => i.isLoadingPointType)
-      .map((i) => i.getDurationInMinutes)
+    this.loadingTimesInMinutes = route.loadingTimesInMinutes
 
-    this.unloadingTimesInMinutes = route
-      .filter((i) => !i.isLoadingPointType)
-      .map((i) => i.getDurationInMinutes)
+    this.unloadingTimesInMinutes = route.unloadingTimesInMinutes
 
-    this.tripTimesInMinutes = RouteStats.getTripTimes(route)
-    this.totalDurationInMinutes = RouteStats.getDuration(route)
+    this.tripTimesInMinutes = route.tripTimes('minutes')
+    this.totalDurationInMinutes = route.totalDuration('minutes')
   }
 
   static getDbSchema() {
