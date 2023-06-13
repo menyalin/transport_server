@@ -16,7 +16,7 @@ import {
 } from '../constants/order.js'
 
 const { Schema, model, Types } = pkg
-import { RoutePoint } from '../values/routePoint.js'
+import { RoutePoint } from '../values/order/routePoint.js'
 
 const prices = [PriceDTO.modelFields()]
 

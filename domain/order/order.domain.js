@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import { BadRequestError } from '../../helpers/errors.js'
 import { isDateRangesOverlapping } from '../../utils/isDateRangesOverlapping.js'
-import { Route } from '../../values/route.js'
+import { Route } from '../../values/order/route.js'
 
 export class Order {
   static getOrderDate(order) {
@@ -103,12 +103,6 @@ export class Order {
       !minDate || minDate < this.orderDate ? this.orderDate : minDate
 
     // TODO: Перенести логику заполнения в Route.js
-    // this.route.fillDates({
-    //   tmpDate,
-    //   tripDurationInMinutes,
-    //   unloadingDurationInMinutes,
-    // })
-
     this.route.route.forEach((point) => {
       tmpDate = point.autofillDates({
         minDate: tmpDate,
