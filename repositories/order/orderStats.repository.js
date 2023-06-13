@@ -2,7 +2,7 @@ import { Order as OrderDomain } from '../../domain/order/order.domain.js'
 import { EventBus, Events } from '../../eventBus/index.js'
 import { OrderStats as OrderStatsModel } from '../../models/index.js'
 
-import { RouteStats } from '../../values/routeStats.js'
+import { RouteStats } from '../../values/order/routeStats.js'
 
 class OrderStatsRepository {
   constructor() {

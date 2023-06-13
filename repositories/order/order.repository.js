@@ -29,7 +29,10 @@ class OrderRepository {
       throw new Error(`OrderRepository : save : expected OrderDomain instance`)
 
     const operations = orders.map((order) =>
-      makeOperation({ _id: order.id }, order)
+      makeOperation(
+        { _id: order.id },
+        { ...order, route: order.route.toJSON() }
+      )
     )
     await this.model.bulkWrite(operations)
     EventBus.emitEvent(Events.ORDERS_ROUTE_UPDATED, orders)
