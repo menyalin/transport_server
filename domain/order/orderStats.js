@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
-import { RouteStats } from '../../values/routeStats.js'
+import { RouteStats } from '../../values/order/routeStats.js'
 import { Order as OrderDomain } from '../order/order.domain.js'
+import { InvoiceStats } from '../../values/order/invoiceStats.js'
 
 export class OrderStats {
   constructor(order) {
@@ -27,6 +28,7 @@ export class OrderStats {
         required: true,
       },
       route: RouteStats.getDbSchema(),
+      invoice: InvoiceStats.getDbSchema(),
     }
   }
 }

@@ -67,4 +67,12 @@ export class Route {
     const maxDate = Math.max(...dates)
     return dayjs(maxDate).diff(minDate, unit)
   }
+
+  toJSON() {
+    return this.route
+  }
+  toObject() {
+    console.log('toObject: ', this.route)
+    return Object.assign(this.route)
+  }
 }
