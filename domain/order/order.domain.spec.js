@@ -1,7 +1,6 @@
 import { describe, it, expect } from '@jest/globals'
 import { Order } from './order.domain.js'
 import dayjs from 'dayjs'
-import { Route } from '../../values/route.js'
 
 describe('Order.Domain', () => {
   const orderPlannedDate = dayjs('2023-05-27')
