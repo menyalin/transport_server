@@ -16,6 +16,11 @@ const types = [
     text: 'Простой на выгрузке',
   },
   {
+    value: 'returnDowntime',
+    text: 'Простой при возврате',
+    disabled: true,
+  },
+  {
     value: 'return',
     text: 'Возврат продукции',
   },
