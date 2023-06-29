@@ -294,8 +294,12 @@ export const mechanic = {
 
   'zone:readList': true,
   'zone:readItem': true,
+
   'downtime:readList': true,
   'downtime:readItem': true,
+  'downtime:write': true,
+  'downtime:daysForWrite': 30,
+
   'scheduleNote:readList': true,
   'scheduleNote:readItem': true,
   'crew:readList': true,
