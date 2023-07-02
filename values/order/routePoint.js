@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 import dayjs from 'dayjs'
-import { POINT_TYPES } from '../constants/enums.js'
+import { POINT_TYPES } from '../../constants/enums.js'
 
 export class RoutePoint {
   constructor(point) {
@@ -30,18 +30,36 @@ export class RoutePoint {
     this.note = point.note
   }
 
+  get isLoadingPointType() {
+    return this.type === 'loading'
+  }
+
+  get isReturnPoint() {
+    return this.isReturn || this.isPltReturn
+  }
+
+  get getDurationInMinutes() {
+    if (!this.departureDateDoc || !this.arrivalDateDoc) return 0
+    const depDate = dayjs(this.departureDateDoc)
+    const arrDate = dayjs(this.arrivalDateDoc)
+    return depDate.diff(arrDate, 'minutes')
+  }
+
   get datesFilled() {
-    return this.departureDate && this.arrivalDate
+    return (
+      (this.departureDateDoc || this.departureDate) &&
+      (this.arrivalDateDoc || this.arrivalDate)
+    )
   }
 
   get firstDate() {
-    return this.arrivalDate
+    return this.arrivalDateDoc || this.arrivalDate
   }
 
   get lastDate() {
-    if (this.departureDate) return this.departureDate
-    else if (this.arrivalDate) return this.arrivalDate
-    else return null
+    if (this.departureDateDoc || this.departureDate)
+      return this.departureDateDoc || this.departureDate
+    return this.firstDate
   }
 
   autofillDates({ minDate, unloadingDurationInMinutes }) {
@@ -81,10 +99,12 @@ export class RoutePoint {
       type: {
         type: String,
         enum: POINT_TYPES,
+        required: true,
       },
       address: {
         type: mongoose.Types.ObjectId,
         ref: 'Address',
+        required: true,
       },
       plannedDate: Date,
       arrivalDate: Date,

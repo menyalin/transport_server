@@ -16,7 +16,7 @@ import {
 } from '../constants/order.js'
 
 const { Schema, model, Types } = pkg
-import { RoutePoint } from '../values/routePoint.js'
+import { RoutePoint } from '../values/order/routePoint.js'
 
 const prices = [PriceDTO.modelFields()]
 
@@ -179,7 +179,6 @@ const schema = new Schema(
     isActive: { type: Boolean, default: true },
     isDisabled: { type: Boolean, default: false },
     company: { type: Types.ObjectId, ref: 'Company', required: true },
-    manager: { type: Types.ObjectId, ref: 'User' },
     note: { type: String },
     noteAccountant: { type: String },
   },

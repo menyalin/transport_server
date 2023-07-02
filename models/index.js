@@ -28,6 +28,7 @@ import OrderInDocsRegistry from './orderInDocsRegistry.js'
 import OrderInPaymentInvoice from './orderInPaymentInvoice.js'
 import PaymentInvoice from './paymentInvoice.js'
 import DocTemplate from './docTemplate.js'
+import OrderStats from './orderStats.js'
 
 export {
   User,
@@ -60,4 +61,5 @@ export {
   PaymentInvoice,
   OrderInPaymentInvoice,
   DocTemplate,
+  OrderStats,
 }
