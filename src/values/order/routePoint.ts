@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 import dayjs from 'dayjs'
-import { POINT_TYPES } from '../../constants/enums.js'
+import { POINT_TYPES } from '../../constants/enums'
 
 export class RoutePoint {
   constructor(point) {

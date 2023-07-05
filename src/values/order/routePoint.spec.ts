@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import { describe, it, expect } from '@jest/globals'
-import { RoutePoint } from './routePoint.js'
+import { RoutePoint } from './routePoint'
 
 describe('RoutePoint value-object', () => {
   const unloadingDurationInMinutes = 15

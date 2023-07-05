@@ -1,5 +1,5 @@
 import { describe, it, expect } from '@jest/globals'
-import { isDateRangesOverlapping } from './isDateRangesOverlapping.js'
+import { isDateRangesOverlapping } from './isDateRangesOverlapping'
 
 describe('isDateRangesOverlapping', () => {
   it('should return false for empty array', () => {

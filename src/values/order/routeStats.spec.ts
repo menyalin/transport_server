@@ -1,6 +1,6 @@
 import { describe, it, expect } from '@jest/globals'
-import { RouteStats } from './routeStats.js'
-import { Route } from './route.js'
+import { RouteStats } from './routeStats'
+import { Route } from './route'
 
 describe('RouteStats value-oblect', () => {
   it('constructor: unfilled dates in route', () => {

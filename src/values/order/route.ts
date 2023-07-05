@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { RoutePoint } from './routePoint.js'
+import { RoutePoint } from './routePoint'
 
 export class Route {
   static validateRoute(route, method = '') {

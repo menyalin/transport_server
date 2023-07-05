@@ -1,5 +1,5 @@
 import { describe, it, expect } from '@jest/globals'
-import { Order } from './order.domain.js'
+import { Order } from './order.domain'
 import dayjs from 'dayjs'
 
 describe('Order.Domain', () => {

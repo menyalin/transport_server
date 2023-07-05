@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
-import { BadRequestError } from '../../helpers/errors.js'
-import { isDateRangesOverlapping } from '../../utils/isDateRangesOverlapping.js'
-import { Route } from '../../values/order/route.js'
+import { BadRequestError } from '../../helpers/errors'
+import { isDateRangesOverlapping } from '../../utils/isDateRangesOverlapping'
+import { Route } from '../../values/order/route'
 
 export class Order {
   static getOrderDate(order) {
