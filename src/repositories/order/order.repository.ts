@@ -1,3 +1,4 @@
+// @ts-nocheck
 import OrderStatsRepository from './orderStats.repository.js'
 import { Order as OrderDomain } from '../../domain/order/order.domain.js'
 import { EventBus, Events } from '../../eventBus/index.js'

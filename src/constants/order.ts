@@ -1,3 +1,4 @@
+// @ts-nocheck
 const types = [
   { value: 'city', text: 'Город' },
   { value: 'region', text: 'Регион' },

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { City } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 import IService from '../iService.js'

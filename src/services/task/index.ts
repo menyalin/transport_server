@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Task } from '../../models/index.js'
 import { CompanyService } from '../index.js'
 import { emitTo } from '../../socket/index.js'

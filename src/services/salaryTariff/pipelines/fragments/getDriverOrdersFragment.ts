@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { SALARY_TARIFF_TYPES } from '../../../../constants/accounting.js'
 import { ORDER_ANALYTIC_TYPES } from '../../../../constants/order.js'
 const getAddressShortName = (pointType) => ({

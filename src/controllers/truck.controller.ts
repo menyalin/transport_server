@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { IController } from './iController.js'
 import { TruckService } from '../services/index.js'
 

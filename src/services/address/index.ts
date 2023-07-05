@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable no-unused-vars */
 import axios from 'axios'
 import { ChangeLogService } from '../../services/index.js'

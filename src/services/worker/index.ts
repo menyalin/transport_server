@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Worker, User as UserModel } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 import IService from '../iService.js'

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { UnauthorizedError } from '../helpers/errors.js'
 import { User } from '../models/index.js'
 import { TokenService, UserService } from '../services/index.js'

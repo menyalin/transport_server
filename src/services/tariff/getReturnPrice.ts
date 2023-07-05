@@ -1,3 +1,4 @@
+// @ts-nocheck
 import PriceDTO from '../../dto/price.dto.js'
 import { Tariff } from '../../models/index.js'
 import getReturnTariffPipeline from './pipelines/getReturnTariffPipeline.js'

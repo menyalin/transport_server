@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ScheduleNoteService as service } from '../services/index.js'
 
 export default async (io, socket) => {

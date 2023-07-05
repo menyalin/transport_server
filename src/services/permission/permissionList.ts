@@ -1,3 +1,4 @@
+// @ts-nocheck
 export const admin = {
   fullAccess: true,
   'modules:accounting': true, // Для отображения вкладки "Учет"

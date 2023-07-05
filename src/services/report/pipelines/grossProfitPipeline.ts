@@ -1,3 +1,4 @@
+// @ts-nocheck
 import mongoose from 'mongoose'
 import { POINT_TYPES } from '../../../constants/enums.js'
 import { ORDER_PRICE_TYPES_ENUM } from '../../../constants/priceTypes.js'

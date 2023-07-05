@@ -1,3 +1,4 @@
+// @ts-nocheck
 const _docTypes = [
   { value: 'routeCard', text: 'Маршрутная карта' },
   { value: 'trn', text: 'ТрН' },

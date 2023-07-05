@@ -1,3 +1,4 @@
+// @ts-nocheck
 import mongoose from 'mongoose'
 import { PAIMENT_INVOICE_STATUSES } from '../../../constants/paymentInvoice.js'
 import { BadRequestError } from '../../../helpers/errors.js'

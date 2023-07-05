@@ -1,3 +1,4 @@
+// @ts-nocheck
 import mongoose from 'mongoose'
 import { DOCS_REGISTRY_STATUSES } from '../../../constants/docsRegistry.js'
 import { BadRequestError } from '../../../helpers/errors.js'

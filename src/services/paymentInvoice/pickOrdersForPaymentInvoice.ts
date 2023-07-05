@@ -1,3 +1,4 @@
+// @ts-nocheck
 import mongoose from 'mongoose'
 import { BadRequestError } from '../../helpers/errors.js'
 import { Order as OrderModel } from '../../models/index.js'

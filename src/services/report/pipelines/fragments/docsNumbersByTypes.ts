@@ -1,3 +1,4 @@
+// @ts-nocheck
 export default function (type) {
   return {
     $trim: {

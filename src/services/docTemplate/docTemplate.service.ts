@@ -1,3 +1,4 @@
+// @ts-nocheck
 import mongoose from 'mongoose'
 import { DocTemplate } from '../../models/index.js'
 

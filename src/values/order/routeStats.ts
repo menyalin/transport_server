@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Route } from './route'
 
 export class RouteStats {

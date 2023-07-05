@@ -1,3 +1,4 @@
+// @ts-nocheck
 export const addPriceObjByTypes = (priceTypes) => {
   const prices = {}
   priceTypes.forEach((type) => {

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { PARTNER_GROUPS } from '../../../../constants/partner.js'
 import { getRouteDuration } from './getRouteDuration.js'
 export default () => [

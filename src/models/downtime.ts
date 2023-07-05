@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { DOWNTIME_TYPES } from '../constants/enums.js'
 import pkg from 'mongoose'
 const { Schema, model, Types } = pkg

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import jwt from 'jsonwebtoken'
 import { UserService } from '../services/index.js'
 import { UnauthorizedError } from '../helpers/errors.js'

@@ -1,3 +1,4 @@
+// @ts-nocheck
 export const createCompanySchema = {
   type: 'object',
   properties: {

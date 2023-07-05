@@ -1,3 +1,4 @@
+// @ts-nocheck
 /*
     calcWaitingByArrivalDateLoading: { type: Boolean, default: false },
     calcWaitingByArrivalDateUnloading: { type: Boolean, default: false },

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { UserService } from '../services/index.js'
 
 const _updateUserList = async (io, socket, room) => {

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable comma-dangle */
 import mongoose from 'mongoose'
 import PriceDTO from '../../dto/price.dto.js'

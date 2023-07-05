@@ -1,3 +1,4 @@
+// @ts-nocheck
 // import { CompanyService } from '../services/index.js'
 
 export default async (socket, next) => {

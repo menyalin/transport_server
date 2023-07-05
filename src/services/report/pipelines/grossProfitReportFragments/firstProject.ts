@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { firstPlannedDate } from '../fragments/firstPlannedDate.js'
 import { POINT_TYPES } from '../../../../constants/enums.js'
 

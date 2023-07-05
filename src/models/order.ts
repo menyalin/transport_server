@@ -1,3 +1,4 @@
+// @ts-nocheck
 import pkg from 'mongoose'
 import PriceDTO from '../dto/price.dto.js'
 

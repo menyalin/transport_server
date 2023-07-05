@@ -1,3 +1,4 @@
+// @ts-nocheck
 export const getProfileListSchema = {
   type: 'object',
   properties: {

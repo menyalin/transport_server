@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { BadRequestError } from '../../helpers/errors.js'
 import { Partner } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'

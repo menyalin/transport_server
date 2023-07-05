@@ -1,3 +1,4 @@
+// @ts-nocheck
 import dayjs from 'dayjs'
 
 export function truckIdsValidator(truckIds) {

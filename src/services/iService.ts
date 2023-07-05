@@ -1,3 +1,4 @@
+// @ts-nocheck
 export default class IService {
   constructor({ model, emitter, modelName, logService }) {
     this.model = model

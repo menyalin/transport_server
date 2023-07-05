@@ -1,3 +1,4 @@
+// @ts-nocheck
 export class BadRequestError extends Error {
   constructor(error) {
     super(error)

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {
   TkNameService as service,
   PermissionService,

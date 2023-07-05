@@ -1,3 +1,4 @@
+// @ts-nocheck
 import mongoose from 'mongoose'
 import { RouteStats } from '../../values/order/routeStats.js'
 import { Order as OrderDomain } from '../order/order.domain.js'

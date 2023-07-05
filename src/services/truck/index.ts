@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable no-unused-vars */
 import { Truck } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'

@@ -1,3 +1,4 @@
+// @ts-nocheck
 const types = [
   { value: 'truck', text: 'Грузовик' },
   { value: 'trailer', text: 'Прицеп' },

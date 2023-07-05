@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Driver, Order, Truck } from '../../models/index.js'
 import { FileService } from '../index.js'
 import getReportDaysControlPipeline from '../report/pipelines/reportDaysControlPipeline.js'

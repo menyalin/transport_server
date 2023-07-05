@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {
   DocsRegistry as DocsRegistryModel,
   OrderInDocsRegistry as OrderInDocsRegistryModel,

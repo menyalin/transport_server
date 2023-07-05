@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { POINT_TYPES } from '../constants/enums.js'
 
 import {

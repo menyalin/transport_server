@@ -1,3 +1,4 @@
+// @ts-nocheck
 import ChangeLogService from '../changeLog/index.js'
 import { ScheduleNote } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'

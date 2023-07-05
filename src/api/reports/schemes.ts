@@ -1,3 +1,4 @@
+// @ts-nocheck
 export const daysControlSchema = {
   type: 'object',
   properties: {

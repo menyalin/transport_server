@@ -1,3 +1,4 @@
+// @ts-nocheck
 const groups = [
   { value: 'fts', text: 'Сети' },
   { value: 'otherClients', text: 'Клиенты' },

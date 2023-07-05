@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Zone } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'
 import IService from '../iService.js'

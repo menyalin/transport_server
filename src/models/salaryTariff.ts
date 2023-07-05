@@ -1,3 +1,4 @@
+// @ts-nocheck
 import pkg from 'mongoose'
 
 import { ORDER_ANALYTIC_TYPES_ENUM } from '../constants/order.js'

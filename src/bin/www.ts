@@ -1,3 +1,4 @@
+// @ts-nocheck
 #!/usr/bin/env node
 import './config.js'
 import '../db.js'

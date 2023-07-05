@@ -1,3 +1,4 @@
+// @ts-nocheck
 import pkg from 'mongoose'
 import bcrypt from 'bcryptjs'
 const { Schema, model, Types } = pkg

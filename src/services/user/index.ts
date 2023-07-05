@@ -1,3 +1,4 @@
+// @ts-nocheck
 import jwt from 'jsonwebtoken'
 import { ORDER_STATUSES, ORDER_ANALYTIC_TYPES } from '../../constants/order.js'
 import { PARTNER_GROUPS } from '../../constants/partner.js'

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import mongoose from 'mongoose'
 import dayjs from 'dayjs'
 import { POINT_TYPES } from '../../constants/enums'

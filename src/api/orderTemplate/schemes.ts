@@ -1,3 +1,4 @@
+// @ts-nocheck
 export const getListSchema = {
   type: 'object',
   properties: {

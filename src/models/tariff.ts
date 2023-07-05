@@ -1,3 +1,4 @@
+// @ts-nocheck
 import pkg from 'mongoose'
 import { TRUCK_KINDS_ENUM } from '../constants/truck.js'
 import { ORDER_ANALYTIC_TYPES_ENUM } from '../constants/order.js'

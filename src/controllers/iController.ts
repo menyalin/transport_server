@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { PermissionService } from '../services/index.js'
 
 export class IController {

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import authMiddleware from './authMiddleware.js'
 import usersHandler from './usersHandler.js'
 //  import initDataHandler from './initDataHandler.js'

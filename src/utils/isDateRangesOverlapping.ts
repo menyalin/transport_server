@@ -1,3 +1,4 @@
+// @ts-nocheck
 export function isDateRangesOverlapping(dateRanges) {
   if (!dateRanges || !Array.isArray(dateRanges))
     throw new Error('isDateRangesOverlapping: date ranges is missing')

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import pkg from 'mongoose'
 const { Types } = pkg
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import mongoose from 'mongoose'
 import { BadRequestError } from '../../../helpers/errors.js'
 import { DOCUMENT_TYPES } from '../../../constants/accounting.js'

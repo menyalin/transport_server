@@ -1,3 +1,4 @@
+// @ts-nocheck
 import express from 'express'
 import { jwtAuth } from '../../utils/auth.middleware.js'
 import { bodyValidator, queryValidator } from '../../utils/validator.js'

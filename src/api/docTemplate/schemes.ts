@@ -1,3 +1,4 @@
+// @ts-nocheck
 export const getAllowedTemplatesSchema = {
   type: 'object',
   properties: {

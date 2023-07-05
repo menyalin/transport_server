@@ -1,3 +1,4 @@
+// @ts-nocheck
 import ors from 'openrouteservice-js'
 
 export const orsDirections = new ors.Directions({

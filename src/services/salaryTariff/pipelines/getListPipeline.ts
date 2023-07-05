@@ -1,3 +1,4 @@
+// @ts-nocheck
 import mongoose from 'mongoose'
 
 export default ({ company, date, limit, skip, type, tk, liftCapacity }) => {

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { TRUCK_KINDS } from '../../../../constants/truck.js'
 
 export default function (kind) {

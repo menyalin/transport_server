@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable no-unused-vars */
 import { TkName } from '../../models/index.js'
 import { emitTo } from '../../socket/index.js'

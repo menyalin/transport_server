@@ -1,3 +1,4 @@
+// @ts-nocheck
 import dayjs from 'dayjs'
 import { describe, it, expect } from '@jest/globals'
 import { RoutePoint } from './routePoint'

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import mongoose from 'mongoose'
 import { BadRequestError } from '../../../../helpers/errors.js'
 import { ORDER_ANALYTIC_TYPES } from '../../../../constants/order.js'

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import mongoose from 'mongoose'
 import { ORDER_PRICE_TYPES_ENUM } from '../../../constants/priceTypes.js'
 import routePointsNameBuilder from './fragments/routePointsNameBuilder.js'

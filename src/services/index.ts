@@ -1,3 +1,4 @@
+// @ts-nocheck
 import UserService from './user/index.js'
 import CompanyService from './company/index.js'
 import TaskService from './task/index.js'

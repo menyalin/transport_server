@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ChangeLog } from '../../models/index.js'
 
 class ChangeLogService {

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import mongoose from 'mongoose'
 import getAddressesLookupFragment from './fragments/getAddressesLookupFragment.js'
 import getBaseSalaryTariffFragment from './fragments/getBaseSalaryTariffFragment.js'

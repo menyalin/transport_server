@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { IController } from './iController.js'
 import { DocsRegistryService, PermissionService } from '../services/index.js'
 

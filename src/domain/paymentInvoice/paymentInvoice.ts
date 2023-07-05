@@ -1,3 +1,4 @@
+// @ts-nocheck
 import pkg from 'mongoose'
 import { PAIMENT_INVOICE_STATUSES_ENUM } from '../../constants/paymentInvoice.js'
 const { Types } = pkg

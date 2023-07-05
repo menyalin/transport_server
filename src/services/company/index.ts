@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Company } from '../../models/index.js'
 import {
   ChangeLogService,

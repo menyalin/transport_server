@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { mkdirSync } from 'fs'
 import { rm } from 'fs/promises'
 import XLSX from 'xlsx'

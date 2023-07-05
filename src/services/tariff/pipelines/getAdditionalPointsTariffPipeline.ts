@@ -1,3 +1,4 @@
+// @ts-nocheck
 import mongoose from 'mongoose'
 import { ORDER_ANALYTIC_TYPES_ENUM } from '../../../constants/order.js'
 import { BadRequestError } from '../../../helpers/errors.js'

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { BadRequestError } from '../../helpers/errors.js'
 const STATUSES = ['weRefused', 'clientRefused', 'notСonfirmedByClient']
 

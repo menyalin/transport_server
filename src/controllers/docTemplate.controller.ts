@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { DocTemplateService } from '../services/index.js'
 
 class DocTemplateController {

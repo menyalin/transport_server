@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Tariff } from '../../models/index.js'
 import getWaitingTariffPipeline from './pipelines/getWaitingTariffPipeline.js'
 import { AgreementService } from '../index.js'

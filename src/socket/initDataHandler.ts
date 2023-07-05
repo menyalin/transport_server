@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { TaskService } from '../services/index.js'
 
 export default async (io, socket) => {

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect } from '@jest/globals'
 import { Order } from './order.domain'
 import dayjs from 'dayjs'

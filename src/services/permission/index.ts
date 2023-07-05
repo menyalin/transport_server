@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ForbiddenError } from '../../helpers/errors.js'
 import { WorkerService, UserService } from '../index.js'
 import USER_ROLES from './userRoles.js'

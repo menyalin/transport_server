@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ReportService } from '../services/index.js'
 
 class ReportController {

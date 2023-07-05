@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { DowntimeService as service } from '../services/index.js'
 
 export default async (io, socket) => {

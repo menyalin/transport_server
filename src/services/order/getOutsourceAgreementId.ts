@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { AgreementService, TruckService } from '../index.js'
 
 export default async (body) => {

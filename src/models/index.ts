@@ -1,3 +1,4 @@
+// @ts-nocheck
 import User from './user.js'
 import Token from './token.js'
 import Company from './company.js'

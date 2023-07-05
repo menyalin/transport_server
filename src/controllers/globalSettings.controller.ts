@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {
   PermissionService,
   GlobalSettingsService as service,

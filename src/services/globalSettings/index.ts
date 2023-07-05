@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { BadRequestError } from '../../helpers/errors.js'
 import { GlobalSettings as model } from '../../models/index.js'
 

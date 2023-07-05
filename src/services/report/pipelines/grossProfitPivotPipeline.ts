@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { firstMatcher } from '../pipelines/grossProfitReportFragments/firstMatcher.js'
 import { addPriceObjByTypes } from '../pipelines/grossProfitReportFragments/addPriceObjByTypes.js'
 import { firstProject } from './grossProfitReportFragments/firstProject.js'

@@ -1,3 +1,4 @@
+// @ts-nocheck
 export default {
   title: String,
   expDate: Date,

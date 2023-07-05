@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { BadRequestError } from '../helpers/errors.js'
 import { CompanyService, PermissionService } from '../services/index.js'
 

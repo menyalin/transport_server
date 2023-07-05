@@ -1,3 +1,4 @@
+// @ts-nocheck
 export const getProfileDriversSchema = {
   type: 'object',
   properties: {

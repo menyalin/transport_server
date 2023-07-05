@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable no-unused-vars */
 import additionalNotification from './_additionalNotification.js'
 import pkg from 'mongoose'

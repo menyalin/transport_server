@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Ajv from 'ajv'
 
 export const bodyValidator = (schema) => (req, res, next) => {

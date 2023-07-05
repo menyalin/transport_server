@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { AddressService, PermissionService } from '../services/index.js'
 
 export const getById = async (req, res) => {

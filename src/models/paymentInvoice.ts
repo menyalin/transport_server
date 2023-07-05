@@ -1,3 +1,4 @@
+// @ts-nocheck
 import pkg from 'mongoose'
 
 import { PaymentInvoiceDomain } from '../domain/paymentInvoice/paymentInvoice.js'

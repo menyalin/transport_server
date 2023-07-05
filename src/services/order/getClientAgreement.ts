@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { AgreementService } from '../index.js'
 
 export default async (body) => {

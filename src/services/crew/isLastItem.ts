@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Crew } from '../../models/index.js'
 
 export default async ({ crew }) => {
