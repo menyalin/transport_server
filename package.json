@@ -4,10 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "nodemon ./bin/www",
-    "build": "docker build . -t menyalin/server:latest && docker image push menyalin/server:latest",
-    "buildalfa": "docker build . -t menyalin/alfa_server:latest && docker image push menyalin/alfa_server:latest",
-    "test": "jest --watchAll"
+    "dev": "ts-node-dev --respawn --transpile-only ./src/app.ts",
+    "test": "jest --watchAll",
+    "build": "tsc"
   },
   "dependencies": {
     "ajv": "^6.12.6",
@@ -32,6 +31,9 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "typescript": "^5.1.6",
+    "@types/express": "^4.17.17",
+    "@types/node": "^20.3.3",
     "@babel/cli": "^7.14.8",
     "@babel/core": "^7.15.0",
     "@babel/node": "^7.14.9",
@@ -49,6 +51,7 @@
     "nodemon": "^2.0.7",
     "prettier": "^2.2.1",
     "prettier-eslint": "^15.0.1",
+    "ts-node-dev": "^2.0.0",
     "vue-cli-plugin-vuetify-preset-reply": "~1.0.4"
   }
 }
