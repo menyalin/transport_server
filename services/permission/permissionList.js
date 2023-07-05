@@ -175,7 +175,7 @@ export const seniorDispatcher = {
   'orderTemplate:write': true,
   'orderTemplate:delete': true,
   'order:delete': true,
-  'order:daysForRead': 60,
+  'order:daysForRead': 180,
   'order:daysForWrite': 15,
   'order:daysForReadPrice': 15,
   'order:daysForWritePrice': 15,
