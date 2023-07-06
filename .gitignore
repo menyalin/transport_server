@@ -3,3 +3,4 @@ node_modules
 .VSCode
 /mongo_data
 /static
+/dist
