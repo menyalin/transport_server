@@ -1,7 +1,7 @@
 // @ts-nocheck
-import PriceDTO from '../../dto/price.dto.js'
-import { Tariff } from '../../models/index.js'
-import getReturnTariffPipeline from './pipelines/getReturnTariffPipeline.js'
+import PriceDTO from '../../dto/price.dto'
+import { Tariff } from '../../models'
+import getReturnTariffPipeline from './pipelines/getReturnTariffPipeline'
 
 export const getReturnTariff = async (params) => {
   const pipeline = getReturnTariffPipeline(params)

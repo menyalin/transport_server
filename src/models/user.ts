@@ -21,7 +21,7 @@ const userSchema = new Schema(
     isAdmin: { type: Boolean, default: false },
     directoriesProfile: { type: Types.ObjectId },
   },
-  { timestamps: true },
+  { timestamps: true }
 )
 
 userSchema.methods.isCorrectPassword = async function (pass) {

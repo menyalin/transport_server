@@ -1,10 +1,10 @@
 // @ts-nocheck
-import ChangeLogService from '../changeLog/index.js'
-import { Agreement } from '../../models/index.js'
-import { emitTo } from '../../socket/index.js'
-import IService from '../iService.js'
-import getListPipeline from './pipelines/getListPipeline.js'
-import getForOrderPipeline from './pipelines/getForOrderPipeline.js'
+import ChangeLogService from '../changeLog'
+import { Agreement } from '../../models'
+import { emitTo } from '../../socket'
+import IService from '../iService'
+import getListPipeline from './pipelines/getListPipeline'
+import getForOrderPipeline from './pipelines/getForOrderPipeline'
 
 class AgreementService extends IService {
   constructor({ model, emitter, modelName, logService }) {
@@ -38,5 +38,5 @@ export default new AgreementService({
   model: Agreement,
   emitter: emitTo,
   modelName: 'agreement',
-  logService: ChangeLogService
+  logService: ChangeLogService,
 })

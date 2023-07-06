@@ -1,10 +1,9 @@
 // @ts-nocheck
 /* eslint-disable no-unused-vars */
-import { Driver } from '../../models/index.js'
+import { Driver } from '../../models'
 
-import { emitTo } from '../../socket/index.js'
-import { ChangeLogService } from '../index.js'
-
+import { emitTo } from '../../socket'
+import { ChangeLogService } from '..'
 
 class DriverService {
   async create({ body, user }) {
@@ -15,7 +14,7 @@ class DriverService {
       user,
       coll: 'driver',
       opType: 'create',
-      body: JSON.stringify(data.toJSON())
+      body: JSON.stringify(data.toJSON()),
     })
 
     await data.populate('tkName')
@@ -25,7 +24,7 @@ class DriverService {
 
   async updateOne({ id, body, user }) {
     const data = await Driver.findByIdAndUpdate(id, body, {
-      new: true
+      new: true,
     })
     await ChangeLogService.add({
       docId: data._id.toString(),
@@ -33,7 +32,7 @@ class DriverService {
       user,
       coll: 'driver',
       opType: 'update',
-      body: JSON.stringify(data.toJSON())
+      body: JSON.stringify(data.toJSON()),
     })
     await data.populate(['tkName'])
     emitTo(data.company.toString(), 'driver:updated', data)
@@ -43,7 +42,7 @@ class DriverService {
   async getByProfile(profile) {
     const data = await Driver.find({
       company: profile,
-      isActive: true
+      isActive: true,
     }).populate('tkName')
     return data
   }
@@ -51,7 +50,7 @@ class DriverService {
   async search({ search, profile }) {
     const query = {
       isActive: true,
-      surname: new RegExp(search, 'i')
+      surname: new RegExp(search, 'i'),
     }
     if (profile) query.company = profile
     const data = await Driver.find(query).populate('tkName').lean()
@@ -71,7 +70,7 @@ class DriverService {
       user,
       coll: 'driver',
       opType: 'delete',
-      body: JSON.stringify(data.toJSON())
+      body: JSON.stringify(data.toJSON()),
     })
     emitTo(data.company.toString(), 'driver:deleted', id)
     return data

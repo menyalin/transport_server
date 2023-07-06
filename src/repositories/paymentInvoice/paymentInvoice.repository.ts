@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { PaymentInvoice as PaymentInvoiceModel } from '../../models/index.js'
+import { PaymentInvoice as PaymentInvoiceModel } from '../../models'
 
 class PaymentInvoiceRepository {}
 

@@ -1,8 +1,5 @@
 // @ts-nocheck
-import {
-  TkNameService as service,
-  PermissionService,
-} from '../services/index.js'
+import { TkNameService as service, PermissionService } from '../services'
 
 export const create = async (req, res) => {
   try {

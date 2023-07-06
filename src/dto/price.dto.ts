@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { ORDER_PRICE_TYPES_ENUM } from '../constants/priceTypes.js'
+import { ORDER_PRICE_TYPES_ENUM } from '../constants/priceTypes'
 
 const MODEL = {
   type: {

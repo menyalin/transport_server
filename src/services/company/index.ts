@@ -1,12 +1,8 @@
 // @ts-nocheck
-import { Company } from '../../models/index.js'
-import {
-  ChangeLogService,
-  WorkerService,
-  UserService,
-} from '../../services/index.js'
-import { emitTo } from '../../socket/index.js'
-import { BadRequestError } from '../../helpers/errors.js'
+import { Company } from '../../models'
+import { ChangeLogService, WorkerService, UserService } from '../../services'
+import { emitTo } from '../../socket'
+import { BadRequestError } from '../../helpers/errors'
 
 class CompanyService {
   async create(body, userId) {

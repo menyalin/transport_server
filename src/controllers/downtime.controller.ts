@@ -1,9 +1,9 @@
 // @ts-nocheck
-import { IController } from './iController.js'
-import { DowntimeService } from '../services/index.js'
+import { IController } from './iController'
+import { DowntimeService } from '../services'
 
 class DowntimeController extends IController {
-  constructor({ service, permissionName  }) {
+  constructor({ service, permissionName }) {
     super({ service, permissionName })
     this.service = service
   }
@@ -27,4 +27,7 @@ class DowntimeController extends IController {
   }
 }
 
-export default new DowntimeController({ service: DowntimeService, permissionName: 'downtime' })
+export default new DowntimeController({
+  service: DowntimeService,
+  permissionName: 'downtime',
+})

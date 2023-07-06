@@ -1,7 +1,7 @@
 // @ts-nocheck
-import { ForbiddenError } from '../../helpers/errors.js'
-import { WorkerService, UserService } from '../index.js'
-import USER_ROLES from './userRoles.js'
+import { ForbiddenError } from '../../helpers/errors'
+import { WorkerService, UserService } from '..'
+import USER_ROLES from './userRoles'
 
 import {
   director,
@@ -14,7 +14,7 @@ import {
   outsourceCarriersManager,
   userAdmin,
   autoFillRouteDates,
-} from './permissionList.js'
+} from './permissionList'
 
 class PermissionService {
   constructor() {

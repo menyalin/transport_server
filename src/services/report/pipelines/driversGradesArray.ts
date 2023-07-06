@@ -1,9 +1,9 @@
 // @ts-nocheck
 import mongoose from 'mongoose'
-import { ORDER_PRICE_TYPES_ENUM } from '../../../constants/priceTypes.js'
-import routePointsNameBuilder from './fragments/routePointsNameBuilder.js'
-import truckKindTextBuilder from './fragments/truckKindText.js'
-import docsNumbersByTypesBuilder from './fragments/docsNumbersByTypes.js'
+import { ORDER_PRICE_TYPES_ENUM } from '../../../constants/priceTypes'
+import routePointsNameBuilder from './fragments/routePointsNameBuilder'
+import truckKindTextBuilder from './fragments/truckKindText'
+import docsNumbersByTypesBuilder from './fragments/docsNumbersByTypes'
 
 export default ({ dateRange, company }) => {
   const firstPlannedDate = {
@@ -256,9 +256,7 @@ export default ({ dateRange, company }) => {
       'Путевой лист': docsNumbersByTypesBuilder('waybill'),
       'Экспедиторская расписка': docsNumbersByTypesBuilder('shippingReceipt'),
       'Акт возврата': docsNumbersByTypesBuilder('returnAct'),
-      'УПД':docsNumbersByTypesBuilder('upd'),
-      
-
+      УПД: docsNumbersByTypesBuilder('upd'),
     },
   }
 

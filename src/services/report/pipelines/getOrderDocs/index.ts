@@ -1,14 +1,14 @@
 // @ts-nocheck
 import mongoose from 'mongoose'
-import { BadRequestError } from '../../../../helpers/errors.js'
-import { ORDER_ANALYTIC_TYPES } from '../../../../constants/order.js'
+import { BadRequestError } from '../../../../helpers/errors'
+import { ORDER_ANALYTIC_TYPES } from '../../../../constants/order'
 
 import {
   getOrderDocsStatus,
   switchCondition as switchConditionByDocsState,
-} from '../fragments/orderDocsStatus.js'
+} from '../fragments/orderDocsStatus'
 
-import { getAddressDetails } from '../fragments/addressDetails.js'
+import { getAddressDetails } from '../fragments/addressDetails'
 
 export default ({
   company,

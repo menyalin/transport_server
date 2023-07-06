@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { ChangeLog } from '../../models/index.js'
+import { ChangeLog } from '../../models'
 
 class ChangeLogService {
   constructor({ model }) {
@@ -19,7 +19,7 @@ class ChangeLogService {
         coll,
         body: JSON.stringify(i.toJSON()),
         opType,
-      })),
+      }))
     )
   }
 }

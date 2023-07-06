@@ -1,10 +1,10 @@
 // @ts-nocheck
-import { Worker, User as UserModel } from '../../models/index.js'
-import { emitTo } from '../../socket/index.js'
-import IService from '../iService.js'
-import ChangeLogService from '../changeLog/index.js'
-import { BadRequestError } from '../../helpers/errors.js'
-import getCompaniesByUserIdPipeline from './pipelines/getCompaniesByUserIdPipeline.js'
+import { Worker, User as UserModel } from '../../models'
+import { emitTo } from '../../socket'
+import IService from '../iService'
+import ChangeLogService from '../changeLog'
+import { BadRequestError } from '../../helpers/errors'
+import getCompaniesByUserIdPipeline from './pipelines/getCompaniesByUserIdPipeline'
 
 class WorkerService extends IService {
   constructor({ model, emitter, modelName, logService }) {
@@ -117,7 +117,6 @@ class WorkerService extends IService {
     worker.pending = true
     await worker.save()
 
-
     await this.logService.add({
       docId: worker._id.toString(),
       coll: this.modelName,
@@ -126,10 +125,10 @@ class WorkerService extends IService {
       company: worker.company.toString(),
       body: JSON.stringify(worker.toJSON()),
     })
-    
+
     await worker.populate('company', ['name', 'inn', 'fullName'])
     await worker.populate('user', ['name', 'email'])
-    
+
     this.emitter(userId, 'worker:inviteGetted', worker)
     this.emitter(worker.company.toString(), 'worker:updated', worker)
 

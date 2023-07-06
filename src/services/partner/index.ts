@@ -1,9 +1,9 @@
 // @ts-nocheck
-import { BadRequestError } from '../../helpers/errors.js'
-import { Partner } from '../../models/index.js'
-import { emitTo } from '../../socket/index.js'
-import IService from '../iService.js'
-import ChangeLogService from '../changeLog/index.js'
+import { BadRequestError } from '../../helpers/errors'
+import { Partner } from '../../models'
+import { emitTo } from '../../socket'
+import IService from '../iService'
+import ChangeLogService from '../changeLog'
 
 class DocumentService extends IService {
   constructor({ model, emitter, modelName, logService }) {

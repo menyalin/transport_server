@@ -1,12 +1,12 @@
 // @ts-nocheck
-import { firstMatcher } from '../pipelines/grossProfitReportFragments/firstMatcher.js'
-import { addPriceObjByTypes } from '../pipelines/grossProfitReportFragments/addPriceObjByTypes.js'
-import { firstProject } from './grossProfitReportFragments/firstProject.js'
-import { lookupAddressParams } from './grossProfitReportFragments/lookupAddressParams.js'
-import { secondMatcher } from './grossProfitReportFragments/secondMatcher.js'
-import { addTotalPriceFields } from '../pipelines/grossProfitReportFragments/addTotalPriceFields.js'
-import { additionalMatcher } from '../pipelines/grossProfitReportFragments/additionalMatcher.js'
-import { sortingList } from '../pipelines/grossProfitReportFragments/sortingList.js'
+import { firstMatcher } from '../pipelines/grossProfitReportFragments/firstMatcher'
+import { addPriceObjByTypes } from '../pipelines/grossProfitReportFragments/addPriceObjByTypes'
+import { firstProject } from './grossProfitReportFragments/firstProject'
+import { lookupAddressParams } from './grossProfitReportFragments/lookupAddressParams'
+import { secondMatcher } from './grossProfitReportFragments/secondMatcher'
+import { addTotalPriceFields } from '../pipelines/grossProfitReportFragments/addTotalPriceFields'
+import { additionalMatcher } from '../pipelines/grossProfitReportFragments/additionalMatcher'
+import { sortingList } from '../pipelines/grossProfitReportFragments/sortingList'
 
 export default ({
   dateRange,

@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { IController } from './iController.js'
-import { AgreementService } from '../services/index.js'
+import { IController } from './iController'
+import { AgreementService } from '../services'
 
 class AgreementController extends IController {
   constructor({ service, permissionName }) {
@@ -29,5 +29,5 @@ class AgreementController extends IController {
 
 export default new AgreementController({
   service: AgreementService,
-  permissionName: 'agreement'
+  permissionName: 'agreement',
 })

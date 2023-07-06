@@ -1,7 +1,7 @@
 // @ts-nocheck
 import mongoose from 'mongoose'
-import { DOCS_REGISTRY_STATUSES } from '../../../constants/docsRegistry.js'
-import { BadRequestError } from '../../../helpers/errors.js'
+import { DOCS_REGISTRY_STATUSES } from '../../../constants/docsRegistry'
+import { BadRequestError } from '../../../helpers/errors'
 
 export const getListPipeline = ({ clients, company, limit, skip, status }) => {
   if (!company) throw new BadRequestError('docsRegistry: bad request params')

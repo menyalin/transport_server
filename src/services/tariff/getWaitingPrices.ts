@@ -1,8 +1,8 @@
 // @ts-nocheck
-import { Tariff } from '../../models/index.js'
-import getWaitingTariffPipeline from './pipelines/getWaitingTariffPipeline.js'
-import { AgreementService } from '../index.js'
-import PriceDTO from '../../dto/price.dto.js'
+import { Tariff } from '../../models'
+import getWaitingTariffPipeline from './pipelines/getWaitingTariffPipeline'
+import { AgreementService } from '..'
+import PriceDTO from '../../dto/price.dto'
 
 const getWaitingTariff = async (params) => {
   const pipeline = getWaitingTariffPipeline(params)
@@ -14,7 +14,7 @@ const getDurationInHours = (
   { plannedDate, arrivalDate, departureDate, type: pointType },
   agreement,
 
-  { includeHours },
+  { includeHours }
 ) => {
   let startDate, noWaiting, calcByArrivalDate
 
@@ -98,8 +98,8 @@ export default async (order) => {
           priceWOVat: 0,
           price: 0,
           sumVat: 0,
-        },
-      ),
+        }
+      )
   )
 
   const unloadingSumPrices = new PriceDTO(
@@ -117,8 +117,8 @@ export default async (order) => {
           priceWOVat: 0,
           price: 0,
           sumVat: 0,
-        },
-      ),
+        }
+      )
   )
 
   const result = []

@@ -1,6 +1,6 @@
 // @ts-nocheck
 import mongoose from 'mongoose'
-import { DocTemplate } from '../../models/index.js'
+import { DocTemplate } from '../../models'
 
 class DocTemplateService {
   constructor({ docTemplateModel }) {

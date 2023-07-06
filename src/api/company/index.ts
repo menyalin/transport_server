@@ -1,14 +1,14 @@
 // @ts-nocheck
 import express from 'express'
 
-import { bodyValidator, queryValidator } from '../../utils/validator.js'
-import { jwtAuth } from '../../utils/auth.middleware.js'
-import ctrl from '../../controllers/company.controller.js'
+import { bodyValidator, queryValidator } from '../../utils/validator'
+import { jwtAuth } from '../../utils/auth.middleware'
+import ctrl from '../../controllers/company.controller'
 import {
   createCompanySchema,
   existInnSchema,
   updateCompanySchema,
-} from './schemes.js'
+} from './schemes'
 
 const router = express.Router()
 

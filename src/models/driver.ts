@@ -1,6 +1,6 @@
 // @ts-nocheck
 /* eslint-disable no-unused-vars */
-import additionalNotification from './_additionalNotification.js'
+import additionalNotification from './_additionalNotification'
 import pkg from 'mongoose'
 const { Schema, model, Types } = pkg
 

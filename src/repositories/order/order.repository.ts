@@ -1,9 +1,9 @@
 // @ts-nocheck
-import OrderStatsRepository from './orderStats.repository.js'
-import { Order as OrderDomain } from '../../domain/order/order.domain.js'
-import { EventBus, Events } from '../../eventBus/index.js'
-import { Order as OrderModel } from '../../models/index.js'
-import getOrdersByTrucksAndPeriodPipeline from './pipelines/getOrdersByTrucksAndPeriodPipeline.js'
+import OrderStatsRepository from './orderStats.repository'
+import { Order as OrderDomain } from '../../domain/order/order.domain'
+import { EventBus, Events } from '../../eventBus'
+import { Order as OrderModel } from '../../models'
+import getOrdersByTrucksAndPeriodPipeline from './pipelines/getOrdersByTrucksAndPeriodPipeline'
 
 class OrderRepository {
   constructor({ model }) {

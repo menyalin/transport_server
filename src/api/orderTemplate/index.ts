@@ -2,14 +2,14 @@
 /* eslint-disable no-unused-vars */
 import express from 'express'
 
-import { jwtAuth } from '../../utils/auth.middleware.js'
+import { jwtAuth } from '../../utils/auth.middleware'
 import {
-  queryValidator
+  queryValidator,
   // bodyValidator
-} from '../../utils/validator.js'
+} from '../../utils/validator'
 
-import { getListSchema } from './schemes.js'
-import ctrl from '../../controllers/orderTemplate.controller.js'
+import { getListSchema } from './schemes'
+import ctrl from '../../controllers/orderTemplate.controller'
 
 const router = express.Router()
 

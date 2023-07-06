@@ -4,11 +4,11 @@ import express from 'express'
 
 import {
   // bodyValidator,
-  queryValidator
-} from '../../utils/validator.js'
-import { jwtAuth } from '../../utils/auth.middleware.js'
-import { taskConfirmHandler } from './handlers.js'
-import { taskConfirmSchema } from './schemes.js'
+  queryValidator,
+} from '../../utils/validator'
+import { jwtAuth } from '../../utils/auth.middleware'
+import { taskConfirmHandler } from './handlers'
+import { taskConfirmSchema } from './schemes'
 
 const router = express.Router()
 

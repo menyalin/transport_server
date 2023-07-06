@@ -1,7 +1,7 @@
 // @ts-nocheck
-import { Task } from '../../models/index.js'
-import { CompanyService } from '../index.js'
-import { emitTo } from '../../socket/index.js'
+import { Task } from '../../models'
+import { CompanyService } from '..'
+import { emitTo } from '../../socket'
 
 class TaskService {
   async create(body) {

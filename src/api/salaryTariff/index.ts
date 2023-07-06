@@ -2,11 +2,11 @@
 /* eslint-disable no-unused-vars */
 import express from 'express'
 
-import { jwtAuth } from '../../utils/auth.middleware.js'
-import { bodyValidator, queryValidator } from '../../utils/validator.js'
+import { jwtAuth } from '../../utils/auth.middleware'
+import { bodyValidator, queryValidator } from '../../utils/validator'
 
-import { getListSchema, getDriverSalarySchema } from './schemes.js'
-import ctrl from '../../controllers/salaryTariff.controller.js'
+import { getListSchema, getDriverSalarySchema } from './schemes'
+import ctrl from '../../controllers/salaryTariff.controller'
 
 const router = express.Router()
 

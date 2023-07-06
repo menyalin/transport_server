@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { AgreementService } from '../index.js'
+import { AgreementService } from '..'
 
 export default async (body) => {
   if (!body.route[0].plannedDate || !body.client.client) return null

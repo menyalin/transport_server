@@ -1,9 +1,9 @@
 // @ts-nocheck
 /* eslint-disable no-unused-vars */
-import { Truck } from '../../models/index.js'
-import { emitTo } from '../../socket/index.js'
-import logService from '../changeLog/index.js'
-import checkNotCompletedOrders from './checkNotCompletedOrders.js'
+import { Truck } from '../../models'
+import { emitTo } from '../../socket'
+import logService from '../changeLog'
+import checkNotCompletedOrders from './checkNotCompletedOrders'
 class TruckService {
   async create({ body, user }) {
     const data = await Truck.create(body)
@@ -68,7 +68,7 @@ class TruckService {
     const data = await Truck.findByIdAndUpdate(
       id,
       { isActive: false },
-      { new: true },
+      { new: true }
     )
     await logService.add({
       docId: data._id.toString(),

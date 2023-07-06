@@ -5,8 +5,8 @@ import {
   TRUCK_TYPES_ENUM,
   TRUCK_KINDS_ENUM,
   TRUCK_LIFT_CAPACITY_TYPES,
-} from '../constants/truck.js'
-import additionalNotification from './_additionalNotification.js'
+} from '../constants/truck'
+import additionalNotification from './_additionalNotification'
 
 const { Schema, model, Types } = pkg
 
@@ -92,7 +92,7 @@ const truckSchema = new Schema(
     allowUseTrailer: { type: Boolean, default: false },
     allowedDrivers: [allowedDriver],
   },
-  { timestamps: true },
+  { timestamps: true }
 )
 
 export const Truck = model('Truck', truckSchema, 'trucks')

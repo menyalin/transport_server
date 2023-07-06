@@ -1,8 +1,8 @@
 // @ts-nocheck
 import mongoose from 'mongoose'
-import { RouteStats } from '../../values/order/routeStats.js'
-import { Order as OrderDomain } from '../order/order.domain.js'
-import { InvoiceStats } from '../../values/order/invoiceStats.js'
+import { RouteStats } from '../../values/order/routeStats'
+import { Order as OrderDomain } from '../order/order.domain'
+import { InvoiceStats } from '../../values/order/invoiceStats'
 
 export class OrderStats {
   constructor(order) {

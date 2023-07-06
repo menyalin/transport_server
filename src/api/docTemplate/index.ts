@@ -2,11 +2,11 @@
 /* eslint-disable no-unused-vars */
 import express from 'express'
 
-import { jwtAuth } from '../../utils/auth.middleware.js'
-import { queryValidator } from '../../utils/validator.js'
+import { jwtAuth } from '../../utils/auth.middleware'
+import { queryValidator } from '../../utils/validator'
 
-import { getAllowedTemplatesSchema } from './schemes.js'
-import ctrl from '../../controllers/docTemplate.controller.js'
+import { getAllowedTemplatesSchema } from './schemes'
+import ctrl from '../../controllers/docTemplate.controller'
 
 const router = express.Router()
 

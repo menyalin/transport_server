@@ -2,7 +2,7 @@
 import {
   PaymentInvoice as PaymentInvoiceModel,
   OrderInPaymentInvoice as OrderInPaymentInvoiceModel,
-} from '../../models/index.js'
+} from '../../models'
 
 export const getPaymentInvoicesByOrderIds = async (ids = []) => {
   if (!ids.length)

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { io } from './index.js'
+import { io } from '.'
 
 export default async (userId, room) => {
   // eslint-disable-next-line no-unused-vars

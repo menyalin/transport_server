@@ -1,5 +1,5 @@
 // @ts-nocheck
-// import { CompanyService } from '../services/index.js'
+// import { CompanyService } from '../services'
 
 export default async (socket, next) => {
   const userId = socket.handshake.auth.userId

@@ -1,11 +1,11 @@
 // @ts-nocheck
-import ChangeLogService from '../changeLog/index.js'
-import { ScheduleNote } from '../../models/index.js'
-import { emitTo } from '../../socket/index.js'
-import IService from '../iService.js'
+import ChangeLogService from '../changeLog'
+import { ScheduleNote } from '../../models'
+import { emitTo } from '../../socket'
+import IService from '../iService'
 
-import { getListSchedulePipeline } from './pipelines/getListSchedulePipeline.js'
-import { getListPipeline } from './pipelines/getListPipeline.js'
+import { getListSchedulePipeline } from './pipelines/getListSchedulePipeline'
+import { getListPipeline } from './pipelines/getListPipeline'
 
 class ScheduleNoteService extends IService {
   constructor({ model, emitter, modelName, logService }) {
@@ -35,5 +35,5 @@ export default new ScheduleNoteService({
   model: ScheduleNote,
   emitter: emitTo,
   modelName: 'scheduleNote',
-  logService: ChangeLogService
+  logService: ChangeLogService,
 })

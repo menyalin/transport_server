@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { DocTemplateService } from '../services/index.js'
+import { DocTemplateService } from '../services'
 
 class DocTemplateController {
   constructor({ service, permissionName }) {

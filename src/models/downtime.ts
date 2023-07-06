@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { DOWNTIME_TYPES } from '../constants/enums.js'
+import { DOWNTIME_TYPES } from '../constants/enums'
 import pkg from 'mongoose'
 const { Schema, model, Types } = pkg
 
@@ -17,7 +17,7 @@ const schema = new Schema(
     inOrderTime: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
   },
-  { timestamps: true },
+  { timestamps: true }
 )
 
 export default model('Downtime', schema, 'downtimes')

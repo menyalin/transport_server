@@ -1,8 +1,5 @@
 // @ts-nocheck
-import {
-  CrewService as service,
-  PermissionService,
-} from '../services/index.js'
+import { CrewService as service, PermissionService } from '../services'
 
 export const create = async (req, res) => {
   try {
@@ -79,10 +76,7 @@ export const getActualCrews = async (req, res) => {
 }
 export const getByDriver = async (req, res) => {
   try {
-    const data = await service.getOneByDriver(
-      req.query.driver,
-      req.query?.date,
-    )
+    const data = await service.getOneByDriver(req.query.driver, req.query?.date)
     res.status(200).json(data)
   } catch (e) {
     res.status(e.statusCoode || 500).json(e.message)

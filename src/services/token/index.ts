@@ -2,8 +2,8 @@
 import jwt from 'jsonwebtoken'
 import dayjs from 'dayjs'
 import { v4 as uuidv4 } from 'uuid'
-import { Token } from '../../models/index.js'
-import { BadRequestError, UnauthorizedError } from '../../helpers/errors.js'
+import { Token } from '../../models'
+import { BadRequestError, UnauthorizedError } from '../../helpers/errors'
 
 class TokenService {
   _createToken(userId, secret = 'secret', lifetime = '30d') {
@@ -14,7 +14,7 @@ class TokenService {
     const accessToken = this._createToken(
       userId,
       process.env.ACCESS_JWT_SECRET,
-      process.env.ACCESS_TOKEN_LIFETIME,
+      process.env.ACCESS_TOKEN_LIFETIME
     )
 
     const refreshToken = uuidv4()
@@ -40,7 +40,7 @@ class TokenService {
     const accessToken = this._createToken(
       existedToken.userId.toString(),
       process.env.ACCESS_JWT_SECRET,
-      process.env.ACCESS_TOKEN_LIFETIME,
+      process.env.ACCESS_TOKEN_LIFETIME
     )
 
     const refreshToken = uuidv4()
@@ -63,6 +63,5 @@ class TokenService {
     return null
   }
 }
-
 
 export default new TokenService()

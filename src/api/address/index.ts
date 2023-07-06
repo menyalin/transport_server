@@ -2,8 +2,8 @@
 /* eslint-disable no-unused-vars */
 import express from 'express'
 
-import { jwtAuth } from '../../utils/auth.middleware.js'
-import { queryValidator, bodyValidator } from '../../utils/validator.js'
+import { jwtAuth } from '../../utils/auth.middleware'
+import { queryValidator, bodyValidator } from '../../utils/validator'
 import {
   getById,
   searchAddress,
@@ -11,23 +11,19 @@ import {
   updateAddress,
   getSuggestions,
   getProfileAddresses,
-  deleteById
-} from '../../controllers/address.controllers.js'
+  deleteById,
+} from '../../controllers/address.controllers'
 
 import {
   getSuggestionsSchema,
   getProfileAddressesSchema,
-  createAddressSchema
-} from './schemes.js'
+  createAddressSchema,
+} from './schemes'
 
 const router = express.Router()
 // api/addresses
 router.post('/', [jwtAuth, bodyValidator(createAddressSchema)], createAddress)
-router.put(
-  '/:id',
-  [jwtAuth, bodyValidator(createAddressSchema)],
-  updateAddress
-)
+router.put('/:id', [jwtAuth, bodyValidator(createAddressSchema)], updateAddress)
 router.get(
   '/get_suggestions',
   [jwtAuth, queryValidator(getSuggestionsSchema)],

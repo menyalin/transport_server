@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { PARTNER_GROUPS } from '../../../../constants/partner.js'
-import { getRouteDuration } from './getRouteDuration.js'
+import { PARTNER_GROUPS } from '../../../../constants/partner'
+import { getRouteDuration } from './getRouteDuration'
 export default () => [
   { $unwind: { path: '$route' } },
   {

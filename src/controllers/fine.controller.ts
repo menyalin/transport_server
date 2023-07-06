@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { IController } from './iController.js'
-import { FineService, PermissionService } from '../services/index.js'
+import { IController } from './iController'
+import { FineService, PermissionService } from '../services'
 
 class FineController extends IController {
   constructor({ service, permissionName }) {

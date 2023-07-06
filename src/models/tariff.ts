@@ -1,11 +1,11 @@
 // @ts-nocheck
 import pkg from 'mongoose'
-import { TRUCK_KINDS_ENUM } from '../constants/truck.js'
-import { ORDER_ANALYTIC_TYPES_ENUM } from '../constants/order.js'
+import { TRUCK_KINDS_ENUM } from '../constants/truck'
+import { ORDER_ANALYTIC_TYPES_ENUM } from '../constants/order'
 import {
   TARIFF_TYPES_ENUM,
   TARIFF_ROUND_BY_HOURS_ENUM,
-} from '../constants/tariff.js'
+} from '../constants/tariff'
 const { Schema, model, Types } = pkg
 
 const schema = new Schema(
@@ -51,7 +51,7 @@ const schema = new Schema(
     loadingZone: { type: Types.ObjectId, ref: 'Zone' },
     unloadingZone: { type: Types.ObjectId, ref: 'Zone' },
   },
-  { timestamps: true },
+  { timestamps: true }
 )
 
 export default model('Tariff', schema, 'tariffs')

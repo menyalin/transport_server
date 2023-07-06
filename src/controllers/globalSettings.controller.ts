@@ -2,7 +2,7 @@
 import {
   PermissionService,
   GlobalSettingsService as service,
-} from '../services/index.js'
+} from '../services'
 
 class GlobalSettingsController {
   async create(req, res) {

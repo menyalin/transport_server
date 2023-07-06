@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { UserService } from '../services/index.js'
+import { UserService } from '../services'
 
 const _updateUserList = async (io, socket, room) => {
   const sockets = []

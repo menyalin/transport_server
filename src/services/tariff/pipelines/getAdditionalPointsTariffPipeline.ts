@@ -1,7 +1,7 @@
 // @ts-nocheck
 import mongoose from 'mongoose'
-import { ORDER_ANALYTIC_TYPES_ENUM } from '../../../constants/order.js'
-import { BadRequestError } from '../../../helpers/errors.js'
+import { ORDER_ANALYTIC_TYPES_ENUM } from '../../../constants/order'
+import { BadRequestError } from '../../../helpers/errors'
 
 export default ({
   company,
@@ -14,7 +14,7 @@ export default ({
 }) => {
   if (!orderType || !ORDER_ANALYTIC_TYPES_ENUM.includes(orderType))
     throw new BadRequestError(
-      `orderType is undefinded, please set correct order type! ${orderType}`,
+      `orderType is undefinded, please set correct order type! ${orderType}`
     )
 
   const orderDate = new Date(date)

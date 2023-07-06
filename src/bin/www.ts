@@ -1,9 +1,8 @@
 // @ts-nocheck
-#!/usr/bin/env node
-import './config.js'
-import '../db.js'
-import app from '../app.js'
-import { io, options } from '../socket/index.js'
+import './config'
+import '../db'
+import app from '../app'
+import { io, options } from '../socket'
 import Debug from 'debug'
 import http from 'http'
 

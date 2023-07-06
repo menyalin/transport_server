@@ -2,8 +2,8 @@
 /* eslint-disable no-unused-vars */
 import express from 'express'
 
-import { jwtAuth } from '../../utils/auth.middleware.js'
-import { queryValidator, bodyValidator } from '../../utils/validator.js'
+import { jwtAuth } from '../../utils/auth.middleware'
+import { queryValidator, bodyValidator } from '../../utils/validator'
 import {
   create,
   updateOne,
@@ -16,7 +16,7 @@ import {
   closeCrew,
   crewDiagramReport,
   getByTruckAndDate,
-} from '../../controllers/crew.controllers.js'
+} from '../../controllers/crew.controllers'
 import {
   getListSchema,
   createDocSchema,
@@ -24,7 +24,7 @@ import {
   getByDriverScheme,
   getByTruckScheme,
   closeCrewSchema,
-} from './schemes.js'
+} from './schemes'
 
 const router = express.Router()
 
@@ -33,19 +33,19 @@ router.get('/', [jwtAuth, queryValidator(getListSchema)], getProfileDocs)
 router.get(
   '/actual',
   [jwtAuth, queryValidator(getActualCrewsSchema)],
-  getActualCrews,
+  getActualCrews
 )
 router.get(
   '/by_driver',
   [jwtAuth, queryValidator(getByDriverScheme)],
-  getByDriver,
+  getByDriver
 )
 router.get('/by_truck', [jwtAuth], getByTruck)
 
 router.get(
   '/by_truck_and_date',
   [jwtAuth, queryValidator(getByTruckScheme)],
-  getByTruckAndDate,
+  getByTruckAndDate
 )
 router.get('/reports/crew_diagram', [], crewDiagramReport)
 

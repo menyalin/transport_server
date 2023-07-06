@@ -1,9 +1,6 @@
 // @ts-nocheck
-import { AutoSetRouteDatesDTO } from '../dto/autoSetRouteDates.dto.js'
-import {
-  OrderService as service,
-  PermissionService,
-} from '../services/index.js'
+import { AutoSetRouteDatesDTO } from '../dto/autoSetRouteDates.dto'
+import { OrderService as service, PermissionService } from '../services'
 
 class OrderController {
   async create(req, res) {

@@ -1,10 +1,10 @@
 // @ts-nocheck
 import express from 'express'
-import { jwtAuth } from '../../utils/auth.middleware.js'
-import { bodyValidator, queryValidator } from '../../utils/validator.js'
+import { jwtAuth } from '../../utils/auth.middleware'
+import { bodyValidator, queryValidator } from '../../utils/validator'
 
-import { getListSchema, addOrdersToInvoiceSchema } from './schemes.js'
-import ctrl from '../../controllers/paymentInvoice.controller.js'
+import { getListSchema, addOrdersToInvoiceSchema } from './schemes'
+import ctrl from '../../controllers/paymentInvoice.controller'
 
 const router = express.Router()
 

@@ -1,7 +1,7 @@
 // @ts-nocheck
 import express from 'express'
-import { bodyValidator } from '../../utils/validator.js'
-import { jwtAuth } from '../../utils/auth.middleware.js'
+import { bodyValidator } from '../../utils/validator'
+import { jwtAuth } from '../../utils/auth.middleware'
 
 import {
   loginSchema,
@@ -12,8 +12,8 @@ import {
   setPasswordSchema,
   confirmEmailSchema,
   retryConfirmationEmailSchema,
-} from './schemes.js'
-import ctrl from '../../controllers/auth.controller.js'
+} from './schemes'
+import ctrl from '../../controllers/auth.controller'
 
 const router = express.Router()
 
@@ -24,25 +24,25 @@ router.get('/:id', [jwtAuth], ctrl.getById)
 router.post(
   '/change_password',
   [jwtAuth, bodyValidator(changePasswordSchema)],
-  ctrl.changePassword,
+  ctrl.changePassword
 )
 
 router.post(
   '/confirm_email',
   [bodyValidator(confirmEmailSchema)],
-  ctrl.confirmEmail,
+  ctrl.confirmEmail
 )
 
 router.post(
   '/retry_confirmation_email',
   [jwtAuth, bodyValidator(retryConfirmationEmailSchema)],
-  ctrl.retryConfirmationEmail,
+  ctrl.retryConfirmationEmail
 )
 
 router.post(
   '/set_password',
   [bodyValidator(setPasswordSchema)],
-  ctrl.setPassword,
+  ctrl.setPassword
 )
 
 router.post('/login', [bodyValidator(loginSchema)], ctrl.login)
@@ -51,19 +51,19 @@ router.post('/refresh', ctrl.refresh)
 router.post(
   '/restore_password',
   [bodyValidator(restorePasswordSchema)],
-  ctrl.restorePassword,
+  ctrl.restorePassword
 )
 
 router.post(
   '/registration',
   [bodyValidator(registrationSchema)],
-  ctrl.registration,
+  ctrl.registration
 )
 
 router.post(
   '/configProfile',
   [jwtAuth, bodyValidator(configProfileSchema)],
-  ctrl.configProfile,
+  ctrl.configProfile
 )
 
 export default router

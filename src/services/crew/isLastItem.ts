@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { Crew } from '../../models/index.js'
+import { Crew } from '../../models'
 
 export default async ({ crew }) => {
   const lastTransportItem = crew.transport.pop()

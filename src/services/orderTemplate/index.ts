@@ -1,9 +1,9 @@
 // @ts-nocheck
-import ChangeLogService from '../changeLog/index.js'
-import { OrderTemplate } from '../../models/index.js'
-import { emitTo } from '../../socket/index.js'
-import IService from '../iService.js'
-// import getListPipeline from './pipelines/getListPipeline.js'
+import ChangeLogService from '../changeLog'
+import { OrderTemplate } from '../../models'
+import { emitTo } from '../../socket'
+import IService from '../iService'
+// import getListPipeline from './pipelines/getListPipeline'
 
 class OrderTemplateService extends IService {
   constructor({ model, emitter, modelName, logService }) {
@@ -17,7 +17,7 @@ class OrderTemplateService extends IService {
     const res = await this.model
       .find({
         company: params.company,
-        isActive: true
+        isActive: true,
       })
       .lean()
     return res
@@ -28,5 +28,5 @@ export default new OrderTemplateService({
   model: OrderTemplate,
   emitter: emitTo,
   modelName: 'orderTemplate',
-  logService: ChangeLogService
+  logService: ChangeLogService,
 })

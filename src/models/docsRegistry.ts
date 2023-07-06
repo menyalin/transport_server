@@ -1,6 +1,6 @@
 // @ts-nocheck
 import pkg from 'mongoose'
-import { DOCS_REGISTRY_STATUSES_ENUM } from '../constants/docsRegistry.js'
+import { DOCS_REGISTRY_STATUSES_ENUM } from '../constants/docsRegistry'
 const { Schema, model, Types } = pkg
 
 const schema = new Schema(

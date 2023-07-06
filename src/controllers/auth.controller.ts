@@ -1,7 +1,7 @@
 // @ts-nocheck
-import { UnauthorizedError } from '../helpers/errors.js'
-import { User } from '../models/index.js'
-import { TokenService, UserService } from '../services/index.js'
+import { UnauthorizedError } from '../helpers/errors'
+import { User } from '../models'
+import { TokenService, UserService } from '../services'
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
@@ -46,7 +46,7 @@ class AuthController {
       if (!!tmpUser && (await tmpUser.isCorrectPassword(password))) {
         const { accessToken, refreshToken } = await TokenService.generate(
           tmpUser._id.toString(),
-          req,
+          req
         )
         res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS)
         res.status(201).json({ accessToken })
@@ -62,7 +62,7 @@ class AuthController {
       const newUser = await User.create(req.body)
       const { accessToken, refreshToken } = await TokenService.generate(
         newUser._id.toString(),
-        req,
+        req
       )
       res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS)
       // todo: Удалить генерацию token, должен быть только accessToken
@@ -81,7 +81,7 @@ class AuthController {
         throw new UnauthorizedError('refresh token is missing')
 
       const { refreshToken, accessToken } = await TokenService.refresh(
-        req.cookies.refreshToken,
+        req.cookies.refreshToken
       )
       res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS)
       res.status(201).json({ accessToken })
@@ -107,7 +107,7 @@ class AuthController {
       await TokenService.deleteAllUserTokens(req.userId)
       const { accessToken, refreshToken } = await TokenService.generate(
         req.userId,
-        req,
+        req
       )
       res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS)
       res.status(200).json({ accessToken })
@@ -121,7 +121,7 @@ class AuthController {
       const user = await UserService.setPassword(req.body)
       const { accessToken, refreshToken } = await TokenService.generate(
         user._id.toString(),
-        req,
+        req
       )
       res.cookie('refreshToken', refreshToken, COOKIE_OPTIONS)
       res.status(200).json({ accessToken })

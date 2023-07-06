@@ -1,15 +1,15 @@
 // @ts-nocheck
-import { POINT_TYPES } from '../constants/enums.js'
+import { POINT_TYPES } from '../constants/enums'
 
 import {
   TRUCK_KINDS_ENUM,
   TRUCK_LIFT_CAPACITY_TYPES,
   LOAD_DIRECTION_ENUM,
-} from '../constants/truck.js'
+} from '../constants/truck'
 import {
   ORDER_STATUSES_ENUM,
   ORDER_ANALYTIC_TYPES_ENUM,
-} from '../constants/order.js'
+} from '../constants/order'
 
 import pkg from 'mongoose'
 
@@ -99,7 +99,7 @@ const schema = new Schema(
     company: { type: Types.ObjectId, ref: 'Company', required: true },
     manager: { type: Types.ObjectId, ref: 'User' },
   },
-  { timestamps: true },
+  { timestamps: true }
 )
 
 export default model('OrderTemlate', schema, 'orderTemplates')

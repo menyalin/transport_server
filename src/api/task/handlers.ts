@@ -1,6 +1,6 @@
 // @ts-nocheck
 /* eslint-disable no-unused-vars */
-import { TaskService } from '../../services/index.js'
+import { TaskService } from '../../services'
 
 export const taskConfirmHandler = async (req, res) => {
   try {

@@ -1,7 +1,7 @@
 // @ts-nocheck
 import jwt from 'jsonwebtoken'
-import { UserService } from '../services/index.js'
-import { UnauthorizedError } from '../helpers/errors.js'
+import { UserService } from '../services'
+import { UnauthorizedError } from '../helpers/errors'
 
 export const jwtAuth = async (req, res, next) => {
   if (req.headers.authorization) {
@@ -9,7 +9,7 @@ export const jwtAuth = async (req, res, next) => {
     try {
       const payload = jwt.verify(
         token,
-        process.env.ACCESS_JWT_SECRET || 'secret',
+        process.env.ACCESS_JWT_SECRET || 'secret'
       )
       const user = await UserService.findById(payload.userId)
       if (!user) next(new UnauthorizedError('invalid userId'))

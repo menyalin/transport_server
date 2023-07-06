@@ -1,6 +1,6 @@
 // @ts-nocheck
 import mongoose from 'mongoose'
-import { PAIMENT_INVOICE_STATUSES_ENUM } from '../../constants/paymentInvoice.js'
+import { PAIMENT_INVOICE_STATUSES_ENUM } from '../../constants/paymentInvoice'
 
 export class InvoiceStats {
   static getDbSchema() {

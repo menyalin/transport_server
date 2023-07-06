@@ -1,11 +1,11 @@
 // @ts-nocheck
-import ChangeLogService from '../changeLog/index.js'
-import { Fine } from '../../models/index.js'
-import { emitTo } from '../../socket/index.js'
-import IService from '../iService.js'
-import { BadRequestError } from '../../helpers/errors.js'
+import ChangeLogService from '../changeLog'
+import { Fine } from '../../models'
+import { emitTo } from '../../socket'
+import IService from '../iService'
+import { BadRequestError } from '../../helpers/errors'
 
-import { getListPipeline } from './pipelines/getListPipeline.js'
+import { getListPipeline } from './pipelines/getListPipeline'
 
 class FineService extends IService {
   constructor({ model, emitter, modelName, logService }) {

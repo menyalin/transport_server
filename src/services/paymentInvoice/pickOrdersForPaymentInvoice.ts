@@ -1,14 +1,14 @@
 // @ts-nocheck
 import mongoose from 'mongoose'
-import { BadRequestError } from '../../helpers/errors.js'
-import { Order as OrderModel } from '../../models/index.js'
+import { BadRequestError } from '../../helpers/errors'
+import { Order as OrderModel } from '../../models'
 import {
   finalPricesFragmentBuilder,
   totalSumFragmentBuilder,
-} from '../_pipelineFragments/orderFinalPricesFragmentBuilder.js'
-import { orderLoadingZoneFragmentBuilder } from '../_pipelineFragments/orderLoadingZoneFragmentBuilder.js'
-import { orderSearchByNumberFragmentBuilder } from '../_pipelineFragments/orderSearchByNumberFragmentBuilder.js'
-import { orderPlannedDateBuilder } from '../_pipelineFragments/orderPlannedDateBuilder.js'
+} from '../_pipelineFragments/orderFinalPricesFragmentBuilder'
+import { orderLoadingZoneFragmentBuilder } from '../_pipelineFragments/orderLoadingZoneFragmentBuilder'
+import { orderSearchByNumberFragmentBuilder } from '../_pipelineFragments/orderSearchByNumberFragmentBuilder'
+import { orderPlannedDateBuilder } from '../_pipelineFragments/orderPlannedDateBuilder'
 
 const paymentPartsSumWOVatFragemt = {
   $reduce: {

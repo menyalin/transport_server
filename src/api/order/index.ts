@@ -2,9 +2,9 @@
 /* eslint-disable no-unused-vars */
 import express from 'express'
 
-import { jwtAuth } from '../../utils/auth.middleware.js'
-import { queryValidator, bodyValidator } from '../../utils/validator.js'
-import ctrl from '../../controllers/order.controller.js'
+import { jwtAuth } from '../../utils/auth.middleware'
+import { queryValidator, bodyValidator } from '../../utils/validator'
+import ctrl from '../../controllers/order.controller'
 import {
   createSchema,
   getListSchema,
@@ -13,7 +13,7 @@ import {
   setDocsSchema,
   setDocsStateSchema,
   autoSetRouteDatesSchema,
-} from './schemes.js'
+} from './schemes'
 
 const router = express.Router()
 
@@ -28,7 +28,11 @@ router.get('/:id', [jwtAuth], ctrl.getById)
 
 router.post('/get_distance', [jwtAuth], ctrl.getDistance)
 router.post('/from_template', [jwtAuth], ctrl.createFromTemplate)
-router.post('/auto_set_route_dates', [jwtAuth, bodyValidator(autoSetRouteDatesSchema)], ctrl.autoSetRouteDates)
+router.post(
+  '/auto_set_route_dates',
+  [jwtAuth, bodyValidator(autoSetRouteDatesSchema)],
+  ctrl.autoSetRouteDates
+)
 
 router.post(
   '/save_final_prices',

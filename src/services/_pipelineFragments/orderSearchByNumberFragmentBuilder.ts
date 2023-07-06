@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { BadRequestError } from '../../helpers/errors.js'
+import { BadRequestError } from '../../helpers/errors'
 
 export const orderSearchByNumberFragmentBuilder = (search) => {
   if (!search)

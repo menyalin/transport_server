@@ -1,23 +1,23 @@
 // @ts-nocheck
 import pkg from 'mongoose'
-import PriceDTO from '../dto/price.dto.js'
+import PriceDTO from '../dto/price.dto'
 
 import {
   TRUCK_KINDS_ENUM,
   TRUCK_LIFT_CAPACITY_TYPES,
   LOAD_DIRECTION_ENUM,
-} from '../constants/truck.js'
+} from '../constants/truck'
 import {
   DOCUMENT_TYPES_ENUM,
   DOCUMENT_STATUSES_ENUM,
-} from '../constants/accounting.js'
+} from '../constants/accounting'
 import {
   ORDER_STATUSES_ENUM,
   ORDER_ANALYTIC_TYPES_ENUM,
-} from '../constants/order.js'
+} from '../constants/order'
 
 const { Schema, model, Types } = pkg
-import { RoutePoint } from '../values/order/routePoint.js'
+import { RoutePoint } from '../values/order/routePoint'
 
 const prices = [PriceDTO.modelFields()]
 

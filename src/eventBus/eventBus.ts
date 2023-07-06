@@ -1,5 +1,5 @@
 // @ts-nocheck
-import EventEmitter from 'node:events'
+import EventEmitter from 'events'
 
 class EventBus extends EventEmitter {
   constructor() {

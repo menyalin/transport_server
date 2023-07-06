@@ -1,17 +1,17 @@
 // @ts-nocheck
 import mongoose from 'mongoose'
-import ChangeLogService from '../changeLog/index.js'
+import ChangeLogService from '../changeLog'
 import {
   DocsRegistry as DocsRegistryModel,
   Order as OrderModel,
   OrderInDocsRegistry as OrderInDocsRegistryModel,
-} from '../../models/index.js'
-import { emitTo } from '../../socket/index.js'
+} from '../../models'
+import { emitTo } from '../../socket'
 
-import { BadRequestError } from '../../helpers/errors.js'
-import { getListPipeline } from './pipelines/getListPipeline.js'
-import { getPickOrdersPipeline } from './pipelines/pickOrdersPipeline.js'
-import getOrdersForRegistry from './getOrdersForRegistry.js'
+import { BadRequestError } from '../../helpers/errors'
+import { getListPipeline } from './pipelines/getListPipeline'
+import { getPickOrdersPipeline } from './pipelines/pickOrdersPipeline'
+import getOrdersForRegistry from './getOrdersForRegistry'
 
 class DocsRegistryService {
   constructor({ model, emitter, modelName, logService }) {
@@ -186,10 +186,11 @@ class DocsRegistryService {
       .populate('client')
       .populate('client.placesForTransferDocs')
 
-    const placeForTransferDocs = docsRegistry?.client?.placesForTransferDocs.find(
-      (i) =>
-        i.address.toString() === docsRegistry.placeForTransferDocs.toString()
-    )
+    const placeForTransferDocs =
+      docsRegistry?.client?.placesForTransferDocs.find(
+        (i) =>
+          i.address.toString() === docsRegistry.placeForTransferDocs.toString()
+      )
     const allowedAddresses = placeForTransferDocs?.allowedLoadingPoints.map(
       (i) => i.toString()
     )

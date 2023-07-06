@@ -2,7 +2,7 @@
 import {
   DocsRegistry as DocsRegistryModel,
   OrderInDocsRegistry as OrderInDocsRegistryModel,
-} from '../../models/index.js'
+} from '../../models'
 
 export const getDocsRegistryByOrderId = async (orderId) => {
   if (!orderId) throw new Error('getDocsRegistryByOrderId: orderId is required')

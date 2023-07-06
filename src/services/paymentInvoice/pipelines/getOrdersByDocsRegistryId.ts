@@ -1,8 +1,8 @@
 // @ts-nocheck
 import mongoose from 'mongoose'
-import { BadRequestError } from '../../../helpers/errors.js'
-import { DOCUMENT_TYPES } from '../../../constants/accounting.js'
-import { orderDocNumbersStringFragment } from '../../_pipelineFragments/orderDocNumbersStringBuilder.js'
+import { BadRequestError } from '../../../helpers/errors'
+import { DOCUMENT_TYPES } from '../../../constants/accounting'
+import { orderDocNumbersStringFragment } from '../../_pipelineFragments/orderDocNumbersStringBuilder'
 export function getOrdersByDocsRegistryId({ docsRegistryId, orderIds }) {
   if (!docsRegistryId && !orderIds)
     throw new BadRequestError(

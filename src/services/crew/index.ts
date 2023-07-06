@@ -1,14 +1,14 @@
 // @ts-nocheck
-import { Crew } from '../../models/index.js'
-import { emitTo } from '../../socket/index.js'
-import { ChangeLogService } from '../index.js'
-import isLastItem from './isLastItem.js'
-import getActualCrewsPipeline from './pipelines/getActualCrewsPipeline.js'
-import getCrewByTruckPipeline from './pipelines/getCrewByTruckPipeline.js'
-import getCrewDiagramReportPipeline from './pipelines/getCrewDiagramReportPipeline.js'
-import getCrewByTruckAndDatePipeline from './pipelines/getCrewByTruckAndDatePipeline.js'
-import getLastCrewByDriverPipeline from './pipelines/getLastCrewByDriverPipeline.js'
-import getCrewListPipeline from './pipelines/getCrewListPipeline.js'
+import { Crew } from '../../models'
+import { emitTo } from '../../socket'
+import { ChangeLogService } from '..'
+import isLastItem from './isLastItem'
+import getActualCrewsPipeline from './pipelines/getActualCrewsPipeline'
+import getCrewByTruckPipeline from './pipelines/getCrewByTruckPipeline'
+import getCrewDiagramReportPipeline from './pipelines/getCrewDiagramReportPipeline'
+import getCrewByTruckAndDatePipeline from './pipelines/getCrewByTruckAndDatePipeline'
+import getLastCrewByDriverPipeline from './pipelines/getLastCrewByDriverPipeline'
+import getCrewListPipeline from './pipelines/getCrewListPipeline'
 
 class CrewService {
   async create(body, userId) {
@@ -94,7 +94,7 @@ class CrewService {
 
     if (!crew) return null
     const transportItem = crew.transport.find(
-      (item) => item._id.toString() === id,
+      (item) => item._id.toString() === id
     )
     if (new Date(transportItem.startDate) > new Date(endDate))
       throw new Error('bad query params')

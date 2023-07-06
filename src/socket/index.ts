@@ -1,10 +1,10 @@
 // @ts-nocheck
-import authMiddleware from './authMiddleware.js'
-import usersHandler from './usersHandler.js'
-//  import initDataHandler from './initDataHandler.js'
-import ordersHandler from './ordersHandler.js'
-import dountimesHandler from './dountimesHandler.js'
-import scheduleNotesHandler from './scheduleNotesHandler.js'
+import authMiddleware from './authMiddleware'
+import usersHandler from './usersHandler'
+//  import initDataHandler from './initDataHandler'
+import ordersHandler from './ordersHandler'
+import dountimesHandler from './dountimesHandler'
+import scheduleNotesHandler from './scheduleNotesHandler'
 
 import { Server } from 'socket.io'
 const io = new Server({})

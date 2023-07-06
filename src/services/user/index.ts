@@ -1,11 +1,11 @@
 // @ts-nocheck
 import jwt from 'jsonwebtoken'
-import { ORDER_STATUSES, ORDER_ANALYTIC_TYPES } from '../../constants/order.js'
-import { PARTNER_GROUPS } from '../../constants/partner.js'
-import { ORDER_PRICE_TYPES } from '../../constants/priceTypes.js'
-import { DOCS_REGISTRY_STATUSES } from '../../constants/docsRegistry.js'
-import { PAIMENT_INVOICE_STATUSES } from '../../constants/paymentInvoice.js'
-import { User } from '../../models/index.js'
+import { ORDER_STATUSES, ORDER_ANALYTIC_TYPES } from '../../constants/order'
+import { PARTNER_GROUPS } from '../../constants/partner'
+import { ORDER_PRICE_TYPES } from '../../constants/priceTypes'
+import { DOCS_REGISTRY_STATUSES } from '../../constants/docsRegistry'
+import { PAIMENT_INVOICE_STATUSES } from '../../constants/paymentInvoice'
+import { User } from '../../models'
 
 import {
   AddressService,
@@ -23,22 +23,22 @@ import {
   WorkerService,
   GlobalSettingsService,
   NotificationService,
-} from '../index.js'
+} from '..'
 import {
   DOCUMENT_TYPES,
   DOCUMENT_STATUSES,
   SALARY_TARIFF_TYPES,
-} from '../../constants/accounting.js'
-import { TARIFF_TYPES, TARIFF_ROUND_BY_HOURS } from '../../constants/tariff.js'
-import { emitTo } from '../../socket/index.js'
+} from '../../constants/accounting'
+import { TARIFF_TYPES, TARIFF_ROUND_BY_HOURS } from '../../constants/tariff'
+import { emitTo } from '../../socket'
 
 import {
   LOAD_DIRECTION,
   TRUCK_KINDS,
   TRUCK_LIFT_CAPACITY_TYPES,
   TRUCK_TYPES,
-} from '../../constants/truck.js'
-import { BadRequestError, NotFoundError } from '../../helpers/errors.js'
+} from '../../constants/truck'
+import { BadRequestError, NotFoundError } from '../../helpers/errors'
 
 class UserService {
   async findById(id, fields = '-password') {

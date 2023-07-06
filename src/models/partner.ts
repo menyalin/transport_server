@@ -1,6 +1,6 @@
 // @ts-nocheck
 import pkg from 'mongoose'
-import { PARTNER_GROUPS_ENUM } from '../constants/partner.js'
+import { PARTNER_GROUPS_ENUM } from '../constants/partner'
 const { Schema, model, Types } = pkg
 
 const placeForTransferDocs = {

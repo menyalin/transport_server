@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { IController } from './iController.js'
-import { OrderTemplateService } from '../services/index.js'
+import { IController } from './iController'
+import { OrderTemplateService } from '../services'
 
 class OrderTemplateController extends IController {
   constructor({ service, permissionName }) {
@@ -18,4 +18,7 @@ class OrderTemplateController extends IController {
   }
 }
 
-export default new OrderTemplateController({ service: OrderTemplateService, permissionName: 'orderTemplate' })
+export default new OrderTemplateController({
+  service: OrderTemplateService,
+  permissionName: 'orderTemplate',
+})

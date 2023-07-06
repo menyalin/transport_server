@@ -1,9 +1,9 @@
 // @ts-nocheck
 /* eslint-disable no-unused-vars */
 import axios from 'axios'
-import { ChangeLogService } from '../../services/index.js'
-import { Address } from '../../models/index.js'
-import { emitTo } from '../../socket/index.js'
+import { ChangeLogService } from '../../services'
+import { Address } from '../../models'
+import { emitTo } from '../../socket'
 
 const URL =
   'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address'
@@ -77,7 +77,7 @@ class AddressService {
           $language: 'russian',
         },
       },
-      { score: { $meta: 'textScore' } },
+      { score: { $meta: 'textScore' } }
     )
       .sort({ score: { $meta: 'textScore' } })
       .limit(5)

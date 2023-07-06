@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { AddressService, PermissionService } from '../services/index.js'
+import { AddressService, PermissionService } from '../services'
 
 export const getById = async (req, res) => {
   try {
@@ -27,11 +27,11 @@ export const createAddress = async (req, res) => {
     await PermissionService.check({
       userId: req.userId,
       companyId: req.companyId,
-      operation: 'address:write'
+      operation: 'address:write',
     })
     const newAddress = await AddressService.create({
       body: req.body,
-      user: req.userId
+      user: req.userId,
     })
     res.status(201).json(newAddress)
   } catch (e) {
@@ -44,12 +44,12 @@ export const updateAddress = async (req, res) => {
     await PermissionService.check({
       userId: req.userId,
       companyId: req.companyId,
-      operation: 'address:write'
+      operation: 'address:write',
     })
     const address = await AddressService.updateOne({
       id: req.params.id,
       body: req.body,
-      user: req.userId
+      user: req.userId,
     })
     res.status(200).json(address)
   } catch (e) {
@@ -60,10 +60,7 @@ export const updateAddress = async (req, res) => {
 export const getSuggestions = async (req, res) => {
   try {
     const { address } = req.query
-    const suggestions = await AddressService.getSuggestions(
-      address,
-      req.userId
-    )
+    const suggestions = await AddressService.getSuggestions(address, req.userId)
     res.status(200).json(suggestions)
   } catch (e) {
     res.status(e.statusCode || 500).json(e.message)
@@ -84,11 +81,11 @@ export const deleteById = async (req, res) => {
     await PermissionService.check({
       userId: req.userId,
       companyId: req.companyId,
-      operation: 'address:delete'
+      operation: 'address:delete',
     })
     const address = await AddressService.deleteById({
       id: req.params.id,
-      user: req.userId
+      user: req.userId,
     })
     res.status(200).json(address)
   } catch (e) {

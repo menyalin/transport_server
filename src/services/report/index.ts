@@ -1,14 +1,14 @@
 // @ts-nocheck
-import { Driver, Order, Truck } from '../../models/index.js'
-import { FileService } from '../index.js'
-import getReportDaysControlPipeline from '../report/pipelines/reportDaysControlPipeline.js'
-import getInProgressOrdersPipeline from './pipelines/inProgressOrdersPipeline.js'
-import getTruckStateOnDatePipeline from './pipelines/truckStateOnDatePipeline.js'
-import getDriversGradesAppayPipeline from './pipelines/driversGradesArray.js'
-import getGrossProfitPipeline from './pipelines/grossProfitPipeline.js'
-import getGrossProfitPivotPipeline from './pipelines/grossProfitPivotPipeline.js'
-import getGrossProfitDetailsPipeline from './pipelines/getGrossProfitDetailsPipeline.js'
-import getOrderDocsPipeline from './pipelines/getOrderDocs/index.js'
+import { Driver, Order, Truck } from '../../models'
+import { FileService } from '..'
+import getReportDaysControlPipeline from '../report/pipelines/reportDaysControlPipeline'
+import getInProgressOrdersPipeline from './pipelines/inProgressOrdersPipeline'
+import getTruckStateOnDatePipeline from './pipelines/truckStateOnDatePipeline'
+import getDriversGradesAppayPipeline from './pipelines/driversGradesArray'
+import getGrossProfitPipeline from './pipelines/grossProfitPipeline'
+import getGrossProfitPivotPipeline from './pipelines/grossProfitPivotPipeline'
+import getGrossProfitDetailsPipeline from './pipelines/getGrossProfitDetailsPipeline'
+import getOrderDocsPipeline from './pipelines/getOrderDocs'
 
 class ReportService {
   async inProgressOrders({ profile, client }) {

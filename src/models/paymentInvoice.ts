@@ -1,7 +1,7 @@
 // @ts-nocheck
 import pkg from 'mongoose'
 
-import { PaymentInvoiceDomain } from '../domain/paymentInvoice/paymentInvoice.js'
+import { PaymentInvoiceDomain } from '../domain/paymentInvoice/paymentInvoice'
 const { Schema, model } = pkg
 
 const schema = new Schema(PaymentInvoiceDomain.getDbSchema(), {

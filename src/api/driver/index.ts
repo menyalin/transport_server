@@ -2,10 +2,10 @@
 /* eslint-disable no-unused-vars */
 import express from 'express'
 
-import { jwtAuth } from '../../utils/auth.middleware.js'
-import { queryValidator, bodyValidator } from '../../utils/validator.js'
-import { getProfileDriversSchema, createDriverSchema } from './schemes.js'
-import ctrl from '../../controllers/driver.controller.js'
+import { jwtAuth } from '../../utils/auth.middleware'
+import { queryValidator, bodyValidator } from '../../utils/validator'
+import { getProfileDriversSchema, createDriverSchema } from './schemes'
+import ctrl from '../../controllers/driver.controller'
 
 const router = express.Router()
 

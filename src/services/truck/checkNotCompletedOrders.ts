@@ -1,12 +1,12 @@
 // @ts-nocheck
-import { Order } from '../../models/index.js'
-import { BadRequestError } from '../../helpers/errors.js'
+import { Order } from '../../models'
+import { BadRequestError } from '../../helpers/errors'
 
 export default async function ({ truckId }) {
   const data = await Order.findOne({
     isActive: true,
     'confirmedCrew.truck': truckId,
-    'state.status': { $ne: 'completed' }
+    'state.status': { $ne: 'completed' },
   }).lean()
   if (data)
     throw new BadRequestError(

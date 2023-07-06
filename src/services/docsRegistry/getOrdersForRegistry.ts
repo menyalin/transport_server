@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { getOrdersByDocsRegistryId } from './pipelines/getOrdersByDocsRegistryId.js'
-import { OrderInDocsRegistry as OrderInDocsRegistryModel } from '../../models/index.js'
+import { getOrdersByDocsRegistryId } from './pipelines/getOrdersByDocsRegistryId'
+import { OrderInDocsRegistry as OrderInDocsRegistryModel } from '../../models'
 
 export default async function getOrdesForRegistry({
   docsRegistryId,

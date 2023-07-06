@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { IController } from './iController.js'
-import { ZoneService } from '../services/index.js'
+import { IController } from './iController'
+import { ZoneService } from '../services'
 
 class Controller extends IController {
   constructor({ service, permissionName }) {

@@ -1,9 +1,9 @@
 // @ts-nocheck
 /* eslint-disable no-unused-vars */
-import { TkName } from '../../models/index.js'
-import { emitTo } from '../../socket/index.js'
-import IService from '../iService.js'
-import ChangeLogService from '../changeLog/index.js'
+import { TkName } from '../../models'
+import { emitTo } from '../../socket'
+import IService from '../iService'
+import ChangeLogService from '../changeLog'
 
 class TkNameService extends IService {
   constructor({ model, emitter, modelName, logService }) {

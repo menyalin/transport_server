@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { ReportService } from '../services/index.js'
+import { ReportService } from '../services'
 
 class ReportController {
   constructor({ service }) {

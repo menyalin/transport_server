@@ -1,13 +1,13 @@
 // @ts-nocheck
-import ChangeLogService from '../changeLog/index.js'
-import { Downtime } from '../../models/index.js'
-import { emitTo } from '../../socket/index.js'
-import IService from '../iService.js'
+import ChangeLogService from '../changeLog'
+import { Downtime } from '../../models'
+import { emitTo } from '../../socket'
+import IService from '../iService'
 
-import { getListSchedulePipeline } from './pipelines/getListSchedulePipeline.js'
-import { getListPipeline } from './pipelines/getListPipeline.js'
-import checkCrossItems from '../order/checkCrossItems.js'
-import { PermissionService } from '../index.js'
+import { getListSchedulePipeline } from './pipelines/getListSchedulePipeline'
+import { getListPipeline } from './pipelines/getListPipeline'
+import checkCrossItems from '../order/checkCrossItems'
+import { PermissionService } from '..'
 
 class DowntimeService extends IService {
   constructor({ model, emitter, modelName, logService }) {
@@ -54,7 +54,7 @@ class DowntimeService extends IService {
     this.emitter(
       downtime.company.toString(),
       `${this.modelName}:updated`,
-      downtime,
+      downtime
     )
 
     if (this.logService)

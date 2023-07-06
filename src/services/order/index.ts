@@ -1,27 +1,27 @@
 // @ts-nocheck
 /* eslint-disable comma-dangle */
 import mongoose from 'mongoose'
-import PriceDTO from '../../dto/price.dto.js'
+import PriceDTO from '../../dto/price.dto'
 import {
   Order as OrderModel,
   OrderTemplate as OrderTemplateModel,
-} from '../../models/index.js'
-import { emitTo } from '../../socket/index.js'
-import { getSchedulePipeline } from './pipelines/getSchedulePipeline.js'
-import { getOrderListPipeline } from './pipelines/getOrderListPipeline.js'
-import { ChangeLogService, PermissionService, TariffService } from '../index.js'
-import checkCrossItems from './checkCrossItems.js'
-import checkRefusedOrder from './checkRefusedOrder.js'
-import getRouteFromTemplate from './getRouteFromTemplate.js'
-import getClientAgreementId from './getClientAgreement.js'
-import getOutsourceAgreementId from './getOutsourceAgreementId.js'
-import { orsDirections } from '../../helpers/orsClient.js'
-import { BadRequestError } from '../../helpers/errors.js'
-import { getDocsRegistryByOrderId } from './getDocsRegistryByOrderId.js'
-import { getPaymentInvoicesByOrderIds } from './getPaymentInvoicesByOrderIds.js'
-import OrderRepository from '../../repositories/order/order.repository.js'
-import { Order as OrderDomain } from '../../domain/order/order.domain.js'
-import { EventBus, Events } from '../../eventBus/index.js'
+} from '../../models'
+import { emitTo } from '../../socket'
+import { getSchedulePipeline } from './pipelines/getSchedulePipeline'
+import { getOrderListPipeline } from './pipelines/getOrderListPipeline'
+import { ChangeLogService, PermissionService, TariffService } from '..'
+import checkCrossItems from './checkCrossItems'
+import checkRefusedOrder from './checkRefusedOrder'
+import getRouteFromTemplate from './getRouteFromTemplate'
+import getClientAgreementId from './getClientAgreement'
+import getOutsourceAgreementId from './getOutsourceAgreementId'
+import { orsDirections } from '../../helpers/orsClient'
+import { BadRequestError } from '../../helpers/errors'
+import { getDocsRegistryByOrderId } from './getDocsRegistryByOrderId'
+import { getPaymentInvoicesByOrderIds } from './getPaymentInvoicesByOrderIds'
+import OrderRepository from '../../repositories/order/order.repository'
+import { Order as OrderDomain } from '../../domain/order/order.domain'
+import { EventBus, Events } from '../../eventBus'
 
 const _isEqualDatesOfRoute = ({ oldRoute, newRoute }) => {
   const oldArrivalDate = new Date(oldRoute[0].arrivalDate).toLocaleString()

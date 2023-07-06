@@ -2,10 +2,10 @@
 /* eslint-disable no-unused-vars */
 import express from 'express'
 
-import { jwtAuth } from '../../utils/auth.middleware.js'
-import { queryValidator, bodyValidator } from '../../utils/validator.js'
+import { jwtAuth } from '../../utils/auth.middleware'
+import { queryValidator, bodyValidator } from '../../utils/validator'
 
-import { getProfileListSchema, createSchema } from './schemes.js'
+import { getProfileListSchema, createSchema } from './schemes'
 import {
   getById,
   search,
@@ -13,7 +13,7 @@ import {
   create,
   updateOne,
   deleteById,
-} from '../../controllers/tkName.controllers.js'
+} from '../../controllers/tkName.controllers'
 
 const router = express.Router()
 
@@ -21,7 +21,7 @@ const router = express.Router()
 router.get(
   '/',
   [jwtAuth, queryValidator(getProfileListSchema)],
-  getProfileTkNames,
+  getProfileTkNames
 )
 router.get('/search', [jwtAuth], search)
 router.get('/:id', [jwtAuth], getById)

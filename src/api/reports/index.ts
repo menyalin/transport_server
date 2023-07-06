@@ -2,9 +2,9 @@
 /* eslint-disable no-unused-vars */
 import express from 'express'
 
-import { jwtAuth } from '../../utils/auth.middleware.js'
-import { queryValidator, bodyValidator } from '../../utils/validator.js'
-import ctrl from '../../controllers/report.controller.js'
+import { jwtAuth } from '../../utils/auth.middleware'
+import { queryValidator, bodyValidator } from '../../utils/validator'
+import ctrl from '../../controllers/report.controller'
 import {
   daysControlSchema,
   driversGradesSchema,
@@ -12,7 +12,7 @@ import {
   grossProfitPivotSchema,
   grossProfitDetailsSchema,
   orderDocsSchema,
-} from './schemes.js'
+} from './schemes'
 
 const router = express.Router()
 

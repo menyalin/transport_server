@@ -1,6 +1,6 @@
 // @ts-nocheck
 import mongoose from 'mongoose'
-import { orderPlannedDateBuilder } from '../../../services/_pipelineFragments/orderPlannedDateBuilder.js'
+import { orderPlannedDateBuilder } from '../../../services/_pipelineFragments/orderPlannedDateBuilder'
 
 export default function ({ company, truckIds, orderStatuses, period }) {
   return [

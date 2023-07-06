@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { IController } from './iController.js'
-import { TruckService } from '../services/index.js'
+import { IController } from './iController'
+import { TruckService } from '../services'
 
 class TruckController extends IController {
   constructor({ service, permissionName }) {

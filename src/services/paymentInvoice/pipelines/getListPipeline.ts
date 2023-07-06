@@ -1,7 +1,7 @@
 // @ts-nocheck
 import mongoose from 'mongoose'
-import { PAIMENT_INVOICE_STATUSES } from '../../../constants/paymentInvoice.js'
-import { BadRequestError } from '../../../helpers/errors.js'
+import { PAIMENT_INVOICE_STATUSES } from '../../../constants/paymentInvoice'
+import { BadRequestError } from '../../../helpers/errors'
 
 export const getListPipeline = ({
   clients,

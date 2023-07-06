@@ -1,10 +1,10 @@
 // @ts-nocheck
-import ChangeLogService from '../changeLog/index.js'
-import { SalaryTariff, Order as OrderModel } from '../../models/index.js'
-import { emitTo } from '../../socket/index.js'
-import IService from '../iService.js'
-import getListPipeline from './pipelines/getListPipeline.js'
-import getDriverSalaryByPeriodPipeline from './pipelines/getDriverSalaryByPeriodPipeline.js'
+import ChangeLogService from '../changeLog'
+import { SalaryTariff, Order as OrderModel } from '../../models'
+import { emitTo } from '../../socket'
+import IService from '../iService'
+import getListPipeline from './pipelines/getListPipeline'
+import getDriverSalaryByPeriodPipeline from './pipelines/getDriverSalaryByPeriodPipeline'
 
 class SalaryTariffService extends IService {
   constructor({ model, emitter, modelName, logService }) {

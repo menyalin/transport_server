@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { IController } from './iController.js'
-import { DriverService } from '../services/index.js'
+import { IController } from './iController'
+import { DriverService } from '../services'
 
 class DriverController extends IController {
   constructor({ service, permissionName }) {
@@ -12,7 +12,7 @@ class DriverController extends IController {
     try {
       const data = await DriverService.search({
         search: req.query.querySearch,
-        profile: req.query.profile
+        profile: req.query.profile,
       })
       res.status(200).json(data)
     } catch (e) {
@@ -23,5 +23,5 @@ class DriverController extends IController {
 
 export default new DriverController({
   service: DriverService,
-  permissionName: 'driver'
+  permissionName: 'driver',
 })

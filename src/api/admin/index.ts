@@ -1,11 +1,11 @@
 // @ts-nocheck
 /* eslint-disable no-unused-vars */
 import express from 'express'
-import { jwtAuth } from '../../utils/auth.middleware.js'
-// import { getProfileListSchema, createSchema } from './schemes.js'
-// import { queryValidator, bodyValidator } from '../../utils/validator.js'
+import { jwtAuth } from '../../utils/auth.middleware'
+// import { getProfileListSchema, createSchema } from './schemes'
+// import { queryValidator, bodyValidator } from '../../utils/validator'
 
-import ctrl from '../../controllers/globalSettings.controller.js'
+import ctrl from '../../controllers/globalSettings.controller'
 
 const router = express.Router()
 

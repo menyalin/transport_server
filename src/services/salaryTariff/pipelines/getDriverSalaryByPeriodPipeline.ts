@@ -1,11 +1,11 @@
 // @ts-nocheck
 import mongoose from 'mongoose'
-import getAddressesLookupFragment from './fragments/getAddressesLookupFragment.js'
-import getBaseSalaryTariffFragment from './fragments/getBaseSalaryTariffFragment.js'
-import getDriverOrdersFragment from './fragments/getDriverOrdersFragment.js'
-import getWaitingSalaryTariffFragment from './fragments/getWaitingSalaryTariffFragment.js'
-import getReturnSalaryTariff from './fragments/getReturnSalaryTariff.js'
-import getAdditionalPointsTariff from './fragments/getAdditionPointsSalaryTariff.js'
+import getAddressesLookupFragment from './fragments/getAddressesLookupFragment'
+import getBaseSalaryTariffFragment from './fragments/getBaseSalaryTariffFragment'
+import getDriverOrdersFragment from './fragments/getDriverOrdersFragment'
+import getWaitingSalaryTariffFragment from './fragments/getWaitingSalaryTariffFragment'
+import getReturnSalaryTariff from './fragments/getReturnSalaryTariff'
+import getAdditionalPointsTariff from './fragments/getAdditionPointsSalaryTariff'
 
 export default ({
   company,

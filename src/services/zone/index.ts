@@ -1,8 +1,8 @@
 // @ts-nocheck
-import { Zone } from '../../models/index.js'
-import { emitTo } from '../../socket/index.js'
-import IService from '../iService.js'
-import ChangeLogService from '../changeLog/index.js'
+import { Zone } from '../../models'
+import { emitTo } from '../../socket'
+import IService from '../iService'
+import ChangeLogService from '../changeLog'
 
 class Service extends IService {
   constructor({ model, emitter, modelName, logService }) {

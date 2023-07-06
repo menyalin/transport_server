@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { TaskService } from '../services/index.js'
+import { TaskService } from '../services'
 
 export default async (io, socket) => {
   const tasks = await TaskService.getActiveTasksForUser(socket.userId)

@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { IController } from './iController.js'
-import { ScheduleNoteService } from '../services/index.js'
+import { IController } from './iController'
+import { ScheduleNoteService } from '../services'
 
 class ScheduleNoteController extends IController {
   constructor({ service, permissionName }) {
@@ -29,5 +29,5 @@ class ScheduleNoteController extends IController {
 
 export default new ScheduleNoteController({
   service: ScheduleNoteService,
-  permissionName: 'scheduleNote'
+  permissionName: 'scheduleNote',
 })

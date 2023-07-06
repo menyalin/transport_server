@@ -1,5 +1,5 @@
 // @ts-nocheck
-import EventBus from './eventBus.js'
-import Events from './events.js'
+import EventBus from './eventBus'
+import Events from './events'
 
 export { EventBus, Events }

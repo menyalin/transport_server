@@ -1,10 +1,10 @@
 // @ts-nocheck
 import pkg from 'mongoose'
 
-import { ORDER_ANALYTIC_TYPES_ENUM } from '../constants/order.js'
-import { SALARY_TARIFF_TYPES_ENUM } from '../constants/accounting.js'
-import { TARIFF_ROUND_BY_HOURS_ENUM } from '../constants/tariff.js'
-import { PARTNER_GROUPS_ENUM } from '../constants/partner.js'
+import { ORDER_ANALYTIC_TYPES_ENUM } from '../constants/order'
+import { SALARY_TARIFF_TYPES_ENUM } from '../constants/accounting'
+import { TARIFF_ROUND_BY_HOURS_ENUM } from '../constants/tariff'
+import { PARTNER_GROUPS_ENUM } from '../constants/partner'
 const { Schema, model, Types } = pkg
 
 const schema = new Schema(
@@ -33,7 +33,6 @@ const schema = new Schema(
     isPltReturn: { type: Boolean, default: false },
 
     includedPoints: { type: Number },
-
   },
 
   { timestamps: true }

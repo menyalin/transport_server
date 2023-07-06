@@ -1,13 +1,13 @@
 // @ts-nocheck
-import ChangeLogService from '../changeLog/index.js'
-import { Tariff } from '../../models/index.js'
-import { emitTo } from '../../socket/index.js'
-import IService from '../iService.js'
-import getListPipeline from './pipelines/getListPipeline.js'
-import getBasePrice from './getBasePrice.js'
-import getAdditionalPointsPrice from './getAdditionalPointsPrice.js'
-import getWaitingPrices from './getWaitingPrices.js'
-import getReturnPrice from './getReturnPrice.js'
+import ChangeLogService from '../changeLog'
+import { Tariff } from '../../models'
+import { emitTo } from '../../socket'
+import IService from '../iService'
+import getListPipeline from './pipelines/getListPipeline'
+import getBasePrice from './getBasePrice'
+import getAdditionalPointsPrice from './getAdditionalPointsPrice'
+import getWaitingPrices from './getWaitingPrices'
+import getReturnPrice from './getReturnPrice'
 
 class TariffService extends IService {
   constructor({ model, emitter, modelName, logService }) {
@@ -79,7 +79,7 @@ class TariffService extends IService {
     if (savedBasePrice || basePrice) {
       const returnPrice = await getReturnPrice(
         order,
-        savedBasePrice || basePrice,
+        savedBasePrice || basePrice
       )
       if (returnPrice) resArray.push(returnPrice)
     }

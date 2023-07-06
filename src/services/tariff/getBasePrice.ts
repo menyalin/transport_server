@@ -1,9 +1,9 @@
 // @ts-nocheck
-import PriceDTO from '../../dto/price.dto.js'
-import { Tariff, Address } from '../../models/index.js'
-import getPointsTariffPipeline from './pipelines/getPointsTariffPipeline.js'
-import getDistanceZonesPipeline from './pipelines/getDistanceZonesPipeline.js'
-import getZonesTariffPipeline from './pipelines/getZonesTariffPipeline.js'
+import PriceDTO from '../../dto/price.dto'
+import { Tariff, Address } from '../../models'
+import getPointsTariffPipeline from './pipelines/getPointsTariffPipeline'
+import getDistanceZonesPipeline from './pipelines/getDistanceZonesPipeline'
+import getZonesTariffPipeline from './pipelines/getZonesTariffPipeline'
 
 const getPointsTariff = async (params) => {
   const pipeline = getPointsTariffPipeline(params)
@@ -74,7 +74,7 @@ export default async (params) => {
       ...new PriceDTO({
         type: 'base',
         ...tariff.zones.find(
-          (i) => i.distance >= params.analytics.distanceDirect,
+          (i) => i.distance >= params.analytics.distanceDirect
         ),
       }),
     }

@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { IController } from './iController.js'
-import { DocsRegistryService, PermissionService } from '../services/index.js'
+import { IController } from './iController'
+import { DocsRegistryService, PermissionService } from '../services'
 
 class DocsRegistryController extends IController {
   constructor({ service, permissionName }) {

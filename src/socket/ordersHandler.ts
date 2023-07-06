@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { OrderService as service } from '../services/index.js'
+import { OrderService as service } from '../services'
 
 export default async (io, socket) => {
   socket.on('moveOrderInSchedule', (order) =>

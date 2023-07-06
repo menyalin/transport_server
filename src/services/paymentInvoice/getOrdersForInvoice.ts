@@ -1,9 +1,9 @@
 // @ts-nocheck
 import mongoose from 'mongoose'
-import { orderPlannedDateBuilder } from '../_pipelineFragments/orderPlannedDateBuilder.js'
-import { orderDriverFullNameBuilder } from '../_pipelineFragments/orderDriverFullNameBuilder.js'
-import { OrderInPaymentInvoice as OrderInPaymentInvoiceModel } from '../../models/index.js'
-import { pricesFragmentBuilder } from './fragments/pricesFragmentBuilder.js'
+import { orderPlannedDateBuilder } from '../_pipelineFragments/orderPlannedDateBuilder'
+import { orderDriverFullNameBuilder } from '../_pipelineFragments/orderDriverFullNameBuilder'
+import { OrderInPaymentInvoice as OrderInPaymentInvoiceModel } from '../../models'
+import { pricesFragmentBuilder } from './fragments/pricesFragmentBuilder'
 
 export default async function getOrdersForPaymentInvoice({
   paymentInvoiceId,

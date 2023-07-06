@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { BadRequestError } from '../helpers/errors.js'
-import { CompanyService, PermissionService } from '../services/index.js'
+import { BadRequestError } from '../helpers/errors'
+import { CompanyService, PermissionService } from '../services'
 
 class CompanyController {
   async create(req, res) {

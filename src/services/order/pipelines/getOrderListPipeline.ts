@@ -1,8 +1,8 @@
 // @ts-nocheck
 import mongoose from 'mongoose'
-import { orderDocNumbersStringFragment } from '../../_pipelineFragments/orderDocNumbersStringBuilder.js'
-import { orderDocsStatusConditionBuilder } from '../../_pipelineFragments/orderDocsStatusConditionBuilder.js'
-import { orderLoadingZoneFragmentBuilder } from '../../_pipelineFragments/orderLoadingZoneFragmentBuilder.js'
+import { orderDocNumbersStringFragment } from '../../_pipelineFragments/orderDocNumbersStringBuilder'
+import { orderDocsStatusConditionBuilder } from '../../_pipelineFragments/orderDocsStatusConditionBuilder'
+import { orderLoadingZoneFragmentBuilder } from '../../_pipelineFragments/orderLoadingZoneFragmentBuilder'
 
 const getSortingStage = (sortBy = [], sortDesc = []) => {
   if (!Array.isArray(sortBy) || !sortBy.length)

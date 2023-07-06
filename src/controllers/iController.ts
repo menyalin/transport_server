@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { PermissionService } from '../services/index.js'
+import { PermissionService } from '../services'
 
 export class IController {
   constructor({ service, permissionName }) {

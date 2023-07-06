@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { firstPlannedDate } from '../fragments/firstPlannedDate.js'
-import { POINT_TYPES } from '../../../../constants/enums.js'
+import { firstPlannedDate } from '../fragments/firstPlannedDate'
+import { POINT_TYPES } from '../../../../constants/enums'
 
 const getPointAddressIdsByType = (type) => {
   if (!type || !POINT_TYPES.includes(type))

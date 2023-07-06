@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { POINT_TYPES } from '../../../../constants/enums.js'
+import { POINT_TYPES } from '../../../../constants/enums'
 
 export default (pointType) => {
   if (!POINT_TYPES.includes(pointType))

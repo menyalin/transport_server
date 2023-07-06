@@ -1,6 +1,6 @@
 // @ts-nocheck
 import mongoose from 'mongoose'
-import { getDurutationInPoints } from './getDurutationInPoints.js'
+import { getDurutationInPoints } from './getDurutationInPoints'
 
 export default (company) => {
   return [

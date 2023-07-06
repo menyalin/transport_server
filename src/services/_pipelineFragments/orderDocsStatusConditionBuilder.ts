@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { BadRequestError } from '../../helpers/errors.js'
+import { BadRequestError } from '../../helpers/errors'
 
 /* 
 const _docStatuses = [

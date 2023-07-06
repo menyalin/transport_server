@@ -1,7 +1,6 @@
 // @ts-nocheck
 /* eslint-disable semi */
 import mongoose from 'mongoose'
-// const dg = require('debug')('mongo:connection')
 // dg('start connection')
 mongoose.set('strictQuery', false)
 mongoose.connect(

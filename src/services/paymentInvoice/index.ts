@@ -1,15 +1,15 @@
 // @ts-nocheck
 // import mongoose from 'mongoose'
-import ChangeLogService from '../changeLog/index.js'
+import ChangeLogService from '../changeLog'
 import {
   OrderInPaymentInvoice as OrderInPaymentInvoiceModel,
   PaymentInvoice as PaymentInvoiceModel,
-} from '../../models/index.js'
-import { emitTo } from '../../socket/index.js'
-import { BadRequestError } from '../../helpers/errors.js'
-import { getListPipeline } from './pipelines/getListPipeline.js'
-import { pickOrdersForPaymentInvoice } from './pickOrdersForPaymentInvoice.js'
-import getOrdersForInvoice from './getOrdersForInvoice.js'
+} from '../../models'
+import { emitTo } from '../../socket'
+import { BadRequestError } from '../../helpers/errors'
+import { getListPipeline } from './pipelines/getListPipeline'
+import { pickOrdersForPaymentInvoice } from './pickOrdersForPaymentInvoice'
+import getOrdersForInvoice from './getOrdersForInvoice'
 
 class PaymentInvoiceService {
   constructor({ model, emitter, modelName, logService }) {

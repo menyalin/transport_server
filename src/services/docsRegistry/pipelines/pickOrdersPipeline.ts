@@ -1,9 +1,9 @@
 // @ts-nocheck
 import mongoose from 'mongoose'
-import { BadRequestError } from '../../../helpers/errors.js'
-import { orderLoadingZoneFragmentBuilder } from '../../_pipelineFragments/orderLoadingZoneFragmentBuilder.js'
-import { orderDocsStatusConditionBuilder } from '../../_pipelineFragments/orderDocsStatusConditionBuilder.js'
-import { orderSearchByNumberFragmentBuilder } from '../../_pipelineFragments/orderSearchByNumberFragmentBuilder.js'
+import { BadRequestError } from '../../../helpers/errors'
+import { orderLoadingZoneFragmentBuilder } from '../../_pipelineFragments/orderLoadingZoneFragmentBuilder'
+import { orderDocsStatusConditionBuilder } from '../../_pipelineFragments/orderDocsStatusConditionBuilder'
+import { orderSearchByNumberFragmentBuilder } from '../../_pipelineFragments/orderSearchByNumberFragmentBuilder'
 
 function selectableOrdersFilter(onlySelectable) {
   if (!onlySelectable) return []

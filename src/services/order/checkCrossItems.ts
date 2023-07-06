@@ -1,7 +1,7 @@
 // @ts-nocheck
 import mongoose from 'mongoose'
-import { BadRequestError } from '../../helpers/errors.js'
-import { Order, Downtime } from '../../models/index.js'
+import { BadRequestError } from '../../helpers/errors'
+import { Order, Downtime } from '../../models'
 
 const _getDatesFromBody = ({ body }) => {
   const tmpDates = []
