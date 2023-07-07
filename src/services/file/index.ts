@@ -1,33 +1,19 @@
-// @ts-nocheck
-import { mkdirSync } from 'fs'
-import { rm } from 'fs/promises'
-import XLSX from 'xlsx'
-import moment from 'moment'
+import { Readable } from 'stream'
+import * as XLSX from 'xlsx'
 
 class FileService {
-  constructor() {
-    try {
-      mkdirSync('static/tmp')
-    } catch (e) {}
-  }
+  async createExcelFile(data: unknown[]): Promise<Readable> {
+    const wb: XLSX.WorkBook = XLSX.utils.book_new()
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(data)
 
-  async createFileLink({ data, reportName }) {
-    const wb = XLSX.utils.book_new()
-    const worksheet = XLSX.utils.json_to_sheet(data)
     XLSX.utils.book_append_sheet(wb, worksheet, 'report')
-    const fileName = moment().format('YYYY_MM_DD_HH_mm_ss') + '_' + reportName
-    const link = `static/tmp/${fileName}.xlsx`
-    await XLSX.writeFileXLSX(wb, link)
-    this.autoremove({ filename: link })
-    return link
-  }
 
-  autoremove({ filename, timeout }) {
-    setTimeout(() => {
-      rm(filename)
-        .then()
-        .catch((e) => console.log(e))
-    }, timeout || 1000 * 60)
+    const excelFile: Buffer = XLSX.write(wb, {
+      type: 'buffer',
+      bookType: 'xlsx',
+    })
+
+    return Readable.from(excelFile)
   }
 }
 

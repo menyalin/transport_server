@@ -9,34 +9,70 @@ import getGrossProfitPipeline from './pipelines/grossProfitPipeline'
 import getGrossProfitPivotPipeline from './pipelines/grossProfitPivotPipeline'
 import getGrossProfitDetailsPipeline from './pipelines/getGrossProfitDetailsPipeline'
 import getOrderDocsPipeline from './pipelines/getOrderDocs'
+import { IDateRange } from '../../classes/dateRange'
 
-class ReportService {
+export interface IDriversGradesXlsxReportProps {
+  company: string
+  dateRange: IDateRange
+}
+
+interface ITruckStateOnDateProps {
+  company: string
+  date: Date
+  truckType: string
+  tkName: string
+}
+
+export interface IReportService {
+  driversGradesXlsxReport: (
+    props: IDriversGradesXlsxReportProps
+  ) => Promise<Readable>
+
+  daysControl: (days: number, profile: string) => Promise<unknown[]>
+
+  inProgressOrders: ({ profile: string, client: string }) => Promise<unknown[]>
+
+  truckStateOnDate: (props: ITruckStateOnDateProps) => Promise<unknown[]>
+
+  orderDocs: (props: unknown) => Promise<unknown>
+
+  grossProfit: (props: unknown) => Promise<unknown>
+
+  grossProfitPivot: (props: unknown) => Promise<unknown>
+
+  grossProfitDetails: (props: unknown) => Promise<unknown>
+}
+
+class ReportService implements IReportService {
   async inProgressOrders({ profile, client }) {
     const pipeline = getInProgressOrdersPipeline({ profile, client })
     const data = await Order.aggregate(pipeline)
     return data
   }
 
-  async daysControl(days, profile) {
-    let parsedDays
-    if (!!days && !isNaN(parseInt(days))) parsedDays = parseInt(days)
-    const pipeline = getReportDaysControlPipeline(parsedDays, profile)
+  async daysControl(days, profile): Promise<unknown[]> {
+    const pipeline = getReportDaysControlPipeline(days, profile)
     const data = await Driver.aggregate(pipeline)
     return data
   }
 
-  async truckStateOnDate({ company, date, truckType, tkName }) {
+  async truckStateOnDate({
+    company,
+    date,
+    truckType,
+    tkName,
+  }: ITruckStateOnDateProps) {
     const pipeline = getTruckStateOnDatePipeline({
-      company,
-      date,
+      company: company,
+      date: date,
       truckType: truckType || 'truck',
-      tkName,
+      tkName: tkName,
     })
     const res = await Truck.aggregate(pipeline)
     return res
   }
 
-  async orderDocs(params) {
+  async orderDocs(params: unknown) {
     const pipeline = getOrderDocsPipeline(params)
     const res = await Order.aggregate(pipeline)
     return res[0] || {}
@@ -81,14 +117,17 @@ class ReportService {
     } else return res[0]
   }
 
-  async driversGradesGetLink({ company, dateRange }) {
+  async driversGradesXlsxReport({
+    company,
+    dateRange,
+  }: IDriversGradesXlsxReportProps): Promise<Readable> {
     const pipeline = getDriversGradesAppayPipeline({ company, dateRange })
     const array = await Order.aggregate(pipeline)
-    const link = await FileService.createFileLink({
-      data: array.map((i) => ({ ...i, _id: i._id.toString() })),
-      reportName: 'driversGrades',
-    })
-    return link
+
+    const stream = await FileService.createExcelFile(
+      array.map((i) => ({ ...i, _id: i._id.toString() }))
+    )
+    return stream
   }
 }
 
