@@ -34,7 +34,7 @@ router.get('/truckStateOnDate', [jwtAuth], (...args) =>
 router.post(
   '/drivers_grades',
   [jwtAuth, bodyValidator(driversGradesSchema)],
-  (...args) => ctrl.driversGradesGetLink(...args)
+  (...args) => ctrl.driversGradesXlsxReport(...args)
 )
 
 router.post(

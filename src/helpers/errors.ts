@@ -1,5 +1,7 @@
 // @ts-nocheck
 export class BadRequestError extends Error {
+  statusCode: number
+
   constructor(error) {
     super(error)
     this.data = { error }

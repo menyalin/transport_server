@@ -1,11 +1,14 @@
-// @ts-nocheck
 import mongoose from 'mongoose'
 import { ORDER_PRICE_TYPES_ENUM } from '../../../constants/priceTypes'
 import routePointsNameBuilder from './fragments/routePointsNameBuilder'
 import truckKindTextBuilder from './fragments/truckKindText'
 import docsNumbersByTypesBuilder from './fragments/docsNumbersByTypes'
+import { IDriversGradesXlsxReportProps } from '..'
 
-export default ({ dateRange, company }) => {
+export default ({
+  dateRange,
+  company,
+}: IDriversGradesXlsxReportProps): unknown[] => {
   const firstPlannedDate = {
     $getField: {
       field: 'plannedDate',
@@ -15,13 +18,13 @@ export default ({ dateRange, company }) => {
 
   const firstMatcher = {
     $match: {
-      company: mongoose.Types.ObjectId(company),
+      company: new mongoose.Types.ObjectId(company),
       isActive: true,
       $expr: {
         $and: [
           { $eq: ['$state.status', 'completed'] },
-          { $gte: [firstPlannedDate, new Date(dateRange[0])] },
-          { $lt: [firstPlannedDate, new Date(dateRange[1])] },
+          { $gte: [firstPlannedDate, dateRange.start] },
+          { $lt: [firstPlannedDate, dateRange.end] },
         ],
       },
     },
@@ -146,7 +149,7 @@ export default ({ dateRange, company }) => {
     },
   }
 
-  const addPriceTypeFieldsBuilder = (priceTypes) => {
+  const addPriceTypeFieldsBuilder = (priceTypes: string[]) => {
     let res = {}
     priceTypes.forEach((type) => {
       res = Object.assign(res, {
@@ -167,7 +170,7 @@ export default ({ dateRange, company }) => {
     { $sort: { firstPlannedDate: 1 } },
   ]
 
-  const getTotalPrice = (priceTypes, withVat = true) => ({
+  const getTotalPrice = (priceTypes: string[], withVat = true) => ({
     $add: priceTypes.map((type) => ({
       $ifNull: [`$${type}.${withVat ? 'price' : 'priceWOVat'}`, 0],
     })),
