@@ -7,7 +7,7 @@ export const createSchema = {
     },
     startPositionDate: {
       type: ['string', 'null'],
-      formats: ['date', 'date-time'],
+      // formats: ['date', 'date-time'],
     },
   },
   required: ['company', 'startPositionDate'],
@@ -22,11 +22,11 @@ export const getListForScheduleSchema = {
     },
     startDate: {
       type: ['string', 'null'],
-      formats: ['date', 'date-time'],
+      // formats: ['date', 'date-time'],
     },
     endDate: {
       type: ['string', 'null'],
-      formats: ['date', 'date-time'],
+      // formats: ['date', 'date-time'],
     },
   },
   required: ['profile', 'startDate'],
@@ -41,11 +41,11 @@ export const getListSchema = {
     },
     startDate: {
       type: ['string', 'null'],
-      formats: ['date', 'date-time'],
+      // formats: ['date', 'date-time'],
     },
     endDate: {
       type: ['string', 'null'],
-      formats: ['date', 'date-time'],
+      // formats: ['date', 'date-time'],
     },
     skip: {
       type: 'string',

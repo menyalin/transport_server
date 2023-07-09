@@ -69,11 +69,11 @@ export const createDocSchema = {
     },
     startDate: {
       type: 'string',
-      formats: ['date', 'date-time'],
+      // formats: ['date', 'date-time'],
     },
     endDate: {
       type: ['string', 'null'],
-      formats: ['date', 'date-time'],
+      // formats: ['date', 'date-time'],
     },
     note: {
       type: ['string', 'null'],
@@ -93,7 +93,7 @@ export const closeCrewSchema = {
     },
     endDate: {
       type: 'string',
-      formats: ['date', 'date-time'],
+      // formats: ['date', 'date-time'],
     },
   },
   required: ['type', 'endDate'],
