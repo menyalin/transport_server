@@ -3,6 +3,7 @@ FROM node:lts
 WORKDIR /usr/src/app
 COPY package*.json ./
 COPY tsconfig.json ./
+COPY jest.config.js ./ 
 
 RUN npm ci --only=production
 
