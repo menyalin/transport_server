@@ -1,11 +1,11 @@
-FROM node:18-alpine
+FROM node:lts-alpine
 
 WORKDIR /usr/src/app
 COPY package*.json ./
 COPY tsconfig.json ./
 COPY jest.config.js ./ 
 
-RUN npm ci --only=production
+RUN npm ci
 
 COPY src src
 RUN npm run build 
