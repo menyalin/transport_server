@@ -8,7 +8,7 @@ export default (profile) => {
     {
       $match: {
         isActive: true,
-        company: mongoose.Types.ObjectId(profile),
+        company: new mongoose.Types.ObjectId(profile),
         transport: {
           $elemMatch: {
             startDate: {

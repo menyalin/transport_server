@@ -16,21 +16,17 @@ export default ({
     const firstMatcher = {
       $match: {
         isActive: true,
-        company: mongoose.Types.ObjectId(company),
-        agreement: mongoose.Types.ObjectId(agreement),
+        company: new mongoose.Types.ObjectId(company),
+        agreement: new mongoose.Types.ObjectId(agreement),
         type: 'directDistanceZones',
         date: { $lte: orderDate },
         truckKind: truckKind,
         liftCapacity: liftCapacity,
-        loading: mongoose.Types.ObjectId(firstPoint),
+        loading: new mongoose.Types.ObjectId(firstPoint),
         'zones.distance': { $gte: analytics.distanceDirect },
       },
     }
-    return [
-      firstMatcher,
-      { $sort: { date: -1, createdAt: -1 } },
-      { $limit: 1 },
-    ]
+    return [firstMatcher, { $sort: { date: -1, createdAt: -1 } }, { $limit: 1 }]
   } catch (e) {
     throw new Error(e)
   }

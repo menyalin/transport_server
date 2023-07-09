@@ -40,7 +40,7 @@ export default function (company) {
         pipeline: [
           {
             $match: {
-              company: mongoose.Types.ObjectId(company),
+              company: new mongoose.Types.ObjectId(company),
               isActive: true,
               $expr: {
                 $and: [

@@ -31,7 +31,7 @@ export default ({
 
   const firstMatcher = {
     $match: {
-      company: mongoose.Types.ObjectId(company),
+      company: new mongoose.Types.ObjectId(company),
       isActive: true,
       $expr: {
         $and: [
@@ -46,7 +46,7 @@ export default ({
     firstMatcher.$match.$expr.$and.push({
       $in: [
         '$confirmedCrew.tkName',
-        tks.map((tk) => mongoose.Types.ObjectId(tk)),
+        tks.map((tk) => new mongoose.Types.ObjectId(tk)),
       ],
     })
   if (orderType)
@@ -58,13 +58,13 @@ export default ({
     firstMatcher.$match.$expr.$and.push({
       $in: [
         '$client.client',
-        clients.map((client) => mongoose.Types.ObjectId(client)),
+        clients.map((client) => new mongoose.Types.ObjectId(client)),
       ],
     })
 
   if (driver)
     firstMatcher.$match.$expr.$and.push({
-      $eq: ['$confirmedCrew.driver', mongoose.Types.ObjectId(driver)],
+      $eq: ['$confirmedCrew.driver', new mongoose.Types.ObjectId(driver)],
     })
 
   const driverFilter = [

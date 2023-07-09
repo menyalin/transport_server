@@ -5,7 +5,7 @@ const pipeline = (userId) => {
   const matcher = {
     $match: {
       isActive: true,
-      user: mongoose.Types.ObjectId(userId),
+      user: new mongoose.Types.ObjectId(userId),
       accepted: true,
       disabled: false,
       pending: false,

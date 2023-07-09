@@ -8,12 +8,12 @@ export default function ({ company, truckIds, orderStatuses, period }) {
       $match: {
         $expr: {
           $and: [
-            { $eq: ['$company', mongoose.Types.ObjectId(company)] },
+            { $eq: ['$company', new mongoose.Types.ObjectId(company)] },
             { $in: ['$state.status', orderStatuses] },
             {
               $in: [
                 '$confirmedCrew.truck',
-                truckIds.map((id) => mongoose.Types.ObjectId(id)),
+                truckIds.map((id) => new mongoose.Types.ObjectId(id)),
               ],
             },
             { $gte: [orderPlannedDateBuilder(), period[0]] },

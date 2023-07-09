@@ -7,22 +7,22 @@ export default (driver) => {
   const firstMatcher = {
     $match: {
       isActive: true,
-      driver: mongoose.Types.ObjectId(driver)
-    }
+      driver: new mongoose.Types.ObjectId(driver),
+    },
   }
 
   const sortByDate = {
     $sort: {
-      startDate: -1
-    }
+      startDate: -1,
+    },
   }
 
   const addTransportObj = {
     $addFields: {
       transport: {
-        $last: '$transport'
-      }
-    }
+        $last: '$transport',
+      },
+    },
   }
 
   return [firstMatcher, sortByDate, { $limit: 1 }, addTransportObj]

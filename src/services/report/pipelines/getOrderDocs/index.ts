@@ -28,7 +28,7 @@ export default ({
     $match: {
       isActive: true,
       'state.status': 'completed',
-      company: mongoose.Types.ObjectId(company),
+      company: new mongoose.Types.ObjectId(company),
       $expr: {
         $and: [],
       },
@@ -37,11 +37,11 @@ export default ({
 
   if (truck)
     firstMatcher.$match.$expr.$and.push({
-      $eq: ['$confirmedCrew.truck', mongoose.Types.ObjectId(truck)],
+      $eq: ['$confirmedCrew.truck', new mongoose.Types.ObjectId(truck)],
     })
   if (driver)
     firstMatcher.$match.$expr.$and.push({
-      $eq: ['$confirmedCrew.driver', mongoose.Types.ObjectId(driver)],
+      $eq: ['$confirmedCrew.driver', new mongoose.Types.ObjectId(driver)],
     })
   if (date)
     firstMatcher.$match.$expr.$and.push({
@@ -55,13 +55,16 @@ export default ({
     firstMatcher.$match.$expr.$and.push({
       $in: [
         '$confirmedCrew.tkName',
-        tks.map((i) => mongoose.Types.ObjectId(i)),
+        tks.map((i) => new mongoose.Types.ObjectId(i)),
       ],
     })
 
   if (clients && clients.length)
     firstMatcher.$match.$expr.$and.push({
-      $in: ['$client.client', clients.map((i) => mongoose.Types.ObjectId(i))],
+      $in: [
+        '$client.client',
+        clients.map((i) => new mongoose.Types.ObjectId(i)),
+      ],
     })
 
   firstMatcher.$match.$expr.$and.push(switchConditionByDocsState(state))

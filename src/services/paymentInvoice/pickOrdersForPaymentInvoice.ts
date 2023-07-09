@@ -37,7 +37,7 @@ export async function pickOrdersForPaymentInvoice({
 
   const firstMatcherBuilder = (filtersExpressions = []) => ({
     $match: {
-      company: mongoose.Types.ObjectId(company),
+      company: new mongoose.Types.ObjectId(company),
       isActive: true,
       $expr: {
         $and: [
@@ -61,12 +61,12 @@ export async function pickOrdersForPaymentInvoice({
 
   if (truck)
     filters.push({
-      $eq: ['$confirmedCrew.truck', mongoose.Types.ObjectId(truck)],
+      $eq: ['$confirmedCrew.truck', new mongoose.Types.ObjectId(truck)],
     })
 
   if (driver)
     filters.push({
-      $eq: ['$confirmedCrew.driver', mongoose.Types.ObjectId(driver)],
+      $eq: ['$confirmedCrew.driver', new mongoose.Types.ObjectId(driver)],
     })
 
   const paymentInvoiceFilterBuilder = (orderIdField = '_id') => [
@@ -130,7 +130,7 @@ export async function pickOrdersForPaymentInvoice({
             ...filters,
             {
               $in: [
-                mongoose.Types.ObjectId(client),
+                new mongoose.Types.ObjectId(client),
                 {
                   $ifNull: [
                     { $map: { input: '$paymentParts', in: '$$this.client' } },
@@ -142,7 +142,9 @@ export async function pickOrdersForPaymentInvoice({
           ]),
           { $unwind: { path: '$paymentParts' } },
           {
-            $match: { 'paymentParts.client': mongoose.Types.ObjectId(client) },
+            $match: {
+              'paymentParts.client': new mongoose.Types.ObjectId(client),
+            },
           },
           ...paymentInvoiceFilterBuilder('paymentParts._id'),
           ...addAgreementBuilder('paymentParts.agreement'),
@@ -172,7 +174,7 @@ export async function pickOrdersForPaymentInvoice({
   const loadingZoneFragment = orderLoadingZoneFragmentBuilder()
   const orders = await OrderModel.aggregate([
     firstMatcherBuilder([
-      { $eq: ['$client.client', mongoose.Types.ObjectId(client)] },
+      { $eq: ['$client.client', new mongoose.Types.ObjectId(client)] },
       ...filters,
     ]),
     ...paymentInvoiceFilterBuilder('_id'),

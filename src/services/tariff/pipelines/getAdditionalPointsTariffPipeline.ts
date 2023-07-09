@@ -22,8 +22,8 @@ export default ({
   const firstMatcher = {
     $match: {
       isActive: true,
-      company: mongoose.Types.ObjectId(company),
-      agreement: mongoose.Types.ObjectId(agreement),
+      company: new mongoose.Types.ObjectId(company),
+      agreement: new mongoose.Types.ObjectId(agreement),
       type: 'additionalPoints',
       date: { $lte: orderDate },
       truckKind: truckKind,

@@ -9,8 +9,8 @@ export default (truck) => {
       $match: {
         isActive: true,
         $or: [
-          { 'transport.truck': mongoose.Types.ObjectId(truck) },
-          { 'transport.trailer': mongoose.Types.ObjectId(truck) }
+          { 'transport.truck': new mongoose.Types.ObjectId(truck) },
+          { 'transport.trailer': new mongoose.Types.ObjectId(truck) }
         ]
       }
     },
@@ -21,8 +21,8 @@ export default (truck) => {
       $match: {
         $expr: {
           $or: [
-            { $eq: ['$transport.truck', mongoose.Types.ObjectId(truck)] },
-            { $eq: ['$transport.trailer', mongoose.Types.ObjectId(truck)] }
+            { $eq: ['$transport.truck', new mongoose.Types.ObjectId(truck)] },
+            { $eq: ['$transport.trailer', new mongoose.Types.ObjectId(truck)] }
           ]
         }
       }

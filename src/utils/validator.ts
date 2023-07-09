@@ -1,9 +1,12 @@
 // @ts-nocheck
 import Ajv from 'ajv'
+import addFormats from "ajv-formats"
+
 
 export const bodyValidator = (schema) => (req, res, next) => {
-  const newAjv = new Ajv({ allErrors: true })
-  const validate = newAjv.compile(schema)
+  const ajv = new Ajv({ allErrors: true })
+  addFormats(ajv)
+  const validate = ajv.compile(schema)
 
   if (validate(req.body)) return next()
 
@@ -11,8 +14,9 @@ export const bodyValidator = (schema) => (req, res, next) => {
 }
 
 export const queryValidator = (schema) => (req, res, next) => {
-  const newAjv = new Ajv({ allErrors: true })
-  const validate = newAjv.compile(schema)
+  const ajv = new Ajv({ allErrors: true })
+  addFormats(ajv)
+  const validate = ajv.compile(schema)
 
   if (validate(req.query)) return next()
 

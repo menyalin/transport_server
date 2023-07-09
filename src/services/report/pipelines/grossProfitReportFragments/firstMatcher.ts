@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 const { Types, isObjectIdOrHexString } = mongoose
 
 const getValuesArray = (values) =>
-  values.map((i) => (isObjectIdOrHexString(i) ? Types.ObjectId(i) : i))
+  values.map((i) => (isObjectIdOrHexString(i) ? new Types.ObjectId(i) : i))
 
 const _getMainFilterBlock = ({ field, cond, values }) => {
   if (cond === 'in')
@@ -19,7 +19,7 @@ const _getMainFilterBlock = ({ field, cond, values }) => {
 export const firstMatcher = ({ company, dateRange, mainFilters }) => {
   const firstMatcher = {
     $match: {
-      company: Types.ObjectId(company),
+      company: new Types.ObjectId(company),
       isActive: true,
       $expr: {
         $and: [
@@ -37,7 +37,7 @@ export const firstMatcher = ({ company, dateRange, mainFilters }) => {
         field: '$client.client',
         cond: mainFilters.clients.cond,
         values: mainFilters.clients.values,
-      }),
+      })
     )
 
   // Основной отбор по TkNames
@@ -47,7 +47,7 @@ export const firstMatcher = ({ company, dateRange, mainFilters }) => {
         field: '$confirmedCrew.tkName',
         cond: mainFilters.tkNames.cond,
         values: mainFilters.tkNames.values,
-      }),
+      })
     )
 
   // Основной отбор по грузовикам
@@ -57,7 +57,7 @@ export const firstMatcher = ({ company, dateRange, mainFilters }) => {
         field: '$confirmedCrew.truck',
         cond: mainFilters.trucks.cond,
         values: mainFilters.trucks.values,
-      }),
+      })
     )
 
   // Основной отбор по водителям
@@ -67,7 +67,7 @@ export const firstMatcher = ({ company, dateRange, mainFilters }) => {
         field: '$confirmedCrew.driver',
         cond: mainFilters.drivers.cond,
         values: mainFilters.drivers.values,
-      }),
+      })
     )
 
   // Основной отбор по типу рейса
@@ -77,7 +77,7 @@ export const firstMatcher = ({ company, dateRange, mainFilters }) => {
         field: '$analytics.type',
         cond: mainFilters.orderTypes.cond,
         values: mainFilters.orderTypes.values,
-      }),
+      })
     )
   return firstMatcher
 }

@@ -127,7 +127,7 @@ class OrderService {
       order.confirmedCrew.truck = null
       order.confirmedCrew.outsourceAgreement = null
     } else {
-      order.confirmedCrew.truck = mongoose.Types.ObjectId(truck)
+      order.confirmedCrew.truck = new mongoose.Types.ObjectId(truck)
       order.confirmedCrew.outsourceAgreement = await getOutsourceAgreementId(
         order
       )
@@ -282,7 +282,7 @@ class OrderService {
 
     emitTo(orderDomain.company.toString(), 'order:updated', orderDomain)
     await ChangeLogService.add({
-      docId: mongoose.Types.ObjectId(orderDomain.id),
+      docId: new mongoose.Types.ObjectId(orderDomain.id),
       company: orderDomain.company,
       coll: 'order',
       user,

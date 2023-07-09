@@ -17,8 +17,8 @@ export default ({
     const firstMatcher = {
       $match: {
         isActive: true,
-        company: mongoose.Types.ObjectId(company),
-        agreement: mongoose.Types.ObjectId(agreement),
+        company: new mongoose.Types.ObjectId(company),
+        agreement: new mongoose.Types.ObjectId(agreement),
         type: 'zones',
         date: { $lte: orderDate },
         truckKind: truckKind,
@@ -28,13 +28,13 @@ export default ({
             {
               $in: [
                 '$loadingZone',
-                loadingZones.map((i) => mongoose.Types.ObjectId(i)),
+                loadingZones.map((i) => new mongoose.Types.ObjectId(i)),
               ],
             },
             {
               $in: [
                 '$unloadingZone',
-                unloadingZones.map((i) => mongoose.Types.ObjectId(i)),
+                unloadingZones.map((i) => new mongoose.Types.ObjectId(i)),
               ],
             },
           ],

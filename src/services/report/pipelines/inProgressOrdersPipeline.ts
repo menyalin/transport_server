@@ -18,7 +18,7 @@ export default ({ profile, client }) => {
   const matcher = {
     $match: {
       isActive: true,
-      company: Types.ObjectId(profile),
+      company: new Types.ObjectId(profile),
       route: {
         $elemMatch: pointInProgress,
       },
@@ -302,7 +302,7 @@ export default ({ profile, client }) => {
     },
   }
 
-  if (client) matcher.$match.client.client = Types.ObjectId(client)
+  if (client) matcher.$match.client.client = new Types.ObjectId(client)
   return [
     matcher,
     unwindRoute,

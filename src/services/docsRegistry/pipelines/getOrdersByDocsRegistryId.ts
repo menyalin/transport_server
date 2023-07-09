@@ -16,12 +16,15 @@ export function getOrdersByDocsRegistryId({ docsRegistryId, orderIds }) {
 
   if (docsRegistryId)
     firstMatcher.$match.$expr.$and.push({
-      $eq: ['$docsRegistry', mongoose.Types.ObjectId(docsRegistryId)],
+      $eq: ['$docsRegistry', new mongoose.Types.ObjectId(docsRegistryId)],
     })
 
   if (orderIds)
     firstMatcher.$match.$expr.$and.push({
-      $in: ['$order', orderIds.map((order) => mongoose.Types.ObjectId(order))],
+      $in: [
+        '$order',
+        orderIds.map((order) => new mongoose.Types.ObjectId(order)),
+      ],
     })
 
   const orderLookup = [

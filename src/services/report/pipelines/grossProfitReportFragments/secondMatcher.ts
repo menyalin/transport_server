@@ -10,7 +10,7 @@ const getAddressFilterBlock = ({ field, filter }) => {
           $map: {
             input: field,
             in: {
-              $in: ['$$this', filter?.values.map((i) => Types.ObjectId(i))],
+              $in: ['$$this', filter?.values.map((i) => new Types.ObjectId(i))],
             },
           },
         },
@@ -24,7 +24,10 @@ const getAddressFilterBlock = ({ field, filter }) => {
             $map: {
               input: field,
               in: {
-                $in: ['$$this', filter?.values.map((i) => Types.ObjectId(i))],
+                $in: [
+                  '$$this',
+                  filter?.values.map((i) => new Types.ObjectId(i)),
+                ],
               },
             },
           },
@@ -46,7 +49,7 @@ export const secondMatcher = ({ filters }) => {
       getAddressFilterBlock({
         field: '$loadingRegions',
         filter: filters.loadingRegions,
-      }),
+      })
     )
   // Регионы разгрузки
   if (filters.unloadingRegions?.values.length)
@@ -54,7 +57,7 @@ export const secondMatcher = ({ filters }) => {
       getAddressFilterBlock({
         field: '$unloadingRegions',
         filter: filters.unloadingRegions,
-      }),
+      })
     )
   // Зоны погрузки
   if (filters.loadingZones?.values.length)
@@ -62,7 +65,7 @@ export const secondMatcher = ({ filters }) => {
       getAddressFilterBlock({
         field: '$loadingZones',
         filter: filters.loadingZones,
-      }),
+      })
     )
   // Зоны разгрузки
   if (filters.unloadingZones?.values.length)
@@ -70,7 +73,7 @@ export const secondMatcher = ({ filters }) => {
       getAddressFilterBlock({
         field: '$unloadingZones',
         filter: filters.unloadingZones,
-      }),
+      })
     )
   return secondMatcher
 }

@@ -15,14 +15,14 @@ export default ({
   const firstMatcher = {
     $match: {
       isActive: true,
-      company: mongoose.Types.ObjectId(company),
+      company: new mongoose.Types.ObjectId(company),
     },
   }
   if (type) firstMatcher.$match.type = type
   if (agreement)
-    firstMatcher.$match.agreement = mongoose.Types.ObjectId(agreement)
+    firstMatcher.$match.agreement = new mongoose.Types.ObjectId(agreement)
   if (document)
-    firstMatcher.$match.document = mongoose.Types.ObjectId(document)
+    firstMatcher.$match.document = new mongoose.Types.ObjectId(document)
   const agreementLookup = [
     {
       $lookup: {
@@ -37,7 +37,7 @@ export default ({
   if (client) {
     agreementLookup.push({
       $match: {
-        'agreement.clients': mongoose.Types.ObjectId(client),
+        'agreement.clients': new mongoose.Types.ObjectId(client),
       },
     })
   }

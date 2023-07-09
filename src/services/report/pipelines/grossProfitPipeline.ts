@@ -68,7 +68,7 @@ const addTotalPriceFields = () => ({
 export default ({ dateRange, company }) => {
   const firstMatcher = {
     $match: {
-      company: mongoose.Types.ObjectId(company),
+      company: new mongoose.Types.ObjectId(company),
       isActive: true,
       $expr: {
         $and: [

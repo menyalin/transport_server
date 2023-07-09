@@ -8,13 +8,13 @@ export default ({ company, date, truckType, tkName }) => {
 
   const firstMatcher = {
     $match: {
-      company: mongoose.Types.ObjectId(company),
+      company: new mongoose.Types.ObjectId(company),
       type: truckType,
       isActive: true,
       $or: [{ endServiceDate: null }, { endServiceDate: { $gt: inputDate } }],
     },
   }
-  if (tkName) firstMatcher.$match.tkName = mongoose.Types.ObjectId(tkName)
+  if (tkName) firstMatcher.$match.tkName = new mongoose.Types.ObjectId(tkName)
 
   return [
     firstMatcher,
@@ -27,7 +27,7 @@ export default ({ company, date, truckType, tkName }) => {
             $match: {
               $expr: {
                 $and: [
-                  { $eq: ['$company', mongoose.Types.ObjectId(company)] },
+                  { $eq: ['$company', new mongoose.Types.ObjectId(company)] },
                   { $eq: ['$isActive', true] },
                   { $lte: ['$startDate', inputDate] },
                   {

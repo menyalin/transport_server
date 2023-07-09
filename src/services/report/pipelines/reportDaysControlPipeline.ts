@@ -20,34 +20,34 @@ export default (dayLimit = 30, profile) => {
                   $dateDiff: {
                     startDate: '$$NOW',
                     endDate: '$$item.expDate',
-                    unit: 'day'
-                  }
-                }
-              }
-            }
+                    unit: 'day',
+                  },
+                },
+              },
+            },
           },
           as: 'item',
           cond: {
-            $gte: ['$$item.daysBeforeRemind', '$$item.validDays']
-          }
-        }
+            $gte: ['$$item.daysBeforeRemind', '$$item.validDays'],
+          },
+        },
       },
-      []
-    ]
+      [],
+    ],
   }
   const concatArrays = {
     $addFields: {
       controlDates: {
-        $concatArrays: ['$controlDates', '$additionalNotifications']
-      }
-    }
+        $concatArrays: ['$controlDates', '$additionalNotifications'],
+      },
+    },
   }
   const drivers = [
     {
       $match: {
-        company: Types.ObjectId(profile),
-        dismissalDate: null
-      }
+        company: new Types.ObjectId(profile),
+        dismissalDate: null,
+      },
     },
     {
       $project: {
@@ -56,9 +56,9 @@ export default (dayLimit = 30, profile) => {
         name: {
           $trim: {
             input: {
-              $concat: ['$surname', ' ', '$name', ' ', '$patronymic']
-            }
-          }
+              $concat: ['$surname', ' ', '$name', ' ', '$patronymic'],
+            },
+          },
         },
         additionalNotifications,
         controlDates: [
@@ -70,9 +70,9 @@ export default (dayLimit = 30, profile) => {
               $dateDiff: {
                 startDate: '$$NOW',
                 endDate: '$driverCardPeriod',
-                unit: 'day'
-              }
-            }
+                unit: 'day',
+              },
+            },
           },
           {
             title: 'Аттестация (мед.книжка)',
@@ -82,9 +82,9 @@ export default (dayLimit = 30, profile) => {
               $dateDiff: {
                 startDate: '$$NOW',
                 endDate: '$medBook.certifiedBeforeDate',
-                unit: 'day'
-              }
-            }
+                unit: 'day',
+              },
+            },
           },
           {
             title: 'Ежегодная комиссия (мед.книжка)',
@@ -93,8 +93,8 @@ export default (dayLimit = 30, profile) => {
               $dateAdd: {
                 startDate: '$medBook.annualCommisionDate',
                 unit: 'year',
-                amount: 1
-              }
+                amount: 1,
+              },
             },
             validDays: {
               $dateDiff: {
@@ -103,31 +103,31 @@ export default (dayLimit = 30, profile) => {
                   $dateAdd: {
                     startDate: '$medBook.annualCommisionDate',
                     unit: 'year',
-                    amount: 1
-                  }
+                    amount: 1,
+                  },
                 },
-                unit: 'day'
-              }
-            }
-          }
+                unit: 'day',
+              },
+            },
+          },
         ],
-        note: '$medBook.note'
-      }
+        note: '$medBook.note',
+      },
     },
     {
-      ...concatArrays
+      ...concatArrays,
     },
 
     {
-      $unwind: '$controlDates'
+      $unwind: '$controlDates',
     },
     {
       $match: {
         'controlDates.validDays': {
-          $lte: dayLimit
-        }
-      }
-    }
+          $lte: dayLimit,
+        },
+      },
+    },
   ]
 
   const trucks = [
@@ -137,9 +137,9 @@ export default (dayLimit = 30, profile) => {
         pipeline: [
           {
             $match: {
-              company: Types.ObjectId(profile),
-              endServiceDate: null
-            }
+              company: new Types.ObjectId(profile),
+              endServiceDate: null,
+            },
           },
           {
             $project: {
@@ -157,9 +157,9 @@ export default (dayLimit = 30, profile) => {
                     $dateDiff: {
                       startDate: '$$NOW',
                       endDate: '$sanitaryPassportExpDate',
-                      unit: 'day'
-                    }
-                  }
+                      unit: 'day',
+                    },
+                  },
                 },
                 {
                   title: 'Дневной пропуск',
@@ -169,9 +169,9 @@ export default (dayLimit = 30, profile) => {
                     $dateDiff: {
                       startDate: '$$NOW',
                       endDate: '$permits.dayPermitExpDate',
-                      unit: 'day'
-                    }
-                  }
+                      unit: 'day',
+                    },
+                  },
                 },
                 {
                   title: 'Ночной пропуск',
@@ -181,9 +181,9 @@ export default (dayLimit = 30, profile) => {
                     $dateDiff: {
                       startDate: '$$NOW',
                       endDate: '$permits.nightPermitExpDate',
-                      unit: 'day'
-                    }
-                  }
+                      unit: 'day',
+                    },
+                  },
                 },
                 {
                   title: 'Осаго',
@@ -193,9 +193,9 @@ export default (dayLimit = 30, profile) => {
                     $dateDiff: {
                       startDate: '$$NOW',
                       endDate: '$insurance.osagoExpDate',
-                      unit: 'day'
-                    }
-                  }
+                      unit: 'day',
+                    },
+                  },
                 },
                 {
                   title: 'Каско',
@@ -205,9 +205,9 @@ export default (dayLimit = 30, profile) => {
                     $dateDiff: {
                       startDate: '$$NOW',
                       endDate: '$insurance.kaskoExpDate',
-                      unit: 'day'
-                    }
-                  }
+                      unit: 'day',
+                    },
+                  },
                 },
                 {
                   title: 'Диагностическая карта',
@@ -218,9 +218,9 @@ export default (dayLimit = 30, profile) => {
                     $dateDiff: {
                       startDate: '$$NOW',
                       endDate: '$additionalDetails.diagnosticCardExpDate',
-                      unit: 'day'
-                    }
-                  }
+                      unit: 'day',
+                    },
+                  },
                 },
                 {
                   title: 'Тахограф',
@@ -230,30 +230,30 @@ export default (dayLimit = 30, profile) => {
                     $dateDiff: {
                       startDate: '$$NOW',
                       endDate: '$additionalDetails.tachographExpDate',
-                      unit: 'day'
-                    }
-                  }
-                }
-              ]
-            }
+                      unit: 'day',
+                    },
+                  },
+                },
+              ],
+            },
           },
           {
-            ...concatArrays
+            ...concatArrays,
           },
 
           {
-            $unwind: '$controlDates'
+            $unwind: '$controlDates',
           },
           {
             $match: {
               'controlDates.validDays': {
-                $lte: dayLimit
-              }
-            }
-          }
-        ]
-      }
-    }
+                $lte: dayLimit,
+              },
+            },
+          },
+        ],
+      },
+    },
   ]
 
   return [...drivers, ...trucks, { $sort: { 'controlDates.validDays': 1 } }]

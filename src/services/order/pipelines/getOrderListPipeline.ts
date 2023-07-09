@@ -44,7 +44,7 @@ export const getOrderListPipeline = ({
   const firstMatcher = {
     $match: {
       isActive: true,
-      company: mongoose.Types.ObjectId(profile),
+      company: new mongoose.Types.ObjectId(profile),
       $expr: {
         $and: [
           { $gte: ['$startPositionDate', sP] },
@@ -64,17 +64,19 @@ export const getOrderListPipeline = ({
 
   if (status && !accountingMode) firstMatcher.$match['state.status'] = status
   if (client)
-    firstMatcher.$match['client.client'] = mongoose.Types.ObjectId(client)
+    firstMatcher.$match['client.client'] = new mongoose.Types.ObjectId(client)
 
   if (truck)
-    firstMatcher.$match['confirmedCrew.truck'] = mongoose.Types.ObjectId(truck)
+    firstMatcher.$match['confirmedCrew.truck'] = new mongoose.Types.ObjectId(
+      truck
+    )
   if (trailer)
-    firstMatcher.$match['confirmedCrew.trailer'] = mongoose.Types.ObjectId(
+    firstMatcher.$match['confirmedCrew.trailer'] = new mongoose.Types.ObjectId(
       // eslint-disable-next-line comma-dangle
       trailer
     )
   if (address)
-    firstMatcher.$match['route.address'] = mongoose.Types.ObjectId(address)
+    firstMatcher.$match['route.address'] = new mongoose.Types.ObjectId(address)
 
   const agreementLookup = [
     {
@@ -111,7 +113,7 @@ export const getOrderListPipeline = ({
       },
     },
     {
-      $match: { 'truck.tkName': mongoose.Types.ObjectId(tkName) },
+      $match: { 'truck.tkName': new mongoose.Types.ObjectId(tkName) },
     },
   ]
 
@@ -137,7 +139,7 @@ export const getOrderListPipeline = ({
   const loadingZoneLookup = orderLoadingZoneFragmentBuilder()
 
   if (driver)
-    firstMatcher.$match['confirmedCrew.driver'] = mongoose.Types.ObjectId(
+    firstMatcher.$match['confirmedCrew.driver'] = new mongoose.Types.ObjectId(
       // eslint-disable-next-line comma-dangle
       driver
     )
@@ -192,7 +194,7 @@ export const getOrderListPipeline = ({
 
   if (loadingZone) {
     secondMatcher.$match.$expr.$and.push({
-      $in: [mongoose.Types.ObjectId(loadingZone), '$_loadingZoneIds'],
+      $in: [new mongoose.Types.ObjectId(loadingZone), '$_loadingZoneIds'],
     })
   }
 
