@@ -5,7 +5,7 @@ COPY package*.json ./
 COPY tsconfig.json ./
 COPY jest.config.js ./ 
 
-RUN npm install
+RUN npm ci --only=production
 
 COPY src src
 RUN npm run build 
