@@ -18,7 +18,7 @@ export default ({
 
   const firstMatcher = {
     $match: {
-      company: new new mongoose.Types.ObjectId(company),
+      company: new mongoose.Types.ObjectId(company),
       isActive: true,
       $expr: {
         $and: [
