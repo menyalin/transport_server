@@ -89,7 +89,7 @@ class DocsRegistryService {
   async create({ body, user, company }) {
     if (!company) throw new BadRequestError('bad request params')
     const lastRegistry = await this.model.aggregate([
-      { $match: { company: mongoose.Types.ObjectId(company) } },
+      { $match: { company: new mongoose.Types.ObjectId(company) } },
       { $project: { number: '$number' } },
       { $sort: { number: -1 } },
       { $limit: 1 },

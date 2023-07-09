@@ -36,8 +36,8 @@ export const getPickOrdersPipeline = ({
     $match: {
       'state.status': 'completed',
       isActive: true,
-      company: mongoose.Types.ObjectId(company),
-      'client.client': mongoose.Types.ObjectId(client),
+      company: new mongoose.Types.ObjectId(company),
+      'client.client': new mongoose.Types.ObjectId(client),
       $expr: {
         $and: [],
       },
@@ -63,7 +63,7 @@ export const getPickOrdersPipeline = ({
     firstMatcher.$match.$expr.$and.push({
       $in: [
         { $getField: { field: 'address', input: { $first: '$route' } } },
-        allowedLoadingPoints.map((p) => mongoose.Types.ObjectId(p)),
+        allowedLoadingPoints.map((p) => new mongoose.Types.ObjectId(p)),
       ],
     })
 
@@ -74,12 +74,12 @@ export const getPickOrdersPipeline = ({
 
   if (truck)
     firstMatcher.$match.$expr.$and.push({
-      $eq: ['$confirmedCrew.truck', mongoose.Types.ObjectId(truck)],
+      $eq: ['$confirmedCrew.truck', new mongoose.Types.ObjectId(truck)],
     })
 
   if (driver)
     firstMatcher.$match.$expr.$and.push({
-      $eq: ['$confirmedCrew.driver', mongoose.Types.ObjectId(driver)],
+      $eq: ['$confirmedCrew.driver', new mongoose.Types.ObjectId(driver)],
     })
 
   const docsRegistryFilter = [
@@ -145,7 +145,7 @@ export const getPickOrdersPipeline = ({
   }
   if (loadingZone) {
     secondMatcher.$match.$expr.$and.push({
-      $in: [mongoose.Types.ObjectId(loadingZone), '$_loadingZoneIds'],
+      $in: [new mongoose.Types.ObjectId(loadingZone), '$_loadingZoneIds'],
     })
   }
 

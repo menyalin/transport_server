@@ -30,7 +30,7 @@ export const getListPipeline = ({
   const firstMatcher = {
     $match: {
       isActive: true,
-      company: mongoose.Types.ObjectId(company),
+      company: new mongoose.Types.ObjectId(company),
       $and: [
         { startPositionDate: { $gte: sP } },
         { startPositionDate: { $lt: eP } },
@@ -38,7 +38,7 @@ export const getListPipeline = ({
     },
   }
   if (truckFilter)
-    firstMatcher.$match.truck = mongoose.Types.ObjectId(truckFilter)
+    firstMatcher.$match.truck = new mongoose.Types.ObjectId(truckFilter)
   const group = [
     {
       $sort: {

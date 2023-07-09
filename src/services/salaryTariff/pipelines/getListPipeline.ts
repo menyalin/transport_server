@@ -6,7 +6,7 @@ export default ({ company, date, limit, skip, type, tk, liftCapacity }) => {
   const firstMatcher = {
     $match: {
       isActive: true,
-      company: mongoose.Types.ObjectId(company),
+      company: new mongoose.Types.ObjectId(company),
       $expr: {
         $and: [],
       },
@@ -15,7 +15,7 @@ export default ({ company, date, limit, skip, type, tk, liftCapacity }) => {
   if (type) firstMatcher.$match.type = type
   if (tk)
     firstMatcher.$match.$expr.$and.push({
-      $in: [mongoose.Types.ObjectId(tk), '$tks'],
+      $in: [new mongoose.Types.ObjectId(tk), '$tks'],
     })
 
   if (liftCapacity)

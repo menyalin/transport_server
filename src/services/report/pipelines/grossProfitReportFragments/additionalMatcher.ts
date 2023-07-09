@@ -5,7 +5,7 @@ const { Types, isObjectIdOrHexString } = mongoose
 const getValuesArray = (values) =>
   values
     .map((i) => {
-      if (isObjectIdOrHexString(i)) return Types.ObjectId(i)
+      if (isObjectIdOrHexString(i)) return new Types.ObjectId(i)
       return i
     })
     .filter((i) => !!i)
@@ -25,7 +25,7 @@ export const additionalMatcher = (filters) => {
         field: '$client',
         cond: filters.clients.cond,
         values: filters.clients.values,
-      }),
+      })
     )
 
   // Основной отбор по TkNames
@@ -35,7 +35,7 @@ export const additionalMatcher = (filters) => {
         field: '$tkName',
         cond: filters.tkNames.cond,
         values: filters.tkNames.values,
-      }),
+      })
     )
 
   // Основной отбор по грузовикам
@@ -45,7 +45,7 @@ export const additionalMatcher = (filters) => {
         field: '$truckId',
         cond: filters.trucks.cond,
         values: filters.trucks.values,
-      }),
+      })
     )
 
   // Основной отбор по водителям
@@ -55,7 +55,7 @@ export const additionalMatcher = (filters) => {
         field: '$driverId',
         cond: filters.drivers.cond,
         values: filters.drivers.values,
-      }),
+      })
     )
 
   // Основной отбор по типу рейса
@@ -65,7 +65,7 @@ export const additionalMatcher = (filters) => {
         field: '$orderType',
         cond: filters.orderTypes.cond,
         values: filters.orderTypes.values,
-      }),
+      })
     )
 
   return matcher

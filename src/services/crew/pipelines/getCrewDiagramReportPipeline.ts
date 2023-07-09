@@ -8,7 +8,7 @@ export default ({ period, profile }) => {
   const endPeriod = new Date(periodArr[1])
   if (startPeriod > endPeriod) throw new Error('bad query params')
 
-  const company = mongoose.Types.ObjectId(profile)
+  const company = new mongoose.Types.ObjectId(profile)
 
   const firstMatcher = {
     $match: {

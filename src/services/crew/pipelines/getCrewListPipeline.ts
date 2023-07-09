@@ -32,18 +32,18 @@ export default ({
   let firstMatcher = {
     $match: {
       isActive: true,
-      company: mongoose.Types.ObjectId(profile)
+      company: new mongoose.Types.ObjectId(profile)
     }
   }
   if (truck)
     firstMatcher = {
       ...firstMatcher,
       $match: {
-        $expr: { $in: [mongoose.Types.ObjectId(truck), '$transport.truck'] }
+        $expr: { $in: [new mongoose.Types.ObjectId(truck), '$transport.truck'] }
       }
     }
-  if (driver) firstMatcher.$match.driver = mongoose.Types.ObjectId(driver)
-  if (tkName) firstMatcher.$match.tkName = mongoose.Types.ObjectId(tkName)
+  if (driver) firstMatcher.$match.driver =new mongoose.Types.ObjectId(driver)
+  if (tkName) firstMatcher.$match.tkName = new mongoose.Types.ObjectId(tkName)
   if (state === 'active') firstMatcher.$match['transport.endDate'] = null
   if (state === 'inactive')
     firstMatcher.$match['transport.endDate'] = { $ne: null }

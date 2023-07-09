@@ -18,7 +18,7 @@ const _getDatesFromBody = ({ body }) => {
 }
 
 const _checkUnfinishedOrder = async ({ body, id }) => {
-  const truckId = mongoose.Types.ObjectId(
+  const truckId = new mongoose.Types.ObjectId(
     body.confirmedCrew?.truck || body.truck
   )
   const matcher = {
@@ -48,7 +48,7 @@ const _checkUnfinishedOrder = async ({ body, id }) => {
     },
   }
   if (id && !body.type)
-    matcher.$match._id = { $ne: mongoose.Types.ObjectId(id) }
+    matcher.$match._id = { $ne: new mongoose.Types.ObjectId(id) }
   const orders = await Order.aggregate([matcher])
   if (orders.length > 0)
     throw new BadRequestError('У грузовика есть незавершенные рейсы')
@@ -67,13 +67,13 @@ const _checkSequenceOfDates = (dates) => {
 
 const _checkCrossDowntimes = async ({ body, dates, id }) => {
   const sDate = new Date(dates[0])
-  const truckId = mongoose.Types.ObjectId(
+  const truckId = new mongoose.Types.ObjectId(
     body.confirmedCrew?.truck || body.truck
   )
   const matcher = {
     $match: {
       isActive: true,
-      company: mongoose.Types.ObjectId(body.company),
+      company: new mongoose.Types.ObjectId(body.company),
       truck: truckId,
       $expr: {
         $or: [
@@ -88,7 +88,7 @@ const _checkCrossDowntimes = async ({ body, dates, id }) => {
       },
     },
   }
-  if (id) matcher.$match._id = { $ne: mongoose.Types.ObjectId(id) }
+  if (id) matcher.$match._id = { $ne: new mongoose.Types.ObjectId(id) }
 
   if (dates.length >= 2) {
     const eDate = new Date(dates[dates.length - 1])
@@ -121,13 +121,13 @@ const _checkCrossDowntimes = async ({ body, dates, id }) => {
 
 const _checkCrossOrders = async ({ body, dates, id }) => {
   const sDate = new Date(dates[0])
-  const truckId = mongoose.Types.ObjectId(
+  const truckId = new mongoose.Types.ObjectId(
     body.confirmedCrew?.truck || body.truck
   )
   const matcher = {
     $match: {
       isActive: true,
-      company: mongoose.Types.ObjectId(body.company),
+      company: new mongoose.Types.ObjectId(body.company),
       'confirmedCrew.truck': truckId,
       $expr: {
         $or: [
@@ -221,7 +221,7 @@ const _checkCrossOrders = async ({ body, dates, id }) => {
       ],
     })
   }
-  if (id) matcher.$match._id = { $ne: mongoose.Types.ObjectId(id) }
+  if (id) matcher.$match._id = { $ne: new mongoose.Types.ObjectId(id) }
 
   const orders = await Order.aggregate([matcher])
   if (orders.length > 0)

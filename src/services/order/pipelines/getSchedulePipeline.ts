@@ -38,7 +38,7 @@ export const getSchedulePipeline = ({ company, startDate, endDate }) => {
   const firstMatcher = {
     $match: {
       isActive: true,
-      company: mongoose.Types.ObjectId(company),
+      company: new mongoose.Types.ObjectId(company),
       $expr: {
         $or: [
           {

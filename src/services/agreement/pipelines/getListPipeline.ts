@@ -5,7 +5,7 @@ export default ({ company, date, limit, skip, client }) => {
   const firstMatcher = {
     $match: {
       isActive: true,
-      company: mongoose.Types.ObjectId(company),
+      company: new mongoose.Types.ObjectId(company),
       $expr: {
         $and: [],
       },
@@ -14,7 +14,7 @@ export default ({ company, date, limit, skip, client }) => {
 
   if (client)
     firstMatcher.$match.$expr.$and.push({
-      $in: [mongoose.Types.ObjectId(client), '$clients'],
+      $in: [new mongoose.Types.ObjectId(client), '$clients'],
     })
 
   const group = [

@@ -12,8 +12,8 @@ export default ({ truck, date, state }) => {
             { startDate: { $lte: inputDate } },
             {
               $or: [
-                { truck: mongoose.Types.ObjectId(truck) },
-                { trailer: mongoose.Types.ObjectId(truck) },
+                { truck: new mongoose.Types.ObjectId(truck) },
+                { trailer: new mongoose.Types.ObjectId(truck) },
               ],
             },
             { $or: [{ endDate: { $gt: inputDate } }, { endDate: null }] },
@@ -26,8 +26,8 @@ export default ({ truck, date, state }) => {
   const secondMatcher = {
     $match: {
       $or: [
-        { 'transport.truck': mongoose.Types.ObjectId(truck) },
-        { 'transport.trailer': mongoose.Types.ObjectId(truck) },
+        { 'transport.truck': new mongoose.Types.ObjectId(truck) },
+        { 'transport.trailer': new mongoose.Types.ObjectId(truck) },
       ],
 
       'transport.startDate': { $lte: inputDate },

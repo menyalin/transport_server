@@ -8,7 +8,7 @@ export const getListPipeline = ({ clients, company, limit, skip, status }) => {
   const firstMatcher = {
     $match: {
       isActive: true,
-      company: mongoose.Types.ObjectId(company),
+      company: new mongoose.Types.ObjectId(company),
       $expr: {
         $and: [],
       },
@@ -17,11 +17,11 @@ export const getListPipeline = ({ clients, company, limit, skip, status }) => {
 
   if (clients && clients.length) {
     firstMatcher.$match.$expr.$and.push({
-      $in: ['$client', clients.map((i) => mongoose.Types.ObjectId(i))],
+      $in: ['$client', clients.map((i) => new mongoose.Types.ObjectId(i))],
     })
   }
 
-  // if (driver) firstMatcher.$match.driver = mongoose.Types.ObjectId(driver)
+  // if (driver) firstMatcher.$match.driver = new mongoose.Types.ObjectId(driver)
 
   if (status) firstMatcher.$match.$expr.$and.push({ $eq: ['$status', status] })
 

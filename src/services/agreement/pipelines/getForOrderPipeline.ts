@@ -6,13 +6,13 @@ export default ({ company, client, date, tkNameId }) => {
     $match: {
       isActive: true,
       closed: { $ne: true },
-      company: mongoose.Types.ObjectId(company),
+      company: new mongoose.Types.ObjectId(company),
       date: { $lt: new Date(date) },
     },
   }
 
   if (tkNameId)
-    firstMatcher.$match.outsourceCarriers = mongoose.Types.ObjectId(tkNameId)
-  else if (client) firstMatcher.$match.clients = mongoose.Types.ObjectId(client)
+    firstMatcher.$match.outsourceCarriers = new mongoose.Types.ObjectId(tkNameId)
+  else if (client) firstMatcher.$match.clients = new mongoose.Types.ObjectId(client)
   return [firstMatcher, { $sort: { date: -1 } }, { $limit: 1 }]
 }

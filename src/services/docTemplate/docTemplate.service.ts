@@ -16,11 +16,13 @@ class DocTemplateService {
               { $eq: [0, { $size: '$companies' }] },
               {
                 $and: [
-                  { $in: [mongoose.Types.ObjectId(company), '$companies'] },
+                  { $in: [new mongoose.Types.ObjectId(company), '$companies'] },
                   {
                     $or: [
                       { $eq: [0, { $size: '$clients' }] },
-                      { $in: [mongoose.Types.ObjectId(client), '$clients'] },
+                      {
+                        $in: [new mongoose.Types.ObjectId(client), '$clients'],
+                      },
                     ],
                   },
                 ],
