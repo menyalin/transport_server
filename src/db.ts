@@ -1,13 +1,15 @@
 // @ts-nocheck
-/* eslint-disable semi */
 import mongoose from 'mongoose'
-// dg('start connection')
-mongoose.set('strictQuery', false)
-mongoose.connect(
-  process.env.DB_URL,
-  {},
 
-  (err) => {
-    if (err) throw new Error(err.message) // dg('db connected')
-  }
-)
+mongoose.set('strictQuery', false)
+mongoose.connect(process.env.DB_URL)
+
+mongoose.connection.on('error', err => {
+  console.log('db_connection_error:')
+  console.log(err)
+  process.exit()
+})
+
+mongoose.connection.on('connected', () => {
+  console.log('db_connected')
+})

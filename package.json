@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "ts-node-dev -r esm ./src/bin/www",
+    "dev:debug": "ts-node-dev --transpile-only --respawn --inspect=4321 --project tsconfig.json ./src/bin/www",
+    "dev": "ts-node-dev --transpile-only --respawn --project tsconfig.json ./src/bin/www",
     "test": "jest",
     "lint": "eslint . --ext .ts,.js",
     "build": "tsc"
