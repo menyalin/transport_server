@@ -27,11 +27,11 @@ export const createTruckSchema = {
     },
     endServiceDate: {
       type: ['string', 'null'],
-      formats: ['date', 'date-time'],
+      // formats: ['date', 'date-time'],
     },
     startServiceDate: {
       type: ['string', 'null'],
-      formats: ['date', 'date-time'],
+      // formats: ['date', 'date-time'],
     },
     tkName: { type: ['string', 'null'] },
     regNum: { type: ['string', 'null'] },
@@ -39,7 +39,7 @@ export const createTruckSchema = {
     sts: { type: ['string', 'null'] },
     stsDate: {
       type: ['string', 'null'],
-      formats: ['date', 'date-time'],
+      // formats: ['date', 'date-time'],
     },
     pts: { type: ['string', 'null'] },
     owner: { type: ['string', 'null'] },
