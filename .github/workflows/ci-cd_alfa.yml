@@ -1,11 +1,12 @@
 name: Docker Image CI (ALFA)
 on:
-  # push:
-  #   branches: ['alfa']
   pull_request:
+    types:
+      - closed
     branches: ['alfa']
 jobs:
   build:
+    if: github.event.pull_request.merged == true
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
