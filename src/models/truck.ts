@@ -2,8 +2,8 @@
 /* eslint-disable no-unused-vars */
 import pkg from 'mongoose'
 import {
-  TRUCK_TYPES_ENUM,
-  TRUCK_KINDS_ENUM,
+  TRUCK_TYPES_ENUM_VALUES,
+  TRUCK_KINDS_ENUM_VALUES,
   TRUCK_LIFT_CAPACITY_TYPES,
 } from '../constants/truck'
 import additionalNotification from './_additionalNotification'
@@ -70,8 +70,8 @@ const truckSchema = new Schema(
     issueYear: Number,
     startServiceDate: Date,
     endServiceDate: Date,
-    type: { type: String, enum: TRUCK_TYPES_ENUM },
-    kind: { type: String, enum: [...TRUCK_KINDS_ENUM, null] },
+    type: { type: String, enum: TRUCK_TYPES_ENUM_VALUES },
+    kind: { type: String, enum: [...TRUCK_KINDS_ENUM_VALUES, null] },
     liftCapacityType: { type: Number, enum: TRUCK_LIFT_CAPACITY_TYPES },
     tkName: { type: Types.ObjectId, ref: 'TkName' },
     regNum: String,

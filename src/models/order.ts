@@ -3,9 +3,9 @@ import pkg from 'mongoose'
 import PriceDTO from '../dto/price.dto'
 
 import {
-  TRUCK_KINDS_ENUM,
+  TRUCK_KINDS_ENUM_VALUES,
   TRUCK_LIFT_CAPACITY_TYPES,
-  LOAD_DIRECTION_ENUM,
+  LOAD_DIRECTION_ENUM_VALUES,
 } from '../constants/truck'
 import {
   DOCUMENT_TYPES_ENUM,
@@ -138,7 +138,7 @@ const state = {
 const reqTransport = {
   kind: {
     type: String,
-    enum: TRUCK_KINDS_ENUM,
+    enum: TRUCK_KINDS_ENUM_VALUES,
   },
   liftCapacity: {
     type: Number,
@@ -146,7 +146,7 @@ const reqTransport = {
   },
   loadDirection: {
     type: String,
-    enum: LOAD_DIRECTION_ENUM,
+    enum: LOAD_DIRECTION_ENUM_VALUES,
   },
 }
 
