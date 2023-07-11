@@ -11,6 +11,14 @@ export class RoutePoint {
     this.type = point.type
     this.address = point.address
     this.plannedDate = point.plannedDate ? new Date(point.plannedDate) : null
+    this.intervalEndDate =
+      point.useInterval && point.intervalEndDate
+        ? new Date(point.intervalEndDate)
+        : null
+    this.intervalEndDateDoc =
+      point.useInterval && point.intervalEndDateDoc
+        ? new Date(point.intervalEndDateDoc)
+        : null
     this.arrivalDate = point.arrivalDate ? new Date(point.arrivalDate) : null
     this.departureDate = point.departureDate
       ? new Date(point.departureDate)
@@ -27,6 +35,7 @@ export class RoutePoint {
     this.isReturn = point.isReturn || false
     this.isPltReturn = point.isPltReturn || false
     this.isAutofilled = point.isAutofilled || false
+    this.useInterval = point.useInterval || false
     this.note = point.note
   }
 
@@ -107,11 +116,14 @@ export class RoutePoint {
         required: true,
       },
       plannedDate: Date,
+      intervalEndDate: Date,
+      intervalEndDateDoc: Date,
       arrivalDate: Date,
       departureDate: Date,
       plannedDateDoc: Date,
       arrivalDateDoc: Date,
       departureDateDoc: Date,
+      useInterval: { type: Boolean, default: false },
       isReturn: { type: Boolean, default: false },
       isPltReturn: { type: Boolean, default: false },
       isAutofilled: { type: Boolean, default: false },
