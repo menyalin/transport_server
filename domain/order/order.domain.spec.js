@@ -106,32 +106,32 @@ describe('Order.Domain', () => {
       const expectedResult = new Date(
         orderPlannedDate.add(4, 'minute').toISOString()
       )
-      expect(orderCompleted1.lastRouteDate).toEqual(expectedResult)
+      expect(orderCompleted1.route.lastRouteDate).toEqual(expectedResult)
     })
 
     it('should return last date in "inProgress" order', () => {
       const expectedResult = new Date(
         orderPlannedDate.add(1, 'minute').toISOString()
       )
-      expect(orderInProgress1.lastRouteDate).toEqual(expectedResult)
+      expect(orderInProgress1.route.lastRouteDate).toEqual(expectedResult)
     })
 
     it('should return last date in "inProgress" order', () => {
       const expectedResult = new Date(
         orderPlannedDate.add(3, 'minute').toISOString()
       )
-      expect(orderInProgress3.lastRouteDate).toEqual(expectedResult)
+      expect(orderInProgress3.route.lastRouteDate).toEqual(expectedResult)
     })
 
     it('should return NULL in "inProgress" order whithot dates', () => {
-      expect(orderInProgress2.lastRouteDate).toBeNull()
+      expect(orderInProgress2.route.lastRouteDate).toBeNull()
     })
   })
 
   describe('fillRouteDatesAndComplete', () => {
     it('completed order: should return a new minDate and "updated" flag is falsy', () => {
       const expectedDate = new Date(
-        dayjs(orderCompleted1.lastRouteDate)
+        dayjs(orderCompleted1.route.lastRouteDate)
           .add(tripDurationInMinutes, 'minutes')
           .toISOString()
       )
@@ -146,7 +146,7 @@ describe('Order.Domain', () => {
 
     it('inProgress order: should return a new minDate and "updated" flag is truthy', () => {
       const expectedDate = new Date(
-        dayjs(orderInProgress1.lastRouteDate)
+        dayjs(orderInProgress1.route.lastRouteDate)
           .add(
             unloadingDurationInMinutes * 2 + tripDurationInMinutes * 2,
             'minutes'

@@ -32,6 +32,7 @@ import TokenService from './token/index.js'
 import NotificationService from './notification/index.js'
 import FileService from './file/index.js'
 import DocTemplateService from './docTemplate/docTemplate.service.js'
+import OrderStatsService from './orderStats/orderStats.service.js'
 
 export {
   UserService,
@@ -66,4 +67,5 @@ export {
   DocsRegistryService,
   PaymentInvoiceService,
   DocTemplateService,
+  OrderStatsService,
 }
