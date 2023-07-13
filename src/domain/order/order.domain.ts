@@ -1,6 +1,5 @@
 // @ts-nocheck
 import dayjs from 'dayjs'
-import { BadRequestError } from '../../helpers/errors'
 import { isDateRangesOverlapping } from '../../utils/isDateRangesOverlapping'
 import { Route } from '../../values/order/route'
 
@@ -15,7 +14,7 @@ export class Order {
     // Проверка наличия комментария,
     const STATUSES = ['weRefused', 'clientRefused', 'notСonfirmedByClient']
     if (STATUSES.includes(orderBody?.state?.status) && !orderBody.note)
-      throw new BadRequestError(
+      throw new Error(
         'Сохранение не возможно. Необходимо заполнить примечание или изменить статус рейса'
       )
     return

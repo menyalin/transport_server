@@ -1,26 +1,45 @@
-// @ts-nocheck
+export enum TARIFF_TYPES_ENUM {
+  points = 'points',
+  zones = 'zones',
+  directDistanceZones = 'directDistanceZones',
+  waiting = 'waiting',
+  waitingOnReturn = 'waitingOnReturn',
+  additionalPoints = 'additionalPoints',
+  return = 'return',
+}
+export const TARIFF_TYPES_ENUM_VALUES = Object.values(TARIFF_TYPES_ENUM)
+
 const types = [
   {
-    value: 'points',
+    value: TARIFF_TYPES_ENUM.points,
     text: 'Маршрут, адреса',
     disabled: false,
     tariffType: 'base',
   },
   {
-    value: 'zones',
+    value: TARIFF_TYPES_ENUM.zones,
     text: 'Маршрут, зоны',
     disabled: false,
     tariffType: 'base',
   },
   {
-    value: 'directDistanceZones',
+    value: TARIFF_TYPES_ENUM.directDistanceZones,
     text: 'Зоны, по линейке',
     disabled: false,
     tariffType: 'base',
   },
-  { value: 'waiting', text: 'Простой', disabled: false },
-  { value: 'additionalPoints', text: 'Дополнительные точки', disabled: false },
-  { value: 'return', text: 'Возврат', disabled: false },
+  { value: TARIFF_TYPES_ENUM.waiting, text: 'Простой', disabled: false },
+  {
+    value: TARIFF_TYPES_ENUM.waitingOnReturn,
+    text: 'Простой при возврате',
+    disabled: false,
+  },
+  {
+    value: TARIFF_TYPES_ENUM.additionalPoints,
+    text: 'Дополнительные точки',
+    disabled: false,
+  },
+  { value: TARIFF_TYPES_ENUM.return, text: 'Возврат', disabled: false },
 ]
 
 const roundByHours = [
@@ -36,7 +55,6 @@ export const BASE_PRICE_TARIFF_TYPES = types
   .map((i) => i.value)
 
 export const TARIFF_TYPES = types
-export const TARIFF_TYPES_ENUM = types.map((i) => i.value)
 
 export const TARIFF_ROUND_BY_HOURS = roundByHours
 export const TARIFF_ROUND_BY_HOURS_ENUM = roundByHours.map((i) => i.value)
