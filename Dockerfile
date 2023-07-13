@@ -1,9 +1,14 @@
-FROM node:16-alpine
+FROM node:lts-alpine
 
 WORKDIR /usr/src/app
 COPY package*.json ./
+COPY tsconfig.json ./
+COPY jest.config.js ./ 
 
-RUN npm ci --only=production
-COPY . .
+RUN npm ci
+
+COPY src src
+RUN npm run build 
+
 EXPOSE 3000
-CMD [ "node", "./bin/www.js" ]
+CMD [ "node", "./dist/bin/www.js" ]
