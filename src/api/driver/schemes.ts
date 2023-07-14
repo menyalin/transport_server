@@ -3,80 +3,80 @@ export const getProfileDriversSchema = {
   type: 'object',
   properties: {
     profile: {
-      type: 'string'
-    }
+      type: 'string',
+    },
   },
   required: ['profile'],
-  additionalProperties: false
+  additionalProperties: false,
 }
 
 export const createDriverSchema = {
   type: 'object',
   properties: {
     company: {
-      type: 'string'
+      type: 'string',
     },
     surname: {
-      type: ['string', 'null']
+      type: ['string', 'null'],
     },
     name: {
-      type: ['string', 'null']
+      type: ['string', 'null'],
     },
     patronymic: {
-      type: ['string', 'null']
+      type: ['string', 'null'],
     },
     tkName: {
-      type: ['string', 'null']
+      type: ['string', 'null'],
     },
     passportId: {
-      type: ['string', 'null']
+      type: ['string', 'null'],
     },
     passportIssued: {
-      type: ['string', 'null']
+      type: ['string', 'null'],
     },
     passportDate: {
       type: ['string', 'null'],
-      formats: ['date', 'date-time']
+      // formats: ['date', 'date-time']
     },
     licenseId: {
       type: ['string', 'null'],
     },
     licenseDate: {
       type: ['string', 'null'],
-      formats: ['date', 'date-time']
+      // formats: ['date', 'date-time']
     },
     licenseCategory: {
-      type: ['string', 'null']
+      type: ['string', 'null'],
     },
     driverCardId: {
-      type: ['string', 'null']
+      type: ['string', 'null'],
     },
     driverCardPeriod: {
       type: ['string', 'null'],
-      formats: ['date', 'date-time']
+      // formats: ['date', 'date-time']
     },
     employmentDate: {
       type: ['string', 'null'],
-      formats: ['date', 'date-time']
+      // formats: ['date', 'date-time']
     },
     dismissalDate: {
       type: ['string', 'null'],
-      formats: ['date', 'date-time']
+      // formats: ['date', 'date-time']
     },
     recommender: { type: ['string', 'null'] },
 
     birthday: {
       type: ['string', 'null'],
-      formats: ['date', 'date-time']
+      // formats: ['date', 'date-time']
     },
     phone: {
-      type: ['string', 'null']
+      type: ['string', 'null'],
     },
     phone2: {
-      type: ['string', 'null']
-    }
+      type: ['string', 'null'],
+    },
   },
   required: ['company', 'surname'],
-  additionalProperties: true
+  additionalProperties: true,
 }
 //
