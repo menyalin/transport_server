@@ -1,10 +1,10 @@
 // @ts-nocheck
 import mongoose from 'mongoose'
-import { POINT_TYPES } from '../../../constants/enums'
+import { POINT_TYPE_VALUES } from '../../../constants/enums'
 import { ORDER_PRICE_TYPES_ENUM } from '../../../constants/priceTypes'
 
 const getPointAddressIdsByType = (type) => {
-  if (!type || !POINT_TYPES.includes(type))
+  if (!type || !POINT_TYPE_VALUES.includes(type))
     throw new Error(`GROSS PROFIT ERROR: incorrect point type: ${type}`)
   return {
     $map: {

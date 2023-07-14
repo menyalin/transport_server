@@ -1,5 +1,4 @@
-// @ts-nocheck
-import { POINT_TYPES } from '../constants/enums'
+import { POINT_TYPE_VALUES } from '../constants/enums'
 
 import {
   TRUCK_KINDS_ENUM_VALUES,
@@ -18,13 +17,22 @@ const { Schema, model, Types } = pkg
 const point = {
   type: {
     type: String,
-    enum: POINT_TYPES,
+    enum: POINT_TYPE_VALUES,
   },
   address: {
     type: Types.ObjectId,
     ref: 'Address',
   },
   fixedTime: String,
+  hoursInterval: {
+    type: Number,
+    min: 0,
+    default: 0,
+  },
+  useInterval: {
+    type: Boolean,
+    default: false,
+  },
   offsetDays: Number,
   note: String,
 }
