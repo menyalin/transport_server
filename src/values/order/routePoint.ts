@@ -1,11 +1,11 @@
 // @ts-nocheck
 import mongoose from 'mongoose'
 import dayjs from 'dayjs'
-import { POINT_TYPES } from '../../constants/enums'
+import { POINT_TYPE_VALUES } from '../../constants/enums'
 
 export class RoutePoint {
   constructor(point) {
-    if (!POINT_TYPES.includes(point.type))
+    if (!POINT_TYPE_VALUES.includes(point.type))
       throw new Error('RoutePoint : constructor error : invalid point type')
     if (!point.address)
       throw new Error('RoutePoint : constructor error : address is missing')
@@ -108,7 +108,7 @@ export class RoutePoint {
     return {
       type: {
         type: String,
-        enum: POINT_TYPES,
+        enum: POINT_TYPE_VALUES,
         required: true,
       },
       address: {

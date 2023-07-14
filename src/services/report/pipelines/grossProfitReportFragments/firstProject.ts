@@ -1,9 +1,9 @@
 // @ts-nocheck
 import { firstPlannedDate } from '../fragments/firstPlannedDate'
-import { POINT_TYPES } from '../../../../constants/enums'
+import { POINT_TYPE_VALUES } from '../../../../constants/enums'
 
 const getPointAddressIdsByType = (type) => {
-  if (!type || !POINT_TYPES.includes(type))
+  if (!type || !POINT_TYPE_VALUES.includes(type))
     throw new Error(`GROSS PROFIT ERROR: incorrect point type: ${type}`)
   return {
     $map: {
