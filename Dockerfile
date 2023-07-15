@@ -9,6 +9,6 @@ RUN npm ci
 COPY src src
 RUN npm run build 
 
-COPY templates ./dist
+COPY templates dist/templates
 EXPOSE 3000
 CMD [ "node", "./dist/bin/www.js" ]
