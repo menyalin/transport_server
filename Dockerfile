@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 COPY tsconfig.json ./
 COPY jest.config.js ./ 
-COPY templates ./
+COPY templates ./dist
 RUN npm ci
 
 COPY src src
