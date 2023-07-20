@@ -1,26 +1,82 @@
-// @ts-nocheck
+import { NotifyClientsEvent } from '../../socket/notifyclients.service'
 import dayjs from 'dayjs'
 import { isDateRangesOverlapping } from '../../utils/isDateRangesOverlapping'
 import { Route } from '../../values/order/route'
 
+import { ORDER_DOMAIN_EVENTS, OrderRemoveEvent } from './domainEvents'
+import { BusEvent } from 'ts-bus/types'
+
+export interface IOrderDTO {
+  _id: string
+  orderDate?: string | Date
+  startPositionDate?: Date | string
+  route: []
+  state: {
+    status: string
+    driverNotified?: boolean
+    clientNotified?: boolean
+  }
+  grade?: object
+  company: string
+  confirmedCrew: {
+    truck: string
+  }
+  docs: []
+  client: {
+    client: string
+  }
+  prePrices: []
+  prices: []
+  finalPrices: []
+  outsourceCosts: []
+  cargoParams: object
+  reqTransport: object
+  paymentParts: []
+  analytics: object
+  docsState: object
+  paymentToDriver: object
+  note: string
+  noteAccountant: string
+  isActive: boolean
+  isDisabled: boolean
+}
+
 export class Order {
-  static getOrderDate(order) {
-    if (order?.orderDate) return new Date(order.orderDate)
-    const tmpDate = order.route[0].plannedDateDoc || order.route[0].plannedDate
-    return new Date(tmpDate)
+  events: BusEvent<any>[] = []
+  _id: string
+  state: {
+    status: string
+    driverNotified?: boolean
+    clientNotified?: boolean
   }
-
-  static orderStatusValidator(orderBody) {
-    // Проверка наличия комментария,
-    const STATUSES = ['weRefused', 'clientRefused', 'notСonfirmedByClient']
-    if (STATUSES.includes(orderBody?.state?.status) && !orderBody.note)
-      throw new Error(
-        'Сохранение не возможно. Необходимо заполнить примечание или изменить статус рейса'
-      )
-    return
+  startPositionDate?: Date | null
+  grade: {
+    grade?: number
   }
+  company: string
+  orderDate: Date
+  route: Route
+  confirmedCrew: {
+    truck: string
+  }
+  docs: []
+  client: object
+  prePrices: []
+  prices: []
+  finalPrices: []
+  outsourceCosts: []
+  cargoParams: object
+  reqTransport: object
+  paymentParts: []
+  analytics: object
+  docsState: object
+  paymentToDriver: object
+  note: string
+  noteAccountant: string
+  isActive: boolean = true
+  isDisabled: boolean = false
 
-  constructor(order) {
+  constructor(order: IOrderDTO) {
     Order.orderStatusValidator(order)
 
     if (!order._id) throw new Error('Order : constructor : order ID is missing')
@@ -30,9 +86,10 @@ export class Order {
     this.startPositionDate = order.startPositionDate
       ? new Date(order.startPositionDate)
       : null
+
     this._id = order._id
     this.state = order.state
-    this.grade = order.grade
+    this.grade = order.grade || {}
     this.company = order.company
     this.orderDate = Order.getOrderDate(order)
     this.route = new Route(order.route)
@@ -53,6 +110,30 @@ export class Order {
     this.noteAccountant = order.noteAccountant
     this.isActive = order.isActive
     this.isDisabled = order.isDisabled
+  }
+
+  clearEvents() {
+    this.events = []
+  }
+
+  remove(userId: string) {
+    if (this?.state?.status === 'needGet') {
+      this.events.push(OrderRemoveEvent({ orderId: this.id }))
+      this.events.push(
+        NotifyClientsEvent({
+          subscriber: this.company.toString(),
+          topic: ORDER_DOMAIN_EVENTS.deleted,
+          payload: this.id,
+        })
+      )
+    }
+  }
+  toObject(): object {
+    const obj: { [key: string]: any } = {}
+    Object.getOwnPropertyNames(this).forEach((prop: string) => {
+      obj[prop] = (this as any)[prop]
+    })
+    return obj
   }
 
   complete() {
@@ -76,7 +157,7 @@ export class Order {
     return this.state.status === 'completed' && this.route.routeDatesFilled
   }
 
-  isEqual(inputId) {
+  isEqual(inputId: string) {
     return this._id === inputId || this._id.toString() === inputId.toString()
   }
 
@@ -88,8 +169,9 @@ export class Order {
     return this.confirmedCrew.truck.toString()
   }
 
-  get routeDateRange() {
+  get routeDateRange(): [Date, Date] | null {
     if (!this.isCompleted) return null
+    if (!this.route.firstArrivalDate || !this.route.lastRouteDate) return null
     else return [this.route.firstArrivalDate, this.route.lastRouteDate]
   }
 
@@ -97,7 +179,11 @@ export class Order {
     minDate,
     tripDurationInMinutes,
     unloadingDurationInMinutes,
-  }) {
+  }: {
+    minDate: Date | null
+    tripDurationInMinutes: number
+    unloadingDurationInMinutes: number
+  }): [Date, boolean] {
     let updated = false
     let tmpDate =
       !minDate || minDate < this.orderDate ? this.orderDate : minDate
@@ -123,13 +209,13 @@ export class Order {
   }
 
   static autoCompleteOrders(
-    orders,
+    orders: Order[],
     tripDurationInMinutes = 30,
     unloadingDurationInMinutes = 15
   ) {
-    const updatedOrders = []
+    const updatedOrders: Order[] = []
 
-    const events = []
+    const events: object[] = []
 
     if (!Array.isArray(orders))
       throw new Error(
@@ -141,13 +227,13 @@ export class Order {
       throw new Error(
         'OrderDomain:autoCompleteOrders error : trucks count !== 1'
       )
-    orders.sort((a, b) => a.orderDate - b.orderDate)
-    var minDate
+    orders.sort((a, b) => +a.orderDate - +b.orderDate)
+    let minDate = null
 
     for (let order of orders) {
-      let updated = false
+      let updated: boolean = false
       if (order.isCompleted) {
-        minDate = order.route.lastDate
+        minDate = order.route.lastRouteDate
       } else if (order.isInProgress) {
         ;[minDate, updated] = order.fillRouteDatesAndComplete({
           minDate,
@@ -170,5 +256,21 @@ export class Order {
       events,
       updatedOrders,
     }
+  }
+
+  static getOrderDate(order: IOrderDTO): Date {
+    if (order?.orderDate) return new Date(order.orderDate)
+    const route: Route = new Route(order.route)
+    return route.orderDate
+  }
+
+  static orderStatusValidator(orderBody: IOrderDTO) {
+    // Проверка наличия комментария,
+    const STATUSES = ['weRefused', 'clientRefused', 'notСonfirmedByClient']
+    if (STATUSES.includes(orderBody?.state?.status) && !orderBody.note)
+      throw new Error(
+        'Сохранение не возможно. Необходимо заполнить примечание или изменить статус рейса'
+      )
+    return
   }
 }

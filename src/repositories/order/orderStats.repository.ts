@@ -1,15 +1,33 @@
-// @ts-nocheck
+import {
+  ORDER_DOMAIN_EVENTS,
+  OrderRemoveEvent,
+  OrdersRouteUpdateEvent,
+} from '../../domain/order/domainEvents'
 import { Order as OrderDomain } from '../../domain/order/order.domain'
-import { EventBus, Events } from '../../eventBus'
+import { bus } from '../../eventBus'
 import { OrderStats as OrderStatsModel } from '../../models'
 
 import { RouteStats } from '../../values/order/routeStats'
 
 class OrderStatsRepository {
   constructor() {
-    EventBus.subscribe(Events.ORDERS_ROUTE_UPDATED, this.updateRoutes)
+    bus.subscribe(OrdersRouteUpdateEvent, (e) => {
+      try {
+        this.updateRoutes(e.payload)
+      } catch (e) {
+        console.log(' order route update subscription error: ', e)
+      }
+    })
+    bus.subscribe(OrderRemoveEvent, (e) => {
+      try {
+        this.removeStats(e.payload.orderId)
+      } catch (e) {
+        console.log(' order remove subscription error: ', e)
+      }
+    })
   }
-  static validateOrders(orders, method = '') {
+
+  static validateOrders(orders: OrderDomain[], method = '') {
     if (!orders || !Array.isArray(orders))
       throw new Error(
         `OrderStatsRepository : ${method} : orders array is missing`
@@ -18,10 +36,15 @@ class OrderStatsRepository {
       throw new Error(`OrderStatsRepository : ${method} : invalid orders type`)
   }
 
-  async updateRoutes(orders) {
+  async removeStats(orderId: string) {
+    const res = await OrderStatsModel.findOneAndDelete({ orderId })
+    return res
+  }
+
+  async updateRoutes(orders: OrderDomain[]) {
     OrderStatsRepository.validateOrders(orders, 'updateRoutes')
     if (orders.length === 0) return
-    const makeOperation = (filter, update) => ({
+    const makeOperation = (filter: object, update: object) => ({
       updateOne: { filter, update, upsert: true },
     })
     const operations = orders.map((order) =>

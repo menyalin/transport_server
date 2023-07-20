@@ -1,17 +1,41 @@
-// @ts-nocheck
-import mongoose from 'mongoose'
 import dayjs from 'dayjs'
-import { POINT_TYPE_VALUES } from '../../constants/enums'
+import mongoose from 'mongoose'
+import { POINT_TYPES_ENUM, POINT_TYPE_VALUES } from '../../constants/enums'
+import { ITemplateRoutePoint } from './templateRoutePoint'
+
+function setDate(date: Date | string | null): Date | null {
+  if (!date) return null
+  if (typeof date === 'string') return new Date(date)
+  return date
+}
 
 export class RoutePoint {
-  constructor(point) {
+  type: POINT_TYPES_ENUM
+  address: string
+  plannedDate: Date | null
+  plannedDateDoc: Date | null
+  intervalEndDate: Date | null
+  intervalEndDateDoc: Date | null
+  arrivalDate: Date | null
+  arrivalDateDoc: Date | null
+  departureDate: Date | null
+  departureDateDoc: Date | null
+  isReturn: boolean = false
+  isPltReturn: boolean = false
+  isAutofilled: boolean = false
+  useInterval: boolean = false
+  note: string
+
+  // TODO: add point interface
+  constructor(point: any) {
     if (!POINT_TYPE_VALUES.includes(point.type))
       throw new Error('RoutePoint : constructor error : invalid point type')
     if (!point.address)
       throw new Error('RoutePoint : constructor error : address is missing')
     this.type = point.type
     this.address = point.address
-    this.plannedDate = point.plannedDate ? new Date(point.plannedDate) : null
+    this.plannedDate = setDate(point.plannedDate)
+
     this.intervalEndDate =
       point.useInterval && point.intervalEndDate
         ? new Date(point.intervalEndDate)
@@ -38,6 +62,47 @@ export class RoutePoint {
     this.isAutofilled = point.isAutofilled || false
     this.useInterval = point.useInterval || false
     this.note = point.note
+  }
+
+  static createFromTemplatePoint(
+    templatePoint: ITemplateRoutePoint,
+    orderDate: Date,
+    isFirstPoint: boolean
+  ): RoutePoint {
+    if (!orderDate) throw new Error('OrderDate is missing!')
+
+    const plannedDate: Date | null =
+      templatePoint.hasFixedTime || isFirstPoint
+        ? new Date(
+            dayjs(orderDate)
+              .add(templatePoint.fixedTime as number, 'hours')
+              .add(templatePoint.offsetDays || 0, 'days')
+              .toISOString()
+          )
+        : null
+
+    const intervalEndDate: Date | null = templatePoint.useInterval
+      ? new Date(
+          dayjs(orderDate)
+            .add(
+              (templatePoint.fixedTime as number) + templatePoint.hoursInterval,
+              'hours'
+            )
+            .add(templatePoint.offsetDays || 0, 'days')
+            .toISOString()
+        )
+      : null
+
+    return new RoutePoint({
+      type: templatePoint.type,
+      address: templatePoint.address,
+      plannedDate,
+      intervalEndDate,
+      plannedDateDoc: plannedDate,
+      intervalEndDateDoc: intervalEndDate,
+      useInterval: templatePoint.useInterval,
+      note: templatePoint.note,
+    })
   }
 
   get isLoadingPointType() {
@@ -72,7 +137,8 @@ export class RoutePoint {
     return this.firstDate
   }
 
-  autofillDates({ minDate, unloadingDurationInMinutes }) {
+  // TODO: add point interface
+  autofillDates({ minDate, unloadingDurationInMinutes }: any) {
     if (
       !minDate ||
       isNaN(unloadingDurationInMinutes || !(minDate instanceof Date))
@@ -92,7 +158,7 @@ export class RoutePoint {
       this.isAutofilled = true
     }
 
-    if (!this.departureDates) {
+    if (!this.departureDate) {
       tmpDate = dayjs(this.arrivalDate).add(
         unloadingDurationInMinutes || 15,
         'minutes'

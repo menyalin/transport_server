@@ -1,5 +1,2 @@
-// @ts-nocheck
-import EventBus from './eventBus'
-import Events from './events'
-
-export { EventBus, Events }
+import { EventBus } from 'ts-bus'
+export const bus = new EventBus()

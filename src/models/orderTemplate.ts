@@ -1,5 +1,3 @@
-import { POINT_TYPE_VALUES } from '../constants/enums'
-
 import {
   TRUCK_KINDS_ENUM_VALUES,
   TRUCK_LIFT_CAPACITY_TYPES,
@@ -11,31 +9,10 @@ import {
 } from '../constants/order'
 
 import pkg from 'mongoose'
+import { TemplateRoutePoint } from '../values/order/templateRoutePoint'
 
 const { Schema, model, Types } = pkg
 
-const point = {
-  type: {
-    type: String,
-    enum: POINT_TYPE_VALUES,
-  },
-  address: {
-    type: Types.ObjectId,
-    ref: 'Address',
-  },
-  fixedTime: String,
-  hoursInterval: {
-    type: Number,
-    min: 0,
-    default: 0,
-  },
-  useInterval: {
-    type: Boolean,
-    default: false,
-  },
-  offsetDays: Number,
-  note: String,
-}
 const analytics = {
   type: { type: String, enum: ORDER_ANALYTIC_TYPES_ENUM },
   distanceRoad: { type: Number },
@@ -95,7 +72,7 @@ const schema = new Schema(
     },
     analytics,
     fixedTimeSlots: { type: Boolean, default: false },
-    route: [point],
+    route: [TemplateRoutePoint.getDbSchema()],
     cargoParams: cargoParams,
     reqTransport: reqTransport,
     state,

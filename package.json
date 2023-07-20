@@ -5,7 +5,7 @@
   "scripts": {
     "dev:debug": "ts-node-dev --transpile-only --respawn --inspect=4321 --project tsconfig.json ./src/bin/www",
     "dev": "ts-node-dev --transpile-only --respawn --project tsconfig.json ./src/bin/www",
-    "test": "jest",
+    "test:watch": "jest --watchAll",
     "lint": "eslint . --ext .ts,.js",
     "build": "tsc"
   },
@@ -29,6 +29,7 @@
     "nodemailer": "^6.9.3",
     "openrouteservice-js": "^0.3.0",
     "socket.io": "^4.7.1",
+    "ts-bus": "^2.3.1",
     "typescript": "^5.1.6",
     "uuid": "^9.0.0",
     "xlsx": "^0.18.5"
