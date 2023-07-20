@@ -2,6 +2,8 @@
 import dayjs from 'dayjs'
 import { describe, it, expect } from '@jest/globals'
 import { RoutePoint } from './routePoint'
+import { TemplateRoutePoint } from './templateRoutePoint'
+import { POINT_TYPES_ENUM } from '../../constants/enums'
 
 describe('RoutePoint value-object', () => {
   const unloadingDurationInMinutes = 15
@@ -115,5 +117,95 @@ describe('RoutePoint value-object', () => {
       arrivalDateDoc: new Date('2023-06-06T08:00:00.000Z'),
     })
     expect(point.getDurationInMinutes).toBe(0)
+  })
+})
+
+describe('RoutePointcreatefromTemplatePoint', () => {
+  test('should throw error when orderDate is null', () => {
+    const templatePoint = new TemplateRoutePoint({
+      type: POINT_TYPES_ENUM.loading,
+      address: '123 St',
+      hourInterval: 2,
+      useInterval: true,
+    })
+
+    expect(() => {
+      RoutePoint.createFromTemplatePoint(templatePoint, null)
+    }).toThrow('OrderDate is missing!')
+  })
+
+  test('should return RoutePoint object when function is passed with valid arguments', () => {
+    const orderDate = new Date()
+    const templatePoint = new TemplateRoutePoint({
+      type: POINT_TYPES_ENUM.loading,
+      address: '123 St',
+      hoursInterval: 2.3,
+      useInterval: true,
+      fixedTime: 13.5,
+      offsetDays: 0,
+    })
+
+    const result = RoutePoint.createFromTemplatePoint(templatePoint, orderDate)
+
+    const expectedPlannedDate = new Date(
+      dayjs(orderDate)
+        .add(templatePoint.fixedTime, 'hours')
+        .add(templatePoint.offsetDays, 'days')
+    )
+
+    const expectedEndDate = new Date(
+      dayjs(orderDate)
+        .add(templatePoint.fixedTime, 'hours')
+        .add(templatePoint.hoursInterval, 'hours')
+        .add(templatePoint.offsetDays, 'days')
+    )
+
+    expect(result).toMatchObject({
+      plannedDate: expectedPlannedDate,
+      intervalEndDate: expectedEndDate,
+      useInterval: true,
+    })
+  })
+
+  test('should return RoutePoint from template without fixedTime (first point)', () => {
+    const orderDate = new Date()
+    const templatePoint = new TemplateRoutePoint({
+      type: POINT_TYPES_ENUM.loading,
+      address: '123 St',
+    })
+
+    const result = RoutePoint.createFromTemplatePoint(
+      templatePoint,
+      orderDate,
+      true
+    )
+
+    const expectedPlannedDate = new Date(dayjs(orderDate))
+
+    expect(result).toMatchObject({
+      plannedDate: expectedPlannedDate,
+      intervalEndDate: null,
+      useInterval: false,
+    })
+  })
+
+  test('should return RoutePoint from template without fixedTime (second point)', () => {
+    const orderDate = new Date()
+    const templatePoint = new TemplateRoutePoint({
+      type: POINT_TYPES_ENUM.loading,
+      address: '123 St',
+    })
+
+    const result = RoutePoint.createFromTemplatePoint(
+      templatePoint,
+      orderDate,
+      false
+    )
+
+    expect(result).toMatchObject({
+      plannedDate: null,
+      intervalEndDate: null,
+      useInterval: false,
+    })
   })
 })

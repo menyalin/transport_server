@@ -1,34 +1,17 @@
-// @ts-nocheck
-import moment from 'moment'
+import { RoutePoint } from '../../values/order/routePoint'
+import {
+  ITemplateRoutePoint,
+  TemplateRoutePoint,
+} from '../../values/order/templateRoutePoint'
 
-const getRouteFromTemplate = ({ template, date }) => {
-  let tmpRoute = []
-  if (!template.fixedTimeSlots) {
-    tmpRoute = template.route
-    tmpRoute[0].plannedDate = date
-    return tmpRoute
-  }
-
-  for (let i = 0; i < template.route.length; i++) {
-    if (i === 0) {
-      tmpRoute.push({
-        ...template.route[i],
-        plannedDate: moment(date)
-          .add(template.route[i].fixedTime, 'h')
-          .format(),
-      })
-    } else {
-      const point = template.route[i]
-      if (point.fixedTime && point.offsetDays >= 0) {
-        point.plannedDate = moment(date)
-          .add(template.route[i].fixedTime, 'h')
-          .add(template.route[i].offsetDays, 'd')
-          .format()
-      }
-      tmpRoute.push({ ...point })
-    }
-  }
-  return tmpRoute
+const getRouteFromTemplate = ({ template, date }: any): RoutePoint[] => {
+  return template.route.map((point: ITemplateRoutePoint, idx: number) =>
+    RoutePoint.createFromTemplatePoint(
+      new TemplateRoutePoint(point),
+      new Date(date),
+      idx === 0
+    )
+  )
 }
 
 export default getRouteFromTemplate
