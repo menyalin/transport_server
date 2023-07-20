@@ -12,19 +12,19 @@ function setDate(date: Date | string | null): Date | null {
 export class RoutePoint {
   type: POINT_TYPES_ENUM
   address: string
-  plannedDate: Date | null
-  plannedDateDoc: Date | null
-  intervalEndDate: Date | null
-  intervalEndDateDoc: Date | null
-  arrivalDate: Date | null
-  arrivalDateDoc: Date | null
-  departureDate: Date | null
-  departureDateDoc: Date | null
+  plannedDate: Date | null = null
+  plannedDateDoc: Date | null = null
+  intervalEndDate: Date | null = null
+  intervalEndDateDoc: Date | null = null
+  arrivalDate: Date | null = null
+  arrivalDateDoc: Date | null = null
+  departureDate: Date | null = null
+  departureDateDoc: Date | null = null
   isReturn: boolean = false
   isPltReturn: boolean = false
   isAutofilled: boolean = false
   useInterval: boolean = false
-  note: string
+  note?: string
 
   // TODO: add point interface
   constructor(point: any) {
