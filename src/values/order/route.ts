@@ -1,30 +1,35 @@
-// @ts-nocheck
-import dayjs from 'dayjs'
+import dayjs, { UnitType } from 'dayjs'
 import { RoutePoint } from './routePoint'
+import { isDate } from '../../utils/typeGuards'
 
 export class Route {
-  static validateRoute(route, method = '') {
+  route: RoutePoint[]
+  static validateRoute(route: RoutePoint[], method = '') {
     if (!route || !Array.isArray(route))
       throw new Error(`Route : ${method} : unexpected route type`)
     if (route.length < 2)
       throw new Error(`Route : ${method} : invalid length of array`)
   }
 
-  constructor(route) {
+  constructor(route: []) {
     Route.validateRoute(route, 'constructor')
-    this.route = route.map((p) => new RoutePoint(p))
+    this.route = route.map((p: RoutePoint) => new RoutePoint(p))
   }
 
   get firstArrivalDate() {
     return this.route[0].firstDate
   }
 
-  get lastRouteDate() {
-    return this.route.reduce(
-      (lastDate, point) =>
-        point.lastDate > lastDate ? point.lastDate : lastDate,
-      null
-    )
+  get lastRouteDate(): Date | null {
+    return this.route.reduce((latest: Date | null, point) => {
+      if (
+        point.lastDate !== null &&
+        (latest === null || point.lastDate > latest)
+      ) {
+        return point.lastDate
+      }
+      return latest
+    }, null)
   }
 
   get routeDatesFilled() {
@@ -47,7 +52,7 @@ export class Route {
       .map((i) => i.getDurationInMinutes)
   }
 
-  tripTimes(unit) {
+  tripTimes(unit: UnitType) {
     const res = []
     for (let i = 1; i < this.route.length; i++) {
       const prev = this.route[i - 1]
@@ -59,21 +64,34 @@ export class Route {
     return res
   }
 
-  totalDuration(unit) {
+  totalDuration(unit: UnitType) {
     const dates = this.route
-      .reduce((arr, item) => [...arr, item.firstDate, item.lastDate], [])
-      .filter((i) => !!i)
+      .reduce(
+        (arr: (Date | null)[], item: RoutePoint) => [
+          ...arr,
+          item.firstDate,
+          item.lastDate,
+        ],
+        []
+      )
+      .filter(isDate)
     if (dates.length <= 1) return 0
-    const minDate = Math.min(...dates)
-    const maxDate = Math.max(...dates)
+    const minDate = Math.min(...dates.map((date) => date.getTime()))
+    const maxDate = Math.max(...dates.map((date) => date.getTime()))
     return dayjs(maxDate).diff(minDate, unit)
   }
-
+  get orderDate(): Date {
+    if (!this.route[0].plannedDateDoc && !this.route[0].plannedDate)
+      throw new Error('order date is missing! invalid order')
+    if (isDate(this.route[0].plannedDateDoc))
+      return this.route[0].plannedDateDoc
+    if (isDate(this.route[0].plannedDate)) return this.route[0].plannedDate
+    else throw new Error('order date is missing! invalid order')
+  }
   toJSON() {
     return this.route
   }
   toObject() {
-    console.log('toObject: ', this.route)
     return Object.assign(this.route)
   }
 }

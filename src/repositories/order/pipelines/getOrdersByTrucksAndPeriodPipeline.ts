@@ -1,23 +1,35 @@
-// @ts-nocheck
-import mongoose from 'mongoose'
+import { PipelineStage, Types } from 'mongoose'
 import { orderPlannedDateBuilder } from '../../../services/_pipelineFragments/orderPlannedDateBuilder'
+import { DateRange } from '../../../classes/dateRange'
 
-export default function ({ company, truckIds, orderStatuses, period }) {
+export interface IGetOrdersByTrucksAndPeriodPipelineProps {
+  company: string
+  truckIds: string[]
+  orderStatuses: string[]
+  period: DateRange
+}
+
+export function getOrdersByTrucksAndPeriodPipeline({
+  company,
+  truckIds,
+  orderStatuses,
+  period,
+}: IGetOrdersByTrucksAndPeriodPipelineProps): PipelineStage[] {
   return [
     {
       $match: {
         $expr: {
           $and: [
-            { $eq: ['$company', new mongoose.Types.ObjectId(company)] },
+            { $eq: ['$company', new Types.ObjectId(company)] },
             { $in: ['$state.status', orderStatuses] },
             {
               $in: [
                 '$confirmedCrew.truck',
-                truckIds.map((id) => new mongoose.Types.ObjectId(id)),
+                truckIds.map((id) => new Types.ObjectId(id)),
               ],
             },
-            { $gte: [orderPlannedDateBuilder(), period[0]] },
-            { $lt: [orderPlannedDateBuilder(), period[1]] },
+            { $gte: [orderPlannedDateBuilder(), period.start] },
+            { $lt: [orderPlannedDateBuilder(), period.end] },
           ],
         },
       },

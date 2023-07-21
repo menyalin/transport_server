@@ -21,7 +21,8 @@ import { getDocsRegistryByOrderId } from './getDocsRegistryByOrderId'
 import { getPaymentInvoicesByOrderIds } from './getPaymentInvoicesByOrderIds'
 import OrderRepository from '../../repositories/order/order.repository'
 import { Order as OrderDomain } from '../../domain/order/order.domain'
-import { EventBus, Events } from '../../eventBus'
+import { bus } from '../../eventBus'
+import orderRepository from '../../repositories/order/order.repository'
 
 const _isEqualDatesOfRoute = ({ oldRoute, newRoute }) => {
   const oldArrivalDate = new Date(oldRoute[0].arrivalDate).toLocaleString()
@@ -174,20 +175,21 @@ class OrderService {
   }
 
   async deleteById({ id, user }) {
-    const order = await OrderModel.findById(id)
-    if (order?.state?.status === 'needGet') {
-      emitTo(order.company.toString(), 'order:deleted', id)
-      await ChangeLogService.add({
-        docId: order._id.toString(),
-        company: order.company.toString(),
-        coll: 'order',
-        user,
-        opType: 'delete',
-        body: JSON.stringify(order.toJSON()),
-      })
-      await order.remove()
-      return order
-    } else throw new BadRequestError('Рейс нельзя удалить')
+    const order: OrderDomain = await OrderRepository.getById(id)
+    order.remove(user)
+    order.events.forEach((event: IDomainEvent) => {
+      bus.publish(event)
+    })
+    order.clearEvents()
+    await ChangeLogService.add({
+      docId: order.id,
+      company: order.company,
+      coll: 'order',
+      user,
+      opType: 'delete',
+      body: JSON.stringify(order),
+    })
+    return order
   }
 
   async getById(id) {
