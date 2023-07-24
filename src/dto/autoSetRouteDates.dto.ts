@@ -1,7 +1,7 @@
-// @ts-nocheck
 import dayjs from 'dayjs'
+import { DateRange } from '../classes/dateRange'
 
-export function truckIdsValidator(truckIds) {
+export function truckIdsValidator(truckIds: string[]) {
   if (!Array.isArray(truckIds) || truckIds.length === 0)
     throw new Error('AutoSetRouteDatesDTO: invalid params: truckIds')
   if (truckIds.some((id) => typeof id !== 'string'))
@@ -9,53 +9,44 @@ export function truckIdsValidator(truckIds) {
   return null
 }
 
-export function parsePeriod(period) {
-  if (!Array.isArray(period) || period.length !== 2)
-    throw new Error('AutoSetRouteDatesDTO: invalid params: period')
-  if (period.some((date) => !dayjs(date).isValid()))
-    throw new Error(
-      'AutoSetRouteDatesDTO: invalid params: period dates not valid'
-    )
-  return period.map((p) => new Date(p)).sort((a, b) => a - b)
+// export function parsePeriod(period) {
+//   if (!Array.isArray(period) || period.length !== 2)
+//     throw new Error('AutoSetRouteDatesDTO: invalid params: period')
+//   if (period.some((date) => !dayjs(date).isValid()))
+//     throw new Error(
+//       'AutoSetRouteDatesDTO: invalid params: period dates not valid'
+//     )
+//   return period.map((p) => new Date(p)).sort((a, b) => a - b)
+// }
+
+interface IProps {
+  truckIds: string[]
+  period: string[]
+  tripDurationInMinutes: number
+  unloadingDurationInMinutes: number
+  operationToken: string
 }
 
 export class AutoSetRouteDatesDTO {
+  operationToken: string
+  truckIds: string[]
+  period: DateRange
+  tripDurationInMinutes: number
+  unloadingDurationInMinutes: number
+
   constructor({
     truckIds,
     period,
     tripDurationInMinutes,
     unloadingDurationInMinutes,
     operationToken,
-  }) {
+  }: IProps) {
     truckIdsValidator(truckIds)
     this.operationToken = operationToken
-    this._truckIds = truckIds
-    this._period = parsePeriod(period)
-    if (
-      Number.isNaN(Number.parseInt(tripDurationInMinutes)) ||
-      Number.isNaN(Number.parseInt(unloadingDurationInMinutes))
-    )
-      throw new Error('AutoSetRouteDatesDTO: invalid params: duration is NaN')
-    this._tripDurationInMinutes = Number.parseInt(tripDurationInMinutes)
-    this._unloadingDurationInMinutes = Number.parseInt(
-      unloadingDurationInMinutes
-    )
-  }
-
-  get truckIds() {
-    return this._truckIds
-  }
-
-  get period() {
-    return this._period
-  }
-
-  get tripDurationInMinutes() {
-    return this._tripDurationInMinutes
-  }
-
-  get unloadingDurationInMinutes() {
-    return this._unloadingDurationInMinutes
+    this.truckIds = truckIds
+    this.period = new DateRange(period[0] as string, period[1] as string)
+    this.tripDurationInMinutes = tripDurationInMinutes
+    this.unloadingDurationInMinutes = unloadingDurationInMinutes
   }
 
   toString() {
