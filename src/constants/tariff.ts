@@ -30,11 +30,6 @@ const types = [
   },
   { value: TARIFF_TYPES_ENUM.waiting, text: 'Простой', disabled: false },
   {
-    value: TARIFF_TYPES_ENUM.waitingOnReturn,
-    text: 'Простой при возврате',
-    disabled: false,
-  },
-  {
     value: TARIFF_TYPES_ENUM.additionalPoints,
     text: 'Дополнительные точки',
     disabled: false,
