@@ -35,6 +35,10 @@ export class BaseZonesTariff implements IBaseZonesTariff {
   groupVat?: boolean | undefined
 
   constructor(t: IBaseZonesTariffProps) {
+    if (!t.loadingZone || !t.unloadingZone)
+      throw new Error(
+        'BaseZonesTariff constractor error: loadingZone or unloadingZone is missing'
+      )
     if (t.groupVat === undefined && t.withVat === undefined)
       throw new Error(
         'BaseZonesTariff constractor error: groupVat and withVat args is missing'
