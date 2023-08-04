@@ -1,5 +1,4 @@
 import {
-  ORDER_DOMAIN_EVENTS,
   OrderRemoveEvent,
   OrdersRouteUpdateEvent,
 } from '../../domain/order/domainEvents'

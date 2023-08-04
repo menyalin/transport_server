@@ -376,7 +376,7 @@ class OrderService {
       if (inputData.operationToken) {
         emitTo(company.toString(), 'order:autoFillDatesSuccessful', {
           token: inputData.operationToken,
-          message: `count of successfully updated orders: ${needSaveOrdes.length}`,
+          message: `Кол-во успешно обновленных рейсов: ${needSaveOrdes.length}`,
         })
       }
     }

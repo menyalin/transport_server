@@ -1,4 +1,4 @@
-import OrderStatsRepository from './orderStats.repository'
+import './orderStats.repository'
 
 import {
   IOrderDTO,
