@@ -6,31 +6,30 @@ import {
   TARIFF_TYPES_ENUM_VALUES,
   TARIFF_ROUND_BY_HOURS_ENUM,
 } from '../../constants/tariff'
-import { ICreateTariffDTO } from './interfaces/createTariff.dto'
+
 import { TRUCK_KINDS_ENUM_VALUES } from '../../constants/truck'
 import { ORDER_ANALYTIC_TYPES_ENUM } from '../../constants/order'
 
 export class Tariff {
-  static create(tariffDTO: ICreateTariffDTO) {
-    switch (tariffDTO.type) {
-      case TARIFF_TYPES_ENUM.points:
-        // return new
-        break
-      case TARIFF_TYPES_ENUM.zones:
-        break
-      case TARIFF_TYPES_ENUM.directDistanceZones:
-        break
-      case TARIFF_TYPES_ENUM.waiting:
-        break
-      case TARIFF_TYPES_ENUM.waitingOnReturn:
-        break
-      case TARIFF_TYPES_ENUM.additionalPoints:
-        break
-      case TARIFF_TYPES_ENUM.return:
-        break
-      default:
-        throw new Error('unknow tariff type')
-    }
+  private constructor() {}
+  static create(tariffDTO: unknown) {
+    // switch (tariffDTO.type) {
+    //   case TARIFF_TYPES_ENUM.points:
+    //     // return new
+    //     break
+    //   case TARIFF_TYPES_ENUM.zones:
+    //     break
+    //   case TARIFF_TYPES_ENUM.directDistanceZones:
+    //     break
+    //   case TARIFF_TYPES_ENUM.waiting:
+    //     break
+    //   case TARIFF_TYPES_ENUM.additionalPoints:
+    //     break
+    //   case TARIFF_TYPES_ENUM.return:
+    //     break
+    //   default:
+    //     throw new Error('unknow tariff type')
+    // }
   }
 
   static getDbSchema() {
@@ -45,14 +44,13 @@ export class Tariff {
         required: true,
       },
       liftCapacity: { type: Number, required: true },
-      priceWOVat: { type: Number, required: true },
-      sumVat: { type: Number, required: true },
+      priceWOVat: { type: Number, required: false },
+      sumVat: { type: Number, required: false },
       price: { type: Number, required: true },
       note: { type: String },
       document: { type: Types.ObjectId, ref: 'Document' },
-      group: { type: String, required: true },
-      groupNote: { type: String },
       groupVat: { type: Boolean, required: true },
+      withVat: { type: Boolean, required: true },
       agreement: { type: Types.ObjectId, ref: 'Agreement', required: true },
       agreementVatRate: { type: Number, required: true },
       // for 'points' type
@@ -66,8 +64,8 @@ export class Tariff {
         {
           distance: Number,
           price: Number,
-          priceWOVat: Number,
-          sumVat: Number,
+          priceWOVat: Number, // Удалить
+          sumVat: Number, // Удалить
         },
       ],
       // for "waiting", "orderType"
@@ -76,9 +74,12 @@ export class Tariff {
       tariffBy: { type: String, enum: ['hour', 'day'] },
       // for 'return'
       percentOfTariff: { type: Number },
-
       loadingZone: { type: Types.ObjectId, ref: 'Zone' },
       unloadingZone: { type: Types.ObjectId, ref: 'Zone' },
+
+      // не используются: надо будет удалить
+      group: { type: String, required: false },
+      groupNote: { type: String },
     }
   }
 }
