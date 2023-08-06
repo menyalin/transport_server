@@ -24,6 +24,13 @@ import {
 import { TRUCK_KINDS_ENUM_VALUES } from '../../constants/truck'
 import { ORDER_ANALYTIC_TYPES_ENUM } from '../../constants/order'
 
+export type UnionTariffType = | BasePointsTariff
+| BaseZonesTariff
+| BaseDirectDistanceZonesTariff
+| WaitingTariff
+| AdditionalPointsTariff
+| ReturnTariff
+
 export class Tariff {
   private constructor() {}
   static create(
@@ -34,13 +41,8 @@ export class Tariff {
       | IWaitingTariffProps
       | IAdditionalPointsTariffProps
       | IReturnTariffProps
-  ):
-    | BasePointsTariff
-    | BaseZonesTariff
-    | BaseDirectDistanceZonesTariff
-    | WaitingTariff
-    | AdditionalPointsTariff
-    | ReturnTariff {
+  ): UnionTariffType
+     {
     switch (tariffDTO.type) {
       case TARIFF_TYPES_ENUM.points:
         return new BasePointsTariff(tariffDTO as IBasePointsTariffProps)

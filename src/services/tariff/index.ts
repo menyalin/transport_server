@@ -1,6 +1,7 @@
 // @ts-nocheck
 import ChangeLogService from '../changeLog'
 import { Tariff } from '../../models'
+import TariffRepository from '../../repositories/tariff/tariff.repository'
 import { emitTo } from '../../socket'
 import IService from '../iService'
 import getListPipeline from './pipelines/getListPipeline'
@@ -18,7 +19,9 @@ class TariffService extends IService {
 
   async create({ body, user, company }) {
     try {
-      const data = await this.model.create(body)
+      
+
+      
       if (Array.isArray(data)) {
         await this.logService.addArray({
           array: data,
