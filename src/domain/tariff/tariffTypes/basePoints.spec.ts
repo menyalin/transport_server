@@ -12,8 +12,10 @@ describe('create base points tariff', () => {
       liftCapacity: 20,
       truckKind: TRUCK_KINDS_ENUM.ref,
       type: TARIFF_TYPES_ENUM.points,
-      price: 10000,
-      withVat: false,
+      price: {
+        price: 10000,
+        withVat: false,
+      },
       loading: '1',
       unloading: '1',
     }
@@ -31,7 +33,8 @@ describe('create base points tariff', () => {
       truckKind: TRUCK_KINDS_ENUM.ref,
       type: TARIFF_TYPES_ENUM.waiting,
       price: 10000,
-      withVat: false,
+      priceWOVat: 10000,
+      groupVat: false,
       loading: '1',
       unloading: '1',
     }

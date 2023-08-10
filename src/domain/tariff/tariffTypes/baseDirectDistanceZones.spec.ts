@@ -1,6 +1,6 @@
 import { TARIFF_TYPES_ENUM } from '../../../constants/tariff'
 import { TRUCK_KINDS_ENUM } from '../../../constants/truck'
-import { TariffPrice } from '../../../values/tariff/tariffPrice'
+
 import {
   IDirectDistanceZonesTariffProps,
   BaseDirectDistanceZonesTariff,
@@ -15,11 +15,13 @@ describe('create tariff', () => {
       liftCapacity: 20,
       truckKind: TRUCK_KINDS_ENUM.ref,
       type: TARIFF_TYPES_ENUM.directDistanceZones,
+      price: 0,
+      priceWOVat: 0,
       zones: [
         { distance: 10, price: 30 },
         { distance: 20, price: 40 },
       ],
-      withVat: false,
+      groupVat: false,
     }
     const tariff = new BaseDirectDistanceZonesTariff(validTariffPlainObj)
     expect(tariff instanceof BaseDirectDistanceZonesTariff).toBe(true)
@@ -33,7 +35,9 @@ describe('create tariff', () => {
       liftCapacity: 20,
       truckKind: TRUCK_KINDS_ENUM.ref,
       type: TARIFF_TYPES_ENUM.waiting,
-      withVat: false,
+      groupVat: false,
+      price: 0,
+      priceWOVat: 0,
       zones: [
         { distance: 10, price: 30 },
         { distance: 20, price: 40 },
@@ -53,7 +57,9 @@ describe('create tariff', () => {
       liftCapacity: 20,
       truckKind: TRUCK_KINDS_ENUM.ref,
       type: TARIFF_TYPES_ENUM.waiting,
-      withVat: false,
+      price: 0,
+      priceWOVat: 0,
+      groupVat: false,
       zones: [],
     }
 

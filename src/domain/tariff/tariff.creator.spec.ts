@@ -1,11 +1,10 @@
 import { TARIFF_TYPES_ENUM } from '../../constants/tariff'
 import { TRUCK_KINDS_ENUM } from '../../constants/truck'
-
+import { createTariff } from './tariff.creator'
 import { BasePointsTariff, IBasePointsTariffProps } from './tariffTypes'
-import { Tariff } from './tariff.domain'
 
 describe('create tariffs any type', () => {
-  it('create base tariff from valid object', () => {
+  it('create base tariff from valid object: (old tariff schema)', () => {
     const validObj: IBasePointsTariffProps = {
       agreement: '1',
       company: '1',
@@ -16,10 +15,31 @@ describe('create tariffs any type', () => {
       loading: '1',
       unloading: '2',
       price: 1000,
-      withVat: false,
+      priceWOVat: 1000,
+      groupVat: false,
     }
 
-    const tariff = Tariff.create(validObj)
+    const tariff = createTariff(validObj)
+    expect(tariff).toBeInstanceOf(BasePointsTariff)
+  })
+
+  it('create base tariff from valid object: (new tariff schema)', () => {
+    const validObj: IBasePointsTariffProps = {
+      agreement: '1',
+      company: '1',
+      date: new Date('2023-01-01'),
+      liftCapacity: 10,
+      type: TARIFF_TYPES_ENUM.points,
+      truckKind: TRUCK_KINDS_ENUM.ref,
+      loading: '1',
+      unloading: '2',
+      price: {
+        price: 1000,
+        withVat: true,
+      },
+    }
+
+    const tariff = createTariff(validObj)
     expect(tariff).toBeInstanceOf(BasePointsTariff)
   })
 
@@ -34,11 +54,12 @@ describe('create tariffs any type', () => {
       loading: '1',
       unloading: '2',
       price: 1000,
-      withVat: false,
+      priceWOVat: 1000,
+      groupVat: false,
     }
 
     expect(() => {
-      Tariff.create(invalidObj)
+      createTariff(invalidObj)
     }).toThrowError()
   })
 })

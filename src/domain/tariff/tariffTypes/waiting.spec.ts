@@ -1,4 +1,4 @@
-import { TARIFF_TYPES_ENUM } from '../../../constants/tariff'
+import { TARIFF_TYPES_ENUM, WAITING_TARIFF_BY } from '../../../constants/tariff'
 import { TRUCK_KINDS_ENUM } from '../../../constants/truck'
 import { TariffPrice } from '../../../values/tariff/tariffPrice'
 import { WaitingTariff, IWaitingTariffProps } from './waiting'
@@ -13,9 +13,11 @@ describe('create base waiting tariff', () => {
       truckKind: TRUCK_KINDS_ENUM.ref,
       type: TARIFF_TYPES_ENUM.waiting,
       price: 0,
-      withVat: false,
+      groupVat: false,
+      priceWOVat: 0,
       includeHours: 3,
       roundByHours: 24,
+      tariffBy: WAITING_TARIFF_BY.day,
       orderType: 'region',
     }
     const tariff = new WaitingTariff(validTariffPlainObj)
@@ -32,10 +34,12 @@ describe('create base waiting tariff', () => {
       truckKind: TRUCK_KINDS_ENUM.ref,
       type: TARIFF_TYPES_ENUM.points,
       price: 10000,
-      withVat: false,
+      groupVat: false,
+      priceWOVat: 10000,
       includeHours: 3,
       roundByHours: 24,
       orderType: 'region',
+      tariffBy: WAITING_TARIFF_BY.day,
     }
 
     expect(() => {

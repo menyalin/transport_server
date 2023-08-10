@@ -1,22 +1,12 @@
 export {
   BaseDirectDistanceZonesTariff,
-  IBaseDirectDistanceZonesTariff,
   IDirectDistanceZonesTariffProps,
 } from './baseDirectDistanceZones'
-export {
-  BasePointsTariff,
-  IBasePointsTariff,
-  IBasePointsTariffProps,
-} from './basePoints'
-export {
-  BaseZonesTariff,
-  IBaseZonesTariff,
-  IBaseZonesTariffProps,
-} from './baseZones'
+export { BasePointsTariff, IBasePointsTariffProps } from './basePoints'
+export { BaseZonesTariff, IBaseZonesTariffProps } from './baseZones'
 export {
   AdditionalPointsTariff,
-  IAdditionalPointsTariff,
   IAdditionalPointsTariffProps,
 } from './additionalPoints'
-export { WaitingTariff, IWaitingTariff, IWaitingTariffProps } from './waiting'
-export { ReturnTariff, IReturnTariff, IReturnTariffProps } from './return'
+export { WaitingTariff, IWaitingTariffProps } from './waiting'
+export { ReturnTariff, IReturnTariffProps } from './return'
