@@ -53,7 +53,7 @@ export default ({
     })
   }
   if (date) {
-    firstMatcher.$match.date = { $lte: date }
+    firstMatcher.$match.date = { $lte: new Date(date) }
     groupByDate.push({
       $sort: { date: 1, createdAt: 1 },
     })

@@ -8,6 +8,7 @@ import getBasePrice from './getBasePrice'
 import getAdditionalPointsPrice from './getAdditionalPointsPrice'
 import getWaitingPrices from './getWaitingPrices'
 import getReturnPrice from './getReturnPrice'
+import { createTariff } from '../../domain/tariff/tariff.creator'
 
 class TariffService extends IService {
   constructor({ model, emitter, modelName, logService }) {
@@ -36,18 +37,17 @@ class TariffService extends IService {
   }
 
   async updateOne({ id, body, user }) {
-    const data = await this.model.findByIdAndUpdate(id, body, { new: true })
-    await data.populate('agreement')
+    const tariff = await TariffRepository.updateById(id, createTariff(body))
 
     await this.logService.add({
-      docId: data._id.toString(),
+      docId: tariff._id.toString(),
       coll: this.modelName,
       opType: 'update',
       user,
-      company: data.company.toString(),
-      body: JSON.stringify(data.toJSON()),
+      company: tariff.company.toString(),
+      body: tariff,
     })
-    return data
+    return tariff
   }
 
   async getList(params) {

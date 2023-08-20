@@ -8,11 +8,13 @@ interface IDistanceWithPrice {
 
 export interface IDirectDistanceZonesTariffProps extends ITariffProps {
   type: TARIFF_TYPES_ENUM
+  loading: string
   zones: IDistanceWithPrice[]
 }
 
 export class BaseDirectDistanceZonesTariff extends Tariff {
   type: TARIFF_TYPES_ENUM = TARIFF_TYPES_ENUM.directDistanceZones
+  loading: string
   zones: IDistanceWithPrice[]
 
   constructor(t: IDirectDistanceZonesTariffProps) {
@@ -26,7 +28,7 @@ export class BaseDirectDistanceZonesTariff extends Tariff {
       throw new Error(
         'BaseDirectDistanceZonesTariff constractor error: invalid tariff type'
       )
-
+    this.loading = t.loading
     this.zones = t.zones
   }
 }

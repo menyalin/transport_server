@@ -21,7 +21,10 @@ export interface ITariffProps {
   agreement: string
   truckKind: TRUCK_KINDS_ENUM
   liftCapacity: number
-  price?: number | { price: number; withVat: boolean; currency?: string }
+  price?:
+    | number
+    | { price: number; withVat: boolean; currency?: string }
+    | TariffPrice
   isActive?: boolean
   document?: string
   note?: string
@@ -52,14 +55,17 @@ export abstract class Tariff {
   agreementName?: string
 
   constructor(p: ITariffProps) {
-    this._id = p._id?.toString()
+    this._id = p?._id?.toString()
     this.company = p.company
     this.date = p.date
     this.agreement = p.agreement
     this.truckKind = p.truckKind
     this.liftCapacity = p.liftCapacity
-    this.agreementName = p.agreementName
+    this.isActive = p.isActive || true
+    this.note = p.note
+    this.document = p.document
     this.price = Tariff.setTariffPrice(p)
+    this.agreementName = p.agreementName
   }
 
   private static setTariffPrice(p: ITariffProps): TariffPrice {
