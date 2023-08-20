@@ -11,6 +11,7 @@ describe('create tariff', () => {
     const validTariffPlainObj: IDirectDistanceZonesTariffProps = {
       agreement: '1',
       company: '1',
+      loading: '1',
       date: new Date('2023-01-01'),
       liftCapacity: 20,
       truckKind: TRUCK_KINDS_ENUM.ref,
@@ -33,6 +34,7 @@ describe('create tariff', () => {
       company: '1',
       date: new Date('2023-01-01'),
       liftCapacity: 20,
+      loading: '1',
       truckKind: TRUCK_KINDS_ENUM.ref,
       type: TARIFF_TYPES_ENUM.waiting,
       groupVat: false,
@@ -61,6 +63,7 @@ describe('create tariff', () => {
       priceWOVat: 0,
       groupVat: false,
       zones: [],
+      loading: '1',
     }
 
     expect(() => {
