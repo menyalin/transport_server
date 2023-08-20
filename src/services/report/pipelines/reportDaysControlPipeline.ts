@@ -210,6 +210,18 @@ export default (dayLimit = 30, profile) => {
                   },
                 },
                 {
+                  title: 'Платон',
+                  dbField: 'additionalDetails.platonDate',
+                  endDate: '$additionalDetails.platonDate',
+                  validDays: {
+                    $dateDiff: {
+                      startDate: '$$NOW',
+                      endDate: '$additionalDetails.platonDate',
+                      unit: 'day',
+                    },
+                  },
+                },
+                {
                   title: 'Диагностическая карта',
                   dbField: 'additionalDetails.diagnosticCardExpDate',
                   endDate: '$additionalDetails.diagnosticCardExpDate',
