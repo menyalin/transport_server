@@ -17,7 +17,7 @@ class ChangeLogService {
         company,
         user,
         coll,
-        body: JSON.stringify(i.toJSON()),
+        body: JSON.stringify(i),
         opType,
       }))
     )

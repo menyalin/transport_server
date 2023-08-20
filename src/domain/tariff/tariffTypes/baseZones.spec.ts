@@ -12,8 +12,9 @@ describe('create base zones tariff', () => {
       liftCapacity: 20,
       truckKind: TRUCK_KINDS_ENUM.ref,
       type: TARIFF_TYPES_ENUM.zones,
-      price: 10000,
-      withVat: false,
+      price: 12000,
+      groupVat: true,
+      priceWOVat: 10000,
       loadingZone: '1',
       unloadingZone: '1',
     }
@@ -31,7 +32,8 @@ describe('create base zones tariff', () => {
       truckKind: TRUCK_KINDS_ENUM.ref,
       type: TARIFF_TYPES_ENUM.waiting,
       price: 10000,
-      withVat: false,
+      groupVat: false,
+      priceWOVat: 1000,
       loadingZone: '1',
       unloadingZone: '1',
     }

@@ -1,63 +1,37 @@
-import { TARIFF_TYPES_ENUM } from '../../../constants/tariff'
-import { TRUCK_KINDS_ENUM } from '../../../constants/truck'
-import {
-  ITariffPriceDTO,
-  TariffPrice,
-} from '../../../values/tariff/tariffPrice'
-import { ITariff } from './tariff.interface'
+import { TARIFF_TYPES_ENUM, WAITING_TARIFF_BY } from '../../../constants/tariff'
+import { ITariffProps, Tariff } from '../tariff.domain'
 
-export interface IWaitingTariff extends ITariff {
-  price: TariffPrice
-  orderType: string
-  includeHours: number
-  roundByHours: number
-}
-
-export interface IWaitingTariffProps
-  extends Omit<ITariff, 'price'>,
-    ITariffPriceDTO {
-  includeHours: number
-  roundByHours: number
-  orderType: string
-}
-
-export class WaitingTariff implements IWaitingTariff {
-  company: string
+export interface IWaitingTariffProps extends ITariffProps {
   type: TARIFF_TYPES_ENUM
-  date: Date
-  agreement: string
-  truckKind: TRUCK_KINDS_ENUM
-  liftCapacity: number
-  note?: string
-  price: TariffPrice
-  document?: string
-  isActive?: boolean
   includeHours: number
   roundByHours: number
   orderType: string
+  tariffBy: WAITING_TARIFF_BY
+}
+
+export class WaitingTariff extends Tariff {
+  type: TARIFF_TYPES_ENUM = TARIFF_TYPES_ENUM.waiting
+  orderType: string
+  includeHours: number
+  roundByHours: number
+  tariffBy: WAITING_TARIFF_BY
 
   constructor(t: IWaitingTariffProps) {
-    if (t.groupVat === undefined && t.withVat === undefined)
-      throw new Error(
-        'WaitingTariff constractor error: groupVat and withVat args is missing'
-      )
-    if (t.type !== TARIFF_TYPES_ENUM.waiting)
+    super(t)
+    if (t.type !== this.type)
       throw new Error('WaitingTariff constractor error: invalid tariff type')
-    this.company = t.company
-    this.type = t.type
-    this.date = t.date
-    this.document = t.document
-    this.agreement = t.agreement
-    this.truckKind = t.truckKind
-    this.liftCapacity = t.liftCapacity
-    this.note = t.note
+    if (
+      t.includeHours === undefined ||
+      t.roundByHours === undefined ||
+      t.orderType === undefined ||
+      t.tariffBy === undefined
+    )
+      throw new Error(
+        'WaitingTariff constractor error: reqired props is missing'
+      )
     this.includeHours = t.includeHours
     this.roundByHours = t.roundByHours
     this.orderType = t.orderType
-    this.price = new TariffPrice({
-      price: t.price,
-      withVat: t.groupVat || t.withVat,
-      currency: t.currency || undefined,
-    })
+    this.tariffBy = t.tariffBy
   }
 }
