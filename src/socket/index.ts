@@ -1,4 +1,5 @@
 // @ts-nocheck
+import './notifyclients.service'
 import authMiddleware from './authMiddleware'
 import usersHandler from './usersHandler'
 //  import initDataHandler from './initDataHandler'
@@ -7,12 +8,12 @@ import dountimesHandler from './dountimesHandler'
 import scheduleNotesHandler from './scheduleNotesHandler'
 
 import { Server } from 'socket.io'
-const io = new Server({})
+export const io = new Server({})
 
-const options = {
+export const options = {
   cors: '*',
 }
-const emitTo = (to, eventType, payload) => {
+export const emitTo = (to, eventType, payload) => {
   io.to(to).emit(eventType, payload)
 }
 
@@ -26,5 +27,3 @@ const onConnection = (socket) => {
 }
 
 io.on('connection', onConnection)
-
-export { io, options, emitTo }

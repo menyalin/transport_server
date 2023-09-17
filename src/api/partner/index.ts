@@ -1,5 +1,4 @@
 // @ts-nocheck
-/* eslint-disable no-unused-vars */
 import express from 'express'
 
 import { jwtAuth } from '../../utils/auth.middleware'
@@ -26,6 +25,11 @@ router.put('/:partnerId/places/:placeId', [jwtAuth], (...args) =>
 )
 router.delete('/:partnerId/places/:placeId', [jwtAuth], (...args) =>
   ctrl.deletePlaceForTransferDocs(...args)
+)
+
+// idle truck notification
+router.post('/:id/idle_truck_notification', [jwtAuth], (...args) =>
+  ctrl.addIdleTruckNotify(...args)
 )
 
 export default router
