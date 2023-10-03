@@ -1,10 +1,10 @@
-import { NotifyClientsEvent } from '../../socket/notifyclients.service'
 import dayjs from 'dayjs'
 import { isDateRangesOverlapping } from '../../utils/isDateRangesOverlapping'
 import { Route } from '../../values/order/route'
 
 import { ORDER_DOMAIN_EVENTS, OrderRemoveEvent } from './domainEvents'
 import { BusEvent } from 'ts-bus/types'
+import { NotifyClientsEvent } from '../../socket/notifyClientsEvent'
 
 export interface IOrderDTO {
   _id: string

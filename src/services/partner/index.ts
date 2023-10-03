@@ -14,7 +14,11 @@ class PartnerService extends IService {
     super({ model, emitter, modelName, logService })
   }
 
-  async addPlaceForTransferDocs(partnerId, place, user) {
+  async addPlaceForTransferDocs(
+    partnerId: string,
+    place: string,
+    user: string
+  ) {
     const partner = await this.model.findById(partnerId)
     if (!partner)
       throw new BadRequestError(
@@ -41,7 +45,11 @@ class PartnerService extends IService {
     return partner
   }
 
-  async deletePlaceForTransferDocs(partnerId, placeId, user) {
+  async deletePlaceForTransferDocs(
+    partnerId: string,
+    placeId: string,
+    user: string
+  ) {
     const partner = await this.model.findById(partnerId)
     if (!partner)
       throw new BadRequestError(
@@ -134,6 +142,53 @@ class PartnerService extends IService {
       coll: 'partner',
       user: userId,
       opType: 'addIdleTruckNotify',
+      body: JSON.stringify(partner.toObject()),
+    })
+    return partner
+  }
+
+  async updateIdleTruckNotify(
+    partnerId: string,
+    idleId: string,
+    user: string,
+    notify: IdleTruckNotify
+  ): PartnerDomain {
+    const partner: PartnerDomain = await PartnerRepository.getById(partnerId)
+
+    partner.updateIdleTruckNotify(idleId, notify)
+
+    partner.events.forEach((event) => {
+      bus.publish(event)
+    })
+    partner.clearEvents()
+
+    await ChangeLogService.add({
+      docId: partner.id,
+      company: partner.company.toString(),
+      coll: 'partner',
+      user,
+      opType: 'updateIdleTruckNotify',
+      body: JSON.stringify(partner.toObject()),
+    })
+    return partner
+  }
+
+  async deleteIdleTruckNotify(partnerId, idleId, user) {
+    const partner: PartnerDomain = await PartnerRepository.getById(partnerId)
+
+    partner.deleteIdleTruckNotify(idleId)
+
+    partner.events.forEach((event) => {
+      bus.publish(event)
+    })
+    partner.clearEvents()
+
+    await ChangeLogService.add({
+      docId: partner.id,
+      company: partner.company.toString(),
+      coll: 'partner',
+      user: user,
+      opType: 'deleteIdleTruckNotify',
       body: JSON.stringify(partner.toObject()),
     })
     return partner

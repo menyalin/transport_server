@@ -1,9 +1,6 @@
-import pkg from 'mongoose'
-import { Partner } from '../domain/partner/partner.domain'
-const { Schema, model } = pkg
+import { model, Schema } from 'mongoose'
+import { Partner as PartnerDomain } from '../domain/partner/partner.domain'
 
-export default model(
-  'Partner',
-  new Schema(Partner.dbSchema(), { timestamps: true }),
-  'partners'
-)
+const partnerSchema = new Schema(PartnerDomain.dbSchema(), { timestamps: true })
+
+export const PartnerModel = model('Partner', partnerSchema, 'partners')

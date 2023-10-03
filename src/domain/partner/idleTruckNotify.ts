@@ -6,6 +6,8 @@ export interface IIdleTruckNotifyProps {
   ccEmails?: string
   idleHoursBeforeNotify?: number
   templateName: string
+  note?: string
+  usePlannedDate?: boolean
 }
 
 export class IdleTruckNotify {
@@ -16,6 +18,8 @@ export class IdleTruckNotify {
   ccEmails?: string
   templateName: string
   idleHoursBeforeNotify: number = 0
+  note?: string
+  usePlannedDate: boolean
 
   constructor(p: IIdleTruckNotifyProps) {
     if (p._id) this._id = p._id.toString()
@@ -24,8 +28,11 @@ export class IdleTruckNotify {
     this.emails = p.emails
     this.ccEmails = p.ccEmails
     this.templateName = p.templateName
+    this.note = p.note
     this.idleHoursBeforeNotify =
       p.idleHoursBeforeNotify !== undefined ? p.idleHoursBeforeNotify : 0
+    this.usePlannedDate =
+      p.usePlannedDate !== undefined ? !!p.usePlannedDate : false
   }
 
   static dbSchema() {
@@ -36,6 +43,8 @@ export class IdleTruckNotify {
       emails: String,
       ccEmails: String,
       templateName: String,
+      note: String,
+      usePlannedDate: { type: Boolean, default: false },
     }
   }
 }

@@ -6,8 +6,9 @@ import {
 import { LoadingDock } from './loadingDock.domain'
 import { IdleTruckNotify } from './idleTruckNotify'
 import { BusEvent } from 'ts-bus/types'
-import { NotifyClientsEvent } from '../../socket/notifyclients.service'
+
 import { PARTNER_DOMAIN_EVENTS, UpdatePartnerEvent } from './domainEvents'
+import { NotifyClientsEvent } from '../../socket/notifyClientsEvent'
 
 const setLoadingDocs = (
   loadingDocks: Array<LoadingDock> | undefined
@@ -91,13 +92,10 @@ export class Partner {
     })
     return obj
   }
-
-  addIdleTruckNotify(notify: IdleTruckNotify) {
-    this.idleTruckNotifications.push(notify)
-
+  private addUpdateEvents() {
     // Событие обновления записи (для сохранения в БД)
     this.events.push(UpdatePartnerEvent(this))
-    // Оповещение пользователей об обновлении записи
+    //  Оповещение пользователей об обновлении записи
     this.events.push(
       NotifyClientsEvent({
         subscriber: this.company.toString(),
@@ -107,7 +105,33 @@ export class Partner {
     )
   }
 
-  static dbSchema() {
+  addIdleTruckNotify(notify: IdleTruckNotify) {
+    this.idleTruckNotifications.push(notify)
+    this.addUpdateEvents()
+  }
+
+  updateIdleTruckNotify(notifyId: string, notify: IdleTruckNotify): void {
+    const idx = this.idleTruckNotifications.findIndex(
+      (i) => i._id?.toString() === notifyId
+    )
+    if (idx === -1)
+      throw new Error(
+        'PartnerDomain : updateIdleTruckNotify : notify not found'
+      )
+
+    this.idleTruckNotifications.splice(idx, 1, notify)
+
+    this.addUpdateEvents()
+  }
+
+  deleteIdleTruckNotify(idleId: string) {
+    this.idleTruckNotifications = this.idleTruckNotifications.filter(
+      (i) => i._id?.toString() !== idleId
+    )
+    this.addUpdateEvents()
+  }
+
+  public static dbSchema() {
     return {
       name: String,
       fullName: String,

@@ -32,4 +32,15 @@ router.post('/:id/idle_truck_notification', [jwtAuth], (...args) =>
   ctrl.addIdleTruckNotify(...args)
 )
 
+router.put(
+  '/:partnerId/idle_truck_notification/:idleId',
+  [jwtAuth],
+  (...args) => ctrl.updateIdleTruckNotify(...args)
+)
+router.delete(
+  '/:partnerId/idle_truck_notification/:idleId',
+  [jwtAuth],
+  (...args) => ctrl.deleteIdleTruckNotification(...args)
+)
+
 export default router

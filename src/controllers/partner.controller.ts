@@ -118,6 +118,51 @@ class PartnerController extends IController {
       else res.status(500).json(e)
     }
   }
+
+  async updateIdleTruckNotify(req: AuthorizedRequest, res: Response) {
+    try {
+      this.validateReq(req)
+      if (this.permissionName)
+        await PermissionService.check({
+          userId: req.userId,
+          companyId: req.companyId,
+          operation: this.permissionName + ':write',
+        })
+
+      const partner: PartnerDomain = await this.service.updateIdleTruckNotify(
+        req.params.partnerId,
+        req.params.idleId,
+        req.userId,
+        new IdleTruckNotify(req.body)
+      )
+      res.status(200).json(partner.toObject())
+    } catch (e) {
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
+    }
+  }
+
+  async deleteIdleTruckNotification(req: AuthorizedRequest, res: Response) {
+    try {
+      this.validateReq(req)
+      if (this.permissionName)
+        await PermissionService.check({
+          userId: req.userId,
+          companyId: req.companyId,
+          operation: this.permissionName + ':write',
+        })
+
+      const partner: PartnerDomain = await this.service.deleteIdleTruckNotify(
+        req.params.partnerId,
+        req.params.idleId,
+        req.userId
+      )
+      res.status(200).json(partner.toObject())
+    } catch (e) {
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
+    }
+  }
 }
 
 export default new PartnerController({
