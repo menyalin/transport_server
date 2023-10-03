@@ -22,7 +22,6 @@ import { getPaymentInvoicesByOrderIds } from './getPaymentInvoicesByOrderIds'
 import OrderRepository from '../../repositories/order/order.repository'
 import { Order as OrderDomain } from '../../domain/order/order.domain'
 import { bus } from '../../eventBus'
-import orderRepository from '../../repositories/order/order.repository'
 
 const _isEqualDatesOfRoute = ({ oldRoute, newRoute }) => {
   const oldArrivalDate = new Date(oldRoute[0].arrivalDate).toLocaleString()

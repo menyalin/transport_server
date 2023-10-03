@@ -4,7 +4,7 @@ import pkg from 'mongoose'
 import { ORDER_ANALYTIC_TYPES_ENUM } from '../constants/order'
 import { SALARY_TARIFF_TYPES_ENUM } from '../constants/accounting'
 import { TARIFF_ROUND_BY_HOURS_ENUM } from '../constants/tariff'
-import { PARTNER_GROUPS_ENUM } from '../constants/partner'
+import { PARTNER_GROUPS_ENUM_VALUES } from '../constants/partner'
 const { Schema, model, Types } = pkg
 
 const schema = new Schema(
@@ -29,7 +29,7 @@ const schema = new Schema(
     roundByHours: { type: Number, enum: TARIFF_ROUND_BY_HOURS_ENUM }, // Кратность округления по часам
     tariffBy: { type: String, enum: ['hour', 'day'] },
     clients: [{ type: Types.ObjectId, ref: 'Partner' }],
-    consigneeTypes: [{ type: String, enum: PARTNER_GROUPS_ENUM }],
+    consigneeTypes: [{ type: String, enum: PARTNER_GROUPS_ENUM_VALUES }],
     isPltReturn: { type: Boolean, default: false },
 
     includedPoints: { type: Number },

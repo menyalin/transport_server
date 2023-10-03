@@ -1,15 +1,42 @@
-// @ts-nocheck
+import { Request, Response } from 'express'
 import { IController } from './iController'
 import { PartnerService, PermissionService } from '../services'
+import { AuthorizedRequest } from './interfaces/request'
+import { BadRequestError } from '../helpers/errors'
+import { IdleTruckNotify } from '../domain/partner/idleTruckNotify'
+import { Partner as PartnerDomain } from '../domain/partner/partner.domain'
+
+interface IConstructorProps {
+  service: typeof PartnerService
+  permissionName: string
+}
 
 class PartnerController extends IController {
-  constructor({ service, permissionName }) {
+  service: typeof PartnerService
+  permissionName: string
+  constructor({ service, permissionName }: IConstructorProps) {
     super({ service, permissionName })
     this.service = service
+    this.permissionName = permissionName
   }
 
-  async addPlaceForTransferDocs(req, res) {
+  validateReq(req: Request): Boolean {
+    if (
+      'userId' in req &&
+      !!req.userId &&
+      'companyId' in req &&
+      !!req.companyId
+    )
+      return true
+    throw new BadRequestError(
+      'PartnerController : userId or companyId is missing'
+    )
+  }
+
+  async addPlaceForTransferDocs(req: AuthorizedRequest, res: Response) {
     try {
+      this.validateReq(req)
+
       if (this.permissionName)
         await PermissionService.check({
           userId: req.userId,
@@ -23,12 +50,14 @@ class PartnerController extends IController {
       )
       res.status(201).json(data)
     } catch (e) {
-      res.status(e.statusCode || 500).json(e.message)
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
     }
   }
 
-  async updatePlaceForTransferDocs(req, res) {
+  async updatePlaceForTransferDocs(req: AuthorizedRequest, res: Response) {
     try {
+      this.validateReq(req)
       if (this.permissionName)
         await PermissionService.check({
           userId: req.userId,
@@ -43,11 +72,12 @@ class PartnerController extends IController {
       )
       res.status(201).json(data)
     } catch (e) {
-      res.status(e.statusCode || 500).json(e.message)
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
     }
   }
 
-  async deletePlaceForTransferDocs(req, res) {
+  async deletePlaceForTransferDocs(req: AuthorizedRequest, res: Response) {
     try {
       if (this.permissionName)
         await PermissionService.check({
@@ -62,7 +92,75 @@ class PartnerController extends IController {
       )
       res.status(201).json(data)
     } catch (e) {
-      res.status(e.statusCode || 500).json(e.message)
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
+    }
+  }
+
+  async addIdleTruckNotify(req: AuthorizedRequest, res: Response) {
+    try {
+      this.validateReq(req)
+      if (this.permissionName)
+        await PermissionService.check({
+          userId: req.userId,
+          companyId: req.companyId,
+          operation: this.permissionName + ':write',
+        })
+
+      const partner: PartnerDomain = await this.service.addIdleTruckNotify(
+        req.params.id,
+        new IdleTruckNotify(req.body),
+        req.userId
+      )
+      res.status(201).json(partner.toObject())
+    } catch (e) {
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
+    }
+  }
+
+  async updateIdleTruckNotify(req: AuthorizedRequest, res: Response) {
+    try {
+      this.validateReq(req)
+      if (this.permissionName)
+        await PermissionService.check({
+          userId: req.userId,
+          companyId: req.companyId,
+          operation: this.permissionName + ':write',
+        })
+
+      const partner: PartnerDomain = await this.service.updateIdleTruckNotify(
+        req.params.partnerId,
+        req.params.idleId,
+        req.userId,
+        new IdleTruckNotify(req.body)
+      )
+      res.status(200).json(partner.toObject())
+    } catch (e) {
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
+    }
+  }
+
+  async deleteIdleTruckNotification(req: AuthorizedRequest, res: Response) {
+    try {
+      this.validateReq(req)
+      if (this.permissionName)
+        await PermissionService.check({
+          userId: req.userId,
+          companyId: req.companyId,
+          operation: this.permissionName + ':write',
+        })
+
+      const partner: PartnerDomain = await this.service.deleteIdleTruckNotify(
+        req.params.partnerId,
+        req.params.idleId,
+        req.userId
+      )
+      res.status(200).json(partner.toObject())
+    } catch (e) {
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
     }
   }
 }

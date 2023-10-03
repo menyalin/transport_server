@@ -4,13 +4,21 @@ import { Partner } from '../../models'
 import { emitTo } from '../../socket'
 import IService from '../iService'
 import ChangeLogService from '../changeLog'
+import { IdleTruckNotify } from '../../domain/partner/idleTruckNotify'
+import { Partner as PartnerDomain } from '../../domain/partner/partner.domain'
+import PartnerRepository from '../../repositories/partner/partner.repository'
+import { bus } from '../../eventBus'
 
-class DocumentService extends IService {
+class PartnerService extends IService {
   constructor({ model, emitter, modelName, logService }) {
     super({ model, emitter, modelName, logService })
   }
 
-  async addPlaceForTransferDocs(partnerId, place, user) {
+  async addPlaceForTransferDocs(
+    partnerId: string,
+    place: string,
+    user: string
+  ) {
     const partner = await this.model.findById(partnerId)
     if (!partner)
       throw new BadRequestError(
@@ -37,7 +45,11 @@ class DocumentService extends IService {
     return partner
   }
 
-  async deletePlaceForTransferDocs(partnerId, placeId, user) {
+  async deletePlaceForTransferDocs(
+    partnerId: string,
+    placeId: string,
+    user: string
+  ) {
     const partner = await this.model.findById(partnerId)
     if (!partner)
       throw new BadRequestError(
@@ -109,9 +121,81 @@ class DocumentService extends IService {
     )
     return partner
   }
+
+  async addIdleTruckNotify(
+    partnerId: string,
+    notify: IdleTruckNotify,
+    userId: string
+  ): Promise<PartnerDomain> {
+    const partner: PartnerDomain = await PartnerRepository.getById(partnerId)
+
+    partner.addIdleTruckNotify(notify)
+
+    partner.events.forEach((event) => {
+      bus.publish(event)
+    })
+    partner.clearEvents()
+
+    await ChangeLogService.add({
+      docId: partner.id,
+      company: partner.company.toString(),
+      coll: 'partner',
+      user: userId,
+      opType: 'addIdleTruckNotify',
+      body: JSON.stringify(partner.toObject()),
+    })
+    return partner
+  }
+
+  async updateIdleTruckNotify(
+    partnerId: string,
+    idleId: string,
+    user: string,
+    notify: IdleTruckNotify
+  ): PartnerDomain {
+    const partner: PartnerDomain = await PartnerRepository.getById(partnerId)
+
+    partner.updateIdleTruckNotify(idleId, notify)
+
+    partner.events.forEach((event) => {
+      bus.publish(event)
+    })
+    partner.clearEvents()
+
+    await ChangeLogService.add({
+      docId: partner.id,
+      company: partner.company.toString(),
+      coll: 'partner',
+      user,
+      opType: 'updateIdleTruckNotify',
+      body: JSON.stringify(partner.toObject()),
+    })
+    return partner
+  }
+
+  async deleteIdleTruckNotify(partnerId, idleId, user) {
+    const partner: PartnerDomain = await PartnerRepository.getById(partnerId)
+
+    partner.deleteIdleTruckNotify(idleId)
+
+    partner.events.forEach((event) => {
+      bus.publish(event)
+    })
+    partner.clearEvents()
+
+    await ChangeLogService.add({
+      docId: partner.id,
+      company: partner.company.toString(),
+      coll: 'partner',
+      user: user,
+      opType: 'deleteIdleTruckNotify',
+      body: JSON.stringify(partner.toObject()),
+    })
+    return partner
+  }
 }
 
-export default new DocumentService({
+export default new PartnerService({
   model: Partner,
   emitter: emitTo,
   modelName: 'partner',
