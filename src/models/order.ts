@@ -187,4 +187,4 @@ const schema = new Schema(
   { timestamps: true }
 )
 
-export default model('Order', schema, 'orders')
+export const OrderModel = model('Order', schema, 'orders')

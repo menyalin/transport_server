@@ -9,10 +9,10 @@ describe('Order.Domain', () => {
   const tripDurationInMinutes = 30
   const unloadingDurationInMinutes = 15
 
-  let orderCompleted1
-  let orderInProgress1
-  let orderInProgress2
-  let orderInProgress3
+  let orderCompleted1: Order
+  let orderInProgress1: Order
+  let orderInProgress2: Order
+  let orderInProgress3: Order
 
   beforeEach(() => {
     orderCompleted1 = new Order({
