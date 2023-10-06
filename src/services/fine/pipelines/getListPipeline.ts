@@ -14,6 +14,8 @@ export const getListPipeline = ({
   sortBy,
   sortDesc,
   searchStr,
+  payingByWorker,
+  needToWithheld,
 }) => {
   const sP = new Date(startDate)
   const eP = new Date(endDate)
@@ -47,16 +49,25 @@ export const getListPipeline = ({
 
   if (driver) firstMatcher.$match.driver = new mongoose.Types.ObjectId(driver)
 
+  if (payingByWorker && payingByWorker !== '__driver__')
+    firstMatcher.$match.payingByWorker = new mongoose.Types.ObjectId(
+      payingByWorker
+    )
+
+  if (payingByWorker && payingByWorker === '__driver__')
+    firstMatcher.$match.isPaydByDriver = true
+
   if (category)
     firstMatcher.$match.$expr.$and.push({ $eq: ['$category', category] })
+
+  if (needToWithheld === 'true')
+    firstMatcher.$match.$expr.$and.push({ $gt: ['$withheldSum', 0] })
 
   const sorting = (sortBy, sortDesc) => {
     const res = { $sort: {} }
     if (!sortBy || sortBy.length === 0)
       return {
-        $sort: {
-          date: 1,
-        },
+        $sort: { date: 1 },
       }
     else
       sortBy.forEach((val, idx) => {
@@ -77,8 +88,54 @@ export const getListPipeline = ({
     },
     {
       $addFields: {
-        count: {
-          $size: '$items',
+        count: { $size: '$items' },
+        analyticData: {
+          totalSum: {
+            $reduce: {
+              initialValue: 0,
+              in: { $add: [{ $ifNull: ['$$this.totalSum', 0] }, '$$value'] },
+              input: '$items',
+            },
+          },
+          totalSumWithDiscount: {
+            $reduce: {
+              initialValue: 0,
+              in: {
+                $add: [{ $ifNull: ['$$this.discountedSum', 0] }, '$$value'],
+              },
+              input: '$items',
+            },
+          },
+          totalPayed: {
+            $reduce: {
+              input: '$items',
+              initialValue: 0,
+              in: { $add: [{ $ifNull: ['$$this.paymentSum', 0] }, '$$value'] },
+            },
+          },
+          needWithheld: {
+            $reduce: {
+              input: '$items',
+              initialValue: 0,
+              in: {
+                $add: [{ $ifNull: ['$$this.withheldSum', 0] }, '$$value'],
+              },
+            },
+          },
+          isWithheld: {
+            $reduce: {
+              input: {
+                $filter: {
+                  input: '$items',
+                  cond: {
+                    $eq: ['$$this.isWithheld', true],
+                  },
+                },
+              },
+              initialValue: 0,
+              in: { $add: [{ $ifNull: ['$$this.withheldSum', 0] }, '$$value'] },
+            },
+          },
         },
         items: {
           $slice: ['$items', +skip, +limit],
