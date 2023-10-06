@@ -39,4 +39,8 @@ export default [
     value: 'autoFillRouteDates',
     text: '(Функция) Быстрое заполнение временных меток в рейсах',
   },
+  {
+    value: 'withheldFineSum',
+    text: '(Функиця) Редактирование реквизита штрафа: "Удержано"',
+  },
 ]
