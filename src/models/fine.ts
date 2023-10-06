@@ -25,6 +25,7 @@ const schema = new Schema(
     isCulpritDriver: { type: Boolean, default: false },
     kX: Number,
     withheldSum: Number,
+    isWithheld: { type: Boolean, default: false },
   },
   { timestamps: true }
 )

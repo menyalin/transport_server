@@ -14,6 +14,7 @@ import {
   outsourceCarriersManager,
   userAdmin,
   autoFillRouteDates,
+  withheldFineSum,
 } from './permissionList'
 
 class PermissionService {
@@ -29,6 +30,7 @@ class PermissionService {
       outsourceCarriersManager,
       userAdmin,
       autoFillRouteDates,
+      withheldFineSum,
     }
   }
 

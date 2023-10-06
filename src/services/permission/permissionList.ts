@@ -55,7 +55,6 @@ export const outsourceCarriersManager = {
   'order:daysForWriteOutsourceCosts': -1,
   'order:daysForWrite': -1,
   'order:readFinalPrices': true,
-  'order:writeFinalPrices': false,
   'order:readDocs': true,
   'tariff:readList': true,
   'tariff:readItem': true,
@@ -69,9 +68,10 @@ export const director = {
   'order:readPaymentToDriver': true,
   'order:writePaymentToDriver': true,
   'modules:accounting': true,
-  'fine:readList': true,
   'report:orderDocs': true,
+  'fine:readList': true,
   'fine:readItem': true,
+  'fine:isWithheldRead': true,
   'worker:readList': true,
   'worker:readItem': true,
   'order:read': true,
@@ -168,7 +168,6 @@ export const seniorDispatcher = {
   'tkName:delete': true,
   'address:write': true,
   'address:delete': true,
-
   'partner:write': true,
   'partner:delete': true,
   'truck:write': true,
@@ -316,7 +315,6 @@ export const userAdmin = {
   'worker:readList': true,
   'worker:readItem': true,
   'worker:write': true,
-  'worker:delete': false,
   'worker:userAdmin': true,
 }
 
@@ -328,6 +326,14 @@ export const hr = {
 }
 export const autoFillRouteDates = {
   'order:autoFillRouteDates': true,
+}
+
+export const withheldFineSum = {
+  'fine:isWithheldRead': true,
+  'fine:isWithheldWrite': true,
+  'fine:readList': true,
+  'fine:readItem': true,
+  'fine:write': true,
 }
 
 /*
