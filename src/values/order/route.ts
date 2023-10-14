@@ -16,6 +16,17 @@ export class Route {
     this.route = route.map((p: RoutePoint) => new RoutePoint(p))
   }
 
+  get activePoints(): RoutePoint[] {
+    const res: RoutePoint[] = this.route.filter((point) => point.isCompleted)
+    const currentPoint = this.route.find((p) => !p.isCompleted)
+    if (currentPoint) res.push(currentPoint)
+    return res
+  }
+
+  get completedPoints(): RoutePoint[] {
+    return this.route.filter((point) => point.isCompleted)
+  }
+
   get firstArrivalDate() {
     return this.route[0].firstDate
   }

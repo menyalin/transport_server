@@ -1,4 +1,5 @@
-import { LoadingDock, ILoadingDockProps } from './loadingDock.domain'
+import { ILoadingDockProps } from './interfaces'
+import { LoadingDock } from './loadingDock.domain'
 
 describe('LoadingDock domain', () => {
   it('Should create valid instance', () => {

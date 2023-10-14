@@ -1,13 +1,5 @@
 import { Types } from 'mongoose'
-
-export interface ILoadingDockProps {
-  _id?: Types.ObjectId | string
-  title: string
-  address: string
-  allowedLoadingPoints?: string[]
-  contacts?: string
-  note?: string
-}
+import { ILoadingDockProps } from './interfaces'
 
 export class LoadingDock {
   _id?: string

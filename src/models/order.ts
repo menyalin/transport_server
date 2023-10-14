@@ -18,6 +18,7 @@ import {
 
 const { Schema, model, Types } = pkg
 import { RoutePoint } from '../values/order/routePoint'
+import { Client } from '../domain/order/client'
 
 const prices = [PriceDTO.modelFields()]
 
@@ -86,19 +87,6 @@ const docs = [
   },
 ]
 
-const client = {
-  client: {
-    type: Types.ObjectId,
-    ref: 'Partner',
-  },
-  num: String,
-  auctionNum: String,
-  agreement: {
-    type: Types.ObjectId,
-    ref: 'Agreement',
-  },
-}
-
 const grade = {
   grade: Number,
   note: String,
@@ -163,7 +151,7 @@ const schema = new Schema(
     startPositionDate: { type: Date, required: true },
     grade,
     docs,
-    client,
+    client: Client.dbSchema(),
     prePrices: prices,
     prices,
     finalPrices: prices,

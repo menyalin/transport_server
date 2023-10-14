@@ -30,10 +30,11 @@ import PaymentInvoiceService from './paymentInvoice'
 import GlobalSettingsService from './globalSettings'
 
 import TokenService from './token'
-import NotificationService from './notification'
+import NotificationService from './notification/notification.service'
 import FileService from './file'
 import DocTemplateService from './docTemplate/docTemplate.service'
 import OrderStatsService from './orderStats/orderStats.service'
+import SchedulerService from './scheduler/scheduler.service'
 
 export {
   UserService,
@@ -69,4 +70,5 @@ export {
   PaymentInvoiceService,
   DocTemplateService,
   OrderStatsService,
+  SchedulerService,
 }
