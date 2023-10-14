@@ -30,6 +30,7 @@ class PartnerRepository {
     })
   }
 
+
   async create(partner: PartnerDomain): Promise<PartnerDomain> {
     const partnerItem: IPartnerWithIdProps =
       await this.partnerModel.create(partner)

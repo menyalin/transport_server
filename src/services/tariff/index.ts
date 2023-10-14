@@ -1,13 +1,14 @@
 // @ts-nocheck
 import ChangeLogService from '../changeLog'
 import { Tariff } from '../../models'
+import TariffRepository from '../../repositories/tariff/tariff.repository'
 import { emitTo } from '../../socket'
 import IService from '../iService'
-import getListPipeline from './pipelines/getListPipeline'
 import getBasePrice from './getBasePrice'
 import getAdditionalPointsPrice from './getAdditionalPointsPrice'
 import getWaitingPrices from './getWaitingPrices'
 import getReturnPrice from './getReturnPrice'
+import { createTariff } from '../../domain/tariff/tariff.creator'
 
 class TariffService extends IService {
   constructor({ model, emitter, modelName, logService }) {
@@ -18,24 +19,16 @@ class TariffService extends IService {
 
   async create({ body, user, company }) {
     try {
-      const data = await this.model.create(body)
-      if (Array.isArray(data)) {
-        await this.logService.addArray({
-          array: data,
-          coll: 'tariff',
-          opType: 'create',
-          user,
-          company,
-        })
-      } else
-        await this.logService.add({
-          docId: data._id.toString(),
-          coll: this.modelName,
-          opType: 'create',
-          user,
-          company: data.company.toString(),
-          body: JSON.stringify(data.toJSON()),
-        })
+      const data = await TariffRepository.create(
+        Array.isArray(body) ? body : [body]
+      )
+      await this.logService.addArray({
+        array: data,
+        coll: 'tariff',
+        opType: 'create',
+        user,
+        company,
+      })
 
       return data
     } catch (e) {
@@ -44,28 +37,22 @@ class TariffService extends IService {
   }
 
   async updateOne({ id, body, user }) {
-    const data = await this.model.findByIdAndUpdate(id, body, { new: true })
-    await data.populate('agreement')
-    if (this.logService)
-      await this.logService.add({
-        docId: data._id.toString(),
-        coll: this.modelName,
-        opType: 'update',
-        user,
-        company: data.company.toString(),
-        body: JSON.stringify(data.toJSON()),
-      })
-    return data
+    const tariff = await TariffRepository.updateById(id, createTariff(body))
+
+    await this.logService.add({
+      docId: tariff._id.toString(),
+      coll: this.modelName,
+      opType: 'update',
+      user,
+      company: tariff.company.toString(),
+      body: tariff,
+    })
+    return tariff
   }
 
   async getList(params) {
-    try {
-      const pipeline = getListPipeline(params)
-      const res = await this.model.aggregate(pipeline)
-      return res[0]
-    } catch (e) {
-      throw new Error(e.message)
-    }
+    const data = await TariffRepository.getList(params)
+    return data
   }
 
   async getPrePricesByOrderData(order) {
@@ -91,6 +78,20 @@ class TariffService extends IService {
     if (waitingPrices) waitingPrices.forEach((price) => resArray.push(price))
 
     return resArray
+  }
+
+  async deleteById({ id, user, company }) {
+    await TariffRepository.removeById(id)
+    this.emitter(company.toString(), `${this.modelName}:deleted`, id)
+
+    await this.logService.add({
+      docId: id,
+      coll: this.modelName,
+      opType: 'delete',
+      user,
+      company: company.toString(),
+    })
+    return true
   }
 }
 

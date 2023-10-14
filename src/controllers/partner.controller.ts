@@ -18,6 +18,7 @@ class PartnerController extends IController {
     super({ service, permissionName })
     this.service = service
     this.permissionName = permissionName
+
   }
 
   validateReq(req: Request): Boolean {
@@ -33,16 +34,15 @@ class PartnerController extends IController {
     )
   }
 
+
   async addPlaceForTransferDocs(req: AuthorizedRequest, res: Response) {
     try {
       this.validateReq(req)
-
       await PermissionService.check({
         userId: req.userId,
         companyId: req.companyId,
         operation: this.permissionName + ':write',
       })
-
       const data = await this.service.addPlaceForTransferDocs(
         req.params.partnerId,
         req.body,
@@ -57,6 +57,7 @@ class PartnerController extends IController {
 
   async updatePlaceForTransferDocs(req: AuthorizedRequest, res: Response) {
     try {
+
       // this.validateReq(req)
 
       await PermissionService.check({
@@ -100,6 +101,7 @@ class PartnerController extends IController {
     try {
       this.validateReq(req)
 
+
       await PermissionService.check({
         userId: req.userId,
         companyId: req.companyId,
@@ -112,6 +114,7 @@ class PartnerController extends IController {
           new IdleTruckNotification(req.body),
           req.userId
         )
+
       res.status(201).json(partner.toObject())
     } catch (e) {
       if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
@@ -123,11 +126,13 @@ class PartnerController extends IController {
     try {
       this.validateReq(req)
 
+
       await PermissionService.check({
         userId: req.userId,
         companyId: req.companyId,
         operation: this.permissionName + ':write',
       })
+
 
       const partner: PartnerDomain = await this.service.updateIdleTruckNotify(
         req.params.partnerId,

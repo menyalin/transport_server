@@ -5,8 +5,10 @@ import { Route } from '../../values/order/route'
 import { ORDER_DOMAIN_EVENTS, OrderRemoveEvent } from './domainEvents'
 import { BusEvent } from 'ts-bus/types'
 import { NotifyClientsEvent } from '../../socket/notifyClientsEvent'
+
 import { Client } from './client'
 import { RoutePoint } from '../../values/order/routePoint'
+
 
 export interface IOrderDTO {
   _id: string

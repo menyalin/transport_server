@@ -1,5 +1,14 @@
-// @ts-nocheck
-import mongoose from 'mongoose'
+import mongoose, { PipelineStage } from 'mongoose'
+interface IProps {
+  company: string
+  date?: Date
+  limit: number
+  skip: number
+  agreement?: string
+  client?: string
+  type?: string
+  document?: string
+}
 
 export default ({
   company,
@@ -10,9 +19,9 @@ export default ({
   client,
   type,
   document,
-}) => {
-  const groupByDate = []
-  const firstMatcher = {
+}: IProps): PipelineStage[] => {
+  const groupByDate: PipelineStage[] = []
+  const firstMatcher: PipelineStage = {
     $match: {
       isActive: true,
       company: new mongoose.Types.ObjectId(company),
@@ -23,21 +32,23 @@ export default ({
     firstMatcher.$match.agreement = new mongoose.Types.ObjectId(agreement)
   if (document)
     firstMatcher.$match.document = new mongoose.Types.ObjectId(document)
-  const agreementLookup = [
+  const agreementLookup: PipelineStage[] = [
     {
       $lookup: {
         from: 'agreements',
         localField: 'agreement',
         foreignField: '_id',
-        as: 'agreement',
+        as: '_agreement',
       },
     },
-    { $addFields: { agreement: { $first: '$agreement' } } },
+    { $addFields: { _agreement: { $first: '$_agreement' } } },
+    { $addFields: { agreementName: '$_agreement.name' } },
   ]
+
   if (client) {
     agreementLookup.push({
       $match: {
-        'agreement.clients': new mongoose.Types.ObjectId(client),
+        '_agreement.clients': new mongoose.Types.ObjectId(client),
       },
     })
   }
@@ -70,7 +81,7 @@ export default ({
     })
   }
 
-  const group = [
+  const group: PipelineStage[] = [
     {
       $group: {
         _id: 'tariffs',

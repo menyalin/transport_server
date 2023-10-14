@@ -37,7 +37,11 @@ export default [
   { value: 'hr', text: 'Кадровик' },
   {
     value: 'autoFillRouteDates',
-    text: '(Функиця) Быстрое заполнение временных меток в рейсах',
+    text: '(Функция) Быстрое заполнение временных меток в рейсах',
+  },
+  {
+    value: 'withheldFineSum',
+    text: '(Функиця) Редактирование реквизита штрафа: "Удержано"',
   },
   {
     value: 'withheldFineSum',

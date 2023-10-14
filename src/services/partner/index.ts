@@ -43,6 +43,7 @@ class PartnerService {
     notifications.forEach((notification) => {
       bus.publish(
         toCreateIdleTruckNotificationEvent({ order, ...notification })
+
       )
     })
   }
@@ -155,7 +156,9 @@ class PartnerService {
     placeId: string,
     user: string
   ) {
+
     const partner = await PartnerRepository.getById(partnerId)
+
     if (!partner)
       throw new BadRequestError(
         'partner:deletePlaceForTransferDocs: partner not found'
@@ -232,6 +235,7 @@ class PartnerService {
     return partner
   }
 
+
   async addIdleTruckNotification(
     partnerId: string,
     notification: IdleTruckNotification,
@@ -262,6 +266,7 @@ class PartnerService {
     user: string,
     notify: IdleTruckNotification
   ): Promise<PartnerDomain> {
+
     const partner: PartnerDomain = await PartnerRepository.getById(partnerId)
 
     partner.updateIdleTruckNotify(idleId, notify)
@@ -282,7 +287,9 @@ class PartnerService {
     return partner
   }
 
+
   async deleteIdleTruckNotify(partnerId: string, idleId: string, user: string) {
+
     const partner: PartnerDomain = await PartnerRepository.getById(partnerId)
 
     partner.deleteIdleTruckNotify(idleId)

@@ -3,9 +3,9 @@ export enum TARIFF_TYPES_ENUM {
   zones = 'zones',
   directDistanceZones = 'directDistanceZones',
   waiting = 'waiting',
-  waitingOnReturn = 'waitingOnReturn',
   additionalPoints = 'additionalPoints',
   return = 'return',
+  // waitingOnReturn = 'waitingOnReturn',
 }
 export const TARIFF_TYPES_ENUM_VALUES = Object.values(TARIFF_TYPES_ENUM)
 
@@ -30,11 +30,6 @@ const types = [
   },
   { value: TARIFF_TYPES_ENUM.waiting, text: 'Простой', disabled: false },
   {
-    value: TARIFF_TYPES_ENUM.waitingOnReturn,
-    text: 'Простой при возврате',
-    disabled: false,
-  },
-  {
     value: TARIFF_TYPES_ENUM.additionalPoints,
     text: 'Дополнительные точки',
     disabled: false,
@@ -58,3 +53,8 @@ export const TARIFF_TYPES = types
 
 export const TARIFF_ROUND_BY_HOURS = roundByHours
 export const TARIFF_ROUND_BY_HOURS_ENUM = roundByHours.map((i) => i.value)
+
+export enum WAITING_TARIFF_BY {
+  day = 'day',
+  hour = 'hour',
+}

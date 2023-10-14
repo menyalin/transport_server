@@ -4,11 +4,14 @@ import {
   PARTNER_GROUPS_ENUM,
 } from '../../constants/partner'
 import { LoadingDock } from './loadingDock.domain'
+
 import { IdleTruckNotification } from './idleTruckNotification'
+
 import { BusEvent } from 'ts-bus/types'
 
 import { PARTNER_DOMAIN_EVENTS, UpdatePartnerEvent } from './domainEvents'
 import { NotifyClientsEvent } from '../../socket/notifyClientsEvent'
+
 import { Route } from '../../values/order/route'
 import {
   INotificationsByRouteRes,
@@ -18,11 +21,13 @@ import {
 
 import * as utils from './helpers/index'
 
+
 export class Partner {
   events: BusEvent<any>[] = []
 
   _id?: string
   name: string
+
   fullName?: string
   inn?: string
   company: string
@@ -32,6 +37,7 @@ export class Partner {
   isService?: boolean = false
   isActive: boolean = true
   placesForTransferDocs: LoadingDock[] = []
+
   idleTruckNotifications: IdleTruckNotification[] = []
 
   constructor(p: IPartnerWithIdProps | IParterProps) {
@@ -44,6 +50,7 @@ export class Partner {
     this.group = p.group
     this.isClient = p.isClient
     this.isActive = p.isActive !== undefined ? p.isActive : true
+
     this.placesForTransferDocs = utils.setLoadingDocs(p.placesForTransferDocs)
     this.idleTruckNotifications = utils.setIdleTruckNotifications(
       p.idleTruckNotifications
@@ -78,6 +85,7 @@ export class Partner {
     )
   }
 
+
   notificationsByRoute(route: Route): INotificationsByRouteRes[] {
     const res: INotificationsByRouteRes[] = []
     if (
@@ -99,7 +107,9 @@ export class Partner {
     this.addUpdateEvents()
   }
 
+
   updateIdleTruckNotify(notifyId: string, notify: IdleTruckNotification): void {
+
     const idx = this.idleTruckNotifications.findIndex(
       (i) => i._id?.toString() === notifyId
     )
@@ -122,10 +132,12 @@ export class Partner {
 
   public static dbSchema() {
     return {
+
       name: { type: String, required: true },
       fullName: String,
       inn: String,
       company: { type: Types.ObjectId, ref: 'Company', required: true },
+
       contacts: String,
       group: { type: String, enum: [...PARTNER_GROUPS_ENUM_VALUES, null] },
       isClient: { type: Boolean, default: false },
