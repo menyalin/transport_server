@@ -10,10 +10,12 @@ import {
   getOrdersByTrucksAndPeriodPipeline,
   IGetOrdersByTrucksAndPeriodPipelineProps,
 } from './pipelines/getOrdersByTrucksAndPeriodPipeline'
+import { getFullOrderDataPipeline } from './pipelines/getFullOrderDataPipeline'
 import {
   OrderRemoveEvent,
   OrdersRouteUpdateEvent,
 } from '../../domain/order/domainEvents'
+import { FullOrderDataDTO } from '../../domain/order/dto/fullOrderData.dto'
 
 class OrderRepository {
   constructor() {
@@ -30,6 +32,14 @@ class OrderRepository {
     const order = await OrderModel.findById<IOrderDTO>(orderId)
     if (!order) throw new Error(`${orderId} not found`)
     return new OrderDomain(order)
+  }
+
+  async getFullOrderDataDTO(orderId: string): Promise<FullOrderDataDTO> {
+    const pipeline = getFullOrderDataPipeline(orderId)
+    const orders = await OrderModel.aggregate(pipeline)
+    if (orders.length === 0)
+      throw new Error('getFullOrderDataDTO : order is missing')
+    return FullOrderDataDTO.create(orders[0])
   }
 
   async getOrdersByTrucksAndPeriod(

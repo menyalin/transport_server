@@ -3,7 +3,7 @@ import { IController } from './iController'
 import { PartnerService, PermissionService } from '../services'
 import { AuthorizedRequest } from './interfaces/request'
 import { BadRequestError } from '../helpers/errors'
-import { IdleTruckNotify } from '../domain/partner/idleTruckNotify'
+import { IdleTruckNotification } from '../domain/partner/idleTruckNotification'
 import { Partner as PartnerDomain } from '../domain/partner/partner.domain'
 
 interface IConstructorProps {
@@ -37,12 +37,12 @@ class PartnerController extends IController {
     try {
       this.validateReq(req)
 
-      if (this.permissionName)
-        await PermissionService.check({
-          userId: req.userId,
-          companyId: req.companyId,
-          operation: this.permissionName + ':write',
-        })
+      await PermissionService.check({
+        userId: req.userId,
+        companyId: req.companyId,
+        operation: this.permissionName + ':write',
+      })
+
       const data = await this.service.addPlaceForTransferDocs(
         req.params.partnerId,
         req.body,
@@ -57,13 +57,13 @@ class PartnerController extends IController {
 
   async updatePlaceForTransferDocs(req: AuthorizedRequest, res: Response) {
     try {
-      this.validateReq(req)
-      if (this.permissionName)
-        await PermissionService.check({
-          userId: req.userId,
-          companyId: req.companyId,
-          operation: this.permissionName + ':write',
-        })
+      // this.validateReq(req)
+
+      await PermissionService.check({
+        userId: req.userId,
+        companyId: req.companyId,
+        operation: this.permissionName + ':write',
+      })
       const data = await this.service.updatePlaceForTransferDocs(
         req.params.partnerId,
         req.params.placeId,
@@ -79,12 +79,11 @@ class PartnerController extends IController {
 
   async deletePlaceForTransferDocs(req: AuthorizedRequest, res: Response) {
     try {
-      if (this.permissionName)
-        await PermissionService.check({
-          userId: req.userId,
-          companyId: req.companyId,
-          operation: this.permissionName + ':write',
-        })
+      await PermissionService.check({
+        userId: req.userId,
+        companyId: req.companyId,
+        operation: this.permissionName + ':write',
+      })
       const data = await this.service.deletePlaceForTransferDocs(
         req.params.partnerId,
         req.params.placeId,
@@ -100,18 +99,19 @@ class PartnerController extends IController {
   async addIdleTruckNotify(req: AuthorizedRequest, res: Response) {
     try {
       this.validateReq(req)
-      if (this.permissionName)
-        await PermissionService.check({
-          userId: req.userId,
-          companyId: req.companyId,
-          operation: this.permissionName + ':write',
-        })
 
-      const partner: PartnerDomain = await this.service.addIdleTruckNotify(
-        req.params.id,
-        new IdleTruckNotify(req.body),
-        req.userId
-      )
+      await PermissionService.check({
+        userId: req.userId,
+        companyId: req.companyId,
+        operation: this.permissionName + ':write',
+      })
+
+      const partner: PartnerDomain =
+        await this.service.addIdleTruckNotification(
+          req.params.id,
+          new IdleTruckNotification(req.body),
+          req.userId
+        )
       res.status(201).json(partner.toObject())
     } catch (e) {
       if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
@@ -122,18 +122,18 @@ class PartnerController extends IController {
   async updateIdleTruckNotify(req: AuthorizedRequest, res: Response) {
     try {
       this.validateReq(req)
-      if (this.permissionName)
-        await PermissionService.check({
-          userId: req.userId,
-          companyId: req.companyId,
-          operation: this.permissionName + ':write',
-        })
+
+      await PermissionService.check({
+        userId: req.userId,
+        companyId: req.companyId,
+        operation: this.permissionName + ':write',
+      })
 
       const partner: PartnerDomain = await this.service.updateIdleTruckNotify(
         req.params.partnerId,
         req.params.idleId,
         req.userId,
-        new IdleTruckNotify(req.body)
+        new IdleTruckNotification(req.body)
       )
       res.status(200).json(partner.toObject())
     } catch (e) {
@@ -145,12 +145,12 @@ class PartnerController extends IController {
   async deleteIdleTruckNotification(req: AuthorizedRequest, res: Response) {
     try {
       this.validateReq(req)
-      if (this.permissionName)
-        await PermissionService.check({
-          userId: req.userId,
-          companyId: req.companyId,
-          operation: this.permissionName + ':write',
-        })
+
+      await PermissionService.check({
+        userId: req.userId,
+        companyId: req.companyId,
+        operation: this.permissionName + ':write',
+      })
 
       const partner: PartnerDomain = await this.service.deleteIdleTruckNotify(
         req.params.partnerId,

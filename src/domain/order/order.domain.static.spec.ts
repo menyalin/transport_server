@@ -1,7 +1,8 @@
 // @ts-nocheck
+import dayjs from 'dayjs'
 import { describe, it, expect } from '@jest/globals'
 import { Order } from './order.domain'
-import dayjs from 'dayjs'
+import { Client } from './client'
 
 describe('Order.Domain static functions', () => {
   const orderPlannedDate1 = dayjs('2023-05-27T06:00:00.000Z')
@@ -22,6 +23,7 @@ describe('Order.Domain static functions', () => {
       state: { status: 'completed' },
       orderDate: orderPlannedDate1.toISOString(),
       confirmedCrew: { truck: 'truck_id' },
+      client: new Client({ client: '1' }),
       route: [
         {
           type: 'loading',
@@ -43,6 +45,7 @@ describe('Order.Domain static functions', () => {
       state: { status: 'inProgress' },
       orderDate: orderPlannedDate1.add(40, 'minutes').toISOString(),
       confirmedCrew: { truck: 'truck_id' },
+      client: new Client({ client: '1' }),
       route: [
         {
           type: 'loading',
@@ -61,6 +64,7 @@ describe('Order.Domain static functions', () => {
       state: { status: 'inProgress' },
       orderDate: orderPlannedDate2.toISOString(),
       confirmedCrew: { truck: 'truck_id' },
+      client: new Client({ client: '1' }),
       route: [
         {
           type: 'loading',
@@ -79,6 +83,7 @@ describe('Order.Domain static functions', () => {
       state: { status: 'inProgress' },
       orderDate: orderPlannedDate1.toISOString(),
       confirmedCrew: { truck: 'truck_id' },
+      client: new Client({ client: '1' }),
       route: [
         {
           type: 'loading',

@@ -5,6 +5,8 @@ import { Route } from '../../values/order/route'
 import { ORDER_DOMAIN_EVENTS, OrderRemoveEvent } from './domainEvents'
 import { BusEvent } from 'ts-bus/types'
 import { NotifyClientsEvent } from '../../socket/notifyClientsEvent'
+import { Client } from './client'
+import { RoutePoint } from '../../values/order/routePoint'
 
 export interface IOrderDTO {
   _id: string
@@ -60,7 +62,7 @@ export class Order {
     truck: string
   }
   docs: []
-  client: object
+  client: Client
   prePrices: []
   prices: []
   finalPrices: []
@@ -95,7 +97,7 @@ export class Order {
     this.route = new Route(order.route)
     this.confirmedCrew = order.confirmedCrew
     this.docs = order.docs
-    this.client = order.client
+    this.client = new Client(order.client)
     this.prePrices = order.prePrices
     this.prices = order.prices
     this.finalPrices = order.finalPrices
@@ -108,12 +110,16 @@ export class Order {
     this.paymentToDriver = order.paymentToDriver
     this.note = order.note
     this.noteAccountant = order.noteAccountant
-    this.isActive = order.isActive
+    this.isActive = order.isActive !== undefined ? order.isActive : true
     this.isDisabled = order.isDisabled
   }
 
   clearEvents() {
     this.events = []
+  }
+
+  get clientId(): string {
+    return this.client.client
   }
 
   remove(userId: string) {
@@ -147,6 +153,13 @@ export class Order {
 
   unlock() {
     this.isDisabled = false
+  }
+
+  get activePoints(): RoutePoint[] {
+    return this.route.activePoints
+  }
+  get completedPoints() {
+    return this.route.completedPoints
   }
 
   get id() {
@@ -251,7 +264,6 @@ export class Order {
         if (updated) updatedOrders.push(order)
       }
     }
-
     return {
       events,
       updatedOrders,

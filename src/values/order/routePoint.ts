@@ -10,6 +10,7 @@ function setDate(date: Date | string | null): Date | null {
 }
 
 export class RoutePoint {
+  _id?: string
   type: POINT_TYPES_ENUM
   address: string
   plannedDate: Date | null = null
@@ -32,6 +33,7 @@ export class RoutePoint {
       throw new Error('RoutePoint : constructor error : invalid point type')
     if (!point.address)
       throw new Error('RoutePoint : constructor error : address is missing')
+    if (point._id) this._id = point._id.toString()
     this.type = point.type
     this.address = point.address
     this.plannedDate = setDate(point.plannedDate)
@@ -120,11 +122,17 @@ export class RoutePoint {
     return depDate.diff(arrDate, 'minutes')
   }
 
-  get datesFilled() {
-    return (
+  get datesFilled(): boolean {
+    return !!(
       (this.departureDateDoc || this.departureDate) &&
       (this.arrivalDateDoc || this.arrivalDate)
     )
+  }
+  get isStarted(): boolean {
+    return !!this.arrivalDate
+  }
+  get isCompleted(): boolean {
+    return this.departureDate !== null
   }
 
   get firstDate() {
