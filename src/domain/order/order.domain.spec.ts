@@ -2,6 +2,7 @@
 import { describe, it, expect } from '@jest/globals'
 import { Order } from './order.domain'
 import dayjs from 'dayjs'
+import { Client } from './client'
 
 describe('Order.Domain', () => {
   const orderPlannedDate = dayjs('2023-05-27')
@@ -19,6 +20,7 @@ describe('Order.Domain', () => {
       _id: 'id',
       state: { status: 'completed' },
       orderDate: orderPlannedDate.toISOString(),
+      client: new Client({ client: '1' }),
       confirmedCrew: { truck: 'truck_id' },
       route: [
         {
@@ -41,6 +43,7 @@ describe('Order.Domain', () => {
       state: { status: 'inProgress' },
       orderDate: orderPlannedDate.toISOString(),
       confirmedCrew: { truck: 'truck_id' },
+      client: new Client({ client: '1' }),
       route: [
         {
           type: 'loading',
@@ -59,6 +62,7 @@ describe('Order.Domain', () => {
       state: { status: 'inProgress' },
       orderDate: orderPlannedDate.toISOString(),
       confirmedCrew: { truck: 'truck_id' },
+      client: new Client({ client: '1' }),
       route: [
         {
           type: 'loading',
@@ -76,6 +80,7 @@ describe('Order.Domain', () => {
       state: { status: 'completed' },
       orderDate: orderPlannedDate.toISOString(),
       confirmedCrew: { truck: 'truck_id' },
+      client: new Client({ client: '1' }),
       route: [
         {
           type: 'loading',

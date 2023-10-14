@@ -1,12 +1,10 @@
 import { EventBus } from 'ts-bus'
-import {
-  IPartnerWithIdProps,
-  Partner as PartnerDomain,
-} from '../../domain/partner/partner.domain'
+import { Partner as PartnerDomain } from '../../domain/partner/partner.domain'
 import { UpdatePartnerEvent } from '../../domain/partner/domainEvents'
 import { bus } from '../../eventBus'
 import { BadRequestError } from '../../helpers/errors'
 import { Partner as PartnerModel } from '../../models'
+import { IPartnerWithIdProps } from '../../domain/partner/interfaces'
 
 class PartnerRepository {
   partnerModel: typeof PartnerModel
@@ -30,6 +28,13 @@ class PartnerRepository {
         console.log(e)
       }
     })
+  }
+
+
+  async create(partner: PartnerDomain): Promise<PartnerDomain> {
+    const partnerItem: IPartnerWithIdProps =
+      await this.partnerModel.create(partner)
+    return new PartnerDomain(partnerItem)
   }
 
   async updatePartner(partner: PartnerDomain) {

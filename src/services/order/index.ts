@@ -22,6 +22,8 @@ import { getPaymentInvoicesByOrderIds } from './getPaymentInvoicesByOrderIds'
 import OrderRepository from '../../repositories/order/order.repository'
 import { Order as OrderDomain } from '../../domain/order/order.domain'
 import { bus } from '../../eventBus'
+import { OrderUpdatedEvent } from '../../domain/order/domainEvents'
+
 
 const _isEqualDatesOfRoute = ({ oldRoute, newRoute }) => {
   const oldArrivalDate = new Date(oldRoute[0].arrivalDate).toLocaleString()
@@ -54,9 +56,8 @@ class OrderService {
       body.client.agreement = await getClientAgreementId(body)
 
     if (!body.confirmedCrew.outsourceAgreement && body.route[0].plannedDate)
-      body.confirmedCrew.outsourceAgreement = await getOutsourceAgreementId(
-        body
-      )
+      body.confirmedCrew.outsourceAgreement =
+        await getOutsourceAgreementId(body)
     if (body.client.agreement && body.analytics.type) {
       body.prePrices = await TariffService.getPrePricesByOrderData(
         PriceDTO.prepareOrderForPrePriceQuery(body)
@@ -128,9 +129,8 @@ class OrderService {
       order.confirmedCrew.outsourceAgreement = null
     } else {
       order.confirmedCrew.truck = new mongoose.Types.ObjectId(truck)
-      order.confirmedCrew.outsourceAgreement = await getOutsourceAgreementId(
-        order
-      )
+      order.confirmedCrew.outsourceAgreement =
+        await getOutsourceAgreementId(order)
     }
     order.confirmedCrew.driver = null
     order.confirmedCrew.trailer = null
@@ -241,9 +241,8 @@ class OrderService {
     }
 
     if (!body.confirmedCrew.outsourceAgreement && body.confirmedCrew.truck)
-      body.confirmedCrew.outsourceAgreement = await getOutsourceAgreementId(
-        body
-      )
+      body.confirmedCrew.outsourceAgreement =
+        await getOutsourceAgreementId(body)
     let order = await OrderModel.findById(id)
 
     if (!order) return null
@@ -280,6 +279,7 @@ class OrderService {
     orderDomain.unlock()
 
     await OrderRepository.save([orderDomain])
+    bus.publish(OrderUpdatedEvent(orderDomain))
 
     emitTo(orderDomain.company.toString(), 'order:updated', orderDomain)
     await ChangeLogService.add({
