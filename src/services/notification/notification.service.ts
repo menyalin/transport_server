@@ -24,6 +24,7 @@ class NotificationService {
   senderEmail?: string
   bus: EventBus
   transporter: Transporter
+
   constructor({ bus }: { bus: EventBus }) {
     this.bus = bus
     this.senderEmail =
@@ -108,7 +109,7 @@ class NotificationService {
     props: IDefaultIdleTruckNotification
   ): Promise<void> {
     const email = new Email({
-      views: { root: path.join(__dirname, 'emailTemplates') },
+      views: { root: path.join(process.cwd(), 'emailTemplates') },
     })
     const html = await email.render('defaultIdleTruckNotify', props)
     await this.transporter.sendMail({
