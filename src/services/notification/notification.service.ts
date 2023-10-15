@@ -74,7 +74,7 @@ class NotificationService {
   async sendRestorePasswordLink({ email, token }: IAuthProps) {
     const link = process.env.CLIENT_URL + '/auth/restore_password/' + token
     const message: Mail.Options = {
-      from: 's4log notification<${}>',
+      from: `s4log notification<${this.senderEmail}>`,
       to: email,
       subject: 'Восстановления пароля',
 
