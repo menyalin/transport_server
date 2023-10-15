@@ -13,6 +13,7 @@ export interface IDefaultIdleTruckNotification {
   to: string
   cc: string | null
   templateName?: string
+  isLoading: boolean
   emailTitle: string
   orderNum: string | null
   routeAddressesString: string
@@ -25,7 +26,7 @@ export interface IDefaultIdleTruckNotification {
   trailerNum?: string
 }
 
-export interface IIdleTruckNotifyProps {}
+
 
 export interface IIdleTruckNotificationMessageProps {
   _id?: string

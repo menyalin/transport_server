@@ -2,7 +2,7 @@ doctype html
 html(lang="ru")
   head
     meta(charset="UTF-8")
-    title= emailTitle
+    title=emailTitle
   body
     h4 Уважаемые коллеги!
     p
@@ -19,6 +19,10 @@ html(lang="ru")
       | #{truckBrand} #{truckNum} #{trailerNum} 
     p
       | 
-      | Просим Вас оказать содействие в погрузке ТС! 
+      if isLoading
+        | Просим Вас оказать содействие в погрузке ТС! 
+      else 
+        | Просим Вас оказать содействие в выгрузке ТС! 
+      br
       br
       | С уважением, #{companyName}
