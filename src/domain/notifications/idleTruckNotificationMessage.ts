@@ -89,7 +89,7 @@ export class IdleTruckNotificationMessage {
       emailTitle: getEmailTitle(order),
       companyName: order.companyName,
       orderNum: order.orderNum || null,
-      plannedDate: point.plannedDate?.toLocaleString(),
+      plannedDate: point.plannedDate?.toLocaleString('ru'),
       fullDriverName: order.fullDriverName,
       driverPhones: order.driverPhones,
       routeAddressesString: order.routeAddressesString,
