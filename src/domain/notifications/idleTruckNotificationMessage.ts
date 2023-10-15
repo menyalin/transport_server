@@ -80,6 +80,7 @@ export class IdleTruckNotificationMessage {
     const body: IDefaultIdleTruckNotification = {
       to: notification.emails,
       cc: notification.ccEmails || null,
+      isLoading: point.isLoadingPointType,
       templateName: notification.templateName || 'defaultIdleTruckNotify',
       emailTitle: getEmailTitle(order),
       companyName: order.companyName,
