@@ -17,6 +17,7 @@ describe('notifications utils - isNeedUpdateNotificationMessage', () => {
       companyName: '1',
       driverPhones: '1',
       emailTitle: '1',
+      isLoading: true,
       orderNum: '1',
       fullDriverName: '1',
       plannedDate: '1',
