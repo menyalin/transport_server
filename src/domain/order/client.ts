@@ -1,17 +1,17 @@
-import { Types, isObjectIdOrHexString } from 'mongoose'
+import { isObjectIdOrHexString, Schema } from 'mongoose'
 
 interface IClientProps {
-  client: string | Types.ObjectId
+  client: string | Schema.Types.ObjectId
   num?: string
   auctionNum?: string
-  agreement?: string | Types.ObjectId
+  agreement?: string | Schema.Types.ObjectId
 }
 
 export class Client {
   client: string
   num?: string
   auctionNum?: string
-  agreement?: string | Types.ObjectId
+  agreement?: string | Schema.Types.ObjectId
   constructor(props: IClientProps) {
     this.client = props.client?.toString()
     this.num = props.num
@@ -22,16 +22,24 @@ export class Client {
         : props.agreement
   }
 
+  toJSON() {
+    return {
+      client: this.client,
+      num: this.num,
+      auctionNum: this.auctionNum,
+      agreement: this.agreement,
+    }
+  }
   static dbSchema() {
     return {
       client: {
-        type: Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'Partner',
       },
       num: String,
       auctionNum: String,
       agreement: {
-        type: Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'Agreement',
       },
     }
