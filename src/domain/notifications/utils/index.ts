@@ -1,0 +1,1 @@
+export { getIdleTruckNotificationMessageSendDate } from './getIdleTruckNotifMessageSendDate'

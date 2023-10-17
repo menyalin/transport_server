@@ -23,6 +23,10 @@ export class Route {
     return res
   }
 
+  get mainLoadingPoint(): RoutePoint {
+    return this.route[0]
+  }
+
   get completedPoints(): RoutePoint[] {
     return this.route.filter((point) => point.isCompleted)
   }

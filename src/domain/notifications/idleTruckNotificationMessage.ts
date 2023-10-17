@@ -1,5 +1,4 @@
 import { Schema, Types } from 'mongoose'
-import dayjs from 'dayjs'
 import { RoutePoint } from '../../values/order/routePoint'
 import { FullOrderDataDTO } from '../order/dto/fullOrderData.dto'
 import { IdleTruckNotification } from '../partner/idleTruckNotification'
@@ -8,6 +7,8 @@ import {
   IIdleTruckNotificationMessageProps,
   MESSAGE_STATUS_ENUM,
 } from './interfaces'
+
+import * as utils from './utils'
 
 const getMessageKey = (
   orderId: string,
@@ -75,11 +76,10 @@ export class IdleTruckNotificationMessage {
       ? MESSAGE_STATUS_ENUM.canceled
       : MESSAGE_STATUS_ENUM.created
 
-    const sendDate = dayjs(
-      notification.usePlannedDate ? point.plannedDate : point.arrivalDate
+    const sendDate = utils.getIdleTruckNotificationMessageSendDate(
+      notification,
+      point
     )
-      .add(+notification.idleHoursBeforeNotify, 'hours')
-      .toDate()
 
     const body: IDefaultIdleTruckNotification = {
       to: notification.emails,
