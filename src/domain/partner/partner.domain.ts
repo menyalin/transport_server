@@ -85,11 +85,14 @@ export class Partner {
       this.idleTruckNotifications.length === 0
     )
       return []
+
     this.idleTruckNotifications.forEach((notification) => {
-      route.activePoints.forEach((point) => {
-        if (utils.isNeedCreateNotification(notification, point))
-          res.push({ notification, point })
-      })
+      if (notification.addresses?.includes(route.mainLoadingPoint.address)) {
+        route.activePoints.forEach((point) => {
+          if (utils.isNeedCreateNotification(notification, point))
+            res.push({ notification, point })
+        })
+      }
     })
     return res
   }
