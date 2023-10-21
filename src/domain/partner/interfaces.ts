@@ -4,6 +4,12 @@ import { LoadingDock } from './loadingDock.domain'
 import { IdleTruckNotification } from './idleTruckNotification'
 import { RoutePoint } from '../../values/order/routePoint'
 
+export enum USE_TRUCK_FILTER_ENUM {
+  included = 'included',
+  excluded = 'excluded',
+  notUsed = 'notUsed',
+}
+
 export interface IParterProps {
   name: string
   fullName?: string
@@ -24,6 +30,7 @@ export interface IPartnerWithIdProps extends IParterProps {
 export interface IIdleTruckNotifyProps {
   _id?: string
   title: string
+  companyName: string
   addresses?: string[]
   emails: string
   ccEmails?: string
@@ -31,6 +38,8 @@ export interface IIdleTruckNotifyProps {
   templateName: string
   note?: string
   usePlannedDate?: boolean
+  useTruckFilter?: USE_TRUCK_FILTER_ENUM
+  trucks?: string[]
 }
 
 export interface INotificationsByRouteRes {

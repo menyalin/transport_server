@@ -22,6 +22,7 @@ describe('Partner domain', () => {
       idleHoursBeforeNotify: 2,
       usePlannedDate: true,
       templateName: '1',
+      companyName: '1',
     })
     point = new RoutePoint({
       address: '1',
@@ -31,21 +32,29 @@ describe('Partner domain', () => {
   })
 
   it('utils.isNeedCreateNotification: should return true, if notification.usePlannedDate && point.plannedDate', () => {
-    expect(utils.isNeedCreateNotification(notification, point)).toBeTruthy()
+    expect(
+      utils.isNeedCreateNotificationByPoint(notification, point)
+    ).toBeTruthy()
   })
   it('utils.isNeedCreateNotification: should return false, if notification.usePlannedDate && point.plannedDate === null', () => {
     point.plannedDate = null
-    expect(utils.isNeedCreateNotification(notification, point)).toBeFalsy()
+    expect(
+      utils.isNeedCreateNotificationByPoint(notification, point)
+    ).toBeFalsy()
   })
   it('utils.isNeedCreateNotification: should return false, if !notification.usePlannedDate && point.plannedDate === null', () => {
     point.plannedDate = null
     notification.usePlannedDate = false
-    expect(utils.isNeedCreateNotification(notification, point)).toBeFalsy()
+    expect(
+      utils.isNeedCreateNotificationByPoint(notification, point)
+    ).toBeFalsy()
   })
   it('utils.isNeedCreateNotification: should return true, if !notification.usePlannedDate && point.isStarted', () => {
     point.plannedDate = new Date('2023-01-01')
     point.arrivalDate = new Date('2023-01-01')
     notification.usePlannedDate = false
-    expect(utils.isNeedCreateNotification(notification, point)).toBeTruthy()
+    expect(
+      utils.isNeedCreateNotificationByPoint(notification, point)
+    ).toBeTruthy()
   })
 })

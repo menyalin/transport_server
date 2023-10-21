@@ -16,6 +16,7 @@ describe('getIdleTruckNotificationMessageSendDate', () => {
       templateName: '1',
       title: 'a',
       usePlannedDate: true,
+      companyName: 'name',
     })
     point = new RoutePoint({
       type: 'loading',

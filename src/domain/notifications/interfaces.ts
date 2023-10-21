@@ -17,6 +17,8 @@ export interface IDefaultIdleTruckNotification {
   emailTitle: string
   orderNum: string | null
   routeAddressesString: string
+  currentAddressString: string
+  waybills: string
   companyName: string
   plannedDate: string
   fullDriverName: string
@@ -24,14 +26,15 @@ export interface IDefaultIdleTruckNotification {
   truckBrand: string
   truckNum: string
   trailerNum?: string
+  showPointStatus: boolean
+  currentStatus?: string
 }
-
-
 
 export interface IIdleTruckNotificationMessageProps {
   _id?: string
   orderId: string
   pointId: string
+  notificationId: string
   key: string
   status: MESSAGE_STATUS_ENUM
   body: IDefaultIdleTruckNotification

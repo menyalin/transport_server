@@ -1,7 +1,7 @@
 import { RoutePoint } from '../../../values/order/routePoint'
 import { IdleTruckNotification } from '../idleTruckNotification'
 
-export const isNeedCreateNotification = (
+export const isNeedCreateNotificationByPoint = (
   notification: IdleTruckNotification,
   point: RoutePoint
 ): boolean => {
