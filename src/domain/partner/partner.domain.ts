@@ -17,6 +17,7 @@ import {
 } from './interfaces'
 
 import * as utils from './helpers/index'
+import { Order } from '../order/order.domain'
 
 export class Partner {
   events: BusEvent<any>[] = []
@@ -78,7 +79,7 @@ export class Partner {
     )
   }
 
-  notificationsByRoute(route: Route): INotificationsByRouteRes[] {
+  notificationsByOrder(order: Order): INotificationsByRouteRes[] {
     const res: INotificationsByRouteRes[] = []
     if (
       !this.idleTruckNotifications ||
@@ -87,9 +88,9 @@ export class Partner {
       return []
 
     this.idleTruckNotifications.forEach((notification) => {
-      if (notification.addresses?.includes(route.mainLoadingPoint.address)) {
-        route.activePoints.forEach((point) => {
-          if (utils.isNeedCreateNotification(notification, point))
+      if (utils.isNeedCreateNotificationByOrder(notification, order)) {
+        order.route.activePoints.forEach((point) => {
+          if (utils.isNeedCreateNotificationByPoint(notification, point))
             res.push({ notification, point })
         })
       }

@@ -10,6 +10,12 @@ html(lang="ru")
       br
       | #{routeAddressesString}
       br
+      br
+      | Адрес: #{currentAddressString}
+      if !!waybills 
+        br
+        | ТТН: #{waybills}
+      br
       b Плановое время: #{plannedDate}
       br
       b ТС простаивает!
@@ -17,8 +23,13 @@ html(lang="ru")
       | #{fullDriverName}, тел. #{driverPhones}
       br
       | #{truckBrand} #{truckNum} #{trailerNum} 
+
+    if showPointStatus
+      p
+        | Статус:  
+        b #{currentStatus} 
     p
-      | 
+      br 
       if isLoading
         | Просим Вас оказать содействие в погрузке ТС! 
       else 

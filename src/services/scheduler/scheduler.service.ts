@@ -4,7 +4,7 @@ import cron from 'node-cron'
 class SchedulerService {
   constructor() {
     cron.schedule(
-      '*/5 * * * *',
+      '*/1 * * * *',
       async () => {
         await tasks.sendIdleTruckNotificationMessages(new Date())
       },

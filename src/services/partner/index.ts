@@ -35,16 +35,16 @@ class PartnerService {
   }
 
   private async createIdleTruckNotification(order: OrderDomain): Promise<void> {
-    if (!order.isInProgress) return
+    if (order.isInProgress || order.isCompleted) {
+      const partner = await PartnerRepository.getById(order.client.client)
 
-    const partner = await PartnerRepository.getById(order.client.client)
-
-    const notifications = partner.notificationsByRoute(order.route)
-    notifications.forEach((notification) => {
-      bus.publish(
-        toCreateIdleTruckNotificationEvent({ order, ...notification })
-      )
-    })
+      const notifications = partner.notificationsByOrder(order)
+      notifications.forEach((notification) => {
+        bus.publish(
+          toCreateIdleTruckNotificationEvent({ order, ...notification })
+        )
+      })
+    }
   }
 
   async create({ body, user }: ICreateProps) {
