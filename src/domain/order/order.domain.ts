@@ -22,6 +22,10 @@ export interface IOrderDTO {
   company: string
   confirmedCrew: {
     truck: string
+    trailer?: string
+    driver?: string
+    outsourceAgreement?: string
+    tkName?: string
   }
   docs: []
   client: {
@@ -60,6 +64,10 @@ export class Order {
   route: Route
   confirmedCrew: {
     truck: string
+    trailer?: string
+    driver?: string
+    outsourceAgreement?: string
+    tkName?: string
   }
   docs: []
   client: Client

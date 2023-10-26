@@ -8,7 +8,10 @@ import {
   IAuthProps,
   IDefaultIdleTruckNotification,
 } from '../../domain/notifications/interfaces'
-import { toSendIdleTruckNotificationMessageEvent } from '../../domain/partner/domainEvents'
+import {
+  toCancelIdleTruckNotificationMessagesEvent,
+  toSendIdleTruckNotificationMessageEvent,
+} from '../../domain/partner/domainEvents'
 import { toCreateIdleTruckNotificationEvent } from './events/idleTruckNotifications'
 import { FullOrderDataDTO } from '../../domain/order/dto/fullOrderData.dto'
 import { IdleTruckNotification } from '../../domain/partner/idleTruckNotification'
@@ -44,12 +47,24 @@ class NotificationService {
         )
       }
     )
+    this.bus.subscribe(
+      toCancelIdleTruckNotificationMessagesEvent,
+      async ({ payload }) => {
+        await this.cancelIdleTruckNotificationMessages(payload)
+      }
+    )
 
     this.bus.subscribe(
       toSendIdleTruckNotificationMessageEvent,
       async ({ payload }) => {
         await this.sendIdleTruckNotificationMessage(payload)
       }
+    )
+  }
+
+  async cancelIdleTruckNotificationMessages(notificationId: string) {
+    await NotificationRepository.cancelIdleTruckNotificationMessages(
+      notificationId
     )
   }
 

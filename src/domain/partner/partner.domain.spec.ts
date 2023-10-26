@@ -17,6 +17,7 @@ describe('Partner domain', () => {
     // })
     notification = new IdleTruckNotification({
       emails: '1@1.ru',
+      isActive: true,
       addresses: ['1'],
       title: '1',
       idleHoursBeforeNotify: 2,
