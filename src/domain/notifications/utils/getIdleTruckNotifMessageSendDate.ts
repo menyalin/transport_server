@@ -6,17 +6,18 @@ export const getIdleTruckNotificationMessageSendDate = (
   notification: IdleTruckNotification,
   point: RoutePoint
 ): Date => {
-  if (!point.plannedDate)
+  if (!point.plannedDate && !point.arrivalDate)
     throw new Error(
-      'getIdleTruckNotificationMessageSendDate : point planned date is missing'
+      'getIdleTruckNotificationMessageSendDate : point dates is missing'
     )
-  let date: Date
-  if (!point.arrivalDate) date = point.plannedDate
-  else
-    date =
-      point.arrivalDate?.valueOf() > point.plannedDate?.valueOf()
-        ? point.arrivalDate
-        : point.plannedDate
+
+  let date = point.plannedDate || point.arrivalDate
+
+  if (point.arrivalDate && point.plannedDate) {
+    date = dayjs(point.arrivalDate).isAfter(point.plannedDate)
+      ? point.arrivalDate
+      : point.plannedDate
+  }
 
   return dayjs(date).add(notification.idleHoursBeforeNotify, 'hours').toDate()
 }

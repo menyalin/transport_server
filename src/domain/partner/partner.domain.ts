@@ -7,9 +7,12 @@ import { LoadingDock } from './loadingDock.domain'
 import { IdleTruckNotification } from './idleTruckNotification'
 import { BusEvent } from 'ts-bus/types'
 
-import { PARTNER_DOMAIN_EVENTS, UpdatePartnerEvent } from './domainEvents'
+import {
+  PARTNER_DOMAIN_EVENTS,
+  UpdatePartnerEvent,
+  toCancelIdleTruckNotificationMessagesEvent,
+} from './domainEvents'
 import { NotifyClientsEvent } from '../../socket/notifyClientsEvent'
-import { Route } from '../../values/order/route'
 import {
   INotificationsByRouteRes,
   IParterProps,
@@ -44,7 +47,7 @@ export class Partner {
     this.contacts = p.contacts
     this.group = p.group
     this.isClient = p.isClient
-    this.isActive = p.isActive !== undefined ? p.isActive : true
+    this.isActive = p.isActive === undefined ? true : p.isActive
     this.placesForTransferDocs = utils.setLoadingDocs(p.placesForTransferDocs)
     this.idleTruckNotifications = utils.setIdleTruckNotifications(
       p.idleTruckNotifications
@@ -87,14 +90,16 @@ export class Partner {
     )
       return []
 
-    this.idleTruckNotifications.forEach((notification) => {
-      if (utils.isNeedCreateNotificationByOrder(notification, order)) {
-        order.route.activePoints.forEach((point) => {
-          if (utils.isNeedCreateNotificationByPoint(notification, point))
-            res.push({ notification, point })
-        })
-      }
-    })
+    this.idleTruckNotifications
+      .filter((i) => i.isActive)
+      .forEach((notification) => {
+        if (utils.isNeedCreateNotificationByOrder(notification, order)) {
+          order.route.activePoints.forEach((point) => {
+            if (utils.isNeedCreateNotificationByPoint(notification, point))
+              res.push({ notification, point })
+          })
+        }
+      })
     return res
   }
 
@@ -113,7 +118,8 @@ export class Partner {
       )
 
     this.idleTruckNotifications.splice(idx, 1, notify)
-
+    if (notify.isActive === false)
+      this.events.push(toCancelIdleTruckNotificationMessagesEvent(notifyId))
     this.addUpdateEvents()
   }
 
@@ -122,6 +128,7 @@ export class Partner {
       (i) => i._id?.toString() !== idleId
     )
     this.addUpdateEvents()
+    this.events.push(toCancelIdleTruckNotificationMessagesEvent(idleId))
   }
 
   public static dbSchema() {

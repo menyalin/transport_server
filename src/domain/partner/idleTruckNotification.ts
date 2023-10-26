@@ -14,6 +14,7 @@ export class IdleTruckNotification {
   usePlannedDate: boolean
   useTruckFilter: USE_TRUCK_FILTER_ENUM = USE_TRUCK_FILTER_ENUM.notUsed
   trucks: string[] = []
+  isActive: boolean
 
   constructor(p: IIdleTruckNotifyProps) {
     if (p._id) this._id = p._id?.toString()
@@ -30,6 +31,7 @@ export class IdleTruckNotification {
       p.usePlannedDate !== undefined ? !!p.usePlannedDate : false
     if (p.useTruckFilter) this.useTruckFilter = p.useTruckFilter
     this.trucks = p.trucks || []
+    this.isActive = p.isActive || false
   }
 
   includeAddress(address: string): boolean {
@@ -49,6 +51,7 @@ export class IdleTruckNotification {
       usePlannedDate: { type: Boolean, default: false },
       useTruckFilter: { type: String, enum: USE_TRUCK_FILTER_ENUM },
       trucks: [{ type: Types.ObjectId, ref: 'Truck' }],
+      isActive: Boolean,
     }
   }
 }

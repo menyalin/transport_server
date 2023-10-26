@@ -40,6 +40,7 @@ export interface IIdleTruckNotifyProps {
   usePlannedDate?: boolean
   useTruckFilter?: USE_TRUCK_FILTER_ENUM
   trucks?: string[]
+  isActive: boolean
 }
 
 export interface INotificationsByRouteRes {

@@ -17,6 +17,7 @@ describe('getIdleTruckNotificationMessageSendDate', () => {
       title: 'a',
       usePlannedDate: true,
       companyName: 'name',
+      isActive: true,
     })
     point = new RoutePoint({
       type: 'loading',
@@ -28,13 +29,6 @@ describe('getIdleTruckNotificationMessageSendDate', () => {
 
   afterEach(() => {
     MockDate.reset()
-  })
-
-  it('throws an error if point planned date is missing', () => {
-    point.plannedDate = null
-    expect(() =>
-      getIdleTruckNotificationMessageSendDate(notification, point)
-    ).toThrowError()
   })
 
   it('arrival date greater than planned date, should return arrival date + idleHoursBeforeNotify', () => {
