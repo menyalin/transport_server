@@ -77,10 +77,7 @@ export class IdleTruckNotificationMessage {
       throw new Error(
         'IdleTruckNotificationMessage : create : Notification ID is missing'
       )
-    if (!point.plannedDate)
-      throw new Error(
-        'IdleTruckNotificationMessage : create : Point plannedDate is missing'
-      )
+
     const key = getMessageKey(
       order._id?.toString(),
       notification._id?.toString() || '',
@@ -104,7 +101,10 @@ export class IdleTruckNotificationMessage {
       emailTitle: getEmailTitle(order, point),
       companyName: notification.companyName || order.companyName,
       orderNum: order.orderNum || null,
-      plannedDate: point.plannedDate?.toLocaleString('ru'),
+      plannedDate:
+        point.plannedDate?.toLocaleString('ru') ||
+        point.arrivalDate?.toLocaleString('ru') ||
+        'invalid date',
       fullDriverName: order.fullDriverName,
       driverPhones: order.driverPhones,
       routeAddressesString: order.routeAddressesString,
