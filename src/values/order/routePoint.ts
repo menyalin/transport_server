@@ -12,6 +12,8 @@ function setDate(date: Date | string | null): Date | null {
 export class RoutePoint {
   _id?: string
   type: POINT_TYPES_ENUM
+  waybills?: string
+  waitsForWaybills?: boolean = false
   address: string
   plannedDate: Date | null = null
   plannedDateDoc: Date | null = null
@@ -63,6 +65,8 @@ export class RoutePoint {
     this.isPltReturn = point.isPltReturn || false
     this.isAutofilled = point.isAutofilled || false
     this.useInterval = point.useInterval || false
+    this.waybills = point.waybills
+    this.waitsForWaybills = point.waitsForWaybills || false
     this.note = point.note
   }
 
@@ -190,6 +194,8 @@ export class RoutePoint {
         ref: 'Address',
         required: true,
       },
+      waybills: String,
+      waitsForWaybills: { type: Boolean, default: false },
       plannedDate: Date,
       intervalEndDate: Date,
       intervalEndDateDoc: Date,

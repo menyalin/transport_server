@@ -24,7 +24,6 @@ import { Order as OrderDomain } from '../../domain/order/order.domain'
 import { bus } from '../../eventBus'
 import { OrderUpdatedEvent } from '../../domain/order/domainEvents'
 
-
 const _isEqualDatesOfRoute = ({ oldRoute, newRoute }) => {
   const oldArrivalDate = new Date(oldRoute[0].arrivalDate).toLocaleString()
   const newArrivalDate = new Date(newRoute[0].arrivalDate).toLocaleString()

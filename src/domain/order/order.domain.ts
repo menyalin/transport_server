@@ -5,10 +5,8 @@ import { Route } from '../../values/order/route'
 import { ORDER_DOMAIN_EVENTS, OrderRemoveEvent } from './domainEvents'
 import { BusEvent } from 'ts-bus/types'
 import { NotifyClientsEvent } from '../../socket/notifyClientsEvent'
-
 import { Client } from './client'
 import { RoutePoint } from '../../values/order/routePoint'
-
 
 export interface IOrderDTO {
   _id: string
@@ -24,6 +22,10 @@ export interface IOrderDTO {
   company: string
   confirmedCrew: {
     truck: string
+    trailer?: string
+    driver?: string
+    outsourceAgreement?: string
+    tkName?: string
   }
   docs: []
   client: {
@@ -62,6 +64,10 @@ export class Order {
   route: Route
   confirmedCrew: {
     truck: string
+    trailer?: string
+    driver?: string
+    outsourceAgreement?: string
+    tkName?: string
   }
   docs: []
   client: Client

@@ -9,4 +9,3 @@ export const PartnerModel = model<IParterProps>(
   partnerSchema,
   'partners'
 )
-

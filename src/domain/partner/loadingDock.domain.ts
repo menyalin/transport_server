@@ -1,7 +1,5 @@
 import { Types } from 'mongoose'
-
 import { ILoadingDockProps } from './interfaces'
-
 
 export class LoadingDock {
   _id?: string
