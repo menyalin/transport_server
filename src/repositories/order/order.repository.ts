@@ -66,7 +66,7 @@ class OrderRepository {
     const operations = orders.map((order) =>
       makeOperation(
         { _id: order.id },
-        { ...order, route: order.route.toJSON() }
+        { ...order, route: order.route.toJSON(), client: order.client.toJSON() }
       )
     )
     await OrderModel.bulkWrite(operations)

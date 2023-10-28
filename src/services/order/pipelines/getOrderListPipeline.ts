@@ -84,36 +84,37 @@ export const getOrderListPipeline = ({
         from: 'agreements',
         localField: 'client.agreement',
         foreignField: '_id',
-        as: 'agreements',
+        as: 'agreement',
       },
     },
     {
       $addFields: {
         agreement: {
-          $first: '$agreements',
+          $first: '$agreement',
         },
       },
     },
   ]
 
   const tkNameLookup = [
+    // TODO: удалить!!
+    // {
+    //   $lookup: {
+    //     from: 'trucks',
+    //     localField: 'confirmedCrew.truck',
+    //     foreignField: '_id',
+    //     as: 'truck',
+    //   },
+    // },
+    // {
+    //   $addFields: {
+    //     truck: {
+    //       $first: '$truck',
+    //     },
+    //   },
+    // },
     {
-      $lookup: {
-        from: 'trucks',
-        localField: 'confirmedCrew.truck',
-        foreignField: '_id',
-        as: 'trucks',
-      },
-    },
-    {
-      $addFields: {
-        truck: {
-          $first: '$trucks',
-        },
-      },
-    },
-    {
-      $match: { 'truck.tkName': new mongoose.Types.ObjectId(tkName) },
+      $match: { 'confirmedCrew.tkName': new mongoose.Types.ObjectId(tkName) },
     },
   ]
 

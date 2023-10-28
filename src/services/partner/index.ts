@@ -35,17 +35,16 @@ class PartnerService {
   }
 
   private async createIdleTruckNotification(order: OrderDomain): Promise<void> {
-    if (!order.isInProgress) return
+    if (order.isInProgress || order.isCompleted) {
+      const partner = await PartnerRepository.getById(order.client.client)
 
-    const partner = await PartnerRepository.getById(order.client.client)
-
-    const notifications = partner.notificationsByRoute(order.route)
-    notifications.forEach((notification) => {
-      bus.publish(
-        toCreateIdleTruckNotificationEvent({ order, ...notification })
-
-      )
-    })
+      const notifications = partner.notificationsByOrder(order)
+      notifications.forEach((notification) => {
+        bus.publish(
+          toCreateIdleTruckNotificationEvent({ order, ...notification })
+        )
+      })
+    }
   }
 
   async create({ body, user }: ICreateProps) {
@@ -156,9 +155,7 @@ class PartnerService {
     placeId: string,
     user: string
   ) {
-
     const partner = await PartnerRepository.getById(partnerId)
-
     if (!partner)
       throw new BadRequestError(
         'partner:deletePlaceForTransferDocs: partner not found'
@@ -235,7 +232,6 @@ class PartnerService {
     return partner
   }
 
-
   async addIdleTruckNotification(
     partnerId: string,
     notification: IdleTruckNotification,
@@ -266,7 +262,6 @@ class PartnerService {
     user: string,
     notify: IdleTruckNotification
   ): Promise<PartnerDomain> {
-
     const partner: PartnerDomain = await PartnerRepository.getById(partnerId)
 
     partner.updateIdleTruckNotify(idleId, notify)
@@ -287,9 +282,7 @@ class PartnerService {
     return partner
   }
 
-
   async deleteIdleTruckNotify(partnerId: string, idleId: string, user: string) {
-
     const partner: PartnerDomain = await PartnerRepository.getById(partnerId)
 
     partner.deleteIdleTruckNotify(idleId)

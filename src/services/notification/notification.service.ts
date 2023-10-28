@@ -8,7 +8,10 @@ import {
   IAuthProps,
   IDefaultIdleTruckNotification,
 } from '../../domain/notifications/interfaces'
-import { toSendIdleTruckNotificationMessageEvent } from '../../domain/partner/domainEvents'
+import {
+  toCancelIdleTruckNotificationMessagesEvent,
+  toSendIdleTruckNotificationMessageEvent,
+} from '../../domain/partner/domainEvents'
 import { toCreateIdleTruckNotificationEvent } from './events/idleTruckNotifications'
 import { FullOrderDataDTO } from '../../domain/order/dto/fullOrderData.dto'
 import { IdleTruckNotification } from '../../domain/partner/idleTruckNotification'
@@ -24,6 +27,7 @@ class NotificationService {
   senderEmail?: string
   bus: EventBus
   transporter: Transporter
+
   constructor({ bus }: { bus: EventBus }) {
     this.bus = bus
     this.senderEmail =
@@ -43,12 +47,24 @@ class NotificationService {
         )
       }
     )
+    this.bus.subscribe(
+      toCancelIdleTruckNotificationMessagesEvent,
+      async ({ payload }) => {
+        await this.cancelIdleTruckNotificationMessages(payload)
+      }
+    )
 
     this.bus.subscribe(
       toSendIdleTruckNotificationMessageEvent,
       async ({ payload }) => {
         await this.sendIdleTruckNotificationMessage(payload)
       }
+    )
+  }
+
+  async cancelIdleTruckNotificationMessages(notificationId: string) {
+    await NotificationRepository.cancelIdleTruckNotificationMessages(
+      notificationId
     )
   }
 
@@ -73,7 +89,7 @@ class NotificationService {
   async sendRestorePasswordLink({ email, token }: IAuthProps) {
     const link = process.env.CLIENT_URL + '/auth/restore_password/' + token
     const message: Mail.Options = {
-      from: 's4log notification<${}>',
+      from: `s4log notification<${this.senderEmail}>`,
       to: email,
       subject: 'Восстановления пароля',
 
@@ -108,7 +124,7 @@ class NotificationService {
     props: IDefaultIdleTruckNotification
   ): Promise<void> {
     const email = new Email({
-      views: { root: path.join(__dirname, 'emailTemplates') },
+      views: { root: path.join(process.cwd(), 'emailTemplates') },
     })
     const html = await email.render('defaultIdleTruckNotify', props)
     await this.transporter.sendMail({

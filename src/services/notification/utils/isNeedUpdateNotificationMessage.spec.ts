@@ -17,6 +17,7 @@ describe('notifications utils - isNeedUpdateNotificationMessage', () => {
       companyName: '1',
       driverPhones: '1',
       emailTitle: '1',
+      isLoading: true,
       orderNum: '1',
       fullDriverName: '1',
       plannedDate: '1',
@@ -24,6 +25,9 @@ describe('notifications utils - isNeedUpdateNotificationMessage', () => {
       truckBrand: '1',
       truckNum: '1',
       templateName: '1',
+      currentAddressString: '12',
+      waybills: '121',
+      showPointStatus: false,
     }
 
     const props: IIdleTruckNotificationMessageProps = {
@@ -33,6 +37,7 @@ describe('notifications utils - isNeedUpdateNotificationMessage', () => {
       status: MESSAGE_STATUS_ENUM.created,
       sendDate: new Date('2023-01-01'),
       body,
+      notificationId: '1',
     }
 
     newMessage = new IdleTruckNotificationMessage(props)

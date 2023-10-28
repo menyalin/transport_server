@@ -4,15 +4,15 @@ import {
   PARTNER_GROUPS_ENUM,
 } from '../../constants/partner'
 import { LoadingDock } from './loadingDock.domain'
-
 import { IdleTruckNotification } from './idleTruckNotification'
-
 import { BusEvent } from 'ts-bus/types'
 
-import { PARTNER_DOMAIN_EVENTS, UpdatePartnerEvent } from './domainEvents'
+import {
+  PARTNER_DOMAIN_EVENTS,
+  UpdatePartnerEvent,
+  toCancelIdleTruckNotificationMessagesEvent,
+} from './domainEvents'
 import { NotifyClientsEvent } from '../../socket/notifyClientsEvent'
-
-import { Route } from '../../values/order/route'
 import {
   INotificationsByRouteRes,
   IParterProps,
@@ -20,14 +20,13 @@ import {
 } from './interfaces'
 
 import * as utils from './helpers/index'
-
+import { Order } from '../order/order.domain'
 
 export class Partner {
   events: BusEvent<any>[] = []
 
   _id?: string
   name: string
-
   fullName?: string
   inn?: string
   company: string
@@ -37,7 +36,6 @@ export class Partner {
   isService?: boolean = false
   isActive: boolean = true
   placesForTransferDocs: LoadingDock[] = []
-
   idleTruckNotifications: IdleTruckNotification[] = []
 
   constructor(p: IPartnerWithIdProps | IParterProps) {
@@ -49,8 +47,7 @@ export class Partner {
     this.contacts = p.contacts
     this.group = p.group
     this.isClient = p.isClient
-    this.isActive = p.isActive !== undefined ? p.isActive : true
-
+    this.isActive = p.isActive === undefined ? true : p.isActive
     this.placesForTransferDocs = utils.setLoadingDocs(p.placesForTransferDocs)
     this.idleTruckNotifications = utils.setIdleTruckNotifications(
       p.idleTruckNotifications
@@ -85,20 +82,24 @@ export class Partner {
     )
   }
 
-
-  notificationsByRoute(route: Route): INotificationsByRouteRes[] {
+  notificationsByOrder(order: Order): INotificationsByRouteRes[] {
     const res: INotificationsByRouteRes[] = []
     if (
       !this.idleTruckNotifications ||
       this.idleTruckNotifications.length === 0
     )
       return []
-    this.idleTruckNotifications.forEach((notification) => {
-      route.activePoints.forEach((point) => {
-        if (utils.isNeedCreateNotification(notification, point))
-          res.push({ notification, point })
+
+    this.idleTruckNotifications
+      .filter((i) => i.isActive)
+      .forEach((notification) => {
+        if (utils.isNeedCreateNotificationByOrder(notification, order)) {
+          order.route.activePoints.forEach((point) => {
+            if (utils.isNeedCreateNotificationByPoint(notification, point))
+              res.push({ notification, point })
+          })
+        }
       })
-    })
     return res
   }
 
@@ -107,9 +108,7 @@ export class Partner {
     this.addUpdateEvents()
   }
 
-
   updateIdleTruckNotify(notifyId: string, notify: IdleTruckNotification): void {
-
     const idx = this.idleTruckNotifications.findIndex(
       (i) => i._id?.toString() === notifyId
     )
@@ -119,7 +118,8 @@ export class Partner {
       )
 
     this.idleTruckNotifications.splice(idx, 1, notify)
-
+    if (notify.isActive === false)
+      this.events.push(toCancelIdleTruckNotificationMessagesEvent(notifyId))
     this.addUpdateEvents()
   }
 
@@ -128,16 +128,15 @@ export class Partner {
       (i) => i._id?.toString() !== idleId
     )
     this.addUpdateEvents()
+    this.events.push(toCancelIdleTruckNotificationMessagesEvent(idleId))
   }
 
   public static dbSchema() {
     return {
-
       name: { type: String, required: true },
       fullName: String,
       inn: String,
       company: { type: Types.ObjectId, ref: 'Company', required: true },
-
       contacts: String,
       group: { type: String, enum: [...PARTNER_GROUPS_ENUM_VALUES, null] },
       isClient: { type: Boolean, default: false },

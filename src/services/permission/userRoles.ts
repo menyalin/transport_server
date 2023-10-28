@@ -47,4 +47,8 @@ export default [
     value: 'withheldFineSum',
     text: '(Функция) Редактирование реквизита штрафа: "Удержано"',
   },
+  {
+    value: 'withheldFineSum',
+    text: '(Функция) Редактирование реквизита штрафа: "Удержано"',
+  },
 ]

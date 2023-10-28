@@ -11,6 +11,7 @@ const schema = z.object({
   truckBrand: z.string(),
   truckNum: z.string(),
   trailerNum: z.string().optional(),
+  addresses: z.array(z.unknown()),
 })
 
 const getDriverFullName = (driver: any): string =>
@@ -40,6 +41,7 @@ export class FullOrderDataDTO {
   truckNum: string
   truckBrand: string
   trailerNum?: string
+  addresses: any[]
 
   private constructor(props: FullOrderDataDTO) {
     this._id = props._id
@@ -52,6 +54,7 @@ export class FullOrderDataDTO {
     this.truckBrand = props.truckBrand
     this.truckNum = props.truckNum || ''
     this.trailerNum = props.trailerNum
+    this.addresses = props.addresses
   }
 
   static create(p: any): any {
@@ -66,6 +69,7 @@ export class FullOrderDataDTO {
       truckBrand: p.truck?.brand,
       truckNum: p.truck?.regNum,
       trailerNum: p.trailer?.regNum,
+      addresses: p.addresses,
     }
 
     return new FullOrderDataDTO(schema.parse(inputdata))
