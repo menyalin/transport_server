@@ -1,6 +1,6 @@
 // @ts-nocheck
 import pkg from 'mongoose'
-import { PAIMENT_INVOICE_STATUSES_ENUM } from '../../constants/paymentInvoice'
+import { PAIMENT_INVOICE_STATUSES_ENUM_VALUES } from '../../constants/paymentInvoice'
 const { Types } = pkg
 
 export class PaymentInvoiceDomain {
@@ -26,7 +26,7 @@ export class PaymentInvoiceDomain {
       sendDate: Date,
       client: { type: Types.ObjectId, ref: 'Partner', required: true },
       agreement: { type: Types.ObjectId, ref: 'Agreement', required: true },
-      status: { type: String, enum: PAIMENT_INVOICE_STATUSES_ENUM },
+      status: { type: String, enum: PAIMENT_INVOICE_STATUSES_ENUM_VALUES },
       isActive: { type: Boolean, default: true },
       note: String,
     }
