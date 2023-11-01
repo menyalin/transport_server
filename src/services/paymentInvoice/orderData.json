@@ -1,0 +1,183 @@
+{
+  "_id": {},
+  "startPositionDate": "2023-10-16T15:00:00.000Z",
+  "grade": {
+    "grade": 2,
+    "note": null
+  },
+  "docs": [],
+  "client": {
+    "client": {},
+    "num": "РС828532",
+    "auctionNum": "АК-109178",
+    "agreement": {}
+  },
+  "prePrices": [],
+  "prices": [
+    {
+      "type": "base",
+      "priceWOVat": 31166.666666666668,
+      "sumVat": 6233.333333333332,
+      "price": 37400,
+      "_id": {}
+    }
+  ],
+  "outsourceCosts": [],
+  "confirmedCrew": {
+    "truck": {},
+    "trailer": {},
+    "driver": {},
+    "outsourceAgreement": null,
+    "tkName": {}
+  },
+  "route": [
+    {
+      "type": "loading",
+      "address": {},
+      "plannedDate": "2023-10-16T13:00:00.000Z",
+      "intervalEndDate": null,
+      "intervalEndDateDoc": null,
+      "arrivalDate": "2023-10-16T18:35:00.000Z",
+      "departureDate": "2023-10-17T03:10:00.000Z",
+      "plannedDateDoc": "2023-10-16T13:00:00.000Z",
+      "arrivalDateDoc": "2023-10-16T18:35:00.000Z",
+      "departureDateDoc": "2023-10-17T03:10:00.000Z",
+      "useInterval": false,
+      "isReturn": false,
+      "isPltReturn": false,
+      "isAutofilled": false,
+      "_id": {}
+    },
+    {
+      "type": "unloading",
+      "address": {},
+      "plannedDate": "2023-10-17T06:00:00.000Z",
+      "intervalEndDate": null,
+      "intervalEndDateDoc": null,
+      "arrivalDate": "2023-10-17T09:45:00.000Z",
+      "departureDate": "2023-10-17T12:00:00.000Z",
+      "plannedDateDoc": "2023-10-17T06:00:00.000Z",
+      "arrivalDateDoc": "2023-10-17T09:45:00.000Z",
+      "departureDateDoc": "2023-10-17T12:00:00.000Z",
+      "useInterval": false,
+      "isReturn": false,
+      "isPltReturn": false,
+      "isAutofilled": false,
+      "_id": {}
+    }
+  ],
+  "cargoParams": {
+    "weight": null,
+    "places": 33,
+    "note": null,
+    "tRegime": "+18"
+  },
+  "reqTransport": {
+    "kind": "ref",
+    "liftCapacity": 20,
+    "loadDirection": "rear"
+  },
+  "state": {
+    "status": "completed",
+    "warning": null,
+    "driverNotified": true,
+    "clientNotified": true
+  },
+  "analytics": {
+    "type": "region",
+    "distanceRoad": 417,
+    "distanceDirect": 315
+  },
+  "docsState": {
+    "getted": true,
+    "date": "2023-10-25T15:47:18.828Z"
+  },
+  "isActive": true,
+  "isDisabled": false,
+  "company": {},
+  "finalPrices": [],
+  "paymentParts": [],
+  "createdAt": "2023-10-13T16:32:00.277Z",
+  "updatedAt": "2023-10-25T15:47:18.830Z",
+  "__v": 0,
+  "paymentToDriver": {},
+  "note": "1 кор недостача, 1 кор излишки",
+  "paymentInvoices": [],
+  "_agreement": {
+    "_id": {},
+    "name": "Объединенные Кондитеры",
+    "clients": [{}],
+    "vatRate": 20,
+    "closed": false,
+    "useCustomPrices": true,
+    "date": "2022-02-01T00:00:00.000Z",
+    "company": {},
+    "note": null,
+    "isActive": true,
+    "zones": [],
+    "createdAt": "2022-02-21T17:33:10.922Z",
+    "updatedAt": "2022-10-09T10:31:29.742Z",
+    "__v": 0,
+    "usePriceWithVAT": true,
+    "isOutsourceAgreement": false,
+    "cashPayment": false,
+    "calcWaitingByArrivalDate": false,
+    "noWaitingPaymentForAreLate": false,
+    "outsourceCarriers": [],
+    "auctionNumRequired": true,
+    "clientNumRequired": true,
+    "priceRequired": true
+  },
+  "plannedDate": "2023-10-16T13:00:00.000Z",
+  "orderId": {},
+  "isSelectable": true,
+  "agreementVatRate": 20,
+  "paymentPartsSumWOVat": 0,
+  "totalByTypes": {
+    "base": 31166.666666666668,
+    "additionalPoints": 0,
+    "loadingDowntime": 0,
+    "unloadingDowntime": 0,
+    "returnDowntime": 0,
+    "return": 0,
+    "other": 0
+  },
+  "total": {
+    "price": 37400,
+    "priceWOVat": 31166.666666666668
+  },
+  "_loadingAddress": {
+    "_id": {},
+    "name": "Московская обл, г Подольск, деревня Валищево, км 9-й автомобильной дороги А-107 ММК, д 7а",
+    "shortName": "Валищево",
+    "note": "Валищево",
+    "label": "Валищево",
+    "geo": {
+      "type": "Point",
+      "coordinates": [37.6676, 55.337394]
+    },
+    "isShipmentPlace": true,
+    "isDeliveryPlace": true,
+    "company": {},
+    "isActive": true,
+    "partner": {},
+    "createdAt": "2021-12-09T08:23:31.373Z",
+    "updatedAt": "2023-01-13T12:06:53.239Z",
+    "__v": 0,
+    "city": {},
+    "region": {},
+    "zones": [{}]
+  },
+  "_loadingZoneIds": [{}],
+  "_loadingZones": [
+    {
+      "_id": {},
+      "name": "МО",
+      "company": {},
+      "isActive": true,
+      "createdAt": "2022-05-25T10:55:37.978Z",
+      "updatedAt": "2022-05-25T10:55:37.978Z",
+      "__v": 0
+    }
+  ]
+}

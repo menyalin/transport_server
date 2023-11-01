@@ -1,31 +1,10 @@
-import {
-  OrderRemoveEvent,
-  OrdersRouteUpdateEvent,
-} from '../../domain/order/domainEvents'
 import { Order as OrderDomain } from '../../domain/order/order.domain'
-import { bus } from '../../eventBus'
+
 import { OrderStats as OrderStatsModel } from '../../models'
 
 import { RouteStats } from '../../values/order/routeStats'
 
 class OrderStatsRepository {
-  constructor() {
-    bus.subscribe(OrdersRouteUpdateEvent, (e) => {
-      try {
-        this.updateRoutes(e.payload)
-      } catch (e) {
-        console.log(' order route update subscription error: ', e)
-      }
-    })
-    bus.subscribe(OrderRemoveEvent, (e) => {
-      try {
-        this.removeStats(e.payload.orderId)
-      } catch (e) {
-        console.log(' order remove subscription error: ', e)
-      }
-    })
-  }
-
   static validateOrders(orders: OrderDomain[], method = '') {
     if (!orders || !Array.isArray(orders))
       throw new Error(

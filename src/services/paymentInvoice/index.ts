@@ -1,15 +1,15 @@
 // @ts-nocheck
 // import mongoose from 'mongoose'
+import { emitTo } from '../../socket'
 import ChangeLogService from '../changeLog'
+import PaymentInvoiceRepository from '../../repositories/paymentInvoice/paymentInvoice.repository'
 import {
   OrderInPaymentInvoice as OrderInPaymentInvoiceModel,
   PaymentInvoice as PaymentInvoiceModel,
 } from '../../models'
-import { emitTo } from '../../socket'
 import { BadRequestError } from '../../helpers/errors'
 import { getListPipeline } from './pipelines/getListPipeline'
-import { pickOrdersForPaymentInvoice } from './pickOrdersForPaymentInvoice'
-import getOrdersForInvoice from './getOrdersForInvoice'
+import { DateRange } from '../../classes/dateRange'
 
 class PaymentInvoiceService {
   constructor({ model, emitter, modelName, logService }) {
@@ -46,7 +46,7 @@ class PaymentInvoiceService {
 
   async getById(id) {
     const paymentInvoice = await this.model.findById(id).lean()
-    const orders = await getOrdersForInvoice({
+    const orders = await PaymentInvoiceRepository.getOrdersForInvoice({
       paymentInvoiceId: paymentInvoice._id.toString(),
     })
     paymentInvoice.orders = orders
@@ -69,7 +69,7 @@ class PaymentInvoiceService {
         body: JSON.stringify(paymentInvoice),
       })
 
-    const orders = await getOrdersForInvoice({
+    const orders = await PaymentInvoiceRepository.getOrdersForInvoice({
       paymentInvoiceId: paymentInvoice._id.toString(),
     })
     paymentInvoice.orders = orders
@@ -121,11 +121,10 @@ class PaymentInvoiceService {
       paymentInvoice: paymentInvoiceId,
       company,
     }))
-    const newOrdersInInvoice = await OrderInPaymentInvoiceModel.create(
-      newObjectItems
-    )
+    const newOrdersInInvoice =
+      await OrderInPaymentInvoiceModel.create(newObjectItems)
 
-    const addedOrders = await getOrdersForInvoice({
+    const addedOrders = await PaymentInvoiceRepository.getOrdersForInvoice({
       orderIds: orders,
     })
 
@@ -193,7 +192,7 @@ class PaymentInvoiceService {
       throw new BadRequestError(
         'PaymentInvoiceService:pickOrders. paymentInvoice not found'
       )
-    const orders = await pickOrdersForPaymentInvoice({
+    const orders = await PaymentInvoiceRepository.pickOrdersForPaymentInvoice({
       paymentInvoiceId,
       company,
       client,
@@ -202,7 +201,7 @@ class PaymentInvoiceService {
       truck,
       driver,
       loadingZone,
-      period,
+      period: new DateRange(period[0], period[1]),
       search,
     })
 
@@ -210,7 +209,7 @@ class PaymentInvoiceService {
   }
 
   async updateOrderPrices({ orderId }) {
-    const [order] = await getOrdersForInvoice({
+    const [order] = await PaymentInvoiceRepository.getOrdersForInvoice({
       orderIds: [orderId],
     })
     if (!order) return null

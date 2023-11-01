@@ -1,7 +1,9 @@
-// @ts-nocheck
+import { Expression } from 'mongoose'
 import { BadRequestError } from '../../helpers/errors'
 
-export const orderSearchByNumberFragmentBuilder = (search) => {
+export const orderSearchByNumberFragmentBuilder = (
+  search: string
+): Expression => {
   if (!search)
     throw new BadRequestError(
       'orderSearchByNumberFragmentBuilder. search text is missing!!'
