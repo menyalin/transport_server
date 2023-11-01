@@ -1,33 +1,36 @@
-// @ts-nocheck
-import mongoose from 'mongoose'
-import { orderPlannedDateBuilder } from '../_pipelineFragments/orderPlannedDateBuilder'
-import { orderDriverFullNameBuilder } from '../_pipelineFragments/orderDriverFullNameBuilder'
+import { BooleanExpression, PipelineStage, Types } from 'mongoose'
 import { OrderInPaymentInvoice as OrderInPaymentInvoiceModel } from '../../models'
-import { pricesFragmentBuilder } from './fragments/pricesFragmentBuilder'
+import { OrderPickedForInvoiceDTO } from '../../domain/paymentInvoice/dto/orderPickedForInvoice.dto'
+import { IGetOrdersForPaymentInvoiceProps } from '../../domain/paymentInvoice/interfaces'
+import { orderPlannedDateBuilder } from '../../services/_pipelineFragments/orderPlannedDateBuilder'
+import { orderDriverFullNameBuilder } from '../../services/_pipelineFragments/orderDriverFullNameBuilder'
+import { pricesFragmentBuilder } from '../../services/paymentInvoice/fragments/pricesFragmentBuilder'
 
-export default async function getOrdersForPaymentInvoice({
+export async function getOrdersForPaymentInvoice({
   paymentInvoiceId,
   orderIds,
-}) {
+}: IGetOrdersForPaymentInvoiceProps) {
   const filters = []
   if (paymentInvoiceId)
     filters.push({
-      $eq: ['$paymentInvoice', new mongoose.Types.ObjectId(paymentInvoiceId)],
+      $eq: ['$paymentInvoice', new Types.ObjectId(paymentInvoiceId)],
+    })
+  else if (orderIds && orderIds.length)
+    filters.push({
+      $in: ['$order', orderIds.map((i) => new Types.ObjectId(i))],
     })
 
-  if (orderIds && orderIds.length)
-    filters.push({
-      $in: ['$order', orderIds.map((i) => new mongoose.Types.ObjectId(i))],
-    })
-  const firstMatchBuilder = (filters = []) => ({
+  const firstMatchBuilder = (
+    filters: BooleanExpression[] = []
+  ): PipelineStage.Match => ({
     $match: {
       $expr: {
-        $and: [...filters],
+        $and: filters as BooleanExpression[],
       },
     },
   })
 
-  const driverLookup = [
+  const driverLookup: PipelineStage[] = [
     {
       $lookup: {
         from: 'drivers',
@@ -39,7 +42,7 @@ export default async function getOrdersForPaymentInvoice({
     { $addFields: { driver: { $first: '$driver' } } },
   ]
 
-  const agreementLookup = [
+  const agreementLookup: PipelineStage[] = [
     {
       $addFields: {
         agreement: {
@@ -72,7 +75,7 @@ export default async function getOrdersForPaymentInvoice({
     },
   ]
 
-  const ordersLookup = [
+  const ordersLookup: PipelineStage[] = [
     {
       $lookup: {
         from: 'orders',
@@ -159,7 +162,7 @@ export default async function getOrdersForPaymentInvoice({
             },
           },
           ...pricesFragmentBuilder(),
-        ],
+        ] as any[],
         as: 'order',
       },
     },
@@ -178,8 +181,8 @@ export default async function getOrdersForPaymentInvoice({
   ]
 
   const ordersInPaymentInvoice = await OrderInPaymentInvoiceModel.aggregate([
-    firstMatchBuilder(filters),
+    firstMatchBuilder(filters as BooleanExpression[]),
     ...ordersLookup,
   ])
-  return ordersInPaymentInvoice
+  return ordersInPaymentInvoice.map((i) => new OrderPickedForInvoiceDTO(i))
 }

@@ -1,5 +1,6 @@
-// @ts-nocheck
-export const orderLoadingZoneFragmentBuilder = () => {
+import { PipelineStage } from 'mongoose'
+
+export const orderLoadingZoneFragmentBuilder = (): PipelineStage[] => {
   return [
     {
       $addFields: {

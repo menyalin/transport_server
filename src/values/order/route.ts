@@ -55,13 +55,13 @@ export class Route {
     return this.route.filter((i) => !i.isReturnPoint).length
   }
 
-  get loadingTimesInMinutes() {
+  get loadingTimesInMinutes(): number[] {
     return this.route
       .filter((i) => i.isLoadingPointType)
       .map((i) => i.getDurationInMinutes)
   }
 
-  get unloadingTimesInMinutes() {
+  get unloadingTimesInMinutes(): number[] {
     return this.route
       .filter((i) => !i.isLoadingPointType)
       .map((i) => i.getDurationInMinutes)
