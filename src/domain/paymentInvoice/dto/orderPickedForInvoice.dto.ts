@@ -52,7 +52,7 @@ const orderPickedForInvoiceDTOSchema = z.object({
     date: z.union([z.instanceof(Date), z.null()]),
   }),
 
-  paymentParts: z.array(z.unknown()).optional(),
+  paymentParts: z.unknown().optional(),
   paymentToDriver: z.unknown(),
   note: z.string().optional(),
   paymentInvoices: z.array(z.unknown()).optional(),
@@ -106,7 +106,7 @@ export class OrderPickedForInvoiceDTO {
     getted: boolean | null
     date: Date | null
   }
-  paymentParts?: any[]
+  paymentParts?: any
   paymentToDriver: any
   note?: string
   paymentInvoices?: any[]
@@ -138,7 +138,6 @@ export class OrderPickedForInvoiceDTO {
     this.plannedDate = preparedProps.plannedDate
     this.orderId = preparedProps.orderId
     this.isSelectable = preparedProps.isSelectable
-    this.agreementVatRate = preparedProps.agreementVatRate
     this.paymentPartsSumWOVat = preparedProps.paymentPartsSumWOVat
     this.confirmedCrew = preparedProps.confirmedCrew
     this.route = preparedProps.route
@@ -149,6 +148,7 @@ export class OrderPickedForInvoiceDTO {
     this.note = preparedProps.note
     this.paymentInvoices = preparedProps.paymentInvoices
     this._agreement = preparedProps._agreement
+    this.agreementVatRate = preparedProps.agreementVatRate
     this.totalByTypes = preparedProps.totalByTypes
     this.total = preparedProps.total
     this.savedTotal = preparedProps.savedTotal
@@ -156,5 +156,10 @@ export class OrderPickedForInvoiceDTO {
     this.needUpdate = preparedProps.needUpdate
     this.itemType = preparedProps.itemType
     this.rowId = preparedProps.rowId
+  }
+
+  saveTotal(): void {
+    this.savedTotal = this.total
+    this.needUpdate = false
   }
 }
