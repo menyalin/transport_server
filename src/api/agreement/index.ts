@@ -8,7 +8,7 @@ import {
   // bodyValidator
 } from '../../utils/validator'
 
-import { getListSchema, getForOrderSchema } from './schemes'
+import { getListSchema, getForOrderSchema, getForClientSchema } from './schemes'
 import ctrl from '../../controllers/agreement.controller'
 
 const router = express.Router()
@@ -21,6 +21,11 @@ router.get(
   '/get_for_order',
   [jwtAuth, queryValidator(getForOrderSchema)],
   (...args) => ctrl.getForOrder(...args)
+)
+router.get(
+  '/get_for_client',
+  [jwtAuth, queryValidator(getForClientSchema)],
+  (...args) => ctrl.getForClient(...args)
 )
 
 router.get('/:id', [jwtAuth], (...args) => ctrl.getById(...args))
