@@ -1,11 +1,19 @@
-// @ts-nocheck
-import mongoose from 'mongoose'
+import { PipelineStage, Types } from 'mongoose'
 
-export default ({ company, date, limit, skip, client }) => {
-  const firstMatcher = {
+interface IProps {
+  company: string
+  date?: string
+  limit: string
+  skip: string
+  client?: string
+  clientsOnly?: string
+}
+
+export default ({ company, limit, skip, client, clientsOnly }: IProps) => {
+  const firstMatcher: PipelineStage.Match = {
     $match: {
       isActive: true,
-      company: new mongoose.Types.ObjectId(company),
+      company: new Types.ObjectId(company),
       $expr: {
         $and: [],
       },
@@ -14,26 +22,25 @@ export default ({ company, date, limit, skip, client }) => {
 
   if (client)
     firstMatcher.$match.$expr.$and.push({
-      $in: [new mongoose.Types.ObjectId(client), '$clients'],
+      $in: [new Types.ObjectId(client), '$clients'],
     })
 
-  const group = [
+  if (clientsOnly === 'true')
+    firstMatcher.$match.$expr.$and.push({
+      $eq: ['$isOutsourceAgreement', false],
+    })
+
+  const group: PipelineStage[] = [
     {
       $group: {
         _id: 'agreements',
-        items: {
-          $push: '$$ROOT',
-        },
+        items: { $push: '$$ROOT' },
       },
     },
     {
       $addFields: {
-        count: {
-          $size: '$items',
-        },
-        items: {
-          $slice: ['$items', +skip, +limit],
-        },
+        count: { $size: '$items' },
+        items: { $slice: ['$items', +skip, +limit] },
       },
     },
   ]
