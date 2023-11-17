@@ -1,7 +1,15 @@
-// @ts-nocheck
-import mongoose from 'mongoose'
+import { PipelineStage, Types } from 'mongoose'
 import { PAIMENT_INVOICE_STATUSES } from '../../../constants/paymentInvoice'
 import { BadRequestError } from '../../../helpers/errors'
+
+interface IProps {
+  clients: string[]
+  company: string
+  limit: string
+  skip: string
+  status: string
+  search: string
+}
 
 export const getListPipeline = ({
   clients,
@@ -10,12 +18,12 @@ export const getListPipeline = ({
   skip,
   status,
   search,
-}) => {
+}: IProps): PipelineStage[] => {
   if (!company) throw new BadRequestError('docsRegistry: bad request params')
-  const firstMatcher = {
+  const firstMatcher: PipelineStage.Match = {
     $match: {
       isActive: true,
-      company: new mongoose.Types.ObjectId(company),
+      company: new Types.ObjectId(company),
       $expr: {
         $and: [],
       },
@@ -30,12 +38,12 @@ export const getListPipeline = ({
 
   if (clients && clients.length) {
     firstMatcher.$match.$expr.$and.push({
-      $in: ['$client', clients.map((i) => new mongoose.Types.ObjectId(i))],
+      $in: ['$client', clients.map((i) => new Types.ObjectId(i))],
     })
   }
   if (status) firstMatcher.$match.$expr.$and.push({ $eq: ['$status', status] })
 
-  const group = [
+  const group: PipelineStage[] = [
     { $sort: { createdAt: -1 } },
     {
       $group: {
@@ -50,7 +58,7 @@ export const getListPipeline = ({
       },
     },
   ]
-  const clientLookup = [
+  const clientLookup: PipelineStage[] = [
     {
       $lookup: {
         from: 'partners',
@@ -60,12 +68,25 @@ export const getListPipeline = ({
       },
     },
     { $addFields: { _client: { $first: '$_client' } } },
-    { $addFields: { clientName: '$_client.name' } },
+  ]
+
+  const agreementLookup: PipelineStage[] = [
+    {
+      $lookup: {
+        from: 'agreements',
+        localField: 'agreement',
+        foreignField: '_id',
+        as: '_agreement',
+      },
+    },
+    { $addFields: { _agreement: { $first: '$_agreement' } } },
   ]
 
   const additionalFields = [
     {
       $addFields: {
+        clientName: '$_client.name',
+        agreementName: '$_agreement.name',
         statusStr: {
           $switch: {
             branches: PAIMENT_INVOICE_STATUSES.map((i) => ({
@@ -117,6 +138,7 @@ export const getListPipeline = ({
   const pipeline = [
     firstMatcher,
     ...clientLookup,
+    ...agreementLookup,
     ...additionalFields,
     ...priceLookup,
   ]
