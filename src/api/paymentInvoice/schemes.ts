@@ -29,3 +29,12 @@ export const addOrdersToInvoiceSchema = {
   required: ['paymentInvoiceId'],
   additionalProperties: true,
 }
+
+export const downloadDocsSchema = {
+  type: 'object',
+  properties: {
+    templateName: { type: 'string' },
+  },
+  required: ['templateName'],
+  additionalProperties: true,
+}

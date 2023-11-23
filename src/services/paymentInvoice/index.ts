@@ -1,5 +1,4 @@
 // @ts-nocheck
-// import mongoose from 'mongoose'
 import ChangeLogService from '../changeLog'
 import {
   OrderInPaymentInvoice as OrderInPaymentInvoiceModel,
@@ -10,6 +9,8 @@ import { BadRequestError } from '../../helpers/errors'
 import { getListPipeline } from './pipelines/getListPipeline'
 import { pickOrdersForPaymentInvoice } from './pickOrdersForPaymentInvoice'
 import getOrdersForInvoice from './getOrdersForInvoice'
+
+import * as pf from './printForms'
 
 class PaymentInvoiceService {
   constructor({ model, emitter, modelName, logService }) {
@@ -110,6 +111,11 @@ class PaymentInvoiceService {
     }
   }
 
+  async downloadDoc(): Promise<Buffer> {
+    const docBuffer: Buffer = await pf.okAktBuilder()
+    return docBuffer
+  }
+
   async addOrdersToInvoice({ company, orders, paymentInvoiceId }) {
     if (!orders || orders.length === 0)
       throw new BadRequestError(
@@ -121,9 +127,8 @@ class PaymentInvoiceService {
       paymentInvoice: paymentInvoiceId,
       company,
     }))
-    const newOrdersInInvoice = await OrderInPaymentInvoiceModel.create(
-      newObjectItems
-    )
+    const newOrdersInInvoice =
+      await OrderInPaymentInvoiceModel.create(newObjectItems)
 
     const addedOrders = await getOrdersForInvoice({
       orderIds: orders,
@@ -180,7 +185,7 @@ class PaymentInvoiceService {
     loadingZone,
     period,
     search,
-  }) {
+  }: IPickOrdersProps) {
     if (!company || !paymentInvoiceId)
       throw new BadRequestError(
         'PaymentInvoiceService:pickOrders. missing required params'

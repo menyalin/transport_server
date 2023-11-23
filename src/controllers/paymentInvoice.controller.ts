@@ -1,33 +1,114 @@
-// @ts-nocheck
-import { IController } from './iController'
+import { Response } from 'express'
+import { Readable } from 'stream'
+import { AuthorizedRequest } from './interfaces/request'
 import { PaymentInvoiceService, PermissionService } from '../services'
+import { BadRequestError } from '../helpers/errors'
+import { IPickOrdersProps } from '../domain/paymentInvoice/interfaces'
 
-class PaymentInvoiceController extends IController {
-  constructor({ service, permissionName }) {
-    super({ service, permissionName })
+class PaymentInvoiceController {
+  service: typeof PaymentInvoiceService
+  permissionName: string
+
+  constructor({
+    service,
+    permissionName,
+  }: {
+    service: typeof PaymentInvoiceService
+    permissionName: string
+  }) {
     this.service = service
+    this.permissionName = permissionName
   }
 
-  // async deleteById(req, res) {
-  //   try {
-  //     if (this.permissionName)
-  //       await PermissionService.check({
-  //         userId: req.userId,
-  //         companyId: req.companyId,
-  //         operation: this.permissionName + ':delete',
-  //       })
-  //     const data = await this.service.deleteById({
-  //       id: req.params.id,
-  //       user: req.userId,
-  //       company: req.companyId,
-  //     })
-  //     res.status(200).json(data)
-  //   } catch (e) {
-  //     res.status(e.statusCode || 500).json(e.message)
-  //   }
-  // }
+  async deleteById(req: AuthorizedRequest, res: Response) {
+    try {
+      if (this.permissionName)
+        await PermissionService.check({
+          userId: req.userId,
+          companyId: req.companyId,
+          operation: this.permissionName + ':delete',
+        })
+      const data = await this.service.deleteById({
+        id: req.params.id,
+        user: req.userId,
+        company: req.companyId,
+      })
+      res.status(200).json(data)
+    } catch (e) {
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
+    }
+  }
 
-  async getList(req, res) {
+  async create(req: AuthorizedRequest, res: Response) {
+    try {
+      await PermissionService.check({
+        userId: req.userId,
+        companyId: req.companyId,
+        operation: this.permissionName + ':write',
+      })
+
+      const data = await this.service.create({
+        body: req.body,
+        user: req.userId,
+        company: req.companyId,
+      })
+      res.status(201).json(data)
+    } catch (e) {
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
+    }
+  }
+
+  async updateOne(req: AuthorizedRequest, res: Response) {
+    try {
+      if (this.permissionName)
+        await PermissionService.check({
+          userId: req.userId,
+          companyId: req.companyId,
+          operation: this.permissionName + ':write',
+        })
+      const data = await this.service.updateOne({
+        id: req.params.id,
+        body: req.body,
+        user: req.userId,
+      })
+      res.status(200).json(data)
+    } catch (e) {
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
+    }
+  }
+
+  async getById(req: AuthorizedRequest, res: Response) {
+    try {
+      const data = await this.service.getById(req.params.id)
+      res.status(200).json(data)
+    } catch (e) {
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
+    }
+  }
+
+  async downloadDocs(req: AuthorizedRequest, res: Response) {
+    try {
+      await PermissionService.check({
+        userId: req.userId,
+        companyId: req.companyId,
+        operation: this.permissionName + ':write',
+      })
+
+      const buffer = await this.service.downloadDoc()
+      const stream = Readable.from(buffer)
+      res.status(201)
+      stream.pipe(res)
+    } catch (e) {
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
+    }
+  }
+
+  async getList(req: AuthorizedRequest, res: Response) {
     try {
       await PermissionService.check({
         userId: req.userId,
@@ -37,24 +118,28 @@ class PaymentInvoiceController extends IController {
       const data = await this.service.getList(req.query)
       res.status(200).json(data)
     } catch (e) {
-      res.status(e.statusCode || 500).json(e.message)
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
     }
   }
 
-  async pickOrders(req, res) {
+  async pickOrders(
+    req: AuthorizedRequest<unknown, unknown, unknown, IPickOrdersProps>,
+    res: Response
+  ) {
     try {
       const data = await this.service.pickOrders({
-        paymentInvoiceId: req.query.paymentInvoiceId,
-        company: req.companyId,
         ...req.query,
+        company: req.companyId as string,
       })
       res.status(200).json(data)
     } catch (e) {
-      res.status(e.statusCode || 500).json(e.message)
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
     }
   }
 
-  async addOrdersToInvoice(req, res) {
+  async addOrdersToInvoice(req: AuthorizedRequest, res: Response) {
     try {
       await PermissionService.check({
         userId: req.userId,
@@ -69,11 +154,12 @@ class PaymentInvoiceController extends IController {
       })
       res.status(200).json(data)
     } catch (e) {
-      res.status(e.statusCode || 500).json(e.message)
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
     }
   }
 
-  async updateOrderPrices(req, res) {
+  async updateOrderPrices(req: AuthorizedRequest, res: Response) {
     try {
       await PermissionService.check({
         userId: req.userId,
@@ -86,11 +172,12 @@ class PaymentInvoiceController extends IController {
       })
       res.status(200).json(data)
     } catch (e) {
-      res.status(e.statusCode || 500).json(e.message)
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
     }
   }
 
-  async removeOrdersFromPaymentInvoice(req, res) {
+  async removeOrdersFromPaymentInvoice(req: AuthorizedRequest, res: Response) {
     try {
       await PermissionService.check({
         userId: req.userId,
@@ -105,7 +192,8 @@ class PaymentInvoiceController extends IController {
       })
       res.status(200).json(data)
     } catch (e) {
-      res.status(e.statusCode || 500).json(e.message)
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
     }
   }
 }

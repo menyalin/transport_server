@@ -3,7 +3,11 @@ import express from 'express'
 import { jwtAuth } from '../../utils/auth.middleware'
 import { bodyValidator, queryValidator } from '../../utils/validator'
 
-import { getListSchema, addOrdersToInvoiceSchema } from './schemes'
+import {
+  getListSchema,
+  addOrdersToInvoiceSchema,
+  downloadDocsSchema,
+} from './schemes'
 import ctrl from '../../controllers/paymentInvoice.controller'
 
 const router = express.Router()
@@ -22,8 +26,15 @@ router.post(
 )
 
 router.post(
+  '/:id/download_docs',
+  [jwtAuth, bodyValidator(downloadDocsSchema)],
+  (...args) => ctrl.downloadDocs(...args)
+)
+
+router.post(
   '/remove_orders_from_invoice',
   [jwtAuth, bodyValidator(addOrdersToInvoiceSchema)],
+
   (...args) => ctrl.removeOrdersFromPaymentInvoice(...args)
 )
 
