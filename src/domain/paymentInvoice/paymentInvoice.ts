@@ -1,6 +1,7 @@
 import { Types } from 'mongoose'
 import { PAIMENT_INVOICE_STATUSES_ENUM_VALUES } from '../../constants/paymentInvoice'
 import { OrderPickedForInvoiceDTO } from './dto/orderPickedForInvoice.dto'
+import { DateRange } from '../../classes/dateRange'
 
 export class PaymentInvoiceDomain {
   _id?: string
@@ -33,6 +34,27 @@ export class PaymentInvoiceDomain {
 
   setOrders(orders: OrderPickedForInvoiceDTO[]): void {
     this.orders = orders
+  }
+
+  get invoicePeriod(): DateRange | null {
+    if (!this.orders || this.orders.length === 0) return null
+    const dates = this.orders
+      .map((order) => order.plannedDate)
+      .sort((a, b) => +a - +b)
+    return new DateRange(dates[0], dates[dates.length - 1])
+  }
+
+  get invoiceTotalSumWithVat(): number {
+    if (!this.orders || this.orders.length === 0) return 0
+    return this.orders.reduce((sum, order) => (sum += order.total.price), 0)
+  }
+
+  get invoiceVatSum(): number {
+    if (!this.orders || this.orders.length === 0) return 0
+    return this.orders.reduce(
+      (sum, order) => (sum += order.total.price - order.total.priceWOVat),
+      0
+    )
   }
 
   static create(invoice: any, orders: OrderPickedForInvoiceDTO[] = []) {

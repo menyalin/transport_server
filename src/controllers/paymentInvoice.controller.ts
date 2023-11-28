@@ -3,7 +3,7 @@ import { Readable } from 'stream'
 import { AuthorizedRequest } from './interfaces/request'
 import { PaymentInvoiceService, PermissionService } from '../services'
 import { BadRequestError } from '../helpers/errors'
-import { IPickOrdersProps } from '../domain/paymentInvoice/interfaces'
+import { IPickOrdersForPaymentInvoiceProps } from '../domain/paymentInvoice/interfaces'
 
 class PaymentInvoiceController {
   service: typeof PaymentInvoiceService
@@ -90,7 +90,10 @@ class PaymentInvoiceController {
     }
   }
 
-  async downloadDocs(req: AuthorizedRequest, res: Response) {
+  async downloadDocs(
+    req: AuthorizedRequest<{ id: string }, any, { templateName: string }>,
+    res: Response
+  ) {
     try {
       await PermissionService.check({
         userId: req.userId,
@@ -98,7 +101,10 @@ class PaymentInvoiceController {
         operation: this.permissionName + ':write',
       })
 
-      const buffer = await this.service.downloadDoc()
+      const buffer = await this.service.downloadDoc(
+        req.params.id,
+        req.body.templateName
+      )
       const stream = Readable.from(buffer)
       res.status(201)
       stream.pipe(res)
@@ -123,8 +129,26 @@ class PaymentInvoiceController {
     }
   }
 
+  async getAllowedPrintForms(
+    req: AuthorizedRequest<any, any, any, { agreement: string }>,
+    res: Response
+  ) {
+    try {
+      const data = await this.service.getAllowedPrintForms(req.query.agreement)
+      res.status(200).json(data)
+    } catch (e) {
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
+    }
+  }
+
   async pickOrders(
-    req: AuthorizedRequest<unknown, unknown, unknown, IPickOrdersProps>,
+    req: AuthorizedRequest<
+      unknown,
+      unknown,
+      unknown,
+      IPickOrdersForPaymentInvoiceProps
+    >,
     res: Response
   ) {
     try {
@@ -159,7 +183,10 @@ class PaymentInvoiceController {
     }
   }
 
-  async updateOrderPrices(req: AuthorizedRequest, res: Response) {
+  async updateOrderPrices(
+    req: AuthorizedRequest<{ orderId: string }>,
+    res: Response
+  ) {
     try {
       await PermissionService.check({
         userId: req.userId,
@@ -169,6 +196,7 @@ class PaymentInvoiceController {
 
       const data = await this.service.updateOrderPrices({
         orderId: req.params.orderId,
+        company: req.companyId,
       })
       res.status(200).json(data)
     } catch (e) {

@@ -1,1 +1,1 @@
-export { okAktBuilder } from './ok_act/okAct'
+export { paymentInvoiceDocumentBuilder } from './documentBuilder'

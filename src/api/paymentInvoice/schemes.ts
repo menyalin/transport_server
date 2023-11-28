@@ -1,4 +1,3 @@
-// @ts-nocheck
 export const getListSchema = {
   type: 'object',
   properties: {
@@ -10,6 +9,17 @@ export const getListSchema = {
     },
   },
   required: ['limit', 'skip'],
+  additionalProperties: true,
+}
+
+export const getAllowedPFSchema = {
+  type: 'object',
+  properties: {
+    agreement: {
+      type: 'string',
+    },
+  },
+  required: ['agreement'],
   additionalProperties: true,
 }
 

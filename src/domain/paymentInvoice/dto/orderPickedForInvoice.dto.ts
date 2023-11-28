@@ -30,6 +30,7 @@ const orderPickedForInvoiceDTOSchema = z.object({
   isSelectable: z.boolean().optional(),
   agreementVatRate: z.number(),
   paymentPartsSumWOVat: z.number(),
+  reqTransport: z.unknown(),
   confirmedCrew: z.object({
     truck: z.union([z.string(), z.instanceof(Types.ObjectId)]),
     trailer: z.union([z.string(), z.instanceof(Types.ObjectId), z.null()]),
@@ -68,6 +69,7 @@ const orderPickedForInvoiceDTOSchema = z.object({
       priceWOVat: z.number(),
     })
     .optional(),
+  savedTotalByTypes: z.unknown(),
   driverName: z.string().optional(),
   needUpdate: z.boolean().optional(),
   itemType: z.string().optional(),
@@ -89,6 +91,7 @@ export class OrderPickedForInvoiceDTO {
   agreementVatRate: number
   paymentPartsSumWOVat: number
   driverName?: string
+  reqTransport: any
   confirmedCrew: {
     truck: Types.ObjectId | string
     trailer: Types.ObjectId | string | null
@@ -116,6 +119,7 @@ export class OrderPickedForInvoiceDTO {
     price: number
     priceWOVat: number
   }
+  savedTotalByTypes?: any
   savedTotal?: {
     price: number
     priceWOVat: number
@@ -140,6 +144,7 @@ export class OrderPickedForInvoiceDTO {
     this.isSelectable = preparedProps.isSelectable
     this.paymentPartsSumWOVat = preparedProps.paymentPartsSumWOVat
     this.confirmedCrew = preparedProps.confirmedCrew
+    this.reqTransport = preparedProps.reqTransport
     this.route = preparedProps.route
     this.analytics = preparedProps.analytics
     this.docsState = preparedProps.docsState
@@ -152,6 +157,7 @@ export class OrderPickedForInvoiceDTO {
     this.totalByTypes = preparedProps.totalByTypes
     this.total = preparedProps.total
     this.savedTotal = preparedProps.savedTotal
+    this.savedTotalByTypes = preparedProps.savedTotalByTypes
     this.driverName = preparedProps.driverName
     this.needUpdate = preparedProps.needUpdate
     this.itemType = preparedProps.itemType
@@ -160,6 +166,7 @@ export class OrderPickedForInvoiceDTO {
 
   saveTotal(): void {
     this.savedTotal = this.total
+    this.savedTotalByTypes = this.totalByTypes
     this.needUpdate = false
   }
 }
