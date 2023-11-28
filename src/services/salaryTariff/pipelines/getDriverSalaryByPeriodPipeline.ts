@@ -93,12 +93,12 @@ export default ({
         from: 'agreements',
         localField: 'client.agreement',
         foreignField: '_id',
-        as: '_agreement',
+        as: 'agreement',
       },
     },
     {
       $addFields: {
-        _clientAgreement: { $first: '$_agreement' },
+        _clientAgreement: { $first: '$agreement' },
       },
     },
   ]

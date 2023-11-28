@@ -57,7 +57,7 @@ const orderPickedForInvoiceDTOSchema = z.object({
   paymentToDriver: z.unknown(),
   note: z.string().optional(),
   paymentInvoices: z.array(z.unknown()).optional(),
-  _agreement: z.unknown(),
+  agreement: z.unknown(),
   totalByTypes: z.unknown(),
   total: z.object({
     price: z.number(),
@@ -113,7 +113,8 @@ export class OrderPickedForInvoiceDTO {
   paymentToDriver: any
   note?: string
   paymentInvoices?: any[]
-  _agreement: any
+  agreement: any
+
   totalByTypes: any
   total: {
     price: number
@@ -152,7 +153,8 @@ export class OrderPickedForInvoiceDTO {
     this.paymentToDriver = preparedProps.paymentToDriver
     this.note = preparedProps.note
     this.paymentInvoices = preparedProps.paymentInvoices
-    this._agreement = preparedProps._agreement
+
+    this.agreement = preparedProps.agreement
     this.agreementVatRate = preparedProps.agreementVatRate
     this.totalByTypes = preparedProps.totalByTypes
     this.total = preparedProps.total

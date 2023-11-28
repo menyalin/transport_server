@@ -80,16 +80,16 @@ export const getListPipeline = ({
         from: 'agreements',
         localField: 'agreement',
         foreignField: '_id',
-        as: '_agreement',
+        as: 'agreement',
       },
     },
-    { $addFields: { _agreement: { $first: '$_agreement' } } },
+    { $addFields: { agreement: { $first: '$agreement' } } },
   ]
 
   const additionalFields: PipelineStage[] = [
     {
       $addFields: {
-        agreementName: '$_agreement.name',
+        agreementName: '$agreement.name',
         _placeName: {
           $getField: {
             field: 'title',
