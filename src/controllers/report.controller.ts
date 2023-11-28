@@ -54,8 +54,8 @@ class ReportController {
   async inProgressOrders(req: Request, res: Response) {
     try {
       const data = await this.service.inProgressOrders({
-        profile: req.query.profile,
-        client: req.query.client,
+        profile: req.query.profile as string,
+        client: req.query.client as string,
       })
       res.status(200).json(data)
     } catch (e) {

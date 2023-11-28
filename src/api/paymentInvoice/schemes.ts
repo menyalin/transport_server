@@ -1,4 +1,3 @@
-// @ts-nocheck
 export const getListSchema = {
   type: 'object',
   properties: {
@@ -10,6 +9,17 @@ export const getListSchema = {
     },
   },
   required: ['limit', 'skip'],
+  additionalProperties: true,
+}
+
+export const getAllowedPFSchema = {
+  type: 'object',
+  properties: {
+    agreement: {
+      type: 'string',
+    },
+  },
+  required: ['agreement'],
   additionalProperties: true,
 }
 
@@ -27,5 +37,14 @@ export const addOrdersToInvoiceSchema = {
     },
   },
   required: ['paymentInvoiceId'],
+  additionalProperties: true,
+}
+
+export const downloadDocsSchema = {
+  type: 'object',
+  properties: {
+    templateName: { type: 'string' },
+  },
+  required: ['templateName'],
   additionalProperties: true,
 }

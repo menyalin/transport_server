@@ -10,6 +10,8 @@ import getGrossProfitPivotPipeline from './pipelines/grossProfitPivotPipeline'
 import getGrossProfitDetailsPipeline from './pipelines/getGrossProfitDetailsPipeline'
 import getOrderDocsPipeline from './pipelines/getOrderDocs'
 import { IDateRange } from '../../classes/dateRange'
+import { PipelineStage } from 'mongoose'
+import { Readable } from 'stream'
 
 export interface IDriversGradesXlsxReportProps {
   company: string
@@ -30,7 +32,13 @@ export interface IReportService {
 
   daysControl: (days: number, profile: string) => Promise<unknown[]>
 
-  inProgressOrders: ({ profile: string, client: string }) => Promise<unknown[]>
+  inProgressOrders: ({
+    profile,
+    client,
+  }: {
+    profile: string
+    client: string
+  }) => Promise<unknown[]>
 
   truckStateOnDate: (props: ITruckStateOnDateProps) => Promise<unknown[]>
 
@@ -44,15 +52,15 @@ export interface IReportService {
 }
 
 class ReportService implements IReportService {
-  async inProgressOrders({ profile, client }) {
-    const pipeline = getInProgressOrdersPipeline({ profile, client })
-    const data = await Order.aggregate(pipeline)
+  async inProgressOrders(props: { profile: string; client: string }) {
+    const pipeline = getInProgressOrdersPipeline(props)
+    const data = await Order.aggregate(pipeline as PipelineStage[])
     return data
   }
 
-  async daysControl(days, profile): Promise<unknown[]> {
+  async daysControl(days: number, profile: string): Promise<unknown[]> {
     const pipeline = getReportDaysControlPipeline(days, profile)
-    const data = await Driver.aggregate(pipeline)
+    const data = await Driver.aggregate(pipeline as PipelineStage[])
     return data
   }
 
@@ -68,19 +76,19 @@ class ReportService implements IReportService {
       truckType: truckType || 'truck',
       tkName: tkName,
     })
-    const res = await Truck.aggregate(pipeline)
+    const res = await Truck.aggregate(pipeline as PipelineStage[])
     return res
   }
 
   async orderDocs(params: unknown) {
     const pipeline = getOrderDocsPipeline(params)
-    const res = await Order.aggregate(pipeline)
+    const res = await Order.aggregate(pipeline as PipelineStage[])
     return res[0] || {}
   }
 
-  async grossProfit({ company, dateRange }) {
-    const pipeline = getGrossProfitPipeline({ company, dateRange })
-    const res = await Order.aggregate(pipeline)
+  async grossProfit(props: unknown) {
+    const pipeline = getGrossProfitPipeline(props)
+    const res = await Order.aggregate(pipeline as PipelineStage[])
     return res[0] || {}
   }
 
@@ -91,7 +99,7 @@ class ReportService implements IReportService {
       groupBy,
       mainFilters,
     })
-    const res = await Order.aggregate(pipeline)
+    const res = await Order.aggregate(pipeline as PipelineStage[])
     return {
       pivot: res[0] || {},
     }
@@ -111,7 +119,7 @@ class ReportService implements IReportService {
       listOptions,
       additionalFilters,
     })
-    const res = await Order.aggregate(pipeline)
+    const res = await Order.aggregate(pipeline as PipelineStage[])
     if (Array.isArray(res) && !Array.isArray(res[0]?.items)) {
       return { items: [], count: 0 }
     } else return res[0]
@@ -122,7 +130,7 @@ class ReportService implements IReportService {
     dateRange,
   }: IDriversGradesXlsxReportProps): Promise<Readable> {
     const pipeline = getDriversGradesAppayPipeline({ company, dateRange })
-    const array = await Order.aggregate(pipeline)
+    const array = await Order.aggregate(pipeline as PipelineStage[])
 
     const stream = await FileService.createExcelFile(
       array.map((i) => ({ ...i, _id: i._id.toString() }))

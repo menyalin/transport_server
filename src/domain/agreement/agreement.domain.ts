@@ -22,7 +22,7 @@ export class Agreement {
   clientNumRequired?: boolean = false
   auctionNumRequired?: boolean = false
   note?: string
-  commission?: number
+  commission: number = 0
   executorName: string
   isActive?: boolean = true
   allowedCarriers?: string[] = []
@@ -65,7 +65,7 @@ export class Agreement {
     this.clientNumRequired = parsedData.clientNumRequired
     this.auctionNumRequired = parsedData.auctionNumRequired
     this.note = parsedData.note
-    this.commission = parsedData.commission
+    this.commission = parsedData.commission || 0
     this.executorName = parsedData.executorName
     this.allowedCarriers = parsedData.allowedCarriers
   }
