@@ -89,10 +89,10 @@ export async function pickOrdersForPaymentInvoice({
         from: 'agreements',
         localField: localField,
         foreignField: '_id',
-        as: '_agreement',
+        as: 'agreement',
       },
     },
-    { $addFields: { _agreement: { $first: '$_agreement' } } },
+    { $addFields: { agreement: { $first: '$agreement' } } },
   ]
 
   const addFields: PipelineStage[] = [
@@ -101,7 +101,7 @@ export async function pickOrdersForPaymentInvoice({
         plannedDate: orderPlannedDateBuilder(),
         orderId: '$_id',
         isSelectable: true,
-        agreementVatRate: '$_agreement.vatRate',
+        agreementVatRate: '$agreement.vatRate',
         paymentPartsSumWOVat: paymentPartsSumWOVatFragemt,
         totalByTypes: { ...finalPricesFragmentBuilder() },
       },
@@ -155,7 +155,7 @@ export async function pickOrdersForPaymentInvoice({
             _id: '$paymentParts._id',
             plannedDate: orderPlannedDateBuilder(),
             isSelectable: true,
-            agreementVatRate: '$_agreement.vatRate',
+            agreementVatRate: '$agreement.vatRate',
             paymentPartsSumWOVat: 0,
             totalByTypes: {
               base: '$paymentParts.priceWOVat',

@@ -76,17 +76,17 @@ export const getListPipeline = ({
         from: 'agreements',
         localField: 'agreement',
         foreignField: '_id',
-        as: '_agreement',
+        as: 'agreement',
       },
     },
-    { $addFields: { _agreement: { $first: '$_agreement' } } },
+    { $addFields: { agreement: { $first: '$agreement' } } },
   ]
 
   const additionalFields = [
     {
       $addFields: {
         clientName: '$_client.name',
-        agreementName: '$_agreement.name',
+        agreementName: '$agreement.name',
         statusStr: {
           $switch: {
             branches: PAIMENT_INVOICE_STATUSES.map((i) => ({

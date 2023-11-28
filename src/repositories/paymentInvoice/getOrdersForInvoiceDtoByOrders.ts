@@ -111,7 +111,7 @@ export const getOrdersForInvoiceDtoByOrders = async (
         from: 'agreements',
         localField: 'agreementId',
         foreignField: '_id',
-        as: '_agreement',
+        as: 'agreement',
       },
     },
     {
@@ -125,15 +125,15 @@ export const getOrdersForInvoiceDtoByOrders = async (
     {
       $addFields: {
         driver: { $first: '$driver' },
-        _agreement: {
-          $first: '$_agreement',
+        agreement: {
+          $first: '$agreement',
         },
       },
     },
     {
       $addFields: {
         driverName: orderDriverFullNameBuilder(),
-        agreementVatRate: '$_agreement.vatRate',
+        agreementVatRate: '$agreement.vatRate',
       },
     },
     {
