@@ -26,7 +26,6 @@ import {
   OrderRemoveEvent,
   OrderTruckChanged,
 } from '../../domain/order/domainEvents'
-import order from '../order'
 
 class NotificationService {
   senderEmail?: string

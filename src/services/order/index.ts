@@ -276,13 +276,13 @@ class OrderService {
         date: new Date(),
       }
     }
+
     if (
-      !body.confirmedCrew?.truck ||
       body.confirmedCrew?.truck.toString() !==
-        order.confirmedCrew?.truck?.toString()
-    ) {
+      order.confirmedCrew?.truck?.toString()
+    )
       bus.publish(OrderTruckChanged({ orderId: order._id.toString() }))
-    }
+
     const orderDomain = new OrderDomain({ ...order, ...body, _id: order._id })
     orderDomain.unlock()
 
