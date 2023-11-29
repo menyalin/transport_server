@@ -47,6 +47,7 @@ export class Partner {
     this.contacts = p.contacts
     this.group = p.group
     this.isClient = p.isClient
+    this.isService = p.isService
     this.isActive = p.isActive === undefined ? true : p.isActive
     this.placesForTransferDocs = utils.setLoadingDocs(p.placesForTransferDocs)
     this.idleTruckNotifications = utils.setIdleTruckNotifications(
