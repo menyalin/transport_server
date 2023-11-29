@@ -33,6 +33,11 @@ class NotificationRepository {
     return !!message ? new IdleTruckNotificationMessage(message) : null
   }
 
+  async getByOrderId(orderId: string): Promise<IdleTruckNotificationMessage[]> {
+    const docs = await IdleTruckNotificationModel.find({ orderId }).lean()
+    return docs.map((i) => new IdleTruckNotificationMessage(i))
+  }
+
   async getCreatedIdleTruckNotificationMessages(
     sendDate: Date
   ): Promise<IdleTruckNotificationMessage[]> {

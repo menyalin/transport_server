@@ -60,6 +60,10 @@ export class IdleTruckNotificationMessage {
     else this.sended.push(date)
   }
 
+  delete() {
+    this.status = MESSAGE_STATUS_ENUM.deleted
+  }
+
   cancel() {
     this.status = MESSAGE_STATUS_ENUM.canceled
   }
