@@ -22,7 +22,10 @@ import { getPaymentInvoicesByOrderIds } from './getPaymentInvoicesByOrderIds'
 import OrderRepository from '../../repositories/order/order.repository'
 import { Order as OrderDomain } from '../../domain/order/order.domain'
 import { bus } from '../../eventBus'
-import { OrderUpdatedEvent } from '../../domain/order/domainEvents'
+import {
+  OrderUpdatedEvent,
+  OrderTruckChanged,
+} from '../../domain/order/domainEvents'
 
 const _isEqualDatesOfRoute = ({ oldRoute, newRoute }) => {
   const oldArrivalDate = new Date(oldRoute[0].arrivalDate).toLocaleString()
@@ -273,7 +276,13 @@ class OrderService {
         date: new Date(),
       }
     }
-
+    if (
+      !body.confirmedCrew?.truck ||
+      body.confirmedCrew?.truck.toString() !==
+        order.confirmedCrew?.truck?.toString()
+    ) {
+      bus.publish(OrderTruckChanged({ orderId: order._id.toString() }))
+    }
     const orderDomain = new OrderDomain({ ...order, ...body, _id: order._id })
     orderDomain.unlock()
 
@@ -281,6 +290,7 @@ class OrderService {
     bus.publish(OrderUpdatedEvent(orderDomain))
 
     emitTo(orderDomain.company.toString(), 'order:updated', orderDomain)
+
     await ChangeLogService.add({
       docId: new mongoose.Types.ObjectId(orderDomain.id),
       company: orderDomain.company,
@@ -289,6 +299,7 @@ class OrderService {
       opType: 'update',
       body: JSON.stringify(orderDomain),
     })
+
     return orderDomain
   }
 

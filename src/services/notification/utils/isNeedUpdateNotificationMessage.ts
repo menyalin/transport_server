@@ -7,7 +7,11 @@ export const isNeedUpdateNotificationMessage = (
 ): boolean => {
   if (!existedMessage) return true
 
-  if (existedMessage.status === MESSAGE_STATUS_ENUM.created) return true
+  if (
+    existedMessage.status === MESSAGE_STATUS_ENUM.created ||
+    existedMessage.status === MESSAGE_STATUS_ENUM.deleted
+  )
+    return true
 
   if (
     existedMessage.status === MESSAGE_STATUS_ENUM.sended &&

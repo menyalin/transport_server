@@ -22,7 +22,11 @@ import { IdleTruckNotificationMessage } from '../../domain/notifications/idleTru
 import NotificationRepository from '../../repositories/notification/notification.repository'
 import { transporterConfig } from './transporterConfig'
 import * as utils from './utils/index'
-import { OrderRemoveEvent } from '../../domain/order/domainEvents'
+import {
+  OrderRemoveEvent,
+  OrderTruckChanged,
+} from '../../domain/order/domainEvents'
+import order from '../order'
 
 class NotificationService {
   senderEmail?: string
@@ -38,8 +42,8 @@ class NotificationService {
 
     const config = transporterConfig()
     this.transporter = nodemailer.createTransport(config)
-    this.bus.subscribe(OrderRemoveEvent, ({ payload: { orderId } }) => {
-      this.deleteNotificationsByOrderId(orderId)
+    this.bus.subscribe(OrderRemoveEvent, async ({ payload: { orderId } }) => {
+      await this.deleteNotificationsByOrderId(orderId)
     })
     this.bus.subscribe(
       toCreateIdleTruckNotificationEvent,
@@ -63,6 +67,9 @@ class NotificationService {
         await this.sendIdleTruckNotificationMessage(payload)
       }
     )
+    this.bus.subscribe(OrderTruckChanged, async ({ payload: { orderId } }) => {
+      await this.deleteNotificationsByOrderId(orderId)
+    })
   }
 
   async cancelIdleTruckNotificationMessages(notificationId: string) {
