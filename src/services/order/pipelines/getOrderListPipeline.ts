@@ -1,5 +1,5 @@
 // @ts-nocheck
-import mongoose from 'mongoose'
+import { Types } from 'mongoose'
 import { orderDocNumbersStringFragment } from '../../_pipelineFragments/orderDocNumbersStringBuilder'
 import { orderDocsStatusConditionBuilder } from '../../_pipelineFragments/orderDocsStatusConditionBuilder'
 import { orderLoadingZoneFragmentBuilder } from '../../_pipelineFragments/orderLoadingZoneFragmentBuilder'
@@ -19,6 +19,7 @@ const getSortingStage = (sortBy = [], sortDesc = []) => {
 
 export const getOrderListPipeline = ({
   profile,
+  agreement,
   client,
   startDate,
   endDate,
@@ -44,7 +45,7 @@ export const getOrderListPipeline = ({
   const firstMatcher = {
     $match: {
       isActive: true,
-      company: new mongoose.Types.ObjectId(profile),
+      company: new Types.ObjectId(profile),
       $expr: {
         $and: [
           { $gte: ['$startPositionDate', sP] },
@@ -53,6 +54,9 @@ export const getOrderListPipeline = ({
       },
     },
   }
+
+  if (agreement)
+    firstMatcher.$match['client.agreement'] = new Types.ObjectId(agreement)
 
   if (accountingMode)
     firstMatcher.$match.$expr.$and.push({
@@ -63,20 +67,14 @@ export const getOrderListPipeline = ({
     })
 
   if (status && !accountingMode) firstMatcher.$match['state.status'] = status
-  if (client)
-    firstMatcher.$match['client.client'] = new mongoose.Types.ObjectId(client)
+  if (client) firstMatcher.$match['client.client'] = new Types.ObjectId(client)
 
   if (truck)
-    firstMatcher.$match['confirmedCrew.truck'] = new mongoose.Types.ObjectId(
-      truck
-    )
+    firstMatcher.$match['confirmedCrew.truck'] = new Types.ObjectId(truck)
   if (trailer)
-    firstMatcher.$match['confirmedCrew.trailer'] = new mongoose.Types.ObjectId(
-      // eslint-disable-next-line comma-dangle
-      trailer
-    )
+    firstMatcher.$match['confirmedCrew.trailer'] = new Types.ObjectId(trailer)
   if (address)
-    firstMatcher.$match['route.address'] = new mongoose.Types.ObjectId(address)
+    firstMatcher.$match['route.address'] = new Types.ObjectId(address)
 
   const agreementLookup = [
     {
@@ -97,25 +95,7 @@ export const getOrderListPipeline = ({
   ]
 
   const tkNameLookup = [
-    // TODO: удалить!!
-    // {
-    //   $lookup: {
-    //     from: 'trucks',
-    //     localField: 'confirmedCrew.truck',
-    //     foreignField: '_id',
-    //     as: 'truck',
-    //   },
-    // },
-    // {
-    //   $addFields: {
-    //     truck: {
-    //       $first: '$truck',
-    //     },
-    //   },
-    // },
-    {
-      $match: { 'confirmedCrew.tkName': new mongoose.Types.ObjectId(tkName) },
-    },
+    { $match: { 'confirmedCrew.tkName': new Types.ObjectId(tkName) } },
   ]
 
   const addSortFields = [
@@ -140,7 +120,7 @@ export const getOrderListPipeline = ({
   const loadingZoneLookup = orderLoadingZoneFragmentBuilder()
 
   if (driver)
-    firstMatcher.$match['confirmedCrew.driver'] = new mongoose.Types.ObjectId(
+    firstMatcher.$match['confirmedCrew.driver'] = new Types.ObjectId(
       // eslint-disable-next-line comma-dangle
       driver
     )
@@ -195,7 +175,7 @@ export const getOrderListPipeline = ({
 
   if (loadingZone) {
     secondMatcher.$match.$expr.$and.push({
-      $in: [new mongoose.Types.ObjectId(loadingZone), '$_loadingZoneIds'],
+      $in: [new Types.ObjectId(loadingZone), '$_loadingZoneIds'],
     })
   }
 
