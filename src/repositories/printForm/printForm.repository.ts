@@ -8,11 +8,13 @@ class PrintFormRepository {
 
   async getTemplatesByTypeAndAgreement(
     docType: string,
-    agreementId: string
+    agreementId: string,
+    clientId: string | null = null
   ): Promise<PrintForm[]> {
     const printForms = await PrintFormModel.find({
       agreement: agreementId,
       docType,
+      $or: [{ client: { $exists: false } }, { client: clientId }],
     }).lean()
     return printForms
   }

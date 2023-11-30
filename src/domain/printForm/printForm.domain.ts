@@ -9,7 +9,9 @@ export class PrintForm {
   docType: string
   pfType: printFormTypes
   agreement: string | null
+  client?: string
   data: any
+
   constructor(p: any) {
     const validProps = PrintForm.schema.parse(p)
     this.name = validProps.name
@@ -29,6 +31,7 @@ export class PrintForm {
     pfType: z.nativeEnum(printFormTypes),
     agreement: z.string().nullable(),
     data: z.any(),
+    client: z.string().nullable(),
   })
 
   static dbSchema = {
@@ -36,6 +39,7 @@ export class PrintForm {
     filenamePattern: { type: String, required: true },
     templateName: { type: String, required: true, unique: true },
     docType: { type: String },
+    client: { type: Types.ObjectId, ref: 'Partner' },
     pfType: { type: String, enum: printFormTypeValues },
     agreement: { type: Types.ObjectId, ref: 'Agreement' },
     data: Object,

@@ -18,8 +18,11 @@ export const getAllowedPFSchema = {
     agreement: {
       type: 'string',
     },
+    client: {
+      type: 'string',
+    },
   },
-  required: ['agreement'],
+  required: ['agreement', 'client'],
   additionalProperties: true,
 }
 
