@@ -130,11 +130,19 @@ class PaymentInvoiceController {
   }
 
   async getAllowedPrintForms(
-    req: AuthorizedRequest<any, any, any, { agreement: string }>,
+    req: AuthorizedRequest<
+      any,
+      any,
+      any,
+      { agreement: string; client: string }
+    >,
     res: Response
   ) {
     try {
-      const data = await this.service.getAllowedPrintForms(req.query.agreement)
+      const data = await this.service.getAllowedPrintForms(
+        req.query.agreement,
+        req.query.client
+      )
       res.status(200).json(data)
     } catch (e) {
       if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)

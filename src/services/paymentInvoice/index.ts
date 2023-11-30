@@ -141,10 +141,14 @@ class PaymentInvoiceService {
     return res[0] || []
   }
 
-  async getAllowedPrintForms(agreement: string): Promise<PrintForm[]> {
+  async getAllowedPrintForms(
+    agreement: string,
+    client: string
+  ): Promise<PrintForm[]> {
     return await PrintFormRepository.getTemplatesByTypeAndAgreement(
       'paymentInvoice',
-      agreement
+      agreement,
+      client
     )
   }
 
