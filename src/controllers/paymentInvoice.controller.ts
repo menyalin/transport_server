@@ -3,7 +3,7 @@ import { Readable } from 'stream'
 import { AuthorizedRequest } from './interfaces/request'
 import { PaymentInvoiceService, PermissionService } from '../services'
 import { BadRequestError } from '../helpers/errors'
-import { IPickOrdersForPaymentInvoiceProps } from '../domain/paymentInvoice/interfaces'
+import { DateRange } from '../classes/dateRange'
 
 class PaymentInvoiceController {
   service: typeof PaymentInvoiceService
@@ -155,14 +155,26 @@ class PaymentInvoiceController {
       unknown,
       unknown,
       unknown,
-      IPickOrdersForPaymentInvoiceProps
+      {
+        company: string
+        client: string
+        period: string[]
+        paymentInvoiceId: string
+        docStatus: string
+        onlySelectable: boolean
+        truck: string
+        driver: string
+        loadingZone: string
+        search: string
+      }
     >,
     res: Response
   ) {
     try {
       const data = await this.service.pickOrders({
         ...req.query,
-        company: req.companyId as string,
+        company: req.companyId,
+        period: new DateRange(req.query.period[0], req.query.period[1]),
       })
       res.status(200).json(data)
     } catch (e) {
