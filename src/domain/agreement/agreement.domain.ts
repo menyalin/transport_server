@@ -23,7 +23,7 @@ export class Agreement {
   auctionNumRequired?: boolean = false
   note?: string
   commission: number = 0
-  executorName: string
+  executorName: string | null
   isActive?: boolean = true
   allowedCarriers?: string[] = []
 
@@ -66,7 +66,7 @@ export class Agreement {
     this.auctionNumRequired = parsedData.auctionNumRequired
     this.note = parsedData.note
     this.commission = parsedData.commission || 0
-    this.executorName = parsedData.executorName
+    this.executorName = parsedData.executorName || null
     this.allowedCarriers = parsedData.allowedCarriers
   }
 
@@ -93,7 +93,7 @@ export class Agreement {
     auctionNumRequired: z.boolean(),
     note: z.string().optional(),
     commission: z.number().optional(),
-    executorName: z.string(),
+    executorName: z.string().optional(),
     allowedCarriers: z.array(z.string()).optional(),
   })
 
@@ -119,7 +119,7 @@ export class Agreement {
     auctionNumRequired: { type: Boolean, default: false },
     note: String,
     commission: { type: Number, default: 0 },
-    executorName: { type: String, required: true },
+    executorName: { type: String },
     allowedCarriers: [{ type: Types.ObjectId, ref: 'Company' }],
   }
 }
