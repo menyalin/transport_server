@@ -7,6 +7,7 @@ import { secondMatcher } from './grossProfitReportFragments/secondMatcher'
 import { addTotalPriceFields } from '../pipelines/grossProfitReportFragments/addTotalPriceFields'
 import { additionalMatcher } from '../pipelines/grossProfitReportFragments/additionalMatcher'
 import { sortingList } from '../pipelines/grossProfitReportFragments/sortingList'
+import { lookupAgreements } from './grossProfitReportFragments/lookupAgreements'
 
 export default ({
   dateRange,
@@ -50,6 +51,7 @@ export default ({
     addPriceObjByTypes(['prices', 'prePrices', 'finalPrices']),
     firstProject(),
     ...lookupAddressParams(),
+    ...lookupAgreements(),
     additionalMatcher(additionalFilters),
     secondMatcher({ filters: mainFilters }),
     secondMatcher({ filters: additionalFilters }),

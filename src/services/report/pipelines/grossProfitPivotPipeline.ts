@@ -5,7 +5,7 @@ import { firstProject } from './grossProfitReportFragments/firstProject'
 import { lookupAddressParams } from './grossProfitReportFragments/lookupAddressParams'
 import { secondMatcher } from './grossProfitReportFragments/secondMatcher'
 import { addTotalPriceFields } from '../pipelines/grossProfitReportFragments/addTotalPriceFields'
-import { additionalMatcher } from './grossProfitReportFragments/additionalMatcher'
+import { lookupAgreements } from './grossProfitReportFragments/lookupAgreements'
 
 export default ({ dateRange, company, groupBy, mainFilters }) => {
   const group = (groupBy) => {
@@ -13,6 +13,9 @@ export default ({ dateRange, company, groupBy, mainFilters }) => {
     switch (groupBy) {
       case 'client':
         groupType = '$client'
+        break
+      case 'agreement':
+        groupType = '$agreement'
         break
       case 'orderType':
         groupType = '$orderType'
@@ -59,6 +62,7 @@ export default ({ dateRange, company, groupBy, mainFilters }) => {
     addPriceObjByTypes(['prices', 'prePrices', 'finalPrices']),
     firstProject(),
     ...lookupAddressParams(),
+    ...lookupAgreements(),
     secondMatcher({ filters: mainFilters }),
     ...addTotalPriceFields(),
     { $sort: { totalWithVat: -1 } },
