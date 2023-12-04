@@ -27,6 +27,14 @@ export const additionalMatcher = (filters) => {
         values: filters.clients.values,
       })
     )
+  if (filters.agreements?.values.length)
+    matcher.$match.$expr.$and.push(
+      _getMainFilterBlock({
+        field: '$agreement',
+        cond: filters.agreements.cond,
+        values: filters.agreements.values,
+      })
+    )
 
   // Основной отбор по TkNames
   if (filters.tkNames?.values.length)
