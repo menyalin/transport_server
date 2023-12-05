@@ -13,7 +13,7 @@ export class OrderInPaymentInvoice {
   company: string
   itemType: string
   total: IPrice
-  totalByTypes: { [key: string]: number }
+  totalByTypes: { [key: string]: IPrice }
 
   constructor(p: any) {
     this.order = p.order
@@ -58,7 +58,7 @@ export class OrderInPaymentInvoice {
     total: PriceType,
     totalByTypes: {
       type: Map,
-      of: Number,
+      of: PriceType,
     },
   }
 }

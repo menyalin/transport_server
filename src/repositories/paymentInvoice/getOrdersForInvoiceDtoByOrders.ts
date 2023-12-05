@@ -1,13 +1,14 @@
 import { PipelineStage, Types } from 'mongoose'
 import { OrderPickedForInvoiceDTO } from '../../domain/paymentInvoice/dto/orderPickedForInvoice.dto'
 import { Order as OrderModel } from '../../models'
-import { paymentPartsSumWOVatFragemt } from './pipelineFragments/paymentPartsSumWOVatFragemt'
+import { paymentPartsSumFragment } from './pipelineFragments/paymentPartsSumFragment'
 import {
   finalPricesFragmentBuilder,
   totalSumFragmentBuilder,
 } from '../../services/_pipelineFragments/orderFinalPricesFragmentBuilder'
 import { orderPlannedDateBuilder } from '../../services/_pipelineFragments/orderPlannedDateBuilder'
 import { orderDriverFullNameBuilder } from '../../services/_pipelineFragments/orderDriverFullNameBuilder'
+import { substructPaymentPartsFromBase } from './pipelineFragments/substructPaymentPartsFromBase'
 
 export const getOrdersForInvoiceDtoByOrders = async (
   orders: string[],
@@ -31,20 +32,12 @@ export const getOrdersForInvoiceDtoByOrders = async (
         orderId: '_id',
         itemType: 'order',
         agreementId: '$client.agreement',
-        paymentPartsSumWOVat: paymentPartsSumWOVatFragemt,
+        paymentPartsSumWOVat: paymentPartsSumFragment(false),
+        paymentPartsSumWithVat: paymentPartsSumFragment(true),
         totalByTypes: { ...finalPricesFragmentBuilder() },
       },
     },
-    {
-      $addFields: {
-        'totalByTypes.base': {
-          $subtract: [
-            '$totalByTypes.base',
-            { $ifNull: ['$paymentPartsSumWOVat', 0] },
-          ],
-        },
-      },
-    },
+    substructPaymentPartsFromBase(),
   ]
 
   const unionWithPaymentPartsOrders: PipelineStage.UnionWith = {
@@ -88,9 +81,13 @@ export const getOrdersForInvoiceDtoByOrders = async (
             _id: '$paymentParts._id',
             agreementId: '$paymentParts.agreement',
             paymentPartsSumWOVat: 0,
+            paymentPartsSumWithVat: 0,
             itemType: 'paymentPart',
             totalByTypes: {
-              base: '$paymentParts.priceWOVat',
+              base: {
+                priceWOVat: '$paymentParts.priceWOVat',
+                price: '$paymentParts.price',
+              },
             },
           },
         },

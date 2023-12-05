@@ -92,10 +92,7 @@ export async function getOrdersForPaymentInvoice({
                       {
                         $ifNull: [
                           {
-                            $map: {
-                              input: '$paymentParts',
-                              in: '$$this._id',
-                            },
+                            $map: { input: '$paymentParts', in: '$$this._id' },
                           },
                           [],
                         ],
