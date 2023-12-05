@@ -174,30 +174,34 @@ class PaymentInvoiceService {
         'PaymentInvoiceService:addOrdersToInvoice. missing required params'
       )
     // Формирую новые объекты в коллекции
-    const ordersDTO: OrderPickedForInvoiceDTO[] =
-      await PaymentInvoiceRepository.getOrdersForInvoiceDtoByOrders(
-        orders,
-        company
-      )
-    ordersDTO.forEach((i) => {
-      i.saveTotal()
-    })
-    // Новые элементы для внесения в таблицу OrdersInPaymentInvoice
-    const newItemRows = ordersDTO.map((orderDTO) =>
-      OrderInPaymentInvoice.create({
-        order: orderDTO,
-        invoiceId: paymentInvoiceId,
+    try {
+      const ordersDTO: OrderPickedForInvoiceDTO[] =
+        await PaymentInvoiceRepository.getOrdersForInvoiceDtoByOrders(
+          orders,
+          company
+        )
+      ordersDTO.forEach((i) => {
+        i.saveTotal()
       })
-    )
+      const newItemRows = ordersDTO.map((orderDTO) =>
+        OrderInPaymentInvoice.create({
+          order: orderDTO,
+          invoiceId: paymentInvoiceId,
+        })
+      )
 
-    await PaymentInvoiceRepository.addOrdersToInvoice(newItemRows)
+      await PaymentInvoiceRepository.addOrdersToInvoice(newItemRows)
 
-    this.emitter(company, 'orders:addedToPaymentInvoice', {
-      orders: ordersDTO,
-      paymentInvoiceId,
-    })
+      this.emitter(company, 'orders:addedToPaymentInvoice', {
+        orders: ordersDTO,
+        paymentInvoiceId,
+      })
 
-    return newItemRows
+      return newItemRows
+    } catch (e) {
+      console.log(e)
+      throw e
+    }
   }
 
   async removeOrdersFromPaymentInvoice({
@@ -227,24 +231,29 @@ class PaymentInvoiceService {
   }
 
   async pickOrders(props: IPickOrdersForPaymentInvoiceProps) {
-    if (!props.company || !props.paymentInvoiceId)
-      throw new BadRequestError(
-        'PaymentInvoiceService:pickOrders. missing required params'
-      )
+    try {
+      if (!props.company || !props.paymentInvoiceId)
+        throw new BadRequestError(
+          'PaymentInvoiceService:pickOrders. missing required params'
+        )
 
-    const paymentInvoice = await this.model
-      .findById(props.paymentInvoiceId)
-      .populate('client')
+      const paymentInvoice = await this.model
+        .findById(props.paymentInvoiceId)
+        .populate('client')
 
-    if (!paymentInvoice)
-      throw new BadRequestError(
-        'PaymentInvoiceService:pickOrders. paymentInvoice not found'
-      )
+      if (!paymentInvoice)
+        throw new BadRequestError(
+          'PaymentInvoiceService:pickOrders. paymentInvoice not found'
+        )
 
-    const orders =
-      await PaymentInvoiceRepository.pickOrdersForPaymentInvoice(props)
+      const orders =
+        await PaymentInvoiceRepository.pickOrdersForPaymentInvoice(props)
 
-    return orders || []
+      return orders || []
+    } catch (e) {
+      console.log('pickOrders error')
+      throw e
+    }
   }
 
   async updateOrderPrices({

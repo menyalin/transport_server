@@ -16,6 +16,11 @@ const IPriceSchema = z.object({
   _id: z.union([z.string(), z.instanceof(Types.ObjectId)]),
 })
 
+const priceSchema = z.object({
+  price: z.number(),
+  priceWOVat: z.number(),
+})
+
 const orderPickedForInvoiceDTOSchema = z.object({
   _id: z.union([z.string(), z.instanceof(Types.ObjectId)]),
   docs: z.array(z.unknown()),
@@ -58,18 +63,11 @@ const orderPickedForInvoiceDTOSchema = z.object({
   note: z.string().optional(),
   paymentInvoices: z.array(z.unknown()).optional(),
   agreement: z.unknown(),
+  total: priceSchema,
+  // totalByTypes: z.record(priceSchema),
   totalByTypes: z.unknown(),
-  total: z.object({
-    price: z.number(),
-    priceWOVat: z.number(),
-  }),
-  savedTotal: z
-    .object({
-      price: z.number(),
-      priceWOVat: z.number(),
-    })
-    .optional(),
-  savedTotalByTypes: z.unknown(),
+  savedTotal: priceSchema.optional(),
+  savedTotalByTypes: z.record(priceSchema).optional(),
   driverName: z.string().optional(),
   needUpdate: z.boolean().optional(),
   itemType: z.string().optional(),

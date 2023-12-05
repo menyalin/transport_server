@@ -10,7 +10,8 @@ import { orderLoadingZoneFragmentBuilder } from '../../services/_pipelineFragmen
 import { orderSearchByNumberFragmentBuilder } from '../../services/_pipelineFragments/orderSearchByNumberFragmentBuilder'
 import { orderPlannedDateBuilder } from '../../services/_pipelineFragments/orderPlannedDateBuilder'
 import { IPickOrdersForPaymentInvoiceProps } from '../../domain/paymentInvoice/interfaces'
-import { paymentPartsSumWOVatFragemt } from './pipelineFragments/paymentPartsSumWOVatFragemt'
+import { paymentPartsSumFragment } from './pipelineFragments/paymentPartsSumFragment'
+import { substructPaymentPartsFromBase } from './pipelineFragments/substructPaymentPartsFromBase'
 
 export async function pickOrdersForPaymentInvoice({
   company,
@@ -102,20 +103,12 @@ export async function pickOrdersForPaymentInvoice({
         orderId: '$_id',
         isSelectable: true,
         agreementVatRate: '$agreement.vatRate',
-        paymentPartsSumWOVat: paymentPartsSumWOVatFragemt,
+        paymentPartsSumWOVat: paymentPartsSumFragment(false),
+        paymentPartsSumWithVat: paymentPartsSumFragment(true),
         totalByTypes: { ...finalPricesFragmentBuilder() },
       },
     },
-    {
-      $addFields: {
-        'totalByTypes.base': {
-          $subtract: [
-            '$totalByTypes.base',
-            { $ifNull: ['$paymentPartsSumWOVat', 0] },
-          ],
-        },
-      },
-    },
+    substructPaymentPartsFromBase(),
     {
       $addFields: {
         total: totalSumFragmentBuilder(),
@@ -157,8 +150,12 @@ export async function pickOrdersForPaymentInvoice({
             isSelectable: true,
             agreementVatRate: '$agreement.vatRate',
             paymentPartsSumWOVat: 0,
+            paymentPartsSumWithVat: 0,
             totalByTypes: {
-              base: '$paymentParts.priceWOVat',
+              base: {
+                price: '$paymentParts.price',
+                priceWOVat: '$paymentParts.priceWOVat',
+              },
             },
           },
         },
