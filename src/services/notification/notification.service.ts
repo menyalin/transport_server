@@ -25,6 +25,7 @@ import * as utils from './utils/index'
 import {
   OrderRemoveEvent,
   OrderTruckChanged,
+  OrderReturnedFromInProgressStatus,
 } from '../../domain/order/domainEvents'
 
 class NotificationService {
@@ -69,6 +70,13 @@ class NotificationService {
     this.bus.subscribe(OrderTruckChanged, async ({ payload: { orderId } }) => {
       await this.deleteNotificationsByOrderId(orderId)
     })
+
+    this.bus.subscribe(
+      OrderReturnedFromInProgressStatus,
+      async ({ payload: { orderId } }) => {
+        await this.deleteNotificationsByOrderId(orderId)
+      }
+    )
   }
 
   async cancelIdleTruckNotificationMessages(notificationId: string) {
