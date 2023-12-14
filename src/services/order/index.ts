@@ -25,6 +25,7 @@ import { bus } from '../../eventBus'
 import {
   OrderUpdatedEvent,
   OrderTruckChanged,
+  OrderReturnedFromInProgressStatus,
 } from '../../domain/order/domainEvents'
 
 const _isEqualDatesOfRoute = ({ oldRoute, newRoute }) => {
@@ -280,8 +281,16 @@ class OrderService {
     if (
       body.confirmedCrew?.truck?.toString() !==
       order.confirmedCrew?.truck?.toString()
-    ) {
+    )
       bus.publish(OrderTruckChanged({ orderId: order._id.toString() }))
+
+    if (
+      order.state.status === 'inProgress' &&
+      ['getted', 'needGet'].includes(body.state.status)
+    ) {
+      bus.publish(
+        OrderReturnedFromInProgressStatus({ orderId: order._id.toString() })
+      )
     }
 
     const orderDomain = new OrderDomain({ ...order, ...body, _id: order._id })

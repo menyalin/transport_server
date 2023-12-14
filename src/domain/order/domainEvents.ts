@@ -24,3 +24,7 @@ export const OrderUpdatedEvent = createEventDefinition<Order>()(
 export const OrderTruckChanged = createEventDefinition<{ orderId: string }>()(
   ORDER_DOMAIN_EVENTS.truck_changed
 )
+
+export const OrderReturnedFromInProgressStatus = createEventDefinition<{
+  orderId: string
+}>()('OrderReturnedFromInProgressStatus')
