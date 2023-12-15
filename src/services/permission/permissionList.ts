@@ -261,7 +261,7 @@ export const accountant = {
   'order:readDocs': true,
   'order:showDocDates': true,
   'order:writeDocDates': true,
-
+  'report:gross_profit': true,
   'docsRegistry:readList': true,
   'docsRegistry:readItem': true,
   'docsRegistry:write': true,
