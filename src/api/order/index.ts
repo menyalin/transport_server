@@ -3,6 +3,7 @@
 import express from 'express'
 
 import { jwtAuth } from '../../utils/auth.middleware'
+import requestIdMiddleware from '../../utils/requestId.middleware'
 import { queryValidator, bodyValidator } from '../../utils/validator'
 import ctrl from '../../controllers/order.controller'
 import {
@@ -39,7 +40,11 @@ router.post(
   [jwtAuth, bodyValidator(saveFinalPricesSchema)],
   ctrl.saveFinalPrices
 )
-router.post('/', [jwtAuth, bodyValidator(createSchema)], ctrl.create)
+router.post(
+  '/',
+  [jwtAuth, requestIdMiddleware, bodyValidator(createSchema)],
+  ctrl.create
+)
 
 router.put(
   '/:id/setDocsState',

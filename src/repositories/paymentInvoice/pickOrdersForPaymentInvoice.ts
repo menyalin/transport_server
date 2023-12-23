@@ -1,4 +1,9 @@
-import { BooleanExpression, PipelineStage, Types } from 'mongoose'
+import {
+  ArrayExpressionOperator,
+  BooleanExpression,
+  PipelineStage,
+  Types,
+} from 'mongoose'
 import { BadRequestError } from '../../helpers/errors'
 import { Order as OrderModel } from '../../models'
 import { OrderPickedForInvoiceDTO } from '../../domain/paymentInvoice/dto/orderPickedForInvoice.dto'
@@ -17,13 +22,11 @@ export async function pickOrdersForPaymentInvoice({
   company,
   client,
   period,
-  paymentInvoiceId,
-  docStatus,
-  onlySelectable,
   truck,
   driver,
-  loadingZone,
   search,
+  agreement,
+  numbers,
 }: IPickOrdersForPaymentInvoiceProps): Promise<OrderPickedForInvoiceDTO[]> {
   if (!company || !client || !period)
     throw new BadRequestError(
@@ -31,7 +34,7 @@ export async function pickOrdersForPaymentInvoice({
     )
 
   const firstMatcherBuilder = (
-    filtersExpressions: BooleanExpression[]
+    filtersExpressions: Array<BooleanExpression | ArrayExpressionOperator>
   ): PipelineStage.Match =>
     ({
       $match: {
@@ -53,7 +56,7 @@ export async function pickOrdersForPaymentInvoice({
       },
     }) as PipelineStage.Match
 
-  const filters: BooleanExpression[] = []
+  const filters: Array<BooleanExpression | ArrayExpressionOperator> = []
   if (search) {
     filters.push(orderSearchByNumberFragmentBuilder(search))
   }
@@ -68,6 +71,10 @@ export async function pickOrdersForPaymentInvoice({
       $eq: ['$confirmedCrew.driver', new Types.ObjectId(driver)],
     })
 
+  if (numbers && numbers.length > 0)
+    filters.push({
+      $in: ['$client.num', numbers.map((i) => new Types.ObjectId(i))],
+    })
   const paymentInvoiceFilterBuilder = (
     orderIdField = '_id'
   ): PipelineStage[] => [
@@ -138,6 +145,7 @@ export async function pickOrdersForPaymentInvoice({
         {
           $match: {
             'paymentParts.client': new Types.ObjectId(client),
+            'paymentParts.agreement': new Types.ObjectId(agreement),
           },
         },
         ...paymentInvoiceFilterBuilder('paymentParts._id'),
@@ -174,6 +182,7 @@ export async function pickOrdersForPaymentInvoice({
     firstMatcherBuilder([
       ...filters,
       { $eq: ['$client.client', new Types.ObjectId(client)] },
+      { $eq: ['$client.agreement', new Types.ObjectId(agreement)] },
     ]),
     ...paymentInvoiceFilterBuilder('_id'),
     ...addAgreementBuilder('client.agreement'),

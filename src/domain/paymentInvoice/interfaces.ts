@@ -4,14 +4,16 @@ import { OrderPickedForInvoiceDTO } from './dto/orderPickedForInvoice.dto'
 export interface IPickOrdersForPaymentInvoiceProps {
   company: string
   client: string
+  agreement: string
   period: DateRange
-  paymentInvoiceId: string
-  docStatus: string
-  onlySelectable: boolean
-  truck: string
-  driver: string
-  loadingZone: string
-  search: string
+  paymentInvoiceId?: string
+  docStatus?: string
+  onlySelectable?: boolean
+  truck?: string
+  driver?: string
+  loadingZone?: string
+  search?: string
+  numbers?: string[]
 }
 
 export interface IAddOrdersToInvoiceProps {
