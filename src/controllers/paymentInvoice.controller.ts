@@ -158,14 +158,16 @@ class PaymentInvoiceController {
       {
         company: string
         client: string
+        agreement: string
         period: string[]
-        paymentInvoiceId: string
-        docStatus: string
-        onlySelectable: boolean
-        truck: string
-        driver: string
-        loadingZone: string
-        search: string
+        paymentInvoiceId?: string
+        docStatus?: string
+        onlySelectable?: boolean
+        truck?: string
+        driver?: string
+        loadingZone?: string
+        search?: string
+        numbers?: string[]
       }
     >,
     res: Response
