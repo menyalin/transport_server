@@ -73,7 +73,7 @@ export async function pickOrdersForPaymentInvoice({
 
   if (numbers && numbers.length > 0)
     filters.push({
-      $in: ['$client.num', numbers.map((i) => new Types.ObjectId(i))],
+      $in: ['$client.num', numbers],
     })
   const paymentInvoiceFilterBuilder = (
     orderIdField = '_id'

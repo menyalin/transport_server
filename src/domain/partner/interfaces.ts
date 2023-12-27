@@ -22,6 +22,7 @@ export interface IParterProps {
   isActive?: boolean
   placesForTransferDocs?: LoadingDock[]
   idleTruckNotifications?: IdleTruckNotification[]
+  invoiceLoader?: string
 }
 export interface IPartnerWithIdProps extends IParterProps {
   _id: string | Types.ObjectId
