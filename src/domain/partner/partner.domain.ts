@@ -37,6 +37,7 @@ export class Partner {
   isActive: boolean = true
   placesForTransferDocs: LoadingDock[] = []
   idleTruckNotifications: IdleTruckNotification[] = []
+  invoiceLoader: string | null = null
 
   constructor(p: IPartnerWithIdProps | IParterProps) {
     if ('_id' in p) this._id = p._id.toString()
@@ -53,6 +54,7 @@ export class Partner {
     this.idleTruckNotifications = utils.setIdleTruckNotifications(
       p.idleTruckNotifications
     )
+    if (this.isClient && p.invoiceLoader) this.invoiceLoader = p.invoiceLoader
   }
 
   get id() {
@@ -145,6 +147,7 @@ export class Partner {
       isActive: { type: Boolean, default: true },
       placesForTransferDocs: [LoadingDock.dbSchema()],
       idleTruckNotifications: [IdleTruckNotification.dbSchema()],
+      invoiceLoader: { type: String },
     }
   }
 }
