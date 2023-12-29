@@ -145,5 +145,11 @@ export const getOrdersForInvoiceDtoByOrders = async (
   pipeline.push(unionWithPaymentPartsOrders)
   pipeline.push(...finalAddFields)
   const res = await OrderModel.aggregate(pipeline)
-  return res.map((i) => new OrderPickedForInvoiceDTO(i))
+
+  return orders
+    .map((orderId) => {
+      const resItem = res.find((i) => i._id.toString() === orderId)
+      return resItem ? new OrderPickedForInvoiceDTO(resItem) : null
+    })
+    .filter((item): item is OrderPickedForInvoiceDTO => item !== null)
 }
