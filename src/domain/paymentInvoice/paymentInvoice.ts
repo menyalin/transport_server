@@ -7,6 +7,8 @@ export class PaymentInvoiceDomain {
   _id?: string
   company: string
   number: string
+  numberByClient?: string
+  dateByClient: Date | null
   sendDate: Date
   clientId: string
   client: any
@@ -20,6 +22,10 @@ export class PaymentInvoiceDomain {
     this._id = invoice?._id.toString()
     this.company = invoice.company
     this.number = invoice.number
+    this.numberByClient = invoice.numberByClient
+    this.dateByClient = invoice.dateByClient
+      ? new Date(invoice.dateByClient)
+      : null
     this.sendDate = new Date(invoice.sendDate)
     this.clientId = !!invoice.client?._id
       ? invoice.client?._id.toString()
@@ -67,7 +73,9 @@ export class PaymentInvoiceDomain {
     return {
       company: { type: Types.ObjectId, ref: 'Company', required: true },
       number: { type: String },
+      numberByClient: { type: String },
       sendDate: Date,
+      dateByClient: Date,
       client: { type: Types.ObjectId, ref: 'Partner', required: true },
       agreement: { type: Types.ObjectId, ref: 'Agreement', required: true },
       status: { type: String, enum: PAIMENT_INVOICE_STATUSES_ENUM_VALUES },
