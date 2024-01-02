@@ -1,5 +1,4 @@
 // @ts-nocheck
-import * as NotifyService from './notifyclients.service'
 import authMiddleware from './authMiddleware'
 import usersHandler from './usersHandler'
 import ordersHandler from './ordersHandler'
