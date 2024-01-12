@@ -46,7 +46,9 @@ class PaymentInvoiceRepository {
       updateOne: { filter, update, upsert: false },
     })
 
-    // bulk write  -update one
+    await OrderInPaymentInvoiceModel.bulkWrite(
+      items.map((i) => makeOperation({ order: i.order }, i))
+    )
   }
 
   async addOrdersToInvoice(items: OrderInPaymentInvoice[]): Promise<void> {
@@ -84,7 +86,7 @@ class PaymentInvoiceRepository {
       await OrderInPaymentInvoiceModel.find<OrderInPaymentInvoice>({
         order: orders,
       }).lean()
-    return items
+    return items.map((i) => new OrderInPaymentInvoice(i))
   }
 }
 

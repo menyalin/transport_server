@@ -263,23 +263,28 @@ class PaymentInvoiceService {
     orderId: string
     company: string
   }): Promise<OrderPickedForInvoiceDTO | null> {
-    const [order] =
-      await PaymentInvoiceRepository.getOrdersForInvoiceDtoByOrders(
-        [orderId],
-        company
-      )
-    if (!order) return null
+    try {
+      const [order] =
+        await PaymentInvoiceRepository.getOrdersForInvoiceDtoByOrders(
+          [orderId],
+          company
+        )
+      if (!order) return null
 
-    const [item] =
-      await PaymentInvoiceRepository.getOrderInPaymentInvoiceItemsByOrders([
-        orderId,
-      ])
-    item.setTotal(order)
-    order.saveTotal()
+      const [item] =
+        await PaymentInvoiceRepository.getOrderInPaymentInvoiceItemsByOrders([
+          orderId,
+        ])
 
-    PaymentInvoiceRepository
+      item.setTotal(order)
+      order.saveTotal()
 
-    return order
+      await PaymentInvoiceRepository.updateOrdersInPaymentInvoce([item])
+
+      return order
+    } catch (e) {
+      return null
+    }
   }
 }
 

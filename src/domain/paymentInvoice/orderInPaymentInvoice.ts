@@ -24,7 +24,7 @@ export class OrderInPaymentInvoice {
     this.totalByTypes = p.totalByTypes
   }
 
-  public setTotal(order: OrderPickedForInvoiceDTO): void {
+  setTotal(order: OrderPickedForInvoiceDTO): void {
     this.total = order.total
     this.totalByTypes = order.totalByTypes
   }

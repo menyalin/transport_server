@@ -29,7 +29,7 @@ export const getOrdersForInvoiceDtoByOrders = async (
   const addFieldsForOrder: PipelineStage[] = [
     {
       $addFields: {
-        orderId: '_id',
+        orderId: '$_id',
         itemType: 'order',
         agreementId: '$client.agreement',
         paymentPartsSumWOVat: paymentPartsSumFragment(false),
