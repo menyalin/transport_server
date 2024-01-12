@@ -1,47 +1,53 @@
 import { PipelineStage, Types } from 'mongoose'
 import { PAIMENT_INVOICE_STATUSES } from '../../../constants/paymentInvoice'
 import { BadRequestError } from '../../../helpers/errors'
+import { z } from 'zod'
 
 interface IProps {
-  clients: string[]
   company: string
   limit: string
   skip: string
-  status: string
-  search: string
+  status?: string
+  search?: string
+  agreements?: string[]
 }
+const IPropsSchema = z.object({
+  company: z.string(),
+  limit: z.string().optional(),
+  skip: z.string().optional(),
+  status: z.string().optional(),
+  search: z.string().optional(),
+  agreements: z.array(z.string()).optional(),
+})
 
-export const getListPipeline = ({
-  clients,
-  company,
-  limit,
-  skip,
-  status,
-  search,
-}: IProps): PipelineStage[] => {
-  if (!company) throw new BadRequestError('docsRegistry: bad request params')
+export const getListPipeline = (p: IProps): PipelineStage[] => {
+  IPropsSchema.parse(p)
+
   const firstMatcher: PipelineStage.Match = {
     $match: {
       isActive: true,
-      company: new Types.ObjectId(company),
+      company: new Types.ObjectId(p.company),
       $expr: {
         $and: [],
       },
     },
   }
 
-  if (search) {
+  if (p.search) {
     firstMatcher.$match.$expr.$and.push({
-      $or: [{ $regexMatch: { input: '$number', regex: search, options: 'i' } }],
+      $or: [
+        { $regexMatch: { input: '$number', regex: p.search, options: 'i' } },
+      ],
     })
   }
 
-  if (clients && clients.length) {
+  if (p.agreements && p.agreements.length) {
     firstMatcher.$match.$expr.$and.push({
-      $in: ['$client', clients.map((i) => new Types.ObjectId(i))],
+      $in: ['$agreement', p.agreements.map((i) => new Types.ObjectId(i))],
     })
   }
-  if (status) firstMatcher.$match.$expr.$and.push({ $eq: ['$status', status] })
+  if (p.status)
+    firstMatcher.$match.$expr.$and.push({ $eq: ['$status', p.status] })
 
   const group: PipelineStage[] = [
     { $sort: { createdAt: -1 } },
@@ -54,7 +60,7 @@ export const getListPipeline = ({
     {
       $addFields: {
         count: { $size: '$items' },
-        items: { $slice: ['$items', +skip, +limit] },
+        items: { $slice: ['$items', +p.skip, +p.limit] },
       },
     },
   ]
