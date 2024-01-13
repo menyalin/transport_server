@@ -2,8 +2,10 @@ import { PipelineStage, Types } from 'mongoose'
 import { PAIMENT_INVOICE_STATUSES } from '../../../constants/paymentInvoice'
 import { BadRequestError } from '../../../helpers/errors'
 import { z } from 'zod'
+import { DateRange } from '../../../classes/dateRange'
 
 interface IProps {
+  period: string[]
   company: string
   limit: string
   skip: string
@@ -12,6 +14,7 @@ interface IProps {
   agreements?: string[]
 }
 const IPropsSchema = z.object({
+  period: z.array(z.string().datetime()).length(2),
   company: z.string(),
   limit: z.string().optional(),
   skip: z.string().optional(),
@@ -22,13 +25,16 @@ const IPropsSchema = z.object({
 
 export const getListPipeline = (p: IProps): PipelineStage[] => {
   IPropsSchema.parse(p)
-
+  const period = new DateRange(p.period[0], p.period[1])
   const firstMatcher: PipelineStage.Match = {
     $match: {
       isActive: true,
       company: new Types.ObjectId(p.company),
       $expr: {
-        $and: [],
+        $and: [
+          { $gte: ['$sendDate', period.start] },
+          { $lte: ['$sendDate', period.end] },
+        ],
       },
     },
   }
