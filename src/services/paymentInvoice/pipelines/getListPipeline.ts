@@ -12,6 +12,8 @@ interface IProps {
   status?: string
   search?: string
   agreements?: string[]
+  sortBy?: string[]
+  sortDesc?: string[]
 }
 const IPropsSchema = z.object({
   period: z.array(z.string().datetime()).length(2),
@@ -21,7 +23,24 @@ const IPropsSchema = z.object({
   status: z.string().optional(),
   search: z.string().optional(),
   agreements: z.array(z.string()).optional(),
+  sortBy: z.array(z.string()).optional(),
+  sortDesc: z.array(z.string()).optional(),
 })
+
+const listSortingFragment = (
+  sortBy: string[] = [],
+  sortDesc: string[] = []
+): Record<string, 1 | -1> => {
+  const fieldsMapper = new Map()
+  fieldsMapper.set('sendDate', 'sendDate')
+  fieldsMapper.set('total.price', 'total.price')
+  fieldsMapper.set('total.priceWOVat', 'total.priceWOVat')
+
+  if (sortBy.length === 0 || !fieldsMapper.has(sortBy[0]))
+    return { createdAt: -1 }
+  else
+    return { [fieldsMapper.get(sortBy[0])]: sortDesc[0] === 'false' ? 1 : -1 }
+}
 
 export const getListPipeline = (p: IProps): PipelineStage[] => {
   IPropsSchema.parse(p)
@@ -133,7 +152,7 @@ export const getListPipeline = (p: IProps): PipelineStage[] => {
   ]
 
   const group: PipelineStage[] = [
-    { $sort: { createdAt: -1 } },
+    { $sort: listSortingFragment(p.sortBy, p.sortDesc) },
     {
       $group: {
         _id: 'paymentInvoices',
