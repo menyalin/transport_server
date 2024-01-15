@@ -1,6 +1,6 @@
 import { PipelineStage, Types } from 'mongoose'
 import { PAIMENT_INVOICE_STATUSES } from '../../../constants/paymentInvoice'
-import { BadRequestError } from '../../../helpers/errors'
+
 import { z } from 'zod'
 import { DateRange } from '../../../classes/dateRange'
 
@@ -55,21 +55,6 @@ export const getListPipeline = (p: IProps): PipelineStage[] => {
   if (p.status)
     firstMatcher.$match.$expr.$and.push({ $eq: ['$status', p.status] })
 
-  const group: PipelineStage[] = [
-    { $sort: { createdAt: -1 } },
-    {
-      $group: {
-        _id: 'paymentInvoices',
-        items: { $push: '$$ROOT' },
-      },
-    },
-    {
-      $addFields: {
-        count: { $size: '$items' },
-        items: { $slice: ['$items', +p.skip, +p.limit] },
-      },
-    },
-  ]
   const clientLookup: PipelineStage[] = [
     {
       $lookup: {
@@ -143,6 +128,41 @@ export const getListPipeline = (p: IProps): PipelineStage[] => {
             },
           },
         },
+      },
+    },
+  ]
+
+  const group: PipelineStage[] = [
+    { $sort: { createdAt: -1 } },
+    {
+      $group: {
+        _id: 'paymentInvoices',
+        items: { $push: '$$ROOT' },
+      },
+    },
+    {
+      $addFields: {
+        routesCount: {
+          $reduce: {
+            initialValue: 0,
+            input: '$items',
+            in: { $add: ['$$this.count', '$$value'] },
+          },
+        },
+        total: {
+          $reduce: {
+            initialValue: { sum: 0, sumWOVat: 0 },
+            input: '$items',
+            in: {
+              sum: { $add: ['$$this.total.price', '$$value.sum'] },
+              sumWOVat: {
+                $add: ['$$this.total.priceWOVat', '$$value.sumWOVat'],
+              },
+            },
+          },
+        },
+        count: { $size: '$items' },
+        items: { $slice: ['$items', +p.skip, +p.limit] },
       },
     },
   ]
