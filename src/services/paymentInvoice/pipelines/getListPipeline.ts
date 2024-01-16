@@ -62,6 +62,13 @@ export const getListPipeline = (p: IProps): PipelineStage[] => {
     firstMatcher.$match.$expr.$and.push({
       $or: [
         { $regexMatch: { input: '$number', regex: p.search, options: 'i' } },
+        {
+          $regexMatch: {
+            input: '$numberByClient',
+            regex: p.search,
+            options: 'i',
+          },
+        },
       ],
     })
   }
