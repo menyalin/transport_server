@@ -32,6 +32,7 @@ const listSortingFragment = (
   sortDesc: string[] = []
 ): Record<string, 1 | -1> => {
   const fieldsMapper = new Map()
+  fieldsMapper.set('number', 'number')
   fieldsMapper.set('sendDate', 'sendDate')
   fieldsMapper.set('total.price', 'total.price')
   fieldsMapper.set('total.priceWOVat', 'total.priceWOVat')
