@@ -11,9 +11,11 @@ export class Route {
       throw new Error(`Route : ${method} : invalid length of array`)
   }
 
-  constructor(route: []) {
+  constructor(route: any[]) {
     Route.validateRoute(route, 'constructor')
-    this.route = route.map((p: RoutePoint) => new RoutePoint(p))
+    this.route = route.map((p) =>
+      p instanceof RoutePoint ? p : new RoutePoint(p)
+    )
   }
 
   get activePoints(): RoutePoint[] {

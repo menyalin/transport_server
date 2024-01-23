@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { ORDER_PRICE_TYPES_ENUM } from '../../../constants/priceTypes'
+import { ORDER_PRICE_TYPES_ENUM_VALUES } from '../../../constants/priceTypes'
 const priceGroups = ['$finalPrices', '$prices', '$prePrices']
 /*
   agreementVatRate : [ 20, 0 ]
@@ -80,7 +80,7 @@ const getTotalPriceByType = (type) => ({
 
 const orderPricesFragment = () => {
   const res = {}
-  ORDER_PRICE_TYPES_ENUM.forEach((priceType) => {
+  ORDER_PRICE_TYPES_ENUM_VALUES.forEach((priceType) => {
     res[priceType] = getTotalPriceByType(priceType)
   })
   return res

@@ -1,7 +1,9 @@
-// @ts-nocheck
 import { ORDER_PRICE_TYPES_ENUM } from '../../../../constants/priceTypes'
 
-const getTotalPrice = (priceTypes, withVat = true) => ({
+const getTotalPrice = (
+  priceTypes: ORDER_PRICE_TYPES_ENUM[],
+  withVat: boolean = true
+) => ({
   $add: priceTypes.map((type) => ({
     $ifNull: [`$${type}.${withVat ? 'price' : 'priceWOVat'}`, 0],
   })),
@@ -9,7 +11,7 @@ const getTotalPrice = (priceTypes, withVat = true) => ({
 
 const addPriceTypeFields = () => {
   let res = {}
-  ORDER_PRICE_TYPES_ENUM.forEach((type) => {
+  Object.values(ORDER_PRICE_TYPES_ENUM).forEach((type) => {
     res = Object.assign(res, {
       [type]: {
         $ifNull: [
@@ -28,8 +30,11 @@ export const addTotalPriceFields = () => {
     addPriceTypeFields(),
     {
       $addFields: {
-        totalWithVat: getTotalPrice(ORDER_PRICE_TYPES_ENUM, true),
-        totalWOVat: getTotalPrice(ORDER_PRICE_TYPES_ENUM, false),
+        totalWithVat: getTotalPrice(
+          Object.values(ORDER_PRICE_TYPES_ENUM),
+          true
+        ),
+        totalWOVat: getTotalPrice(Object.values(ORDER_PRICE_TYPES_ENUM), false),
       },
     },
   ]
