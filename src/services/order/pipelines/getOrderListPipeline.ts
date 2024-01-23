@@ -1,64 +1,79 @@
-// @ts-nocheck
-import { Types } from 'mongoose'
+import z from 'zod'
+import { PipelineStage, Types } from 'mongoose'
 import { orderDocNumbersStringFragment } from '../../_pipelineFragments/orderDocNumbersStringBuilder'
 import { orderDocsStatusConditionBuilder } from '../../_pipelineFragments/orderDocsStatusConditionBuilder'
 import { orderLoadingZoneFragmentBuilder } from '../../_pipelineFragments/orderLoadingZoneFragmentBuilder'
+import { DateRange } from '../../../classes/dateRange'
 
-const getSortingStage = (sortBy = [], sortDesc = []) => {
+const getSortingStage = (
+  sortBy: string[] = [],
+  sortDesc: string[] = []
+): PipelineStage.Sort => {
   if (!Array.isArray(sortBy) || !sortBy.length)
-    return [{ $sort: { createdAt: -1 } }]
+    return { $sort: { createdAt: -1 } }
 
-  const result = {}
+  let result = {}
 
-  sortBy.forEach((item, idx) => {
-    result[item] = sortDesc[idx] === 'true' ? -1 : 1
+  sortBy.forEach((fieldName, idx) => {
+    result = Object.assign(result, {
+      [fieldName]: sortDesc[idx] === 'true' ? -1 : 1,
+    })
   })
 
-  return [{ $sort: result }]
+  return { $sort: result }
 }
 
-export const getOrderListPipeline = ({
-  profile,
-  agreement,
-  client,
-  startDate,
-  endDate,
-  limit,
-  skip,
-  docStatus,
-  invoiceStatus,
-  status,
-  truck,
-  accountingMode,
-  driver,
-  tkName,
-  trailer,
-  searchNum,
-  loadingZone,
-  address,
-  sortBy,
-  sortDesc,
-}) => {
-  const sP = new Date(startDate)
-  const eP = new Date(endDate)
+const IPropsValidator = z.object({
+  profile: z.string(),
+  startDate: z.string(),
+  endDate: z.string(),
+  limit: z.string(),
+  skip: z.string(),
+  docStatuses: z.array(z.string()).optional(),
+  invoiceStatus: z.string().optional(),
+  clients: z.array(z.string()).optional(),
+  agreements: z.array(z.string()).optional(),
+  status: z.string().optional(),
+  trucks: z.array(z.string()).optional(),
+  accountingMode: z.string().optional(),
+  driver: z.string().optional(),
+  tkNames: z.array(z.string()).optional(),
+  trailer: z.string().optional(),
+  searchNum: z.string().optional(),
+  loadingZones: z.array(z.string()).optional(),
+  address: z.string().optional(),
+  sortBy: z.array(z.string()).optional(),
+  sortDesc: z.array(z.string()).optional(),
+})
 
-  const firstMatcher = {
+type IProps = z.infer<typeof IPropsValidator>
+
+export const getOrderListPipeline = (p: IProps): PipelineStage[] => {
+  IPropsValidator.parse(p)
+  const period = new DateRange(p.startDate, p.endDate)
+
+  const firstMatcher: PipelineStage.Match = {
     $match: {
       isActive: true,
-      company: new Types.ObjectId(profile),
+      company: new Types.ObjectId(p.profile),
       $expr: {
         $and: [
-          { $gte: ['$startPositionDate', sP] },
-          { $lt: ['$startPositionDate', eP] },
+          { $gte: ['$startPositionDate', period.start] },
+          { $lt: ['$startPositionDate', period.end] },
         ],
       },
     },
   }
 
-  if (agreement)
-    firstMatcher.$match['client.agreement'] = new Types.ObjectId(agreement)
+  if (p?.agreements?.length)
+    firstMatcher.$match.$expr.$and.push({
+      $in: [
+        '$client.agreement',
+        p.agreements.map((i) => new Types.ObjectId(i)),
+      ],
+    })
 
-  if (accountingMode)
+  if (p.accountingMode)
     firstMatcher.$match.$expr.$and.push({
       $or: [
         { $eq: ['$state.status', 'inProgress'] },
@@ -66,15 +81,30 @@ export const getOrderListPipeline = ({
       ],
     })
 
-  if (status && !accountingMode) firstMatcher.$match['state.status'] = status
-  if (client) firstMatcher.$match['client.client'] = new Types.ObjectId(client)
+  if (p.status && !p.accountingMode)
+    firstMatcher.$match['state.status'] = p.status
 
-  if (truck)
-    firstMatcher.$match['confirmedCrew.truck'] = new Types.ObjectId(truck)
-  if (trailer)
-    firstMatcher.$match['confirmedCrew.trailer'] = new Types.ObjectId(trailer)
-  if (address)
-    firstMatcher.$match['route.address'] = new Types.ObjectId(address)
+  if (p?.clients?.length)
+    firstMatcher.$match.$expr.$and.push({
+      $in: ['$client.client', p.clients.map((i) => new Types.ObjectId(i))],
+    })
+  if (p.tkNames?.length)
+    firstMatcher.$match.$expr.$and.push({
+      $in: [
+        '$confirmedCrew.tkName',
+        p.tkNames.map((i) => new Types.ObjectId(i)),
+      ],
+    })
+
+  if (p.trucks?.length)
+    firstMatcher.$match.$expr.$and.push({
+      $in: ['$confirmedCrew.truck', p.trucks.map((i) => new Types.ObjectId(i))],
+    })
+
+  if (p.trailer)
+    firstMatcher.$match['confirmedCrew.trailer'] = new Types.ObjectId(p.trailer)
+  if (p.address)
+    firstMatcher.$match['route.address'] = new Types.ObjectId(p.address)
 
   const agreementLookup = [
     {
@@ -92,10 +122,6 @@ export const getOrderListPipeline = ({
         },
       },
     },
-  ]
-
-  const tkNameLookup = [
-    { $match: { 'confirmedCrew.tkName': new Types.ObjectId(tkName) } },
   ]
 
   const addSortFields = [
@@ -119,26 +145,30 @@ export const getOrderListPipeline = ({
 
   const loadingZoneLookup = orderLoadingZoneFragmentBuilder()
 
-  if (driver)
-    firstMatcher.$match['confirmedCrew.driver'] = new Types.ObjectId(
-      // eslint-disable-next-line comma-dangle
-      driver
-    )
-  if (docStatus)
-    firstMatcher.$match.$expr.$and.push(
-      orderDocsStatusConditionBuilder(docStatus)
-    )
+  if (p.driver)
+    firstMatcher.$match['confirmedCrew.driver'] = new Types.ObjectId(p.driver)
 
-  if (searchNum) {
+  if (p.docStatuses?.length)
+    firstMatcher.$match.$expr.$and.push({
+      $or: p.docStatuses.map((docStatus) =>
+        orderDocsStatusConditionBuilder(docStatus)
+      ),
+    })
+
+  if (p.searchNum) {
     firstMatcher.$match.$expr.$and.push({
       $or: [
         {
-          $regexMatch: { input: '$client.num', regex: searchNum, options: 'i' },
+          $regexMatch: {
+            input: '$client.num',
+            regex: p.searchNum,
+            options: 'i',
+          },
         },
         {
           $regexMatch: {
             input: '$client.auctionNum',
-            regex: searchNum,
+            regex: p.searchNum,
             options: 'i',
           },
         },
@@ -151,7 +181,7 @@ export const getOrderListPipeline = ({
                   cond: {
                     $regexMatch: {
                       input: '$$this.number',
-                      regex: searchNum,
+                      regex: p.searchNum,
                       options: 'i',
                     },
                   },
@@ -165,7 +195,7 @@ export const getOrderListPipeline = ({
     })
   }
 
-  const secondMatcher = {
+  const secondMatcher: PipelineStage.Match = {
     $match: {
       $expr: {
         $and: [],
@@ -173,14 +203,16 @@ export const getOrderListPipeline = ({
     },
   }
 
-  if (loadingZone) {
+  if (p.loadingZones?.length) {
     secondMatcher.$match.$expr.$and.push({
-      $in: [new Types.ObjectId(loadingZone), '$_loadingZoneIds'],
+      $or: p.loadingZones.map((zone) => ({
+        $in: [new Types.ObjectId(zone), '$_loadingZoneIds'],
+      })),
     })
   }
 
-  const group = [
-    ...getSortingStage(sortBy, sortDesc),
+  const group: PipelineStage[] = [
+    getSortingStage(p.sortBy, p.sortDesc),
     {
       $group: {
         _id: 'orders',
@@ -252,13 +284,13 @@ export const getOrderListPipeline = ({
           $size: '$items',
         },
         items: {
-          $slice: ['$items', +skip, +limit],
+          $slice: ['$items', +p.skip, +p.limit],
         },
       },
     },
   ]
 
-  const paymentInvoiceLookup = [
+  const paymentInvoiceLookup: PipelineStage[] = [
     {
       $lookup: {
         from: 'ordersInPaymentInvoices',
@@ -270,7 +302,10 @@ export const getOrderListPipeline = ({
     {
       $match: {
         $expr: {
-          $eq: [{ $size: '$_invoices' }, invoiceStatus === 'included' ? 1 : 0],
+          $eq: [
+            { $size: '$_invoices' },
+            p.invoiceStatus === 'included' ? 1 : 0,
+          ],
         },
       },
     },
@@ -279,7 +314,7 @@ export const getOrderListPipeline = ({
     },
   ]
 
-  let pipeline = [
+  let pipeline: PipelineStage[] = [
     firstMatcher,
     ...loadingZoneLookup,
     ...addSortFields,
@@ -287,8 +322,7 @@ export const getOrderListPipeline = ({
     ...agreementLookup,
   ]
 
-  if (tkName) pipeline = [...pipeline, ...tkNameLookup]
-  if (invoiceStatus) pipeline = [...pipeline, ...paymentInvoiceLookup]
+  if (p.invoiceStatus) pipeline = [...pipeline, ...paymentInvoiceLookup]
 
   return [...pipeline, ...group]
 }

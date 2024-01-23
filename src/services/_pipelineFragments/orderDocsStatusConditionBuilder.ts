@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { BadRequestError } from '../../helpers/errors'
 
 /* 
@@ -11,7 +10,7 @@ const _docStatuses = [
 */
 
 export const orderDocsStatusConditionBuilder = (
-  docStatus,
+  docStatus: string,
   docsFieldName = '$docs',
   docStateField = '$docsState.getted'
 ) => {
