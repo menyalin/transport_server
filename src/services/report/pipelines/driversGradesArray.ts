@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { ORDER_PRICE_TYPES_ENUM } from '../../../constants/priceTypes'
+import { ORDER_PRICE_TYPES_ENUM_VALUES } from '../../../constants/priceTypes'
 import routePointsNameBuilder from './fragments/routePointsNameBuilder'
 import truckKindTextBuilder from './fragments/truckKindText'
 import docsNumbersByTypesBuilder from './fragments/docsNumbersByTypes'
@@ -227,8 +227,8 @@ export default ({
       },
       Оценка: '$grade.grade',
       'Комментарий к оценке': '$grade.note',
-      'Стоимость с НДС': getTotalPrice(ORDER_PRICE_TYPES_ENUM, true),
-      'Стоимость без НДС': getTotalPrice(ORDER_PRICE_TYPES_ENUM, false),
+      'Стоимость с НДС': getTotalPrice(ORDER_PRICE_TYPES_ENUM_VALUES, true),
+      'Стоимость без НДС': getTotalPrice(ORDER_PRICE_TYPES_ENUM_VALUES, false),
       'Затраты привлеченный с НДС': {
         $reduce: {
           input: '$outsourceCosts',
@@ -274,7 +274,7 @@ export default ({
     ...lookupClient,
     lookupTrailer,
     priceArraysToObjects,
-    addPriceTypeFieldsBuilder(ORDER_PRICE_TYPES_ENUM),
+    addPriceTypeFieldsBuilder(ORDER_PRICE_TYPES_ENUM_VALUES),
     ...sortByPlannedDate,
     finalProject,
   ]

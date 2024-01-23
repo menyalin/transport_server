@@ -1,11 +1,11 @@
-// @ts-nocheck
 import mongoose from 'mongoose'
-import { POINT_TYPE_VALUES } from '../../../constants/enums'
-import { ORDER_PRICE_TYPES_ENUM } from '../../../constants/priceTypes'
+import { POINT_TYPE_VALUES, POINT_TYPES_ENUM } from '../../../constants/enums'
+import {
+  ORDER_PRICE_TYPES_ENUM_VALUES,
+  ORDER_PRICE_TYPES_ENUM,
+} from '../../../constants/priceTypes'
 
-const getPointAddressIdsByType = (type) => {
-  if (!type || !POINT_TYPE_VALUES.includes(type))
-    throw new Error(`GROSS PROFIT ERROR: incorrect point type: ${type}`)
+const getPointAddressIdsByType = (type: string) => {
   return {
     $map: {
       input: {
@@ -19,24 +19,26 @@ const getPointAddressIdsByType = (type) => {
   }
 }
 
-const addPriceObjByTypes = (priceTypes) => {
-  const prices = {}
+const addPriceObjByTypes = (priceTypes: string[]) => {
+  let prices = {}
   priceTypes.forEach((type) => {
-    prices[type] = {
-      $arrayToObject: {
-        $map: {
-          input: `$${type}`,
-          in: { k: '$$this.type', v: '$$this' },
+    prices = Object.assign(prices, {
+      [type]: {
+        $arrayToObject: {
+          $map: {
+            input: `$${type}`,
+            in: { k: '$$this.type', v: '$$this' },
+          },
         },
       },
-    }
+    })
   })
   return {
     $addFields: { ...prices },
   }
 }
 
-const addPriceTypeFieldsBuilder = (priceTypes) => {
+const addPriceTypeFieldsBuilder = (priceTypes: string[]) => {
   let res = {}
   priceTypes.forEach((type) => {
     res = Object.assign(res, {
@@ -52,7 +54,7 @@ const addPriceTypeFieldsBuilder = (priceTypes) => {
   return { $addFields: { ...res } }
 }
 
-const getTotalPrice = (priceTypes, withVat = true) => ({
+const getTotalPrice = (priceTypes: string[], withVat = true) => ({
   $add: priceTypes.map((type) => ({
     $ifNull: [`$${type}.${withVat ? 'price' : 'priceWOVat'}`, 0],
   })),
@@ -60,12 +62,18 @@ const getTotalPrice = (priceTypes, withVat = true) => ({
 
 const addTotalPriceFields = () => ({
   $addFields: {
-    totalWithVat: getTotalPrice(ORDER_PRICE_TYPES_ENUM, true),
-    totalWOVat: getTotalPrice(ORDER_PRICE_TYPES_ENUM, false),
+    totalWithVat: getTotalPrice(ORDER_PRICE_TYPES_ENUM_VALUES, true),
+    totalWOVat: getTotalPrice(ORDER_PRICE_TYPES_ENUM_VALUES, false),
   },
 })
 
-export default ({ dateRange, company }) => {
+export default ({
+  dateRange,
+  company,
+}: {
+  dateRange: string[]
+  company: string
+}) => {
   const firstMatcher = {
     $match: {
       company: new mongoose.Types.ObjectId(company),
@@ -125,7 +133,7 @@ export default ({ dateRange, company }) => {
     firstMatcher,
     addPriceObjByTypes(['prices', 'prePrices', 'finalPrices']),
     project,
-    addPriceTypeFieldsBuilder(ORDER_PRICE_TYPES_ENUM),
+    addPriceTypeFieldsBuilder(ORDER_PRICE_TYPES_ENUM_VALUES),
     addTotalPriceFields(),
     sortOrdersByTotalPrice,
     group,

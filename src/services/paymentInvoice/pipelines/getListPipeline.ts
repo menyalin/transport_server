@@ -36,6 +36,7 @@ const listSortingFragment = (
   fieldsMapper.set('sendDate', 'sendDate')
   fieldsMapper.set('total.price', 'total.price')
   fieldsMapper.set('total.priceWOVat', 'total.priceWOVat')
+  fieldsMapper.set('createdAt', 'createdAt')
 
   if (sortBy.length === 0 || !fieldsMapper.has(sortBy[0]))
     return { createdAt: -1 }

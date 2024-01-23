@@ -1,7 +1,4 @@
-// @ts-nocheck
 import pkg from 'mongoose'
-import PriceDTO from '../dto/price.dto'
-
 import {
   TRUCK_KINDS_ENUM_VALUES,
   TRUCK_LIFT_CAPACITY_TYPES,
@@ -19,14 +16,14 @@ import {
 const { Schema, model, Types } = pkg
 import { RoutePoint } from '../values/order/routePoint'
 import { Client } from '../domain/order/client'
+import { OrderPrice } from '../domain/order/orderPrice'
 
-const prices = [PriceDTO.modelFields()]
+const prices = [OrderPrice.dbSchema]
 
 const paymentPart = {
   client: { type: Types.ObjectId, ref: 'Partner', required: true },
   agreement: { type: Types.ObjectId, ref: 'Agreement', required: true },
-  note: String,
-  ...PriceDTO.modelFields(),
+  ...OrderPrice.dbSchema,
 }
 
 const outsourceCosts = [

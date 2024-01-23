@@ -1,35 +1,44 @@
-// @ts-nocheck
+export enum ORDER_PRICE_TYPES_ENUM {
+  base = 'base',
+  additionalPoints = 'additionalPoints',
+  loadingDowntime = 'loadingDowntime',
+  unloadingDowntime = 'unloadingDowntime',
+  returnDowntime = 'returnDowntime',
+  return = 'return',
+  other = 'other',
+}
+
 const types = [
   {
-    value: 'base',
+    value: ORDER_PRICE_TYPES_ENUM.base,
     text: 'Тариф',
   },
   {
-    value: 'additionalPoints',
+    value: ORDER_PRICE_TYPES_ENUM.additionalPoints,
     text: 'Дополнительные точки',
   },
   {
-    value: 'loadingDowntime',
+    value: ORDER_PRICE_TYPES_ENUM.loadingDowntime,
     text: 'Простой на погрузке',
   },
   {
-    value: 'unloadingDowntime',
+    value: ORDER_PRICE_TYPES_ENUM.unloadingDowntime,
     text: 'Простой на выгрузке',
   },
   {
-    value: 'returnDowntime',
+    value: ORDER_PRICE_TYPES_ENUM.returnDowntime,
     text: 'Простой при возврате',
     disabled: true,
   },
   {
-    value: 'return',
+    value: ORDER_PRICE_TYPES_ENUM.return,
     text: 'Возврат продукции',
   },
   {
-    value: 'other',
+    value: ORDER_PRICE_TYPES_ENUM.other,
     text: 'Прочее',
   },
 ]
 
 export const ORDER_PRICE_TYPES = types
-export const ORDER_PRICE_TYPES_ENUM = types.map((m) => m.value)
+export const ORDER_PRICE_TYPES_ENUM_VALUES = types.map((m) => m.value)

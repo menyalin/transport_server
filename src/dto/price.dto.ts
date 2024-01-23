@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { ORDER_PRICE_TYPES_ENUM } from '../constants/priceTypes'
+import { ORDER_PRICE_TYPES_ENUM_VALUES } from '../constants/priceTypes'
 
 const MODEL = {
   type: {
@@ -26,7 +26,7 @@ export default class PriceDTO {
   }
 
   static createFromTariff({ tariff, type }) {
-    if (!type || !ORDER_PRICE_TYPES_ENUM.includes(type))
+    if (!type || !ORDER_PRICE_TYPES_ENUM_VALUES.includes(type))
       throw new Error('incorrect price type')
     if (!tariff) throw new Error('bad tariff')
     return new PriceDTO({
