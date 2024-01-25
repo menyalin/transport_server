@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { Types } from 'mongoose'
+import { ILoaderData, LoaderDataSchema } from '../interfaces'
 
 interface IPrice {
   type: string
@@ -72,6 +73,7 @@ const orderPickedForInvoiceDTOSchema = z.object({
   needUpdate: z.boolean().optional(),
   itemType: z.string().optional(),
   rowId: z.unknown().optional(),
+  loaderData: LoaderDataSchema.optional(),
 })
 
 export class OrderPickedForInvoiceDTO {
@@ -126,6 +128,7 @@ export class OrderPickedForInvoiceDTO {
   needUpdate?: boolean
   itemType?: string
   rowId?: any
+  loaderData?: ILoaderData
 
   constructor(props: any) {
     const preparedProps = orderPickedForInvoiceDTOSchema.parse(props)
@@ -162,6 +165,14 @@ export class OrderPickedForInvoiceDTO {
     this.needUpdate = preparedProps.needUpdate
     this.itemType = preparedProps.itemType
     this.rowId = preparedProps.rowId
+    if (preparedProps.loaderData) this.loaderData = preparedProps.loaderData
+  }
+
+  addLoaderData(registryInformation: ILoaderData[]) {
+    const uploadedItem = registryInformation.find(
+      (i) => i._id === this._id.toString()
+    )
+    if (uploadedItem) this.loaderData = uploadedItem
   }
 
   saveTotal(): void {

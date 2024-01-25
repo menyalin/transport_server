@@ -1,8 +1,12 @@
-import { Types } from 'mongoose'
-import { ICreateOrderInPaymentInvoiceProps, IPrice } from './interfaces'
+import { Types, Schema } from 'mongoose'
+import {
+  ICreateOrderInPaymentInvoiceProps,
+  ILoaderData,
+  IPrice,
+} from './interfaces'
 import { OrderPickedForInvoiceDTO } from './dto/orderPickedForInvoice.dto'
 
-const PriceType = {
+const PriceTypeSchema = {
   price: Number,
   priceWOVat: Number,
 }
@@ -14,6 +18,7 @@ export class OrderInPaymentInvoice {
   itemType: string
   total: IPrice
   totalByTypes: { [key: string]: IPrice }
+  loaderData: ILoaderData
 
   constructor(p: any) {
     this.order = p.order
@@ -22,6 +27,7 @@ export class OrderInPaymentInvoice {
     this.itemType = p.itemType
     this.total = p.total
     this.totalByTypes = p.totalByTypes
+    this.loaderData = p.loaderData
   }
 
   setTotal(order: OrderPickedForInvoiceDTO): void {
@@ -43,6 +49,7 @@ export class OrderInPaymentInvoice {
       itemType: order.itemType || 'order',
       total: order.total,
       totalByTypes: order.totalByTypes,
+      loaderData: order.loaderData,
     })
   }
 
@@ -55,10 +62,11 @@ export class OrderInPaymentInvoice {
     },
     company: { type: Types.ObjectId, ref: 'Company' },
     itemType: { type: String, enum: ['order', 'paymentPart'] },
-    total: PriceType,
+    total: PriceTypeSchema,
     totalByTypes: {
       type: Map,
-      of: PriceType,
+      of: PriceTypeSchema,
     },
+    loaderData: Schema.Types.Mixed,
   }
 }

@@ -168,6 +168,7 @@ class PaymentInvoiceService {
     company,
     orders,
     paymentInvoiceId,
+    registryData,
   }: IAddOrdersToInvoiceProps) {
     if (!orders || orders.length === 0)
       throw new BadRequestError(
@@ -180,9 +181,12 @@ class PaymentInvoiceService {
           orders,
           company
         )
+
       ordersDTO.forEach((i) => {
+        if (registryData) i.addLoaderData(registryData)
         i.saveTotal()
       })
+
       const newItemRows = ordersDTO.map((orderDTO) =>
         OrderInPaymentInvoice.create({
           order: orderDTO,

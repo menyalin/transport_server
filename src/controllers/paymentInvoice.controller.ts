@@ -197,6 +197,7 @@ class PaymentInvoiceController {
         paymentInvoiceId: req.body.paymentInvoiceId,
         orders: req.body.orders,
         company: req.companyId,
+        registryData: req.body.registryData,
       })
       res.status(200).json(data)
     } catch (e) {
