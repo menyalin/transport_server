@@ -33,6 +33,7 @@ export default ({
     $match: {
       company: new mongoose.Types.ObjectId(company),
       isActive: true,
+      'state.status': 'completed',
       $expr: {
         $and: [
           { $lt: [orderPeriodDate, endPeriod] },

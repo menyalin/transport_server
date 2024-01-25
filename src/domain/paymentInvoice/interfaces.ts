@@ -1,3 +1,4 @@
+import z from 'zod'
 import { DateRange } from '../../classes/dateRange'
 import { OrderPickedForInvoiceDTO } from './dto/orderPickedForInvoice.dto'
 
@@ -20,6 +21,7 @@ export interface IAddOrdersToInvoiceProps {
   company: string
   orders: string[]
   paymentInvoiceId: string
+  registryData?: ILoaderData[]
 }
 
 export interface IGetOrdersForPaymentInvoiceProps {
@@ -31,7 +33,17 @@ export interface IPrice {
   price: number
   priceWOVat: number
 }
+
+export const LoaderDataSchema = z
+  .object({
+    _id: z.string(),
+    loaderName: z.string(),
+  })
+  .and(z.record(z.unknown()))
+export type ILoaderData = z.infer<typeof LoaderDataSchema>
+
 export interface ICreateOrderInPaymentInvoiceProps {
   order: OrderPickedForInvoiceDTO
   invoiceId: string
+  loaderData?: ILoaderData
 }
