@@ -184,7 +184,6 @@ export async function getOrdersForPaymentInvoice({
         'route',
         'totalByTypes',
         'savedTotalByTypes',
-        'total',
         'analytics',
         'prePrices',
         'prices',
