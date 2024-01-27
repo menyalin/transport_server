@@ -169,12 +169,14 @@ export async function getOrdersForPaymentInvoice({
         order: {
           rowId: '$_id',
           savedTotal: '$total',
+          loaderData: '$loaderData',
           savedTotalByTypes: '$totalByTypes',
           needUpdate: { $ne: ['$total.price', '$order.total.price'] },
         },
       },
     },
     { $replaceRoot: { newRoot: '$order' } },
+    { $unset: ['docs', 'agreement', 'docsState'] },
   ]
 
   const ordersInPaymentInvoice = await OrderInPaymentInvoiceModel.aggregate([

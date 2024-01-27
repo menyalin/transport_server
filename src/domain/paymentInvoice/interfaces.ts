@@ -37,7 +37,7 @@ export interface IPrice {
 export const LoaderDataSchema = z
   .object({
     _id: z.string(),
-    loaderName: z.string(),
+    loaderName: z.string().optional(),
   })
   .and(z.record(z.unknown()))
 export type ILoaderData = z.infer<typeof LoaderDataSchema>
