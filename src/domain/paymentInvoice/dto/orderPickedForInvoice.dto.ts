@@ -28,7 +28,7 @@ const orderPickedForInvoiceDTOSchema = z.object({
   company: z.union([z.string(), z.instanceof(Types.ObjectId)]),
   prePrices: z.array(IPriceSchema).optional(),
   prices: z.array(IPriceSchema).optional(),
-  finalPrices: z.array(IPriceSchema),
+  finalPrices: z.array(IPriceSchema).optional(),
   state: z.unknown(),
   plannedDate: z.instanceof(Date),
   orderId: z.union([z.string(), z.instanceof(Types.ObjectId)]),
@@ -47,12 +47,14 @@ const orderPickedForInvoiceDTOSchema = z.object({
     ]),
     tkName: z.union([z.string(), z.instanceof(Types.ObjectId)]),
   }),
-  route: z.array(z.unknown()),
-  analytics: z.object({
-    type: z.string(),
-    distanceRoad: z.number(),
-    distanceDirect: z.number(),
-  }),
+  route: z.array(z.unknown()).optional(),
+  analytics: z
+    .object({
+      type: z.string(),
+      distanceRoad: z.number(),
+      distanceDirect: z.number(),
+    })
+    .optional(),
   docs: z.array(z.unknown()).optional(),
   docsState: z
     .object({
@@ -66,9 +68,9 @@ const orderPickedForInvoiceDTOSchema = z.object({
   note: z.string().optional(),
   paymentInvoices: z.array(z.unknown()).optional(),
   agreement: z.unknown().optional(),
-  total: priceSchema,
+  total: priceSchema.optional(),
   // totalByTypes: z.record(priceSchema),
-  totalByTypes: z.unknown(),
+  totalByTypes: z.unknown().optional(),
   savedTotal: priceSchema.optional(),
   savedTotalByTypes: z.record(priceSchema).optional(),
   driverName: z.string().optional(),
@@ -100,8 +102,8 @@ export class OrderPickedForInvoiceDTO {
     outsourceAgreement: Types.ObjectId | string | null
     tkName: Types.ObjectId | string
   }
-  route: any[]
-  analytics: {
+  route?: any[]
+  analytics?: {
     type: string
     distanceRoad: number
     distanceDirect: number
@@ -117,8 +119,8 @@ export class OrderPickedForInvoiceDTO {
   paymentInvoices?: any[]
   agreement?: any
 
-  totalByTypes: any
-  total: {
+  totalByTypes?: any
+  total?: {
     price: number
     priceWOVat: number
   }

@@ -176,7 +176,29 @@ export async function getOrdersForPaymentInvoice({
       },
     },
     { $replaceRoot: { newRoot: '$order' } },
-    { $unset: ['docs', 'agreement', 'docsState'] },
+    {
+      $unset: [
+        'docs',
+        'agreement',
+        'docsState',
+        'route',
+        'totalByTypes',
+        'savedTotalByTypes',
+        'total',
+        'analytics',
+        'prePrices',
+        'prices',
+        'finalPrices',
+        'loaderData.route',
+        'loaderData.truck',
+        'loaderData.driver',
+        'loaderData.truckType',
+        'loaderData.isTruckTypeEqual',
+        'loaderData.isTruckEqual',
+        'loaderData.isDriverEqual',
+        'loaderData.isPriceEqual',
+      ],
+    },
   ]
 
   const ordersInPaymentInvoice = await OrderInPaymentInvoiceModel.aggregate([
