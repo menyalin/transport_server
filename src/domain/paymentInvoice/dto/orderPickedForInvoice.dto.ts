@@ -68,7 +68,7 @@ const orderPickedForInvoiceDTOSchema = z.object({
   note: z.string().optional(),
   paymentInvoices: z.array(z.unknown()).optional(),
   agreement: z.unknown().optional(),
-  total: priceSchema.optional(),
+  total: priceSchema,
   // totalByTypes: z.record(priceSchema),
   totalByTypes: z.unknown().optional(),
   savedTotal: priceSchema.optional(),
@@ -120,7 +120,7 @@ export class OrderPickedForInvoiceDTO {
   agreement?: any
 
   totalByTypes?: any
-  total?: {
+  total: {
     price: number
     priceWOVat: number
   }
