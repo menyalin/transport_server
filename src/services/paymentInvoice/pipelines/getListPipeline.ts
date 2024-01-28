@@ -93,6 +93,8 @@ export const getListPipeline = (p: IProps): PipelineStage[] => {
       },
     },
     { $addFields: { _client: { $first: '$_client' } } },
+    { $addFields: { clientName: '$_client.name' } },
+    { $unset: ['_client'] },
   ]
 
   const agreementLookup: PipelineStage[] = [
@@ -105,13 +107,13 @@ export const getListPipeline = (p: IProps): PipelineStage[] => {
       },
     },
     { $addFields: { agreement: { $first: '$agreement' } } },
+    { $addFields: { agreementName: '$agreement.name' } },
+    { $unset: ['agreement'] },
   ]
 
   const additionalFields = [
     {
       $addFields: {
-        clientName: '$_client.name',
-        agreementName: '$agreement.name',
         statusStr: {
           $switch: {
             branches: PAIMENT_INVOICE_STATUSES.map((i) => ({
@@ -132,6 +134,20 @@ export const getListPipeline = (p: IProps): PipelineStage[] => {
         localField: '_id',
         foreignField: 'paymentInvoice',
         as: '_orders',
+      },
+    },
+    {
+      $addFields: {
+        _orders: {
+          $map: {
+            input: '$_orders',
+            as: 'order',
+            in: {
+              total: '$$order.total',
+              itemType: '$$order.itemType',
+            },
+          },
+        },
       },
     },
     {
@@ -162,6 +178,7 @@ export const getListPipeline = (p: IProps): PipelineStage[] => {
 
   const group: PipelineStage[] = [
     { $sort: listSortingFragment(p.sortBy, p.sortDesc) },
+    { $unset: ['_orders'] },
     {
       $group: {
         _id: 'paymentInvoices',
