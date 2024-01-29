@@ -178,12 +178,12 @@ export async function getOrdersForPaymentInvoice({
     { $replaceRoot: { newRoot: '$order' } },
     {
       $unset: [
-        'docs',
-        'agreement',
+        // 'docs',
+        // 'agreement',
         'docsState',
-        'route',
+        // 'route',
         'totalByTypes',
-        'savedTotalByTypes',
+        // 'savedTotalByTypes',
         'analytics',
         'prePrices',
         'prices',
