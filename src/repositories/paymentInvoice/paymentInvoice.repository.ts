@@ -12,16 +12,23 @@ import { getOrdersForPaymentInvoice } from './getOrdersForInvoice'
 import { pickOrdersForPaymentInvoice } from './pickOrdersForPaymentInvoice'
 import { getOrdersForInvoiceDtoByOrders } from './getOrdersForInvoiceDtoByOrders'
 import { OrderInPaymentInvoice } from '../../domain/paymentInvoice/orderInPaymentInvoice'
+import { AgreementService } from '../../services'
 
 class PaymentInvoiceRepository {
   async getInvoiceById(id: string): Promise<PaymentInvoiceDomain | null> {
     const data: PaymentInvoiceDomain | null =
       await PaymentInvoiceModel.findById(id).lean()
     if (!data || !data._id) return null
+
+    // const agreement = await AgreementService.getById(
+    //   data.agreementId.toString()
+    // )
+
     const orders = await this.getOrdersPickedForInvoice({
       paymentInvoiceId: data._id.toString(),
     })
     const paymentInvoice = PaymentInvoiceDomain.create(data, orders)
+    // paymentInvoice.setAgreement(agreement)
     return paymentInvoice
   }
 

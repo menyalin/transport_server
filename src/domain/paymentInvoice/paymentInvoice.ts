@@ -17,6 +17,7 @@ export class PaymentInvoiceDomain {
   isActive: boolean
   note?: string
   orders?: OrderPickedForInvoiceDTO[]
+  agreement?: any
 
   private constructor(invoice: any) {
     this._id = invoice?._id.toString()
@@ -36,6 +37,9 @@ export class PaymentInvoiceDomain {
     this.isActive = invoice.isActive
     this.note = invoice.note
     if (invoice.client?._id) this.client = invoice.client
+  }
+  setAgreement(agreement: any) {
+    this.agreement = agreement
   }
 
   setOrders(orders: OrderPickedForInvoiceDTO[]): void {
