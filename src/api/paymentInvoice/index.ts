@@ -17,6 +17,12 @@ const router = express.Router()
 router.get('/', [jwtAuth, queryValidator(getListSchema)], (...args) =>
   ctrl.getList(...args)
 )
+router.get(
+  '/download_list',
+  [jwtAuth, queryValidator(getListSchema)],
+  (...args) => ctrl.getInvoicesListFile(...args)
+)
+
 router.get('/pick_orders', [jwtAuth], (...args) => ctrl.pickOrders(...args))
 router.get(
   '/allowed_print_forms',

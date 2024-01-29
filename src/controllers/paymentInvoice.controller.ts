@@ -1,9 +1,14 @@
 import { Response } from 'express'
 import { Readable } from 'stream'
 import { AuthorizedRequest } from './interfaces/request'
-import { PaymentInvoiceService, PermissionService } from '../services'
+import {
+  FileService,
+  PaymentInvoiceService,
+  PermissionService,
+} from '../services'
 import { BadRequestError } from '../helpers/errors'
 import { DateRange } from '../classes/dateRange'
+import { OrderPickedForInvoiceDTO } from '../domain/paymentInvoice/dto/orderPickedForInvoice.dto'
 
 class PaymentInvoiceController {
   service: typeof PaymentInvoiceService
@@ -123,6 +128,44 @@ class PaymentInvoiceController {
       })
       const data = await this.service.getList(req.query)
       res.status(200).json(data)
+    } catch (e) {
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
+    }
+  }
+
+  async getInvoicesListFile(req: AuthorizedRequest, res: Response) {
+    try {
+      await PermissionService.check({
+        userId: req.userId,
+        companyId: req.companyId,
+        operation: this.permissionName + ':readList',
+      })
+      const data = await this.service.getList({
+        ...req.query,
+        skip: '0',
+        limit: '0',
+      })
+
+      const stream = await FileService.createExcelFile(
+        data.items.map((i: any) => ({
+          _id: i._id.toString(),
+          ['Номер']: i.number,
+          ['Номер клиента']: i.numberByClient,
+          ['Дата выставления']: i.sendDate,
+          ['Дата реестра']: i.dateByClient,
+          ['Статус']: i.statusStr,
+          ['Клиент']: i.clientName,
+          ['Соглашение']: i.agreementName,
+          ['Рейсы']: i.count,
+          ['Сумма без НДС']: i.total.priceWOVat,
+          ['Сумма с НДС']: i.total.price,
+          ['Дата создания']: i.createdAt,
+          ['Комментарий']: i.note,
+        }))
+      )
+      res.status(200)
+      stream.pipe(res)
     } catch (e) {
       if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
       else res.status(500).json(e)

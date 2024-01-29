@@ -207,7 +207,8 @@ export const getListPipeline = (p: IProps): PipelineStage[] => {
           },
         },
         count: { $size: '$items' },
-        items: { $slice: ['$items', +p.skip, +p.limit] },
+        items:
+          +p.limit > 0 ? { $slice: ['$items', +p.skip, +p.limit] } : '$items',
       },
     },
   ]
