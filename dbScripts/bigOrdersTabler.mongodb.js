@@ -1,4 +1,3 @@
-/* global use, db */
 use('transport_dev')
 const orderDateFragment = {
   $getField: {
@@ -491,8 +490,7 @@ const finalProject = {
     'Тип ТС': '$reqTransport.liftCapacity',
     'Вид ТС': '$reqTransport.kind',
     'Т-Режим': '$cargoParams.tRegime',
-    'Тариф из ДС (без НДС)': '$prePricesObj.base.priceWOVat',
-    'Тариф (аукцион) (без НДС)': '$pricesObj.base.priceWOVat',
+
     Примечание: '$note',
     'Цена без НДС(в акте)': '$orderInInvoice.total.priceWOVat',
     'Цена c НДС(в акте)': '$orderInInvoice.total.price',
@@ -508,33 +506,55 @@ const finalProject = {
     'Статус акта': '$invoice.status',
     'Оценка водителя': '$grade.grade',
     'Комментарий к оценке': '$grade.note',
-    'Предв: Допточки без НДС': '$prePricesObj.additionalPoints.priceWOVat',
-    'Предв: Простой на погрузке без НДС':
-      '$prePricesObj.loadingDowntime.priceWOVat',
-    'Предв: Простой на выгрузке без НДС':
-      '$prePricesObj.unloadingDowntime.priceWOVat',
-    'Предв: Возврат без НДС': '$prePricesObj.return.priceWOVat',
-    'Предв: Прочее без НДС': '$prePricesObj.other.priceWOVat',
-    'Предв: Итого без НДС': '$prePricesTotalWOVat',
 
-    'Аукцион: Допточки без НДС': '$pricesObj.additionalPoints.priceWOVat',
-    'Аукцион: Простой на погрузке без НДС':
-      '$pricesObj.loadingDowntime.priceWOVat',
-    'Аукцион: Простой на выгрузке без НДС':
-      '$pricesObj.unloadingDowntime.priceWOVat',
-    'Аукцион: Возврат без НДС': '$pricesObj.return.priceWOVat',
-    'Аукцион: Прочее без НДС': '$pricesObj.other.priceWOVat',
-    'Аукцион: Итого без НДС': '$pricesTotalWOVat',
+    'Предв: Тариф без НДС': { $ifNull: ['$prePricesObj.base.priceWOVat', 0] },
+    'Предв: Допточки без НДС': {
+      $ifNull: ['$prePricesObj.additionalPoints.priceWOVat', 0],
+    },
+    'Предв: Простой на погрузке без НДС': {
+      $ifNull: ['$prePricesObj.loadingDowntime.priceWOVat', 0],
+    },
+    'Предв: Простой на выгрузке без НДС': {
+      $ifNull: ['$prePricesObj.unloadingDowntime.priceWOVat', 0],
+    },
+    'Предв: Возврат без НДС': {
+      $ifNull: ['$prePricesObj.return.priceWOVat', 0],
+    },
+    'Предв: Прочее без НДС': { $ifNull: ['$prePricesObj.other.priceWOVat', 0] },
+    'Предв: Итого без НДС': { $ifNull: ['$prePricesTotalWOVat', 0] },
 
-    'Акт: Допточки без НДС':
-      '$orderInInvoice.totalByTypes.additionalPoints.priceWOVat',
-    'Акт: Простой на погрузке без НДС':
-      '$orderInInvoice.totalByTypes.loadingDowntime.priceWOVat',
-    'Акт: Простой на выгрузке без НДС':
-      '$orderInInvoice.totalByTypes.unloadingDowntime.priceWOVat',
-    'Акт: Возврат без НДС': '$orderInInvoice.totalByTypes.return.priceWOVat',
-    'Акт: Прочее без НДС': '$orderInInvoice.totalByTypes.other.priceWOVat',
-    'Акт: Итого без НДС': '$orderInInvoice.total.priceWOVat',
+    'Аукцион: Тариф без НДС': { $ifNull: ['$pricesObj.base.priceWOVat', 0] },
+    'Аукцион: Допточки без НДС': {
+      $ifNull: ['$pricesObj.additionalPoints.priceWOVat', 0],
+    },
+    'Аукцион: Простой на погрузке без НДС': {
+      $ifNull: ['$pricesObj.loadingDowntime.priceWOVat', 0],
+    },
+    'Аукцион: Простой на выгрузке без НДС': {
+      $ifNull: ['$pricesObj.unloadingDowntime.priceWOVat', 0],
+    },
+    'Аукцион: Возврат без НДС': {
+      $ifNull: ['$pricesObj.return.priceWOVat', 0],
+    },
+    'Аукцион: Прочее без НДС': { $ifNull: ['$pricesObj.other.priceWOVat', 0] },
+    'Аукцион: Итого без НДС': { $ifNull: ['$pricesTotalWOVat', 0] },
+
+    'Акт: Допточки без НДС': {
+      $ifNull: ['$orderInInvoice.totalByTypes.additionalPoints.priceWOVat', 0],
+    },
+    'Акт: Простой на погрузке без НДС': {
+      $ifNull: ['$orderInInvoice.totalByTypes.loadingDowntime.priceWOVat', 0],
+    },
+    'Акт: Простой на выгрузке без НДС': {
+      $ifNull: ['$orderInInvoice.totalByTypes.unloadingDowntime.priceWOVat', 0],
+    },
+    'Акт: Возврат без НДС': {
+      $ifNull: ['$orderInInvoice.totalByTypes.return.priceWOVat', 0],
+    },
+    'Акт: Прочее без НДС': {
+      $ifNull: ['$orderInInvoice.totalByTypes.other.priceWOVat', 0],
+    },
+    'Акт: Итого без НДС': { $ifNull: ['$orderInInvoice.total.priceWOVat', 0] },
   },
 }
 
