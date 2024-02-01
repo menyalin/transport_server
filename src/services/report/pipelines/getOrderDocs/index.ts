@@ -1,6 +1,5 @@
-// @ts-nocheck
-import mongoose from 'mongoose'
-import { BadRequestError } from '../../../../helpers/errors'
+import { z } from 'zod'
+import mongoose, { PipelineStage } from 'mongoose'
 import { ORDER_ANALYTIC_TYPES } from '../../../../constants/order'
 
 import {
@@ -10,64 +9,79 @@ import {
 
 import { getAddressDetails } from '../fragments/addressDetails'
 
-export default ({
-  company,
-  groupBy,
-  tks,
-  clients,
-  state,
-  truck,
-  date,
-  driver,
-  getDocsDays,
-  reviewDocsDays,
-}) => {
-  if (!company)
-    throw new BadRequestError('get orderDocs pipeline: no company id!')
-  const firstMatcher = {
+const variantOfIntervalDaysSchema = z.union([
+  z.literal(1),
+  z.literal(2),
+  z.literal(3),
+  z.literal(4),
+  z.literal(5),
+])
+
+const IPropsSchema = z.object({
+  company: z.string(),
+  tks: z.array(z.string()).optional(),
+  clients: z.array(z.string()).optional(),
+  state: z.array(z.string()).optional(),
+  truck: z.string().optional(),
+  date: z.union([z.string(), z.null()]).optional(),
+  driver: z.string().optional(),
+  getDocsDays: z.array(variantOfIntervalDaysSchema).optional(),
+  reviewDocsDays: z.array(variantOfIntervalDaysSchema).optional(),
+})
+
+type VariantOfIntervalDays = z.infer<typeof variantOfIntervalDaysSchema>
+type IProps = z.infer<typeof IPropsSchema>
+
+export default (p: IProps): PipelineStage[] => {
+  IPropsSchema.parse(p)
+
+  const firstMatcher: PipelineStage.Match = {
     $match: {
       isActive: true,
       'state.status': 'completed',
-      company: new mongoose.Types.ObjectId(company),
+      company: new mongoose.Types.ObjectId(p.company),
       $expr: {
         $and: [],
       },
     },
   }
 
-  if (truck)
+  if (p.truck)
     firstMatcher.$match.$expr.$and.push({
-      $eq: ['$confirmedCrew.truck', new mongoose.Types.ObjectId(truck)],
+      $eq: ['$confirmedCrew.truck', new mongoose.Types.ObjectId(p.truck)],
     })
-  if (driver)
+  if (p.driver)
     firstMatcher.$match.$expr.$and.push({
-      $eq: ['$confirmedCrew.driver', new mongoose.Types.ObjectId(driver)],
+      $eq: ['$confirmedCrew.driver', new mongoose.Types.ObjectId(p.driver)],
     })
-  if (date)
+  if (p.date)
     firstMatcher.$match.$expr.$and.push({
       $lt: [
         { $getField: { field: 'plannedDate', input: { $first: '$route' } } },
-        new Date(date),
+        new Date(p.date),
       ],
     })
 
-  if (tks && tks.length)
+  if (p.tks?.length)
     firstMatcher.$match.$expr.$and.push({
       $in: [
         '$confirmedCrew.tkName',
-        tks.map((i) => new mongoose.Types.ObjectId(i)),
+        p.tks.map((i) => new mongoose.Types.ObjectId(i)),
       ],
     })
 
-  if (clients && clients.length)
+  if (p.clients?.length)
     firstMatcher.$match.$expr.$and.push({
       $in: [
         '$client.client',
-        clients.map((i) => new mongoose.Types.ObjectId(i)),
+        p.clients.map((i) => new mongoose.Types.ObjectId(i)),
       ],
     })
 
-  firstMatcher.$match.$expr.$and.push(switchConditionByDocsState(state))
+  if (p.state?.length)
+    firstMatcher.$match.$expr.$and.push({
+      $or: p.state.map((i) => switchConditionByDocsState(i)),
+    })
 
   const addFields = [
     {
@@ -206,22 +220,22 @@ export default ({
     },
   ]
 
-  const secondMatcher = {
+  const secondMatcher: PipelineStage.Match = {
     $match: {
       $expr: {
         $and: [],
       },
     },
   }
-  if (getDocsDays)
-    secondMatcher.$match.$expr.$and.push(
-      daysCondition(getDocsDays, '$getDocsDays')
-    )
+  if (p.getDocsDays?.length)
+    secondMatcher.$match.$expr.$and.push({
+      $or: p.getDocsDays.map((i) => daysCondition(i, '$getDocsDays')),
+    })
 
-  if (reviewDocsDays)
-    secondMatcher.$match.$expr.$and.push(
-      daysCondition(reviewDocsDays, '$reviewDocsDays')
-    )
+  if (p.reviewDocsDays?.length)
+    secondMatcher.$match.$expr.$and.push({
+      $or: p.reviewDocsDays.map((i) => daysCondition(i, '$reviewDocsDays')),
+    })
 
   const group = [
     {
@@ -272,27 +286,34 @@ export default ({
   ]
 }
 
-const daysCondition = (intervalVariant, fieldName) => {
-  // const daysIntervalItems = [
-  //   { text: '< 10', value: 1 },
-  //   { text: '10 - 20', value: 2 },
-  //   { text: '20 - 30', value: 3 },
-  //   { text: ' > 30 ', value: 4 },
-  // ]
+const daysCondition = (
+  intervalVariant: VariantOfIntervalDays,
+  fieldName: string
+) => {
+  // { text: '< 5', value: 1 },
+  // { text: '5 - 10', value: 2 },
+  // { text: '10 - 20', value: 3 },
+  // { text: '20 - 30', value: 4 },
+  // { text: ' > 30 ', value: 5 },
+
   switch (intervalVariant) {
     case 1:
       return {
-        $and: [{ $lt: [fieldName, 10] }, { $ne: [fieldName, null] }],
+        $and: [{ $lt: [fieldName, 5] }, { $ne: [fieldName, null] }],
       }
     case 2:
       return {
-        $and: [{ $gte: [fieldName, 10] }, { $lt: [fieldName, 20] }],
+        $and: [{ $gte: [fieldName, 5] }, { $lt: [fieldName, 10] }],
       }
     case 3:
       return {
-        $and: [{ $gte: [fieldName, 20] }, { $lt: [fieldName, 30] }],
+        $and: [{ $gte: [fieldName, 10] }, { $lt: [fieldName, 20] }],
       }
     case 4:
+      return {
+        $and: [{ $gte: [fieldName, 20] }, { $lt: [fieldName, 30] }],
+      }
+    case 5:
       return {
         $gte: [fieldName, 30],
       }
