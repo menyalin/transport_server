@@ -28,7 +28,7 @@ const firstMatcher = {
     $expr: {
       $and: [
         { $gte: [orderDateFragment, new Date('2023-12-01')] },
-        { $lt: [orderDateFragment, new Date('2024-01-10')] },
+        // { $lt: [orderDateFragment, new Date('2024-01-10')] },
       ],
     },
   },
@@ -415,13 +415,15 @@ const finalProject = {
   $project: {
     Дата: {
       $dateToString: {
-        format: '%Y-%m-%d %H:%M:%S',
+        format: '%Y.%m.%d %H:%M:%S',
         date: orderDateFragment,
         timezone: 'Europe/Moscow',
       },
     },
     Клиент: '$clientName',
     Соглашение: '$agreementName',
+    'Номер заказа клиента': { $ifNull: ['$client.num', ''] },
+    'Номер аукциона': { $ifNull: ['$client.auctionNum', ''] },
     Тягач: '$truckNum',
     Прицеп: '$trailerNum',
     Водитель: '$driverName',
@@ -497,7 +499,7 @@ const finalProject = {
     'Номер акта': '$invoice.number',
     'Дата акта': {
       $dateToString: {
-        format: '%Y-%m-%d',
+        format: '%Y.%m.%d',
         date: '$invoice.sendDate',
         timezone: 'Europe/Moscow',
       },
@@ -538,7 +540,9 @@ const finalProject = {
     },
     'Аукцион: Прочее без НДС': { $ifNull: ['$pricesObj.other.priceWOVat', 0] },
     'Аукцион: Итого без НДС': { $ifNull: ['$pricesTotalWOVat', 0] },
-
+    'Акт: Тариф без НДС': {
+      $ifNull: ['$orderInInvoice.totalByTypes.base.priceWOVat', 0],
+    },
     'Акт: Допточки без НДС': {
       $ifNull: ['$orderInInvoice.totalByTypes.additionalPoints.priceWOVat', 0],
     },
@@ -571,5 +575,6 @@ db.getCollection('orders').aggregate([
   ...invoiceLookup,
   ...convertedPrices,
   finalProject,
+  { $sort: { Дата: 1 } },
   { $limit: 10 },
 ])
