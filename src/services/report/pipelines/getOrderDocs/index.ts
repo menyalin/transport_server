@@ -82,7 +82,7 @@ export default (p: IProps): PipelineStage[] => {
     firstMatcher.$match.$expr.$and.push({
       $or: p.state.map((i) => switchConditionByDocsState(i)),
     })
-
+  else firstMatcher.$match.$expr.$and.push(switchConditionByDocsState(null))
   const addFields = [
     {
       $lookup: {
