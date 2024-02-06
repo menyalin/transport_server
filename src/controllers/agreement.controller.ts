@@ -30,6 +30,7 @@ class AgreementController extends IController {
     try {
       const data = await this.service.getForClient({
         client: req.query.client,
+        clients: req.query.clients,
         company: req.companyId,
         date: new Date(req.query.date),
       })

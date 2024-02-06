@@ -2,20 +2,24 @@ import z from 'zod'
 import { DateRange } from '../../classes/dateRange'
 import { OrderPickedForInvoiceDTO } from './dto/orderPickedForInvoice.dto'
 
-export interface IPickOrdersForPaymentInvoiceProps {
-  company: string
-  client: string
-  agreement: string
-  period: DateRange
-  paymentInvoiceId?: string
-  docStatus?: string
-  onlySelectable?: boolean
-  truck?: string
-  driver?: string
-  loadingZone?: string
-  search?: string
-  numbers?: string[]
-}
+export const PickOrdersForPaymentInvoicePropsSchema = z.object({
+  company: z.string(),
+  period: DateRange.validationSchema,
+  client: z.string().optional(),
+  agreement: z.string().optional(),
+  paymentInvoiceId: z.string().optional(),
+  docStatus: z.string().optional(),
+  onlySelectable: z.boolean().optional(),
+  truck: z.string().optional(),
+  driver: z.string().optional(),
+  loadingZone: z.string().optional(),
+  search: z.string().optional(),
+  numbers: z.array(z.string()).optional(),
+  limit: z.number().int().positive().optional(),
+})
+export type IPickOrdersForPaymentInvoiceProps = z.infer<
+  typeof PickOrdersForPaymentInvoicePropsSchema
+>
 
 export interface IAddOrdersToInvoiceProps {
   company: string

@@ -559,6 +559,146 @@ const finalProject = {
       $ifNull: ['$orderInInvoice.totalByTypes.other.priceWOVat', 0],
     },
     'Акт: Итого без НДС': { $ifNull: ['$orderInInvoice.total.priceWOVat', 0] },
+    'Плановая дата погрузки': {
+      $dateToString: {
+        format: '%Y.%m.%d %H:%M:%S',
+        date: orderDateFragment,
+        timezone: 'Europe/Moscow',
+      },
+    },
+    'Завершение окна погрузки': {
+      $dateToString: {
+        format: '%Y.%m.%d %H:%M:%S',
+        date: {
+          $getField: {
+            field: 'intervalEndDate',
+            input: {
+              $first: '$route',
+            },
+          },
+        },
+        timezone: 'Europe/Moscow',
+      },
+    },
+    'Факт прибытия на погрузку': {
+      $dateToString: {
+        format: '%Y.%m.%d %H:%M:%S',
+        date: {
+          $getField: {
+            field: 'arrivalDate',
+            input: {
+              $first: '$route',
+            },
+          },
+        },
+        timezone: 'Europe/Moscow',
+      },
+    },
+    'Факт убытия с погрузки': {
+      $dateToString: {
+        format: '%Y.%m.%d %H:%M:%S',
+        date: {
+          $getField: {
+            field: 'departureDate',
+            input: {
+              $first: '$route',
+            },
+          },
+        },
+        timezone: 'Europe/Moscow',
+      },
+    },
+    // Выгрузка
+    'Плановая дата выгрузки': {
+      $dateToString: {
+        format: '%Y.%m.%d %H:%M:%S',
+        date: {
+          $getField: {
+            field: 'plannedDate',
+            input: {
+              $first: {
+                $filter: {
+                  input: '$route',
+                  cond: { $eq: ['$$this.type', 'unloading'] },
+                },
+              },
+            },
+          },
+        },
+        timezone: 'Europe/Moscow',
+      },
+    },
+    'Завершение окна выгрузки': {
+      $dateToString: {
+        format: '%Y.%m.%d %H:%M:%S',
+        date: {
+          $getField: {
+            field: 'intervalEndDate',
+            input: {
+              $first: {
+                $filter: {
+                  input: '$route',
+                  cond: { $eq: ['$$this.type', 'unloading'] },
+                },
+              },
+            },
+          },
+        },
+        timezone: 'Europe/Moscow',
+      },
+    },
+    'Факт прибытия на выгрузку': {
+      $dateToString: {
+        format: '%Y.%m.%d %H:%M:%S',
+        date: {
+          $getField: {
+            field: 'arrivalDate',
+            input: {
+              $first: {
+                $filter: {
+                  input: '$route',
+                  cond: { $eq: ['$$this.type', 'unloading'] },
+                },
+              },
+            },
+          },
+        },
+        timezone: 'Europe/Moscow',
+      },
+    },
+    'Факт убытия с выгрузки': {
+      $dateToString: {
+        format: '%Y.%m.%d %H:%M:%S',
+        date: {
+          $getField: {
+            field: 'departureDate',
+            input: {
+              $first: {
+                $filter: {
+                  input: '$route',
+                  cond: { $eq: ['$$this.type', 'unloading'] },
+                },
+              },
+            },
+          },
+        },
+        timezone: 'Europe/Moscow',
+      },
+    },
+    'Факт завершения рейса': {
+      $dateToString: {
+        format: '%Y.%m.%d %H:%M:%S',
+        date: {
+          $getField: {
+            field: 'departureDate',
+            input: {
+              $last: '$route',
+            },
+          },
+        },
+        timezone: 'Europe/Moscow',
+      },
+    },
   },
 }
 

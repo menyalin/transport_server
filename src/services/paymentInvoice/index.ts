@@ -7,11 +7,12 @@ import {
 } from '../../models'
 import { BadRequestError } from '../../helpers/errors'
 import { getListPipeline } from './pipelines/getListPipeline'
-import { DateRange } from '../../classes/dateRange'
+
 import { PaymentInvoiceDomain } from '../../domain/paymentInvoice/paymentInvoice'
 import {
   IAddOrdersToInvoiceProps,
   IPickOrdersForPaymentInvoiceProps,
+  PickOrdersForPaymentInvoicePropsSchema,
 } from '../../domain/paymentInvoice/interfaces'
 import { PipelineStage } from 'mongoose'
 import { OrderInPaymentInvoice } from '../../domain/paymentInvoice/orderInPaymentInvoice'
@@ -236,26 +237,12 @@ class PaymentInvoiceService {
 
   async pickOrders(props: IPickOrdersForPaymentInvoiceProps) {
     try {
-      if (!props.company || !props.paymentInvoiceId)
-        throw new BadRequestError(
-          'PaymentInvoiceService:pickOrders. missing required params'
-        )
-
-      const paymentInvoice = await this.model
-        .findById(props.paymentInvoiceId)
-        .populate('client')
-
-      if (!paymentInvoice)
-        throw new BadRequestError(
-          'PaymentInvoiceService:pickOrders. paymentInvoice not found'
-        )
-
-      const orders =
+      PickOrdersForPaymentInvoicePropsSchema.parse(props)
+      const result =
         await PaymentInvoiceRepository.pickOrdersForPaymentInvoice(props)
 
-      return orders || []
+      return result || [[]]
     } catch (e) {
-      console.log('pickOrders error')
       throw e
     }
   }
