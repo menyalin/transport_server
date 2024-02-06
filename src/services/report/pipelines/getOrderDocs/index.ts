@@ -9,6 +9,10 @@ import {
 
 import { getAddressDetails } from '../fragments/addressDetails'
 
+function isString(value: unknown): value is string {
+  return typeof value === 'string'
+}
+
 const variantOfIntervalDaysSchema = z.union([
   z.literal(1),
   z.literal(2),
@@ -19,17 +23,26 @@ const variantOfIntervalDaysSchema = z.union([
 
 const IPropsSchema = z.object({
   company: z.string(),
-  tks: z.array(z.string()).optional(),
-  clients: z.array(z.string()).optional(),
-  state: z.array(z.string()).optional(),
-  truck: z.string().optional(),
+  tks: z.array(z.union([z.string(), z.null()])).optional(),
+  clients: z.array(z.union([z.string(), z.null()])).optional(),
+  state: z.array(z.union([z.string(), z.null()])).optional(),
+  truck: z.union([z.string(), z.null()]).optional(),
   date: z.union([z.string(), z.null()]).optional(),
-  driver: z.string().optional(),
-  getDocsDays: z.array(variantOfIntervalDaysSchema).optional(),
-  reviewDocsDays: z.array(variantOfIntervalDaysSchema).optional(),
+  driver: z.union([z.string(), z.null()]).optional(),
+  getDocsDays: z
+    .array(z.union([variantOfIntervalDaysSchema, z.null()]))
+    .optional(),
+  reviewDocsDays: z
+    .array(z.union([variantOfIntervalDaysSchema, z.null()]))
+    .optional(),
 })
 
 type VariantOfIntervalDays = z.infer<typeof variantOfIntervalDaysSchema>
+function isVariantOfIntervalDays(obj: any): obj is VariantOfIntervalDays {
+  const res = variantOfIntervalDaysSchema.safeParse(obj)
+  return res.success
+}
+
 type IProps = z.infer<typeof IPropsSchema>
 
 export default (p: IProps): PipelineStage[] => {
@@ -62,19 +75,19 @@ export default (p: IProps): PipelineStage[] => {
       ],
     })
 
-  if (p.tks?.length)
+  if (p.tks?.filter(isString).length) {
     firstMatcher.$match.$expr.$and.push({
       $in: [
         '$confirmedCrew.tkName',
-        p.tks.map((i) => new mongoose.Types.ObjectId(i)),
+        p.tks.filter(isString).map((i) => new mongoose.Types.ObjectId(i)),
       ],
     })
-
-  if (p.clients?.length)
+  }
+  if (p.clients?.filter(isString).length)
     firstMatcher.$match.$expr.$and.push({
       $in: [
         '$client.client',
-        p.clients.map((i) => new mongoose.Types.ObjectId(i)),
+        p.clients.filter(isString).map((i) => new mongoose.Types.ObjectId(i)),
       ],
     })
 
@@ -227,14 +240,18 @@ export default (p: IProps): PipelineStage[] => {
       },
     },
   }
-  if (p.getDocsDays?.length)
+  if (p.getDocsDays?.filter(isVariantOfIntervalDays).length)
     secondMatcher.$match.$expr.$and.push({
-      $or: p.getDocsDays.map((i) => daysCondition(i, '$getDocsDays')),
+      $or: p.getDocsDays
+        .filter(isVariantOfIntervalDays)
+        .map((i) => daysCondition(i, '$getDocsDays')),
     })
 
-  if (p.reviewDocsDays?.length)
+  if (p.reviewDocsDays?.filter(isVariantOfIntervalDays).length)
     secondMatcher.$match.$expr.$and.push({
-      $or: p.reviewDocsDays.map((i) => daysCondition(i, '$reviewDocsDays')),
+      $or: p.reviewDocsDays
+        .filter(isVariantOfIntervalDays)
+        .map((i) => daysCondition(i, '$reviewDocsDays')),
     })
 
   const group = [
