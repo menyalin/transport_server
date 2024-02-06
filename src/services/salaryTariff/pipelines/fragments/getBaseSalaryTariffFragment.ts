@@ -27,7 +27,7 @@ export default (company) => {
                 $and: [
                   { $gte: ['$$orderDate', '$date'] },
                   { $in: ['$$liftCapacity', '$liftCapacity'] },
-                  { $in: ['$$tkName', '$tks'] },
+                  // { $in: ['$$tkName', '$tks'] },
                   {
                     $in: [
                       '$$consigneeType',

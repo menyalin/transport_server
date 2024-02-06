@@ -48,7 +48,7 @@ export default function (company) {
                   { $gte: ['$$orderDate', '$date'] },
                   { $eq: ['$$orderType', '$orderType'] },
                   { $in: ['$$client', { $ifNull: ['$clients', []] }] },
-                  { $in: ['$$tkName', '$tks'] },
+                  // { $in: ['$$tkName', '$tks'] },
                   { $in: ['$$liftCapacity', '$liftCapacity'] },
                   { $in: ['$$consigneeType', '$consigneeTypes'] },
                 ],
