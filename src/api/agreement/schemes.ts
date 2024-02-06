@@ -46,6 +46,6 @@ export const getForClientSchema = {
       type: 'string',
     },
   },
-  required: ['date', 'client'],
+  required: ['date'],
   additionalProperties: true,
 }

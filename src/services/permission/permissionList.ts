@@ -4,6 +4,7 @@ export const admin = {
   'modules:accounting': true, // Для отображения вкладки "Учет"
   'report:drivers_grades': true,
   'report:orderDocs': true,
+  'report:orders_wo_invoice': true,
   'order:showReturnCheckbox': true,
   'order:readFinalPrices': true,
   'order:writeFinalPrices': true,
@@ -69,6 +70,7 @@ export const director = {
   'order:writePaymentToDriver': true,
   'modules:accounting': true,
   'report:orderDocs': true,
+  'report:orders_wo_invoice': true,
   'fine:readList': true,
   'fine:readItem': true,
   'fine:isWithheldRead': true,
@@ -262,6 +264,7 @@ export const accountant = {
   'order:showDocDates': true,
   'order:writeDocDates': true,
   'report:gross_profit': true,
+  'report:orders_wo_invoice': true,
   'docsRegistry:readList': true,
   'docsRegistry:readItem': true,
   'docsRegistry:write': true,

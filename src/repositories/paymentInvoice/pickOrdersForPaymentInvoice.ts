@@ -20,19 +20,15 @@ import { substructPaymentPartsFromBase } from './pipelineFragments/substructPaym
 
 export async function pickOrdersForPaymentInvoice({
   company,
-  client,
   period,
+  client,
   truck,
   driver,
   search,
   agreement,
   numbers,
-}: IPickOrdersForPaymentInvoiceProps): Promise<OrderPickedForInvoiceDTO[]> {
-  if (!company || !client || !period)
-    throw new BadRequestError(
-      'getOrdersForPaymentInvoice. required args is missing!!'
-    )
-
+  limit,
+}: IPickOrdersForPaymentInvoiceProps): Promise<[OrderPickedForInvoiceDTO[]]> {
   const firstMatcherBuilder = (
     filtersExpressions: Array<BooleanExpression | ArrayExpressionOperator>
   ): PipelineStage.Match =>
@@ -75,6 +71,17 @@ export async function pickOrdersForPaymentInvoice({
     filters.push({
       $in: ['$client.num', numbers],
     })
+
+  const clientFilters: Array<BooleanExpression | ArrayExpressionOperator> = []
+
+  if (client)
+    clientFilters.push({ $eq: ['$client.client', new Types.ObjectId(client)] })
+
+  if (agreement)
+    clientFilters.push({
+      $eq: ['$client.agreement', new Types.ObjectId(agreement)],
+    })
+
   const paymentInvoiceFilterBuilder = (
     orderIdField = '_id'
   ): PipelineStage[] => [
@@ -129,19 +136,12 @@ export async function pickOrdersForPaymentInvoice({
       pipeline: [
         firstMatcherBuilder([
           ...filters,
-          {
-            $in: [
-              new Types.ObjectId(client),
-              {
-                $ifNull: [
-                  { $map: { input: '$paymentParts', in: '$$this.client' } },
-                  [],
-                ],
-              },
-            ],
-          },
+          { $isArray: '$paymentParts' },
+          { $gte: [{ $size: '$paymentParts' }, 1] },
         ] as BooleanExpression[]) as PipelineStage.Match,
+
         { $unwind: { path: '$paymentParts' } },
+
         {
           $match: {
             'paymentParts.client': new Types.ObjectId(client),
@@ -179,18 +179,14 @@ export async function pickOrdersForPaymentInvoice({
 
   const loadingZoneFragment = orderLoadingZoneFragmentBuilder()
   const orders = await OrderModel.aggregate([
-    firstMatcherBuilder([
-      ...filters,
-      { $eq: ['$client.client', new Types.ObjectId(client)] },
-      { $eq: ['$client.agreement', new Types.ObjectId(agreement)] },
-    ]),
+    firstMatcherBuilder([...filters, ...clientFilters]),
     ...paymentInvoiceFilterBuilder('_id'),
     ...addAgreementBuilder('client.agreement'),
     ...addFields,
     unionWithPaymentPartsOrders,
     ...loadingZoneFragment,
-    { $limit: 40 },
+    { $limit: limit || 50 },
   ])
 
-  return orders.map((i) => new OrderPickedForInvoiceDTO(i))
+  return [orders.map((i) => new OrderPickedForInvoiceDTO(i))]
 }

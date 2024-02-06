@@ -35,7 +35,8 @@ class AgreementService extends IService {
   }
 
   async getForClient(props: {
-    client: string
+    client?: string
+    clients?: string[]
     company: string
     date: Date
   }): any[] {

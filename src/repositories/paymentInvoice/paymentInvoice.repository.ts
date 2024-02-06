@@ -12,7 +12,6 @@ import { getOrdersForPaymentInvoice } from './getOrdersForInvoice'
 import { pickOrdersForPaymentInvoice } from './pickOrdersForPaymentInvoice'
 import { getOrdersForInvoiceDtoByOrders } from './getOrdersForInvoiceDtoByOrders'
 import { OrderInPaymentInvoice } from '../../domain/paymentInvoice/orderInPaymentInvoice'
-import { AgreementService } from '../../services'
 
 class PaymentInvoiceRepository {
   async getInvoiceById(id: string): Promise<PaymentInvoiceDomain | null> {
@@ -64,7 +63,7 @@ class PaymentInvoiceRepository {
 
   async pickOrdersForPaymentInvoice(
     params: IPickOrdersForPaymentInvoiceProps
-  ): Promise<OrderPickedForInvoiceDTO[]> {
+  ): Promise<[OrderPickedForInvoiceDTO[]]> {
     return await pickOrdersForPaymentInvoice(params)
   }
 

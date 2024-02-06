@@ -2,10 +2,11 @@ import { Request, Response } from 'express'
 import { IReportService } from '../services/report'
 import { BadRequestError } from '../helpers/errors'
 import { DateRange } from '../classes/dateRange'
-import { ReportService } from '../services'
+import { ReportService, PaymentInvoiceService } from '../services'
 
 interface IServiceProps {
   service: IReportService
+  paymentInvoiceService: typeof PaymentInvoiceService
 }
 
 interface IDaysControlProps {
@@ -27,8 +28,10 @@ interface IDriversGradesReportProps {
 
 class ReportController {
   service: IReportService
-  constructor({ service }: IServiceProps) {
+  paymentInvoiceService: typeof PaymentInvoiceService
+  constructor({ service, paymentInvoiceService }: IServiceProps) {
     this.service = service
+    this.paymentInvoiceService = paymentInvoiceService
   }
 
   async daysControl(
@@ -173,8 +176,24 @@ class ReportController {
       }
     }
   }
+  async ordersWOInvoice(req: Request, res: Response) {
+    try {
+      const data = await this.paymentInvoiceService.pickOrders({
+        ...req.body,
+        period: new DateRange(req.body.period[0], req.body.period[1]),
+      })
+      res.status(200).json(data)
+    } catch (e) {
+      if (e instanceof BadRequestError) {
+        res.status(e.statusCode || 500).json(e.message)
+      } else {
+        res.status(500).json(e)
+      }
+    }
+  }
 }
 
 export default new ReportController({
   service: ReportService as IReportService,
+  paymentInvoiceService: PaymentInvoiceService,
 })
