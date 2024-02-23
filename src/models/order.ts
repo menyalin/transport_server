@@ -17,14 +17,7 @@ const { Schema, model, Types } = pkg
 import { RoutePoint } from '../values/order/routePoint'
 import { Client } from '../domain/order/client'
 import { OrderPrice } from '../domain/order/orderPrice'
-
-const prices = [OrderPrice.dbSchema]
-
-const paymentPart = {
-  client: { type: Types.ObjectId, ref: 'Partner', required: true },
-  agreement: { type: Types.ObjectId, ref: 'Agreement', required: true },
-  ...OrderPrice.dbSchema,
-}
+import { OrderPaymentPart } from '../domain/order/paymentPart'
 
 const outsourceCosts = [
   {
@@ -39,6 +32,7 @@ const outsourceCosts = [
     cashPayment: Boolean,
   },
 ]
+
 const docsState = {
   getted: {
     type: Boolean,
@@ -46,7 +40,6 @@ const docsState = {
   },
   date: {
     type: Date,
-    default: null,
   },
 }
 
@@ -149,16 +142,16 @@ const schema = new Schema(
     grade,
     docs,
     client: Client.dbSchema(),
-    prePrices: prices,
-    prices,
-    finalPrices: prices,
+    prePrices: [OrderPrice.dbSchema],
+    prices: [OrderPrice.dbSchema],
+    finalPrices: [OrderPrice.dbSchema],
     outsourceCosts,
     confirmedCrew,
     route: [RoutePoint.getDbSchema()],
     cargoParams: cargoParams,
     reqTransport: reqTransport,
     state,
-    paymentParts: [paymentPart],
+    paymentParts: [OrderPaymentPart.dbSchema],
     analytics,
     docsState,
     paymentToDriver,
@@ -168,7 +161,6 @@ const schema = new Schema(
     note: { type: String },
     noteAccountant: { type: String },
   },
-  // eslint-disable-next-line comma-dangle
   { timestamps: true }
 )
 
