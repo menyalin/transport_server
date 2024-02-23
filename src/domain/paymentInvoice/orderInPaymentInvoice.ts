@@ -2,22 +2,19 @@ import { Types, Schema } from 'mongoose'
 import {
   ICreateOrderInPaymentInvoiceProps,
   ILoaderData,
-  IPrice,
+  PriceByType,
+  TotalPrice,
 } from './interfaces'
 import { OrderPickedForInvoiceDTO } from './dto/orderPickedForInvoice.dto'
-
-const PriceTypeSchema = {
-  price: Number,
-  priceWOVat: Number,
-}
+import { ORDER_PRICE_TYPES_ENUM } from '../../constants/priceTypes'
 
 export class OrderInPaymentInvoice {
   order: string
   paymentInvoice: string
   company: string
   itemType: string
-  total: IPrice
-  totalByTypes: { [key: string]: IPrice }
+  total: TotalPrice
+  totalByTypes: Record<ORDER_PRICE_TYPES_ENUM, PriceByType>
   loaderData: ILoaderData
 
   constructor(p: any) {
@@ -53,20 +50,27 @@ export class OrderInPaymentInvoice {
     })
   }
 
-  static dbSchema = {
-    order: { type: Types.ObjectId, unique: true }, // orderID or paymentPartId
-    paymentInvoice: {
-      type: Types.ObjectId,
-      ref: 'PaymentInvoice',
-      required: true,
-    },
-    company: { type: Types.ObjectId, ref: 'Company' },
-    itemType: { type: String, enum: ['order', 'paymentPart'] },
-    total: PriceTypeSchema,
-    totalByTypes: {
-      type: Map,
-      of: PriceTypeSchema,
-    },
-    loaderData: Schema.Types.Mixed,
+  static get dbSchema() {
+    const PriceTypeSchema = {
+      price: Number,
+      priceWOVat: Number,
+    }
+
+    return {
+      order: { type: Types.ObjectId, unique: true }, // orderID or paymentPartId
+      paymentInvoice: {
+        type: Types.ObjectId,
+        ref: 'PaymentInvoice',
+        required: true,
+      },
+      company: { type: Types.ObjectId, ref: 'Company' },
+      itemType: { type: String, enum: ['order', 'paymentPart'] },
+      total: PriceTypeSchema,
+      totalByTypes: {
+        type: Map,
+        of: PriceTypeSchema,
+      },
+      loaderData: Schema.Types.Mixed,
+    }
   }
 }

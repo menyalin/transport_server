@@ -97,7 +97,8 @@ class PaymentInvoiceService {
     })
 
     const orders = await PaymentInvoiceRepository.getOrdersPickedForInvoice({
-      paymentInvoiceId: updatedInvoice._id,
+      invoiceId: updatedInvoice._id,
+      company: updatedInvoice.company,
     })
 
     updatedInvoice.setOrders(orders)
@@ -178,10 +179,10 @@ class PaymentInvoiceService {
     // Формирую новые объекты в коллекции
     try {
       const ordersDTO: OrderPickedForInvoiceDTO[] =
-        await PaymentInvoiceRepository.getOrdersForInvoiceDtoByOrders(
-          orders,
-          company
-        )
+        await PaymentInvoiceRepository.getOrdersPickedForInvoiceDTOByOrders({
+          orderIds: orders,
+          company,
+        })
 
       ordersDTO.forEach((i) => {
         if (registryData) i.addLoaderData(registryData)
@@ -255,11 +256,10 @@ class PaymentInvoiceService {
     company: string
   }): Promise<OrderPickedForInvoiceDTO | null> {
     try {
-      const [order] =
-        await PaymentInvoiceRepository.getOrdersForInvoiceDtoByOrders(
-          [orderId],
-          company
-        )
+      const [order] = await PaymentInvoiceRepository.getOrdersPickedForInvoice({
+        orderIds: [orderId],
+        company,
+      })
       if (!order) return null
 
       const [item] =

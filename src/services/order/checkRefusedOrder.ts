@@ -1,8 +1,7 @@
-// @ts-nocheck
 import { BadRequestError } from '../../helpers/errors'
 const STATUSES = ['weRefused', 'clientRefused', 'notСonfirmedByClient']
 
-const checkOrder = (orderBody) => {
+const checkOrder = (orderBody: any) => {
   // Проверка наличия комментария в зависимости от статуса рейса
   if (STATUSES.includes(orderBody?.state?.status) && !orderBody.note)
     throw new BadRequestError(

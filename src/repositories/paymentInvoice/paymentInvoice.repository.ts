@@ -1,33 +1,30 @@
 import { OrderPickedForInvoiceDTO } from '../../domain/paymentInvoice/dto/orderPickedForInvoice.dto'
 import {
-  IGetOrdersForPaymentInvoiceProps,
+  GetOrdersPickedForInvoiceProps,
   IPickOrdersForPaymentInvoiceProps,
+  IStaticticData,
 } from '../../domain/paymentInvoice/interfaces'
 import { PaymentInvoiceDomain } from '../../domain/paymentInvoice/paymentInvoice'
 import {
   PaymentInvoice as PaymentInvoiceModel,
   OrderInPaymentInvoice as OrderInPaymentInvoiceModel,
 } from '../../models'
-import { getOrdersForPaymentInvoice } from './getOrdersForInvoice'
 import { pickOrdersForPaymentInvoice } from './pickOrdersForPaymentInvoice'
-import { getOrdersForInvoiceDtoByOrders } from './getOrdersForInvoiceDtoByOrders'
 import { OrderInPaymentInvoice } from '../../domain/paymentInvoice/orderInPaymentInvoice'
-
+import { getOrdersPickedForInvoice } from './getOrdersPickedForInvoice'
+import { getOrdersPickedForInvoiceDTOByOrders } from './getOrdersPickedForInvoiceDTOByOrders'
 class PaymentInvoiceRepository {
   async getInvoiceById(id: string): Promise<PaymentInvoiceDomain | null> {
-    const data: PaymentInvoiceDomain | null =
+    const invoice: PaymentInvoiceDomain | null =
       await PaymentInvoiceModel.findById(id).lean()
-    if (!data || !data._id) return null
-
-    // const agreement = await AgreementService.getById(
-    //   data.agreementId.toString()
-    // )
+    if (!invoice || !invoice._id) return null
 
     const orders = await this.getOrdersPickedForInvoice({
-      paymentInvoiceId: data._id.toString(),
+      invoiceId: invoice._id.toString(),
+      company: invoice.company.toString(),
     })
-    const paymentInvoice = PaymentInvoiceDomain.create(data, orders)
-    // paymentInvoice.setAgreement(agreement)
+    const paymentInvoice = PaymentInvoiceDomain.create(invoice, orders)
+
     return paymentInvoice
   }
 
@@ -63,21 +60,20 @@ class PaymentInvoiceRepository {
 
   async pickOrdersForPaymentInvoice(
     params: IPickOrdersForPaymentInvoiceProps
-  ): Promise<[OrderPickedForInvoiceDTO[]]> {
+  ): Promise<[OrderPickedForInvoiceDTO[], IStaticticData]> {
     return await pickOrdersForPaymentInvoice(params)
   }
 
-  async getOrdersPickedForInvoice(
-    params: IGetOrdersForPaymentInvoiceProps
+  async getOrdersPickedForInvoiceDTOByOrders(
+    p: GetOrdersPickedForInvoiceProps
   ): Promise<OrderPickedForInvoiceDTO[]> {
-    return await getOrdersForPaymentInvoice(params)
+    return await getOrdersPickedForInvoiceDTOByOrders(p)
   }
 
-  async getOrdersForInvoiceDtoByOrders(
-    orders: string[],
-    company: string
+  async getOrdersPickedForInvoice(
+    params: GetOrdersPickedForInvoiceProps
   ): Promise<OrderPickedForInvoiceDTO[]> {
-    return await getOrdersForInvoiceDtoByOrders(orders, company)
+    return await getOrdersPickedForInvoice(params)
   }
 
   async getOrderInPaymentInvoiceItemsByOrders(

@@ -69,7 +69,7 @@ export class Route {
       .map((i) => i.getDurationInMinutes)
   }
 
-  tripTimes(unit: UnitType) {
+  tripTimes(unit: UnitType = 'minutes') {
     const res = []
     for (let i = 1; i < this.route.length; i++) {
       const prev = this.route[i - 1]
@@ -81,7 +81,7 @@ export class Route {
     return res
   }
 
-  totalDuration(unit: UnitType) {
+  totalDuration(unit: UnitType = 'minutes') {
     const dates = this.route
       .reduce(
         (arr: (Date | null)[], item: RoutePoint) => [

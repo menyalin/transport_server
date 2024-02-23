@@ -2,7 +2,11 @@ import dayjs from 'dayjs'
 import { isDateRangesOverlapping } from '../../utils/isDateRangesOverlapping'
 import { Route } from '../../values/order/route'
 
-import { ORDER_DOMAIN_EVENTS, OrderRemoveEvent } from './domainEvents'
+import {
+  ORDER_DOMAIN_EVENTS,
+  OrderRemoveEvent,
+  OrdersUpdatedEvent,
+} from './domainEvents'
 import { BusEvent } from 'ts-bus/types'
 import { NotifyClientsEvent } from '../../socket/notifyClientsEvent'
 import { Client } from './client'
@@ -74,9 +78,9 @@ export class Order {
   }
   docs: []
   client: Client
-  prePrices: OrderPrice[]
-  prices: OrderPrice[]
-  finalPrices: OrderPrice[]
+  prePrices?: OrderPrice[]
+  prices?: OrderPrice[]
+  finalPrices?: OrderPrice[]
   outsourceCosts: []
   cargoParams: object
   reqTransport: object
@@ -100,18 +104,21 @@ export class Order {
       ? new Date(order.startPositionDate)
       : null
 
-    this._id = order._id
+    this._id = order._id.toString()
     this.state = order.state
     this.grade = order.grade || {}
-    this.company = order.company
+    this.company = order.company.toString()
     this.orderDate = Order.getOrderDate(order)
     this.route = new Route(order.route)
     this.confirmedCrew = order.confirmedCrew
     this.docs = order.docs || []
     this.client = new Client(order.client)
-    this.prePrices = order.prePrices?.map((i) => new OrderPrice(i)) || []
-    this.prices = order.prices?.map((i) => new OrderPrice(i)) || []
-    this.finalPrices = order.finalPrices?.map((i) => new OrderPrice(i)) || []
+    if (order.prePrices?.length)
+      this.prePrices = order.prePrices?.map((i) => new OrderPrice(i))
+    if (order.prices?.length)
+      this.prices = order.prices?.map((i) => new OrderPrice(i))
+    if (order.finalPrices?.length)
+      this.finalPrices = order.finalPrices?.map((i) => new OrderPrice(i))
     this.outsourceCosts = order.outsourceCosts || []
     this.cargoParams = order.cargoParams || {}
     this.reqTransport = order.reqTransport || {}
@@ -166,8 +173,12 @@ export class Order {
     }
   }
 
-  unlock() {
-    this.isDisabled = false
+  setDisableStatus(status: boolean) {
+    this.isDisabled = status
+  }
+
+  setFinalPrices(prices: any[]) {
+    this.finalPrices = prices.map((price) => new OrderPrice(price))
   }
 
   get activePoints(): RoutePoint[] {
@@ -181,15 +192,14 @@ export class Order {
     return this._id?.toString()
   }
   get basePrice(): OrderPrice | null {
-    const finalPrice = this.finalPrices.find(
-      (i) => i.type === ORDER_PRICE_TYPES_ENUM.base
-    )
-    const price = this.prices.find(
-      (i) => i.type === ORDER_PRICE_TYPES_ENUM.base
-    )
-    const prePrice = this.prePrices.find(
-      (i) => i.type === ORDER_PRICE_TYPES_ENUM.base
-    )
+    const finalPrice =
+      this.finalPrices?.find((i) => i.type === ORDER_PRICE_TYPES_ENUM.base) ||
+      null
+    const price =
+      this.prices?.find((i) => i.type === ORDER_PRICE_TYPES_ENUM.base) || null
+    const prePrice =
+      this.prePrices?.find((i) => i.type === ORDER_PRICE_TYPES_ENUM.base) ||
+      null
     return finalPrice || price || prePrice || null
   }
 

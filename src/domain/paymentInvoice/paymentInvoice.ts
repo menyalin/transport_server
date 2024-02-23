@@ -21,7 +21,7 @@ export class PaymentInvoiceDomain {
 
   private constructor(invoice: any) {
     this._id = invoice?._id.toString()
-    this.company = invoice.company
+    this.company = invoice.company.toString()
     this.number = invoice.number
     this.numberByClient = invoice.numberByClient
     this.dateByClient = invoice.dateByClient

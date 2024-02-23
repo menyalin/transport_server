@@ -1,3 +1,4 @@
+import { bus } from '../../eventBus'
 import { BadRequestError } from '../../helpers/errors'
 import { Partner } from '../../models'
 import { emitTo } from '../../socket'
@@ -6,7 +7,6 @@ import { IdleTruckNotification } from '../../domain/partner/idleTruckNotificatio
 import { Partner as PartnerDomain } from '../../domain/partner/partner.domain'
 import { Order as OrderDomain } from '../../domain/order/order.domain'
 import PartnerRepository from '../../repositories/partner/partner.repository'
-import { bus } from '../../eventBus'
 import {
   IConstructorProps,
   ICreateProps,
@@ -14,7 +14,7 @@ import {
   IUpdateOneProps,
 } from './interfaces'
 import { LoadingDock } from '../../domain/partner/loadingDock.domain'
-import { OrderUpdatedEvent } from '../../domain/order/domainEvents'
+import { OrdersUpdatedEvent } from '../../domain/order/domainEvents'
 import { toCreateIdleTruckNotificationEvent } from '../notification/events/idleTruckNotifications'
 import { ILoadingDockProps } from '../../domain/partner/interfaces'
 
@@ -29,8 +29,10 @@ class PartnerService {
     this.emitter = emitter
     this.modelName = modelName
     this.logService = logService
-    bus.subscribe(OrderUpdatedEvent, ({ payload: order }) => {
-      this.createIdleTruckNotification(order)
+    bus.subscribe(OrdersUpdatedEvent, ({ payload: orders }) => {
+      orders.forEach((order) => {
+        this.createIdleTruckNotification(order)
+      })
     })
   }
 

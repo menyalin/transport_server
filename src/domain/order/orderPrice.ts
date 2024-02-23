@@ -4,16 +4,16 @@ import { z } from 'zod'
 export interface IOrderPriceProps {
   type: ORDER_PRICE_TYPES_ENUM
   priceWOVat: number
-  price: number
-  sumVat: number
+  price?: number
+  sumVat?: number
   note?: string
 }
 
 export class OrderPrice {
   type: ORDER_PRICE_TYPES_ENUM
   priceWOVat: number
-  price: number
-  sumVat: number
+  price?: number
+  sumVat?: number
   note?: string
 
   constructor(p: IOrderPriceProps) {
@@ -28,20 +28,22 @@ export class OrderPrice {
   private static propsValidationSchema = z.object({
     type: z.nativeEnum(ORDER_PRICE_TYPES_ENUM),
     priceWOVat: z.number(),
-    price: z.number(),
-    sumVat: z.number(),
+    price: z.number().optional(),
+    sumVat: z.number().optional(),
     note: z.string().optional(),
   })
 
-  static dbSchema = {
-    type: {
-      type: String,
-      required: true,
-      enum: Object.values(ORDER_PRICE_TYPES_ENUM),
-    },
-    priceWOVat: { type: Number },
-    sumVat: { type: Number },
-    price: { type: Number },
-    note: String,
+  static get dbSchema() {
+    return {
+      type: {
+        type: String,
+        required: true,
+        enum: Object.values(ORDER_PRICE_TYPES_ENUM),
+      },
+      priceWOVat: { type: Number },
+      sumVat: { type: Number },
+      price: { type: Number },
+      note: String,
+    }
   }
 }

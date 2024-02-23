@@ -17,7 +17,7 @@ export const OrderRemoveEvent = createEventDefinition<{ orderId: string }>()(
   ORDER_DOMAIN_EVENTS.remove
 )
 
-export const OrderUpdatedEvent = createEventDefinition<Order>()(
+export const OrdersUpdatedEvent = createEventDefinition<Order[]>()(
   ORDER_DOMAIN_EVENTS.updated
 )
 
