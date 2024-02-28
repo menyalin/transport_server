@@ -40,8 +40,8 @@ export class OrderPickedForInvoiceDTO {
   }
   docs?: any[]
   docsState?: {
-    getted: boolean | null
-    date: Date | null
+    getted?: boolean | null
+    date?: Date | null
   }
   paymentParts?: any
   paymentToDriver: any
@@ -77,7 +77,7 @@ export class OrderPickedForInvoiceDTO {
     this.reqTransport = preparedProps.reqTransport
     this.route = preparedProps.route
     this.analytics = preparedProps.analytics
-    this.docsState = preparedProps.docsState
+    this.docsState = preparedProps?.docsState
     this.paymentParts = preparedProps.paymentParts
     this.paymentToDriver = preparedProps.paymentToDriver
     this.paymentInvoices = preparedProps.paymentInvoices
