@@ -133,8 +133,8 @@ export const orderPickedForInvoiceDTOSchema = z
     docs: z.array(z.unknown()).optional(),
     docsState: z
       .object({
-        getted: z.union([z.boolean(), z.null()]),
-        date: z.union([z.instanceof(Date), z.null()]),
+        getted: z.union([z.boolean(), z.null()]).optional(),
+        date: z.union([z.instanceof(Date), z.null()]).optional(),
       })
       .optional(),
 
