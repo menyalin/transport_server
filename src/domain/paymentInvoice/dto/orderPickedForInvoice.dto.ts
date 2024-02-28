@@ -91,8 +91,20 @@ export class OrderPickedForInvoiceDTO {
     this.totalByTypes = utils.calcTotalByTypes(preparedProps)
     this.total = utils.calcTotal(this.totalByTypes)
     this.needUpdate = utils.isNeedUpdatePrices(this.total, this.savedTotal)
-    this.note = preparedProps.paymentParts ? preparedProps.paymentParts.note : preparedProps.note
+    this.note = preparedProps.paymentParts
+      ? preparedProps.paymentParts.note
+      : preparedProps.note
     if (preparedProps.loaderData) this.loaderData = preparedProps.loaderData
+
+    if (
+      preparedProps._total &&
+      preparedProps._totalWOVat &&
+      (Math.ceil(preparedProps._total) !== Math.ceil(this.total.price) ||
+        Math.ceil(preparedProps._totalWOVat) !==
+          Math.ceil(this.total.priceWOVat))
+    ) {
+      console.log('Ошибка запроса. не корректный расчет итогов по рейсу')
+    }
   }
 
   addLoaderData(registryInformation: ILoaderData[]) {
