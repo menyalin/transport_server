@@ -31,6 +31,7 @@ export type IPickOrdersForPaymentInvoiceProps = z.infer<
 
 export interface IStaticticData {
   count: number
+  total: any
 }
 
 export interface IAddOrdersToInvoiceProps {
@@ -151,6 +152,9 @@ export const orderPickedForInvoiceDTOSchema = z
     itemType: z.string(),
     rowId: z.unknown().optional(),
     loaderData: LoaderDataSchema.optional(),
+    // need remove
+    _total: z.number().optional(),
+    _totalWOVat: z.number().optional(),
   })
   .refine(() => true, {
     message: 'orderPickedForInvoiceDTOSchema error',

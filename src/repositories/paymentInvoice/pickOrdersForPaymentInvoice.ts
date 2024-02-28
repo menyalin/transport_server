@@ -1,3 +1,4 @@
+import z from 'zod'
 import {
   ArrayExpressionOperator,
   BooleanExpression,
@@ -14,6 +15,29 @@ import {
   IStaticticData,
   OrderPickedForInvoiceDTOProps,
 } from '../../domain/paymentInvoice/interfaces'
+import {
+  finalPricesWOVatFragmentBuilder,
+  totalSumWOVatFragmentBuilder,
+} from './pipelineFragments/orderFinalPricesFragmentBuilder'
+
+const setStatisticData = (res: any): IStaticticData => {
+  const schema = z.object({
+    count: z.number(),
+    total: z
+      .object({ withVat: z.number(), woVat: z.number() })
+      .array()
+      .length(1),
+  })
+  schema.parse(res)
+
+  return {
+    count: res.count,
+    total: {
+      withVat: res.total[0].withVat,
+      woVat: res.total[0].woVat,
+    },
+  }
+}
 
 export async function pickOrdersForPaymentInvoice({
   company,
@@ -35,26 +59,25 @@ export async function pickOrdersForPaymentInvoice({
 > {
   const firstMatcherBuilder = (
     filtersExpressions: Array<BooleanExpression | ArrayExpressionOperator>
-  ): PipelineStage.Match =>
-    ({
-      $match: {
-        company: new Types.ObjectId(company),
-        isActive: true,
-        $expr: {
-          $and: [
-            { $eq: ['$state.status', 'completed'] },
-            {
-              $and: [
-                { $gte: [orderPlannedDateBuilder(), period.start] },
-                { $lt: [orderPlannedDateBuilder(), period.end] },
-              ],
-            },
+  ): PipelineStage.Match => ({
+    $match: {
+      company: new Types.ObjectId(company),
+      isActive: true,
+      $expr: {
+        $and: [
+          { $eq: ['$state.status', 'completed'] },
+          {
+            $and: [
+              { $gte: [orderPlannedDateBuilder(), period.start] },
+              { $lt: [orderPlannedDateBuilder(), period.end] },
+            ],
+          },
 
-            ...filtersExpressions,
-          ],
-        },
+          ...filtersExpressions,
+        ],
       },
-    }) as PipelineStage.Match
+    },
+  })
 
   const filters: Array<BooleanExpression | ArrayExpressionOperator> = []
   if (search) {
@@ -142,6 +165,30 @@ export async function pickOrdersForPaymentInvoice({
       },
     },
     { $unset: ['paymentParts'] },
+    {
+      $addFields: {
+        totalWOVatByTypes: finalPricesWOVatFragmentBuilder(),
+      },
+    },
+    {
+      $addFields: {
+        _totalWOVat: {
+          $subtract: [totalSumWOVatFragmentBuilder(), '$paymentPartsSumWOVat'],
+        },
+      },
+    },
+    {
+      $addFields: {
+        _total: {
+          $add: [
+            '$_totalWOVat',
+            {
+              $multiply: ['$_totalWOVat', '$agreement.vatRate', 0.01],
+            },
+          ],
+        },
+      },
+    },
   ]
 
   const unionSecondMatcher = (
@@ -199,6 +246,23 @@ export async function pickOrdersForPaymentInvoice({
             paymentPartsSumWOVat: 0,
           },
         },
+        {
+          $addFields: {
+            _totalWOVat: '$paymentParts.priceWOVat',
+            _total: {
+              $add: [
+                '$paymentParts.priceWOVat',
+                {
+                  $multiply: [
+                    '$paymentParts.priceWOVat',
+                    '$agreement.vatRate',
+                    0.01,
+                  ],
+                },
+              ],
+            },
+          },
+        },
 
         { $limit: 50 },
       ] as any[],
@@ -215,7 +279,8 @@ export async function pickOrdersForPaymentInvoice({
 
     const fieldMapper = new Map<string, string>()
     fieldMapper.set('plannedDateStr', 'plannedDate')
-
+    fieldMapper.set('totalPriceWOvat', '_totalWOVat')
+    fieldMapper.set('totalPrice', '_total')
     const filteredArr = sortBy.filter((i) => fieldMapper.has(i))
     if (!filteredArr?.length) return { $sort: { plannedDate: 1 } }
     const fieldName = fieldMapper.get(filteredArr[0]) || 'plannedDate'
@@ -235,6 +300,15 @@ export async function pickOrdersForPaymentInvoice({
           { $limit: !!limit && limit > 0 ? limit : 50 },
         ],
         count: [{ $count: 'count' }],
+        total: [
+          {
+            $group: {
+              _id: null,
+              withVat: { $sum: '$_total' },
+              woVat: { $sum: '$_totalWOVat' },
+            },
+          },
+        ],
       },
     },
     {
@@ -243,6 +317,20 @@ export async function pickOrdersForPaymentInvoice({
           $getField: {
             field: 'count',
             input: { $first: '$count' },
+          },
+        },
+        total: {
+          withVat: {
+            $getField: {
+              field: 'withVat',
+              input: { $first: '$total' },
+            },
+          },
+          woVat: {
+            $getField: {
+              field: 'woVat',
+              input: { $first: '$total' },
+            },
           },
         },
       },
@@ -259,11 +347,11 @@ export async function pickOrdersForPaymentInvoice({
     sortingBuilder(sortBy, sortDesc),
     ...finalFacet,
   ])
-
+  const statisticData: IStaticticData = setStatisticData(res)
   return [
     res.items.map(
       (i: OrderPickedForInvoiceDTOProps) => new OrderPickedForInvoiceDTO(i)
     ),
-    { count: res.count },
+    statisticData,
   ]
 }
