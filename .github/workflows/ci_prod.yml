@@ -1,4 +1,4 @@
-name: Docker Image CI (ALFA)
+name: Docker Image CI (PROD)
 on:
   pull_request:
     types:

@@ -247,9 +247,8 @@ class OrderService {
     return order
   }
 
-  //@ts-ignore
-  async updateOne({ id, body, user }) {
-    checkRefusedOrder(body) // TODO: Удалить после перехода на использование OrderDomain
+  async updateOne({ id, body, user }: { id: string; body: any; user: string }) {
+    checkRefusedOrder(body)
 
     if (!body.client.agreement && body.route[0].plannedDate)
       body.client.agreement = await getClientAgreementId(body)

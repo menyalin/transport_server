@@ -113,11 +113,11 @@ export class Order {
     this.confirmedCrew = order.confirmedCrew
     this.docs = order.docs || []
     this.client = new Client(order.client)
-    if (order.prePrices?.length)
+    if (Array.isArray(order.prePrices))
       this.prePrices = order.prePrices?.map((i) => new OrderPrice(i))
-    if (order.prices?.length)
+    if (Array.isArray(order.prices))
       this.prices = order.prices?.map((i) => new OrderPrice(i))
-    if (order.finalPrices?.length)
+    if (Array.isArray(order.finalPrices))
       this.finalPrices = order.finalPrices?.map((i) => new OrderPrice(i))
     this.outsourceCosts = order.outsourceCosts || []
     this.cargoParams = order.cargoParams || {}
