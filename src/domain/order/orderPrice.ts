@@ -19,9 +19,9 @@ export class OrderPrice {
   constructor(p: IOrderPriceProps) {
     OrderPrice.propsValidationSchema.parse(p)
     this.type = p.type
-    this.priceWOVat = p.priceWOVat
-    this.price = p.price
-    this.sumVat = p.sumVat
+    this.priceWOVat = Math.round(p.priceWOVat * 100) / 100
+    this.price = p.price ? Math.round(p.price * 100) / 100 : undefined
+    this.sumVat = p.sumVat ? Math.round(p.sumVat * 100) / 100 : undefined
     this.note = p.note
   }
 
