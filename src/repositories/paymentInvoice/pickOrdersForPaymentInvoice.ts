@@ -21,17 +21,23 @@ import {
 } from './pipelineFragments/orderFinalPricesFragmentBuilder'
 
 const setStatisticData = (res: any): IStaticticData => {
+  if (!res.total?.length)
+    return {
+      count: 0,
+      total: {
+        withVat: 0,
+        woVat: 0,
+      },
+    }
+
   const schema = z.object({
     count: z.number(),
-    total: z
-      .object({ withVat: z.number(), woVat: z.number() })
-      .array()
-      .length(1),
+    total: z.object({ withVat: z.number(), woVat: z.number() }).array(),
   })
   schema.parse(res)
 
   return {
-    count: res.count,
+    count: res?.count || 0,
     total: {
       withVat: res.total[0].withVat,
       woVat: res.total[0].woVat,
@@ -347,6 +353,7 @@ export async function pickOrdersForPaymentInvoice({
     sortingBuilder(sortBy, sortDesc),
     ...finalFacet,
   ])
+
   const statisticData: IStaticticData = setStatisticData(res)
   return [
     res.items.map(
