@@ -47,6 +47,7 @@ class PaymentInvoiceController extends IController {
         paymentInvoiceId: req.query.paymentInvoiceId,
         company: req.companyId,
         ...req.query,
+        period: new DateRange(req.query.period[0], req.query.period[1]),
       })
       res.status(200).json(data)
     } catch (e) {
@@ -83,6 +84,7 @@ class PaymentInvoiceController extends IController {
 
       const data = await this.service.updateOrderPrices({
         orderId: req.params.orderId,
+        company: req.companyId,
       })
       res.status(200).json(data)
     } catch (e) {

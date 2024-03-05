@@ -10,15 +10,7 @@ import { orderLoadingZoneFragmentBuilder } from '../../services/_pipelineFragmen
 import { orderSearchByNumberFragmentBuilder } from '../../services/_pipelineFragments/orderSearchByNumberFragmentBuilder'
 import { orderPlannedDateBuilder } from '../../services/_pipelineFragments/orderPlannedDateBuilder'
 import { IPickOrdersForPaymentInvoiceProps } from '../../domain/paymentInvoice/interfaces'
-import { orderDriverFullNameBuilder } from '../../services/_pipelineFragments/orderDriverFullNameBuilder'
-
-const paymentPartsSumWOVatFragemt = {
-  $reduce: {
-    initialValue: 0,
-    input: '$paymentParts',
-    in: { $add: ['$$value', '$$this.priceWOVat'] },
-  },
-}
+import { paymentPartsSumWOVatFragemt } from './pipelineFragments/paymentPartsSumWOVatFragemt'
 
 export async function pickOrdersForPaymentInvoice({
   company,
@@ -164,6 +156,7 @@ export async function pickOrdersForPaymentInvoice({
             plannedDate: orderPlannedDateBuilder(),
             isSelectable: true,
             agreementVatRate: '$_agreement.vatRate',
+            paymentPartsSumWOVat: 0,
             totalByTypes: {
               base: '$paymentParts.priceWOVat',
             },

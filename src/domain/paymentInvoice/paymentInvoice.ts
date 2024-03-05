@@ -1,22 +1,44 @@
-// @ts-nocheck
-import pkg from 'mongoose'
+import { Types } from 'mongoose'
 import { PAIMENT_INVOICE_STATUSES_ENUM_VALUES } from '../../constants/paymentInvoice'
-const { Types } = pkg
+import { OrderPickedForInvoiceDTO } from './dto/orderPickedForInvoice.dto'
 
 export class PaymentInvoiceDomain {
-  constructor(invoice, agreement, orders) {
+  _id?: string
+  company: string
+  number: string
+  sendDate: Date
+  clientId: string
+  client: any
+  agreementId: string
+  status: string
+  isActive: boolean
+  note?: string
+  orders?: OrderPickedForInvoiceDTO[]
+
+  private constructor(invoice: any) {
+    this._id = invoice?._id.toString()
     this.company = invoice.company
     this.number = invoice.number
     this.sendDate = new Date(invoice.sendDate)
-    this.clientId = invoice.client
+    this.clientId = !!invoice.client?._id
+      ? invoice.client?._id.toString()
+      : invoice.client
+
     this.agreementId = invoice.agreement
     this.status = invoice.status
     this.isActive = invoice.isActive
     this.note = invoice.note
+    if (invoice.client?._id) this.client = invoice.client
   }
 
-  async create() {
-    return new PaymentInvoiceDomain(invoice, agreement, orders)
+  setOrders(orders: OrderPickedForInvoiceDTO[]): void {
+    this.orders = orders
+  }
+
+  static create(invoice: any, orders: OrderPickedForInvoiceDTO[] = []) {
+    const newInvoice = new PaymentInvoiceDomain(invoice)
+    newInvoice.setOrders(orders)
+    return newInvoice
   }
 
   static getDbSchema() {
