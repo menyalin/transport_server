@@ -5,6 +5,7 @@ import { emitTo } from '../../socket'
 import IService from '../iService'
 import getListPipeline from './pipelines/getListPipeline'
 import getForOrderPipeline from './pipelines/getForOrderPipeline'
+import getForClientPipeline from './pipelines/getForClientPipeline'
 
 class AgreementService extends IService {
   constructor({ model, emitter, modelName, logService }) {
@@ -31,6 +32,17 @@ class AgreementService extends IService {
     } catch (e) {
       throw new Error(e.message)
     }
+  }
+
+  async getForClient(props: {
+    client?: string
+    clients?: string[]
+    company: string
+    date: Date
+  }): any[] {
+    const pipeline = getForClientPipeline(props)
+    const res = await this.model.aggregate(pipeline)
+    return res
   }
 }
 

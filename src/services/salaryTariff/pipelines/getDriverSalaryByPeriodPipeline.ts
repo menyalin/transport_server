@@ -33,6 +33,7 @@ export default ({
     $match: {
       company: new mongoose.Types.ObjectId(company),
       isActive: true,
+      'state.status': 'completed',
       $expr: {
         $and: [
           { $lt: [orderPeriodDate, endPeriod] },
@@ -93,12 +94,12 @@ export default ({
         from: 'agreements',
         localField: 'client.agreement',
         foreignField: '_id',
-        as: '_agreement',
+        as: 'agreement',
       },
     },
     {
       $addFields: {
-        _clientAgreement: { $first: '$_agreement' },
+        _clientAgreement: { $first: '$agreement' },
       },
     },
   ]

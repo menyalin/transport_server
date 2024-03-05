@@ -1,13 +1,26 @@
-// @ts-nocheck
-import mongoose from 'mongoose'
+import { PipelineStage, Types } from 'mongoose'
 import { BadRequestError } from '../../../helpers/errors'
 import { orderLoadingZoneFragmentBuilder } from '../../_pipelineFragments/orderLoadingZoneFragmentBuilder'
 import { orderDocsStatusConditionBuilder } from '../../_pipelineFragments/orderDocsStatusConditionBuilder'
 import { orderSearchByNumberFragmentBuilder } from '../../_pipelineFragments/orderSearchByNumberFragmentBuilder'
 
-function selectableOrdersFilter(onlySelectable) {
+function selectableOrdersFilter(onlySelectable: boolean) {
   if (!onlySelectable) return []
   return [{ $match: { isSelectable: true } }]
+}
+
+interface IProps {
+  company: string
+  client: string
+  allowedLoadingPoints?: string[]
+  docStatus: string
+  onlySelectable: boolean
+  truck: string
+  driver: string
+  loadingZone: string
+  period: string[]
+  search?: string
+  agreement?: string
 }
 
 export const getPickOrdersPipeline = ({
@@ -21,7 +34,8 @@ export const getPickOrdersPipeline = ({
   loadingZone,
   period,
   search,
-}) => {
+  agreement,
+}: IProps): PipelineStage[] => {
   if (!company || !client)
     throw new BadRequestError('getPickOrdersPipeline: bad request params')
 
@@ -32,26 +46,27 @@ export const getPickOrdersPipeline = ({
     },
   }
 
-  const firstMatcher = {
+  const firstMatcher: PipelineStage.Match = {
     $match: {
       'state.status': 'completed',
       isActive: true,
-      company: new mongoose.Types.ObjectId(company),
-      'client.client': new mongoose.Types.ObjectId(client),
+      company: new Types.ObjectId(company),
+      'client.client': new Types.ObjectId(client),
       $expr: {
         $and: [],
       },
     },
   }
+  if (agreement)
+    firstMatcher.$match['client.agreement'] = new Types.ObjectId(agreement)
 
-  if (period.length === 2) {
+  if (period.length === 2)
     firstMatcher.$match.$expr.$and.push({
       $and: [
         { $gte: [orderPlannedDateFragment, new Date(period[0])] },
         { $lt: [orderPlannedDateFragment, new Date(period[1])] },
       ],
     })
-  }
 
   if (search) {
     firstMatcher.$match.$expr.$and.push(
@@ -63,7 +78,7 @@ export const getPickOrdersPipeline = ({
     firstMatcher.$match.$expr.$and.push({
       $in: [
         { $getField: { field: 'address', input: { $first: '$route' } } },
-        allowedLoadingPoints.map((p) => new mongoose.Types.ObjectId(p)),
+        allowedLoadingPoints.map((p) => new Types.ObjectId(p)),
       ],
     })
 
@@ -74,12 +89,12 @@ export const getPickOrdersPipeline = ({
 
   if (truck)
     firstMatcher.$match.$expr.$and.push({
-      $eq: ['$confirmedCrew.truck', new mongoose.Types.ObjectId(truck)],
+      $eq: ['$confirmedCrew.truck', new Types.ObjectId(truck)],
     })
 
   if (driver)
     firstMatcher.$match.$expr.$and.push({
-      $eq: ['$confirmedCrew.driver', new mongoose.Types.ObjectId(driver)],
+      $eq: ['$confirmedCrew.driver', new Types.ObjectId(driver)],
     })
 
   const docsRegistryFilter = [
@@ -91,9 +106,7 @@ export const getPickOrdersPipeline = ({
         as: 'docsRegistries',
       },
     },
-    {
-      $match: { $expr: { $eq: [{ $size: '$docsRegistries' }, 0] } },
-    },
+    { $match: { $expr: { $eq: [{ $size: '$docsRegistries' }, 0] } } },
   ]
   const addFields = [
     {
@@ -136,18 +149,33 @@ export const getPickOrdersPipeline = ({
       },
     },
   ]
-  const secondMatcher = {
+  const secondMatcher: PipelineStage.Match = {
     $match: {
       $expr: {
         $and: [],
       },
     },
   }
-  if (loadingZone) {
+  if (loadingZone)
     secondMatcher.$match.$expr.$and.push({
-      $in: [new mongoose.Types.ObjectId(loadingZone), '$_loadingZoneIds'],
+      $in: [new Types.ObjectId(loadingZone), '$_loadingZoneIds'],
     })
-  }
+
+  const agreementLookup: PipelineStage[] = [
+    {
+      $lookup: {
+        from: 'agreements',
+        localField: 'client.agreement',
+        foreignField: '_id',
+        as: 'agreement',
+      },
+    },
+    {
+      $addFields: {
+        agreement: { $first: '$agreement' },
+      },
+    },
+  ]
 
   return [
     firstMatcher,
@@ -156,6 +184,7 @@ export const getPickOrdersPipeline = ({
     secondMatcher,
     ...addFields,
     ...selectableOrdersFilter(onlySelectable),
-    { $limit: 30 },
+    ...agreementLookup,
+    { $limit: 40 },
   ]
 }

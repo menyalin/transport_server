@@ -1,10 +1,9 @@
-// @ts-nocheck
 import {
   PaymentInvoice as PaymentInvoiceModel,
   OrderInPaymentInvoice as OrderInPaymentInvoiceModel,
 } from '../../models'
 
-export const getPaymentInvoicesByOrderIds = async (ids = []) => {
+export const getPaymentInvoicesByOrderIds = async (ids: string[] = []) => {
   if (!ids.length)
     throw new Error('getPaymentInvoicesByOrderId: orderIds is required')
 

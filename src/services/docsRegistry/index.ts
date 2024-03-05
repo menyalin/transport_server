@@ -5,6 +5,7 @@ import {
   DocsRegistry as DocsRegistryModel,
   Order as OrderModel,
   OrderInDocsRegistry as OrderInDocsRegistryModel,
+  Agreement as AgreementModel,
 } from '../../models'
 import { emitTo } from '../../socket'
 
@@ -48,7 +49,12 @@ class DocsRegistryService {
 
   async getById(id) {
     const docsRegistry = await this.model.findById(id).lean()
-
+    if (docsRegistry.agreement) {
+      const agreement = await AgreementModel.findById(
+        docsRegistry.agreement
+      ).lean()
+      docsRegistry.executorName = agreement?.executorName
+    }
     const orders = await getOrdersForRegistry({
       docsRegistryId: docsRegistry._id.toString(),
     })
@@ -210,6 +216,7 @@ class DocsRegistryService {
       loadingZone,
       period,
       search,
+      agreement: docsRegistry?.agreement.toString() || null,
     })
 
     const ordersForRegistry = await OrderModel.aggregate(pipeline)

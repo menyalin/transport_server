@@ -25,6 +25,20 @@ class AgreementController extends IController {
       res.status(e.statusCode || 500).json(e.message)
     }
   }
+
+  async getForClient(req, res) {
+    try {
+      const data = await this.service.getForClient({
+        client: req.query.client,
+        clients: req.query.clients,
+        company: req.companyId,
+        date: new Date(req.query.date),
+      })
+      res.status(200).json(data)
+    } catch (e) {
+      res.status(e.statusCode || 500).json(e.message)
+    }
+  }
 }
 
 export default new AgreementController({

@@ -22,13 +22,23 @@ import { IdleTruckNotificationMessage } from '../../domain/notifications/idleTru
 import NotificationRepository from '../../repositories/notification/notification.repository'
 import { transporterConfig } from './transporterConfig'
 import * as utils from './utils/index'
+import {
+  OrderRemoveEvent,
+  OrderTruckChanged,
+  OrderReturnedFromInProgressStatus,
+} from '../../domain/order/domainEvents'
+
+import { emitTo } from '../../socket/index'
+import { IEmitTo, NotifyClientsEvent } from '../../socket/notifyClientsEvent'
 
 class NotificationService {
   senderEmail?: string
   bus: EventBus
   transporter: Transporter
+  emitter: typeof emitTo
 
-  constructor({ bus }: { bus: EventBus }) {
+  constructor({ bus, emitter }: { bus: EventBus; emitter: typeof emitTo }) {
+    this.emitter = emitter
     this.bus = bus
     this.senderEmail =
       process.env.NODE_ENV === 'production'
@@ -37,6 +47,16 @@ class NotificationService {
 
     const config = transporterConfig()
     this.transporter = nodemailer.createTransport(config)
+
+    // Оповещение клиентов по WebSocket
+    this.bus.subscribe(NotifyClientsEvent, (e) => {
+      this.publishEvent(e.payload)
+    })
+
+    this.bus.subscribe(OrderRemoveEvent, async ({ payload: { orderId } }) => {
+      await this.deleteNotificationsByOrderId(orderId)
+    })
+
     this.bus.subscribe(
       toCreateIdleTruckNotificationEvent,
       async ({ payload }) => {
@@ -47,25 +67,50 @@ class NotificationService {
         )
       }
     )
+
     this.bus.subscribe(
       toCancelIdleTruckNotificationMessagesEvent,
       async ({ payload }) => {
         await this.cancelIdleTruckNotificationMessages(payload)
       }
     )
-
     this.bus.subscribe(
       toSendIdleTruckNotificationMessageEvent,
       async ({ payload }) => {
         await this.sendIdleTruckNotificationMessage(payload)
       }
     )
+    this.bus.subscribe(OrderTruckChanged, async ({ payload: { orderId } }) => {
+      await this.deleteNotificationsByOrderId(orderId)
+    })
+
+    this.bus.subscribe(
+      OrderReturnedFromInProgressStatus,
+      async ({ payload: { orderId } }) => {
+        await this.deleteNotificationsByOrderId(orderId)
+      }
+    )
+  }
+
+  publishEvent(e: IEmitTo) {
+    this.emitter(e.subscriber, e.topic, e.payload)
   }
 
   async cancelIdleTruckNotificationMessages(notificationId: string) {
     await NotificationRepository.cancelIdleTruckNotificationMessages(
       notificationId
     )
+  }
+  async deleteNotificationsByOrderId(orderId: string): Promise<void> {
+    const notifications: IdleTruckNotificationMessage[] =
+      await NotificationRepository.getByOrderId(orderId)
+
+    notifications.forEach(async (notification) => {
+      notification.delete()
+      await NotificationRepository.updateIdleTruckNotificationMessage(
+        notification
+      )
+    })
   }
 
   async createIdleTruckNotificationMessage(
@@ -137,4 +182,4 @@ class NotificationService {
   }
 }
 
-export default new NotificationService({ bus })
+export default new NotificationService({ bus, emitter: emitTo })

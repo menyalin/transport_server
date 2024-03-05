@@ -1,15 +1,14 @@
-// @ts-nocheck
-import mongoose from 'mongoose'
+import mongoose, { PipelineStage, Types } from 'mongoose'
 import { BadRequestError } from '../../helpers/errors'
 import { Order, Downtime } from '../../models'
 
-const _getDatesFromBody = ({ body }) => {
+const _getDatesFromBody = ({ body }: { body: any }) => {
   const tmpDates = []
   if (body.type) {
     tmpDates.push(new Date(body.startPositionDate))
     tmpDates.push(new Date(body.endPositionDate))
   } else {
-    body.route.forEach((point) => {
+    body.route.forEach((point: any) => {
       if (point.arrivalDate) tmpDates.push(new Date(point.arrivalDate))
       if (point.departureDate) tmpDates.push(new Date(point.departureDate))
     })
@@ -17,11 +16,17 @@ const _getDatesFromBody = ({ body }) => {
   return tmpDates
 }
 
-const _checkUnfinishedOrder = async ({ body, id }) => {
+const _checkUnfinishedOrder = async ({
+  body,
+  id,
+}: {
+  body: any
+  id?: string
+}) => {
   const truckId = new mongoose.Types.ObjectId(
     body.confirmedCrew?.truck || body.truck
   )
-  const matcher = {
+  const matcher: PipelineStage.Match = {
     $match: {
       isActive: true,
       'confirmedCrew.truck': truckId,
@@ -47,14 +52,13 @@ const _checkUnfinishedOrder = async ({ body, id }) => {
       },
     },
   }
-  if (id && !body.type)
-    matcher.$match._id = { $ne: new mongoose.Types.ObjectId(id) }
+  if (id && !body.type) matcher.$match._id = { $ne: new Types.ObjectId(id) }
   const orders = await Order.aggregate([matcher])
   if (orders.length > 0)
     throw new BadRequestError('У грузовика есть незавершенные рейсы')
 }
 
-const _checkSequenceOfDates = (dates) => {
+const _checkSequenceOfDates = (dates: Date[]) => {
   if (dates.length >= 2) {
     for (let i = 1; i < dates.length; i++) {
       if (dates[i] < dates[i - 1])
@@ -65,20 +69,25 @@ const _checkSequenceOfDates = (dates) => {
   }
 }
 
-const _checkCrossDowntimes = async ({ body, dates, id }) => {
+const _checkCrossDowntimes = async ({
+  body,
+  dates,
+  id,
+}: {
+  body: any
+  dates: any[]
+  id?: string
+}) => {
   const sDate = new Date(dates[0])
-  const truckId = new mongoose.Types.ObjectId(
-    body.confirmedCrew?.truck || body.truck
-  )
-  const matcher = {
+  const truckId = new Types.ObjectId(body.confirmedCrew?.truck || body.truck)
+  const matcher: PipelineStage.Match = {
     $match: {
       isActive: true,
-      company: new mongoose.Types.ObjectId(body.company),
+      company: new Types.ObjectId(body.company),
       truck: truckId,
       $expr: {
         $or: [
           {
-            // Начало нового рейса внутри Downtime
             $and: [
               { $lte: ['$startPositionDate', sDate] },
               { $gte: ['$endPositionDate', sDate] },
@@ -88,7 +97,7 @@ const _checkCrossDowntimes = async ({ body, dates, id }) => {
       },
     },
   }
-  if (id) matcher.$match._id = { $ne: new mongoose.Types.ObjectId(id) }
+  if (id) matcher.$match._id = { $ne: new Types.ObjectId(id) }
 
   if (dates.length >= 2) {
     const eDate = new Date(dates[dates.length - 1])
@@ -119,15 +128,21 @@ const _checkCrossDowntimes = async ({ body, dates, id }) => {
   return null
 }
 
-const _checkCrossOrders = async ({ body, dates, id }) => {
+const _checkCrossOrders = async ({
+  body,
+  dates,
+  id,
+}: {
+  body: any
+  dates: any[]
+  id?: string
+}) => {
   const sDate = new Date(dates[0])
-  const truckId = new mongoose.Types.ObjectId(
-    body.confirmedCrew?.truck || body.truck
-  )
-  const matcher = {
+  const truckId = new Types.ObjectId(body.confirmedCrew?.truck || body.truck)
+  const matcher: PipelineStage.Match = {
     $match: {
       isActive: true,
-      company: new mongoose.Types.ObjectId(body.company),
+      company: new Types.ObjectId(body.company),
       'confirmedCrew.truck': truckId,
       $expr: {
         $or: [
@@ -230,7 +245,7 @@ const _checkCrossOrders = async ({ body, dates, id }) => {
     )
 }
 
-export default async ({ body, id }) => {
+export default async ({ body, id }: { body: any; id?: string }) => {
   if (!!body.type && !body.truck)
     throw new BadRequestError('Запрос не корректен')
   if (!body.type && !body.confirmedCrew?.truck) return null

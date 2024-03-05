@@ -1,5 +1,3 @@
-// @ts-nocheck
-/* eslint-disable comma-dangle */
 import mongoose from 'mongoose'
 import PriceDTO from '../../dto/price.dto'
 import {
@@ -22,25 +20,21 @@ import { getPaymentInvoicesByOrderIds } from './getPaymentInvoicesByOrderIds'
 import OrderRepository from '../../repositories/order/order.repository'
 import { Order as OrderDomain } from '../../domain/order/order.domain'
 import { bus } from '../../eventBus'
-import { OrderUpdatedEvent } from '../../domain/order/domainEvents'
+import {
+  OrdersUpdatedEvent,
+  OrderTruckChanged,
+  OrderReturnedFromInProgressStatus,
+} from '../../domain/order/domainEvents'
+import { Route } from '../../values/order/route'
 
-const _isEqualDatesOfRoute = ({ oldRoute, newRoute }) => {
-  const oldArrivalDate = new Date(oldRoute[0].arrivalDate).toLocaleString()
-  const newArrivalDate = new Date(newRoute[0].arrivalDate).toLocaleString()
-  const oldDepartureDate = new Date(
-    oldRoute[oldRoute.length - 1].departureDate
-  ).toLocaleString()
-
-  const newDepartureDate = new Date(
-    newRoute[newRoute.length - 1].departureDate
-  ).toLocaleString()
-  return (
-    oldArrivalDate === newArrivalDate && oldDepartureDate === newDepartureDate
-  )
+const _isEqualDatesOfRoute = (oldRoute: Route, newRoute: Route) => {
+  if (!(oldRoute instanceof Route) || !(newRoute instanceof Route))
+    throw new Error(' _isEqualDatesOfRoute : is invalid route')
+  return oldRoute.totalDuration('minutes') === newRoute.totalDuration('minutes')
 }
 
 class OrderService {
-  async create({ body, user }) {
+  async create({ body, user }: { body: any; user: string }) {
     await PermissionService.checkPeriod({
       userId: user,
       companyId: body.company,
@@ -75,7 +69,7 @@ class OrderService {
     return order
   }
 
-  async createFromTemplate({ body, user }) {
+  async createFromTemplate({ body, user }: { body: any; user: string }) {
     if (!Array.isArray(body) || body.length === 0)
       throw new BadRequestError('Не верный формат данных')
     const templateIds = body.map((i) => i.template)
@@ -88,6 +82,7 @@ class OrderService {
       const template = templates.find(
         (t) => t._id.toString() === body[i].template
       )
+      if (!template) continue
       const startDate = body[i].date
       const route = getRouteFromTemplate({ template, date: startDate })
       for (let j = 0; j < body[i].count; j++) {
@@ -114,15 +109,22 @@ class OrderService {
     return { message: 'created' }
   }
 
-  async disableOrder({ orderId, state }) {
-    const order = await OrderModel.findById(orderId)
+  async disableOrder({ orderId, state }: { orderId: string; state: boolean }) {
+    const order = await OrderRepository.getById(orderId)
     order.isDisabled = state
-    emitTo(order.company.toString(), 'order:updated', order)
-    await order.save()
+    emitTo(order.company, 'order:updated', order)
+    bus.publish(OrdersUpdatedEvent([order]))
   }
 
-  async moveOrderInSchedule({ orderId, truck, startPositionDate }, user) {
-    const order = await OrderModel.findById(orderId)
+  async moveOrderInSchedule(
+    {
+      orderId,
+      truck,
+      startPositionDate,
+    }: { orderId: any; truck: any; startPositionDate: any },
+    user: string
+  ) {
+    const order: any = await OrderModel.findById(orderId)
     if (!truck) {
       order.confirmedCrew.truck = null
       order.confirmedCrew.outsourceAgreement = null
@@ -148,17 +150,25 @@ class OrderService {
     })
   }
 
-  async getList(params) {
+  async getList(params: any) {
     try {
       const pipeline = getOrderListPipeline(params)
       const res = await OrderModel.aggregate(pipeline)
       return res[0]
-    } catch (e) {
-      throw new Error(e.message)
+    } catch (e: any) {
+      throw new Error(e?.message)
     }
   }
 
-  async getListForSchedule({ profile, startDate, endDate }) {
+  async getListForSchedule({
+    profile,
+    startDate,
+    endDate,
+  }: {
+    profile: string
+    startDate: string
+    endDate: string
+  }) {
     try {
       const pipeline = getSchedulePipeline({
         company: profile,
@@ -167,15 +177,15 @@ class OrderService {
       })
       const res = await OrderModel.aggregate(pipeline)
       return res
-    } catch (e) {
-      throw new Error(e.message)
+    } catch (e: any) {
+      throw new Error(e?.message)
     }
   }
 
-  async deleteById({ id, user }) {
+  async deleteById({ id, user }: { id: string; user: string }) {
     const order: OrderDomain = await OrderRepository.getById(id)
     order.remove(user)
-    order.events.forEach((event: IDomainEvent) => {
+    order.events.forEach((event) => {
       bus.publish(event)
     })
     order.clearEvents()
@@ -190,45 +200,55 @@ class OrderService {
     return order
   }
 
-  async getById(id) {
+  async getById(id: string) {
     const allowedStatusesForGetDocsRegistry = ['completed']
-    const order = await OrderModel.findById(id).lean()
+    const order: any = await OrderModel.findById(id).lean()
     if (
       order &&
       allowedStatusesForGetDocsRegistry.includes(order.state.status)
     ) {
       order.docsRegistry = await getDocsRegistryByOrderId(order._id.toString())
+
       order.paymentInvoices = await getPaymentInvoicesByOrderIds([
-        order._id.toString(),
-        ...(order.paymentParts?.map((i) => i._id.toString()) || []),
+        order._id?.toString(),
+        ...(order?.paymentParts?.map((i: any) => i._id.toString()) || []),
       ])
     }
 
     return order
   }
 
-  async updateFinalPrices({ orderId, finalPrices, company, user }) {
-    const order = await OrderModel.findOne({ _id: orderId, company })
-    order.finalPrices = finalPrices
-    await order.save()
+  async updateFinalPrices({
+    orderId,
+    finalPrices,
+    user,
+  }: {
+    orderId: string
+    finalPrices: any[]
+    user: string
+  }) {
+    const order = await OrderRepository.getById(orderId)
+    order.setFinalPrices(finalPrices)
+    bus.publish(OrdersUpdatedEvent([order]))
+
     emitTo(
       order.company.toString(),
       `order:${orderId}:finalPriceUpdated`,
-      order.toJSON()
+      order.toObject()
     )
     await ChangeLogService.add({
-      docId: order._id.toString(),
-      company: order.company.toString(),
+      docId: order._id,
+      company: order.company,
       coll: 'order',
       user,
       opType: 'updateFinalPrices',
-      body: JSON.stringify(order.toJSON()),
+      body: JSON.stringify(order.toObject()),
     })
     return order
   }
 
-  async updateOne({ id, body, user }) {
-    checkRefusedOrder(body) // TODO: Удалить после перехода на использование OrderDomain
+  async updateOne({ id, body, user }: { id: string; body: any; user: string }) {
+    checkRefusedOrder(body)
 
     if (!body.client.agreement && body.route[0].plannedDate)
       body.client.agreement = await getClientAgreementId(body)
@@ -250,15 +270,15 @@ class OrderService {
 
     // если в маршруте изменились даты проверяется пересечение с другими записями
     if (body.route) {
-      const datesNotChanged = _isEqualDatesOfRoute({
-        oldRoute: order.toJSON().route,
-        newRoute: body.route,
-      })
+      const datesNotChanged = _isEqualDatesOfRoute(
+        new Route(order.route),
+        new Route(body.route)
+      )
       if (!datesNotChanged) await checkCrossItems({ body, id })
     }
 
     // контроль разрешения на редактирвоание выполненного рейса
-    if (order.state.status === 'completed')
+    if (order.state?.status === 'completed')
       await PermissionService.checkPeriod({
         userId: user,
         companyId: body.company,
@@ -274,13 +294,32 @@ class OrderService {
       }
     }
 
-    const orderDomain = new OrderDomain({ ...order, ...body, _id: order._id })
-    orderDomain.unlock()
+    if (
+      body.confirmedCrew?.truck?.toString() !==
+      order.confirmedCrew?.truck?.toString()
+    )
+      bus.publish(OrderTruckChanged({ orderId: order._id.toString() }))
 
-    await OrderRepository.save([orderDomain])
-    bus.publish(OrderUpdatedEvent(orderDomain))
+    if (
+      order.state?.status === 'inProgress' &&
+      ['getted', 'needGet'].includes(body.state.status)
+    ) {
+      bus.publish(
+        OrderReturnedFromInProgressStatus({ orderId: order._id.toString() })
+      )
+    }
 
-    emitTo(orderDomain.company.toString(), 'order:updated', orderDomain)
+    const orderDomain = new OrderDomain({
+      ...order.toJSON(),
+      ...body,
+      _id: order._id,
+    })
+    orderDomain.setDisableStatus(false)
+
+    bus.publish(OrdersUpdatedEvent([orderDomain]))
+
+    emitTo(orderDomain.company, 'order:updated', orderDomain)
+
     await ChangeLogService.add({
       docId: new mongoose.Types.ObjectId(orderDomain.id),
       company: orderDomain.company,
@@ -289,13 +328,14 @@ class OrderService {
       opType: 'update',
       body: JSON.stringify(orderDomain),
     })
+
     return orderDomain
   }
-
+  //@ts-ignore
   async getDistance({ coords }) {
     try {
-      const radiusesArray = []
-      coords.forEach((i) => {
+      const radiusesArray: any[] = []
+      coords.forEach(() => {
         radiusesArray.push(-1)
       })
       const res = await orsDirections.calculate({
@@ -315,30 +355,35 @@ class OrderService {
     }
   }
 
-  async setDocsState(id, state) {
+  async setDocsState(id: string, state: boolean) {
     const order = await OrderModel.findById(id)
     if (!order) throw new BadRequestError('order not found')
-    order.docsState.getted = state
-    order.docsState.date = state ? new Date() : null
+    order.docsState = {
+      getted: state,
+      date: state ? new Date() : undefined,
+    }
+
     await order.save()
     emitTo(order.company.toString(), 'order:updated', order)
     return order
   }
 
-  async setDocs(id, docs) {
+  async setDocs(id: string, docs: any[]) {
     const order = await OrderModel.findById(id)
     if (!order) throw new BadRequestError('order not found')
     order.docs = docs
-    if (docs.length && !order?.docsState.getted) {
-      order.docsState.getted = true
-      order.docsState.date = new Date()
-    }
+    if (docs.length && !order.docsState?.getted)
+      order.docsState = {
+        getted: true,
+        date: new Date(),
+      }
+
     await order.save()
     emitTo(order.company.toString(), 'order:updated', order)
     return order
   }
 
-  async autoSetRoutesDates(inputData, company) {
+  async autoSetRoutesDates(inputData: any, company: string) {
     // Получить список рейсов по грузовикам с учетом периода и компании
     const orders = await OrderRepository.getOrdersByTrucksAndPeriod({
       truckIds: inputData.truckIds,

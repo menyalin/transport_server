@@ -7,6 +7,7 @@ export default async (body) => {
     company: body.company,
     client: body.client.client,
     date: body.route[0].plannedDate,
+    carrier: body.confirmedCrew?.tkName,
   })
   return agreement ? agreement._id.toString() : null
 }

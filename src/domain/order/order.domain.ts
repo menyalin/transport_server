@@ -2,17 +2,24 @@ import dayjs from 'dayjs'
 import { isDateRangesOverlapping } from '../../utils/isDateRangesOverlapping'
 import { Route } from '../../values/order/route'
 
-import { ORDER_DOMAIN_EVENTS, OrderRemoveEvent } from './domainEvents'
+import {
+  ORDER_DOMAIN_EVENTS,
+  OrderRemoveEvent,
+  OrdersUpdatedEvent,
+} from './domainEvents'
 import { BusEvent } from 'ts-bus/types'
 import { NotifyClientsEvent } from '../../socket/notifyClientsEvent'
 import { Client } from './client'
 import { RoutePoint } from '../../values/order/routePoint'
+import { OrderPrice } from './orderPrice'
+import { ORDER_PRICE_TYPES_ENUM } from '../../constants/priceTypes'
+import { BadRequestError } from '../../helpers/errors'
 
 export interface IOrderDTO {
   _id: string
   orderDate?: string | Date
   startPositionDate?: Date | string
-  route: []
+  route: RoutePoint[] | any[]
   state: {
     status: string
     driverNotified?: boolean
@@ -27,24 +34,24 @@ export interface IOrderDTO {
     outsourceAgreement?: string
     tkName?: string
   }
-  docs: []
+  docs?: []
   client: {
     client: string
   }
-  prePrices: []
-  prices: []
-  finalPrices: []
-  outsourceCosts: []
-  cargoParams: object
-  reqTransport: object
-  paymentParts: []
-  analytics: object
-  docsState: object
-  paymentToDriver: object
-  note: string
-  noteAccountant: string
-  isActive: boolean
-  isDisabled: boolean
+  prePrices?: any[]
+  prices?: any[]
+  finalPrices?: any[]
+  outsourceCosts?: []
+  cargoParams?: object
+  reqTransport?: object
+  paymentParts?: []
+  analytics?: object
+  docsState?: object
+  paymentToDriver?: object
+  note?: string
+  noteAccountant?: string
+  isActive?: boolean
+  isDisabled?: boolean
 }
 
 export class Order {
@@ -71,18 +78,18 @@ export class Order {
   }
   docs: []
   client: Client
-  prePrices: []
-  prices: []
-  finalPrices: []
+  prePrices?: OrderPrice[]
+  prices?: OrderPrice[]
+  finalPrices?: OrderPrice[]
   outsourceCosts: []
   cargoParams: object
   reqTransport: object
   paymentParts: []
-  analytics: object
-  docsState: object
-  paymentToDriver: object
-  note: string
-  noteAccountant: string
+  analytics?: object
+  docsState?: object
+  paymentToDriver?: object
+  note?: string
+  noteAccountant?: string
   isActive: boolean = true
   isDisabled: boolean = false
 
@@ -97,29 +104,36 @@ export class Order {
       ? new Date(order.startPositionDate)
       : null
 
-    this._id = order._id
+    this._id = order._id.toString()
     this.state = order.state
     this.grade = order.grade || {}
-    this.company = order.company
+    this.company = order.company.toString()
     this.orderDate = Order.getOrderDate(order)
     this.route = new Route(order.route)
     this.confirmedCrew = order.confirmedCrew
-    this.docs = order.docs
+    this.docs = order.docs || []
     this.client = new Client(order.client)
-    this.prePrices = order.prePrices
-    this.prices = order.prices
-    this.finalPrices = order.finalPrices
-    this.outsourceCosts = order.outsourceCosts
-    this.cargoParams = order.cargoParams
-    this.reqTransport = order.reqTransport
-    this.paymentParts = order.paymentParts
+    if (Array.isArray(order.prePrices))
+      this.prePrices = order.prePrices?.map((i) => new OrderPrice(i))
+    if (Array.isArray(order.prices))
+      this.prices = order.prices?.map((i) => new OrderPrice(i))
+    if (Array.isArray(order.finalPrices))
+      this.finalPrices = order.finalPrices?.map((i) => new OrderPrice(i))
+    this.outsourceCosts = order.outsourceCosts || []
+    this.cargoParams = order.cargoParams || {}
+    this.reqTransport = order.reqTransport || {}
+    this.paymentParts = order.paymentParts || []
     this.analytics = order.analytics
     this.docsState = order.docsState
     this.paymentToDriver = order.paymentToDriver
     this.note = order.note
     this.noteAccountant = order.noteAccountant
     this.isActive = order.isActive !== undefined ? order.isActive : true
-    this.isDisabled = order.isDisabled
+    this.isDisabled = order.isDisabled || false
+    if (this.state.status === 'completed' && !this.isReadyToComplete)
+      throw new BadRequestError(
+        'Изменение статуса рейса на "Выполнен" не возможно! Проверьте корректность заполнения базового тарифа и временных отметок в рейсе'
+      )
   }
 
   clearEvents() {
@@ -159,8 +173,12 @@ export class Order {
     }
   }
 
-  unlock() {
-    this.isDisabled = false
+  setDisableStatus(status: boolean) {
+    this.isDisabled = status
+  }
+
+  setFinalPrices(prices: any[]) {
+    this.finalPrices = prices.map((price) => new OrderPrice(price))
   }
 
   get activePoints(): RoutePoint[] {
@@ -172,6 +190,21 @@ export class Order {
 
   get id() {
     return this._id?.toString()
+  }
+  get basePrice(): OrderPrice | null {
+    const finalPrice =
+      this.finalPrices?.find((i) => i.type === ORDER_PRICE_TYPES_ENUM.base) ||
+      null
+    const price =
+      this.prices?.find((i) => i.type === ORDER_PRICE_TYPES_ENUM.base) || null
+    const prePrice =
+      this.prePrices?.find((i) => i.type === ORDER_PRICE_TYPES_ENUM.base) ||
+      null
+    return finalPrice || price || prePrice || null
+  }
+
+  get isReadyToComplete(): Boolean {
+    return !!this.basePrice && this.route.routeDatesFilled
   }
 
   get isCompleted() {

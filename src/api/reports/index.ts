@@ -60,5 +60,10 @@ router.post(
   [jwtAuth, bodyValidator(orderDocsSchema)],
   (...args) => ctrl.orderDocs(...args)
 )
+router.post(
+  '/orders_wo_invoice',
+  [jwtAuth, bodyValidator(orderDocsSchema)],
+  (...args) => ctrl.ordersWOInvoice(...args)
+)
 
 export default router

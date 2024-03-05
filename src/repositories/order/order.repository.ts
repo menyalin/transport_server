@@ -13,6 +13,7 @@ import {
 import { getFullOrderDataPipeline } from './pipelines/getFullOrderDataPipeline'
 import {
   OrderRemoveEvent,
+  OrdersUpdatedEvent,
   OrdersRouteUpdateEvent,
 } from '../../domain/order/domainEvents'
 import { FullOrderDataDTO } from '../../domain/order/dto/fullOrderData.dto'
@@ -20,11 +21,11 @@ import { FullOrderDataDTO } from '../../domain/order/dto/fullOrderData.dto'
 class OrderRepository {
   constructor() {
     bus.subscribe(OrderRemoveEvent, (e) => {
-      try {
-        this.removeById(e.payload)
-      } catch (e) {
-        console.log(' order remove subscription error: ', e)
-      }
+      this.removeById(e.payload)
+    })
+
+    bus.subscribe(OrdersUpdatedEvent, ({ payload }) => {
+      this.save(payload)
     })
   }
 

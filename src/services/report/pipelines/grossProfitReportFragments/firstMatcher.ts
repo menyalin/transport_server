@@ -40,6 +40,16 @@ export const firstMatcher = ({ company, dateRange, mainFilters }) => {
       })
     )
 
+  // Основной отбор по Соглашениям
+  if (mainFilters.agreements?.values.length)
+    firstMatcher.$match.$expr.$and.push(
+      _getMainFilterBlock({
+        field: '$client.agreement',
+        cond: mainFilters.agreements.cond,
+        values: mainFilters.agreements.values,
+      })
+    )
+
   // Основной отбор по TkNames
   if (mainFilters.tkNames?.values.length)
     firstMatcher.$match.$expr.$and.push(

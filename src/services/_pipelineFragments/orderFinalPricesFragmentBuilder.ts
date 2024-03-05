@@ -1,8 +1,7 @@
-// @ts-nocheck
-import { ORDER_PRICE_TYPES_ENUM } from '../../constants/priceTypes'
+import { ORDER_PRICE_TYPES_ENUM_VALUES } from '../../constants/priceTypes'
 const priceGroups = ['$finalPrices', '$prices', '$prePrices']
 
-const getTotalPriceByType = (type) => ({
+const getTotalPriceByType = (type: string) => ({
   $switch: {
     branches: priceGroups.map((group) => ({
       case: {
@@ -19,13 +18,28 @@ const getTotalPriceByType = (type) => ({
         ],
       },
       then: {
-        $getField: {
-          field: 'priceWOVat',
-          input: {
-            $first: {
-              $filter: {
-                input: group,
-                cond: { $eq: ['$$this.type', type] },
+        price: {
+          $getField: {
+            field: 'price',
+            input: {
+              $first: {
+                $filter: {
+                  input: group,
+                  cond: { $eq: ['$$this.type', type] },
+                },
+              },
+            },
+          },
+        },
+        priceWOVat: {
+          $getField: {
+            field: 'priceWOVat',
+            input: {
+              $first: {
+                $filter: {
+                  input: group,
+                  cond: { $eq: ['$$this.type', type] },
+                },
               },
             },
           },
@@ -33,14 +47,17 @@ const getTotalPriceByType = (type) => ({
       },
     })),
 
-    default: 0,
+    default: {
+      price: 0,
+      priceWOVat: 0,
+    },
   },
 })
 
 export const finalPricesFragmentBuilder = () => {
-  const res = {}
-  ORDER_PRICE_TYPES_ENUM.forEach((priceType) => {
-    res[priceType] = getTotalPriceByType(priceType)
+  let res = {}
+  ORDER_PRICE_TYPES_ENUM_VALUES.forEach((priceType) => {
+    res = Object.assign(res, { [priceType]: getTotalPriceByType(priceType) })
   })
   return res
 }
@@ -56,13 +73,13 @@ export const totalSumFragmentBuilder = () => ({
           '$$value.price',
           {
             $add: [
-              '$$this.v',
-              { $multiply: ['$$this.v', '$agreementVatRate', 0.01] },
+              '$$this.v.priceWOVat',
+              { $multiply: ['$$this.v.priceWOVat', '$agreementVatRate', 0.01] },
             ],
           },
         ],
       },
-      priceWOVat: { $add: ['$$value.priceWOVat', '$$this.v'] },
+      priceWOVat: { $add: ['$$value.priceWOVat', '$$this.v.priceWOVat'] },
     },
   },
 })
