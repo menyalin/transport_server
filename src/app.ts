@@ -43,6 +43,8 @@ app.use(
       'http://localhost:8080',
       'https://s4log.ru',
       'https://alfa.s4log.ru',
+      'https://carrier.logicore.ru',
+      'https://logicore.ru',
     ],
   })
 )
