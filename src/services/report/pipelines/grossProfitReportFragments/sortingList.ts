@@ -1,17 +1,22 @@
-// @ts-nocheck
-// import mongoose from 'mongoose'
-// const { Types } = mongoose
+import { PipelineStage } from 'mongoose'
 
-export const sortingList = ({ sortBy, sortDesc }) => {
-  const crossMap = {
+export const sortingList = ({
+  sortBy,
+  sortDesc,
+  priceWithVat,
+}: {
+  sortBy: string[]
+  sortDesc: boolean[]
+  priceWithVat: boolean
+}): PipelineStage[] => {
+  const crossMap: Record<string, string> = {
     orderDate: 'orderDate',
-    price: 'totalWithVat',
-    kPrice: 'totalWithVat',
+    price: priceWithVat ? 'totalWithVat' : 'totalWOVat',
+    kPrice: priceWithVat ? 'totalWithVat' : 'totalWOVat',
   }
 
-  const sort = {
-    $sort: {},
-  }
+  const sort: PipelineStage = { $sort: {} }
+
   if (sortBy.length > 0)
     sort.$sort = {
       [crossMap[sortBy[0]]]: sortDesc[0] ? 1 : -1,

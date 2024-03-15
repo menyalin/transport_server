@@ -7,16 +7,20 @@ import {
 } from '../../models'
 import { BadRequestError } from '../../helpers/errors'
 import { getListPipeline } from './pipelines/getListPipeline'
-import { DateRange } from '../../classes/dateRange'
+
 import { PaymentInvoiceDomain } from '../../domain/paymentInvoice/paymentInvoice'
 import {
   IAddOrdersToInvoiceProps,
   IPickOrdersForPaymentInvoiceProps,
+  PickOrdersForPaymentInvoicePropsSchema,
 } from '../../domain/paymentInvoice/interfaces'
 import { PipelineStage } from 'mongoose'
 import { OrderInPaymentInvoice } from '../../domain/paymentInvoice/orderInPaymentInvoice'
 import { OrderPickedForInvoiceDTO } from '../../domain/paymentInvoice/dto/orderPickedForInvoice.dto'
-//  import { OrderInPaymentInvoice } from '../../domain/paymentInvoice/orderInPaymentInvoice'
+
+import * as pf from './printForms'
+import { PrintForm } from '../../domain/printForm/printForm.domain'
+import { PrintFormRepository } from '../../repositories'
 
 interface IConstructorProps {
   model: typeof PaymentInvoiceModel
@@ -24,7 +28,6 @@ interface IConstructorProps {
   logService: typeof ChangeLogService
   emitter: typeof emitTo
 }
-
 class PaymentInvoiceService {
   model: typeof PaymentInvoiceModel
   modelName: string
@@ -94,7 +97,8 @@ class PaymentInvoiceService {
     })
 
     const orders = await PaymentInvoiceRepository.getOrdersPickedForInvoice({
-      paymentInvoiceId: updatedInvoice._id,
+      invoiceId: updatedInvoice._id,
+      company: updatedInvoice.company,
     })
 
     updatedInvoice.setOrders(orders)
@@ -139,40 +143,71 @@ class PaymentInvoiceService {
     return res[0] || []
   }
 
+  async getAllowedPrintForms(
+    agreement: string,
+    client: string
+  ): Promise<PrintForm[]> {
+    return await PrintFormRepository.getTemplatesByTypeAndAgreement(
+      'paymentInvoice',
+      agreement,
+      client
+    )
+  }
+
+  async downloadDoc(invoiceId: string, templateName: string): Promise<Buffer> {
+    if (!invoiceId || !templateName)
+      throw new Error(
+        'PaymentInvoiceService : downloadDoc : required arg is missing'
+      )
+    const docBuffer: Buffer = await pf.paymentInvoiceDocumentBuilder(
+      invoiceId,
+      templateName
+    )
+    return docBuffer
+  }
+
   async addOrdersToInvoice({
     company,
     orders,
     paymentInvoiceId,
+    registryData,
   }: IAddOrdersToInvoiceProps) {
     if (!orders || orders.length === 0)
       throw new BadRequestError(
         'PaymentInvoiceService:addOrdersToInvoice. missing required params'
       )
     // Формирую новые объекты в коллекции
-    const ordersDTO: OrderPickedForInvoiceDTO[] =
-      await PaymentInvoiceRepository.getOrdersForInvoiceDtoByOrders(
-        orders,
-        company
-      )
-    ordersDTO.forEach((i) => {
-      i.saveTotal()
-    })
-    // Новые элементы для внесения в таблицу OrdersInPaymentInvoice
-    const newItemRows = ordersDTO.map((orderDTO) =>
-      OrderInPaymentInvoice.create({
-        order: orderDTO,
-        invoiceId: paymentInvoiceId,
+    try {
+      const ordersDTO: OrderPickedForInvoiceDTO[] =
+        await PaymentInvoiceRepository.getOrdersPickedForInvoiceDTOByOrders({
+          orderIds: orders,
+          company,
+        })
+
+      ordersDTO.forEach((i) => {
+        if (registryData) i.addLoaderData(registryData)
+        i.saveTotal()
       })
-    )
 
-    await PaymentInvoiceRepository.addOrdersToInvoice(newItemRows)
+      const newItemRows = ordersDTO.map((orderDTO) =>
+        OrderInPaymentInvoice.create({
+          order: orderDTO,
+          invoiceId: paymentInvoiceId,
+        })
+      )
 
-    this.emitter(company, 'orders:addedToPaymentInvoice', {
-      orders: ordersDTO,
-      paymentInvoiceId,
-    })
+      await PaymentInvoiceRepository.addOrdersToInvoice(newItemRows)
 
-    return newItemRows
+      this.emitter(company, 'orders:addedToPaymentInvoice', {
+        orders: ordersDTO,
+        paymentInvoiceId,
+      })
+
+      return newItemRows
+    } catch (e) {
+      console.log(e)
+      throw e
+    }
   }
 
   async removeOrdersFromPaymentInvoice({
@@ -202,24 +237,15 @@ class PaymentInvoiceService {
   }
 
   async pickOrders(props: IPickOrdersForPaymentInvoiceProps) {
-    if (!props.company || !props.paymentInvoiceId)
-      throw new BadRequestError(
-        'PaymentInvoiceService:pickOrders. missing required params'
-      )
+    try {
+      PickOrdersForPaymentInvoicePropsSchema.parse(props)
+      const result =
+        await PaymentInvoiceRepository.pickOrdersForPaymentInvoice(props)
 
-    const paymentInvoice = await this.model
-      .findById(props.paymentInvoiceId)
-      .populate('client')
-
-    if (!paymentInvoice)
-      throw new BadRequestError(
-        'PaymentInvoiceService:pickOrders. paymentInvoice not found'
-      )
-
-    const orders =
-      await PaymentInvoiceRepository.pickOrdersForPaymentInvoice(props)
-
-    return orders || []
+      return result || [[]]
+    } catch (e) {
+      throw e
+    }
   }
 
   async updateOrderPrices({
@@ -229,23 +255,27 @@ class PaymentInvoiceService {
     orderId: string
     company: string
   }): Promise<OrderPickedForInvoiceDTO | null> {
-    const [order] =
-      await PaymentInvoiceRepository.getOrdersForInvoiceDtoByOrders(
-        [orderId],
-        company
-      )
-    if (!order) return null
+    try {
+      const [order] = await PaymentInvoiceRepository.getOrdersPickedForInvoice({
+        orderIds: [orderId],
+        company,
+      })
+      if (!order) return null
 
-    const [item] =
-      await PaymentInvoiceRepository.getOrderInPaymentInvoiceItemsByOrders([
-        orderId,
-      ])
-    item.setTotal(order)
-    order.saveTotal()
+      const [item] =
+        await PaymentInvoiceRepository.getOrderInPaymentInvoiceItemsByOrders([
+          orderId,
+        ])
 
-    PaymentInvoiceRepository
+      item.setTotal(order)
+      order.saveTotal()
 
-    return order
+      await PaymentInvoiceRepository.updateOrdersInPaymentInvoce([item])
+
+      return order
+    } catch (e) {
+      return null
+    }
   }
 }
 

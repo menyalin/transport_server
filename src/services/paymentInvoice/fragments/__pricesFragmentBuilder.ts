@@ -1,5 +1,4 @@
-// @ts-nocheck
-import { ORDER_PRICE_TYPES_ENUM } from '../../../constants/priceTypes'
+import { ORDER_PRICE_TYPES_ENUM_VALUES } from '../../../constants/priceTypes'
 const priceGroups = ['$finalPrices', '$prices', '$prePrices']
 /*
   agreementVatRate : [ 20, 0 ]
@@ -23,7 +22,13 @@ const paymentPartBasePriceFragment = () => ({
   },
 })
 
-const getPriceWOVatFieldFragment = ({ group, type }) => {
+const getPriceWOVatFieldFragment = ({
+  group,
+  type,
+}: {
+  group: string
+  type: string
+}) => {
   const fragment = {
     $getField: {
       field: 'priceWOVat',
@@ -42,7 +47,7 @@ const getPriceWOVatFieldFragment = ({ group, type }) => {
   return fragment
 }
 
-const getTotalPriceByType = (type) => ({
+const getTotalPriceByType = (type: string) => ({
   $switch: {
     branches: priceGroups.map((group) => ({
       case: {
@@ -79,9 +84,12 @@ const getTotalPriceByType = (type) => ({
 })
 
 const orderPricesFragment = () => {
-  const res = {}
-  ORDER_PRICE_TYPES_ENUM.forEach((priceType) => {
-    res[priceType] = getTotalPriceByType(priceType)
+  let res = {}
+  ORDER_PRICE_TYPES_ENUM_VALUES.forEach((priceType) => {
+    res = {
+      ...res,
+      [priceType]: getTotalPriceByType(priceType),
+    }
   })
   return res
 }

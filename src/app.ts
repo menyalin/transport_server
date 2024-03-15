@@ -32,6 +32,7 @@ import fineRouter from './api/fine'
 import paymentInvoiceRouter from './api/paymentInvoice'
 import docTemplateRouter from './api/docTemplate'
 import adminRouter from './api/admin'
+import utilsRouter from './api/utils/utils'
 
 const app = express()
 
@@ -42,6 +43,8 @@ app.use(
       'http://localhost:8080',
       'https://s4log.ru',
       'https://alfa.s4log.ru',
+      'https://carrier.logicore.ru',
+      'https://logicore.ru',
     ],
   })
 )
@@ -78,6 +81,7 @@ app.use('/api/fines', fineRouter)
 app.use('/api/docs_registry', docsRegistryRouter)
 app.use('/api/payment_invoice', paymentInvoiceRouter)
 app.use('/api/doc_templates', docTemplateRouter)
+app.use('/api/utils', utilsRouter)
 
 app.use('/api/admin', adminRouter)
 app.use(errorMiddleware)

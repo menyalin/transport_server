@@ -29,6 +29,7 @@ const getOutsourceCosts = (withVat) => ({
 export const firstProject = () => ({
   $project: {
     status: '$state.status',
+    agreement: '$client.agreement',
     client: '$client.client',
     orderDate: firstPlannedDate(),
     orderType: '$analytics.type',

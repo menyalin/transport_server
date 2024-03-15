@@ -1,27 +1,30 @@
 import { OrderPickedForInvoiceDTO } from '../../domain/paymentInvoice/dto/orderPickedForInvoice.dto'
 import {
-  IGetOrdersForPaymentInvoiceProps,
+  GetOrdersPickedForInvoiceProps,
   IPickOrdersForPaymentInvoiceProps,
+  IStaticticData,
 } from '../../domain/paymentInvoice/interfaces'
 import { PaymentInvoiceDomain } from '../../domain/paymentInvoice/paymentInvoice'
 import {
   PaymentInvoice as PaymentInvoiceModel,
   OrderInPaymentInvoice as OrderInPaymentInvoiceModel,
 } from '../../models'
-import { getOrdersForPaymentInvoice } from './getOrdersForInvoice'
 import { pickOrdersForPaymentInvoice } from './pickOrdersForPaymentInvoice'
-import { getOrdersForInvoiceDtoByOrders } from './getOrdersForInvoiceDtoByOrders'
 import { OrderInPaymentInvoice } from '../../domain/paymentInvoice/orderInPaymentInvoice'
-
+import { getOrdersPickedForInvoice } from './getOrdersPickedForInvoice'
+import { getOrdersPickedForInvoiceDTOByOrders } from './getOrdersPickedForInvoiceDTOByOrders'
 class PaymentInvoiceRepository {
   async getInvoiceById(id: string): Promise<PaymentInvoiceDomain | null> {
-    const data: PaymentInvoiceDomain | null =
+    const invoice: PaymentInvoiceDomain | null =
       await PaymentInvoiceModel.findById(id).lean()
-    if (!data || !data._id) return null
+    if (!invoice || !invoice._id) return null
+
     const orders = await this.getOrdersPickedForInvoice({
-      paymentInvoiceId: data._id.toString(),
+      invoiceId: invoice._id.toString(),
+      company: invoice.company.toString(),
     })
-    const paymentInvoice = PaymentInvoiceDomain.create(data, orders)
+    const paymentInvoice = PaymentInvoiceDomain.create(invoice, orders)
+
     return paymentInvoice
   }
 
@@ -46,7 +49,9 @@ class PaymentInvoiceRepository {
       updateOne: { filter, update, upsert: false },
     })
 
-    // bulk write  -update one
+    await OrderInPaymentInvoiceModel.bulkWrite(
+      items.map((i) => makeOperation({ order: i.order }, i))
+    )
   }
 
   async addOrdersToInvoice(items: OrderInPaymentInvoice[]): Promise<void> {
@@ -55,21 +60,20 @@ class PaymentInvoiceRepository {
 
   async pickOrdersForPaymentInvoice(
     params: IPickOrdersForPaymentInvoiceProps
-  ): Promise<OrderPickedForInvoiceDTO[]> {
+  ): Promise<[OrderPickedForInvoiceDTO[], IStaticticData]> {
     return await pickOrdersForPaymentInvoice(params)
   }
 
-  async getOrdersPickedForInvoice(
-    params: IGetOrdersForPaymentInvoiceProps
+  async getOrdersPickedForInvoiceDTOByOrders(
+    p: GetOrdersPickedForInvoiceProps
   ): Promise<OrderPickedForInvoiceDTO[]> {
-    return await getOrdersForPaymentInvoice(params)
+    return await getOrdersPickedForInvoiceDTOByOrders(p)
   }
 
-  async getOrdersForInvoiceDtoByOrders(
-    orders: string[],
-    company: string
+  async getOrdersPickedForInvoice(
+    params: GetOrdersPickedForInvoiceProps
   ): Promise<OrderPickedForInvoiceDTO[]> {
-    return await getOrdersForInvoiceDtoByOrders(orders, company)
+    return await getOrdersPickedForInvoice(params)
   }
 
   async getOrderInPaymentInvoiceItemsByOrders(
@@ -84,7 +88,7 @@ class PaymentInvoiceRepository {
       await OrderInPaymentInvoiceModel.find<OrderInPaymentInvoice>({
         order: orders,
       }).lean()
-    return items
+    return items.map((i) => new OrderInPaymentInvoice(i))
   }
 }
 

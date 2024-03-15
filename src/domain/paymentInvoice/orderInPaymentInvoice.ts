@@ -1,19 +1,21 @@
-import { Types } from 'mongoose'
-import { ICreateOrderInPaymentInvoiceProps, IPrice } from './interfaces'
+import { Types, Schema } from 'mongoose'
+import {
+  ICreateOrderInPaymentInvoiceProps,
+  ILoaderData,
+  PriceByType,
+  TotalPrice,
+} from './interfaces'
 import { OrderPickedForInvoiceDTO } from './dto/orderPickedForInvoice.dto'
-
-const PriceType = {
-  price: Number,
-  priceWOVat: Number,
-}
+import { ORDER_PRICE_TYPES_ENUM } from '../../constants/priceTypes'
 
 export class OrderInPaymentInvoice {
   order: string
   paymentInvoice: string
   company: string
   itemType: string
-  total: IPrice
-  totalByTypes: { [key: string]: number }
+  total: TotalPrice
+  totalByTypes: Record<ORDER_PRICE_TYPES_ENUM, PriceByType>
+  loaderData: ILoaderData
 
   constructor(p: any) {
     this.order = p.order
@@ -22,9 +24,10 @@ export class OrderInPaymentInvoice {
     this.itemType = p.itemType
     this.total = p.total
     this.totalByTypes = p.totalByTypes
+    this.loaderData = p.loaderData
   }
 
-  public setTotal(order: OrderPickedForInvoiceDTO): void {
+  setTotal(order: OrderPickedForInvoiceDTO): void {
     this.total = order.total
     this.totalByTypes = order.totalByTypes
   }
@@ -43,10 +46,16 @@ export class OrderInPaymentInvoice {
       itemType: order.itemType || 'order',
       total: order.total,
       totalByTypes: order.totalByTypes,
+      loaderData: order.loaderData,
     })
   }
 
-  static dbSchema() {
+  static get dbSchema() {
+    const PriceTypeSchema = {
+      price: Number,
+      priceWOVat: Number,
+    }
+
     return {
       order: { type: Types.ObjectId, unique: true }, // orderID or paymentPartId
       paymentInvoice: {
@@ -56,11 +65,12 @@ export class OrderInPaymentInvoice {
       },
       company: { type: Types.ObjectId, ref: 'Company' },
       itemType: { type: String, enum: ['order', 'paymentPart'] },
-      total: PriceType,
+      total: PriceTypeSchema,
       totalByTypes: {
         type: Map,
-        of: Number,
+        of: PriceTypeSchema,
       },
+      loaderData: Schema.Types.Mixed,
     }
   }
 }

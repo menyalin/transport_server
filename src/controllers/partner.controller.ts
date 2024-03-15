@@ -111,7 +111,6 @@ class PartnerController extends IController {
           new IdleTruckNotification(req.body),
           req.userId
         )
-
       res.status(201).json(partner.toObject())
     } catch (e) {
       if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)

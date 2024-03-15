@@ -1,6 +1,7 @@
 export enum MESSAGE_STATUS_ENUM {
   created = 'created',
   canceled = 'canceled',
+  deleted = 'deleted',
   sended = 'sended',
 }
 

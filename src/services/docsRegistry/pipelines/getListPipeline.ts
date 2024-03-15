@@ -1,14 +1,28 @@
-// @ts-nocheck
-import mongoose from 'mongoose'
+import { PipelineStage, Types } from 'mongoose'
 import { DOCS_REGISTRY_STATUSES } from '../../../constants/docsRegistry'
 import { BadRequestError } from '../../../helpers/errors'
 
-export const getListPipeline = ({ clients, company, limit, skip, status }) => {
+interface IProps {
+  clients: string[]
+  company: string
+  limit: string
+  skip: string
+  status?: string
+  agreement?: string
+}
+
+export const getListPipeline = ({
+  clients,
+  company,
+  limit,
+  skip,
+  status,
+}: IProps): PipelineStage[] => {
   if (!company) throw new BadRequestError('docsRegistry: bad request params')
-  const firstMatcher = {
+  const firstMatcher: PipelineStage.Match = {
     $match: {
       isActive: true,
-      company: new mongoose.Types.ObjectId(company),
+      company: new Types.ObjectId(company),
       $expr: {
         $and: [],
       },
@@ -17,11 +31,9 @@ export const getListPipeline = ({ clients, company, limit, skip, status }) => {
 
   if (clients && clients.length) {
     firstMatcher.$match.$expr.$and.push({
-      $in: ['$client', clients.map((i) => new mongoose.Types.ObjectId(i))],
+      $in: ['$client', clients.map((i) => new Types.ObjectId(i))],
     })
   }
-
-  // if (driver) firstMatcher.$match.driver = new mongoose.Types.ObjectId(driver)
 
   if (status) firstMatcher.$match.$expr.$and.push({ $eq: ['$status', status] })
 
@@ -40,14 +52,9 @@ export const getListPipeline = ({ clients, company, limit, skip, status }) => {
   //   return res
   // }
 
-  const group = [
+  const group: PipelineStage[] = [
     { $sort: { createdAt: -1 } },
-    {
-      $group: {
-        _id: 'docsRegistries',
-        items: { $push: '$$ROOT' },
-      },
-    },
+    { $group: { _id: 'docsRegistries', items: { $push: '$$ROOT' } } },
     {
       $addFields: {
         count: { $size: '$items' },
@@ -55,7 +62,7 @@ export const getListPipeline = ({ clients, company, limit, skip, status }) => {
       },
     },
   ]
-  const clientLookup = [
+  const clientLookup: PipelineStage[] = [
     {
       $lookup: {
         from: 'partners',
@@ -67,9 +74,22 @@ export const getListPipeline = ({ clients, company, limit, skip, status }) => {
     { $addFields: { _client: { $first: '$_client' } } },
   ]
 
-  const additionalFields = [
+  const agreementLookup: PipelineStage[] = [
+    {
+      $lookup: {
+        from: 'agreements',
+        localField: 'agreement',
+        foreignField: '_id',
+        as: 'agreement',
+      },
+    },
+    { $addFields: { agreement: { $first: '$agreement' } } },
+  ]
+
+  const additionalFields: PipelineStage[] = [
     {
       $addFields: {
+        agreementName: '$agreement.name',
         _placeName: {
           $getField: {
             field: 'title',
@@ -95,7 +115,12 @@ export const getListPipeline = ({ clients, company, limit, skip, status }) => {
       },
     },
   ]
-  const pipeline = [firstMatcher, ...clientLookup, ...additionalFields]
+  const pipeline = [
+    firstMatcher,
+    ...clientLookup,
+    ...agreementLookup,
+    ...additionalFields,
+  ]
 
   // if (searchStr) {
   //   pipeline.push({

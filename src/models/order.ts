@@ -1,7 +1,4 @@
-// @ts-nocheck
 import pkg from 'mongoose'
-import PriceDTO from '../dto/price.dto'
-
 import {
   TRUCK_KINDS_ENUM_VALUES,
   TRUCK_LIFT_CAPACITY_TYPES,
@@ -19,15 +16,8 @@ import {
 const { Schema, model, Types } = pkg
 import { RoutePoint } from '../values/order/routePoint'
 import { Client } from '../domain/order/client'
-
-const prices = [PriceDTO.modelFields()]
-
-const paymentPart = {
-  client: { type: Types.ObjectId, ref: 'Partner', required: true },
-  agreement: { type: Types.ObjectId, ref: 'Agreement', required: true },
-  note: String,
-  ...PriceDTO.modelFields(),
-}
+import { OrderPrice } from '../domain/order/orderPrice'
+import { OrderPaymentPart } from '../domain/order/paymentPart'
 
 const outsourceCosts = [
   {
@@ -42,6 +32,7 @@ const outsourceCosts = [
     cashPayment: Boolean,
   },
 ]
+
 const docsState = {
   getted: {
     type: Boolean,
@@ -49,7 +40,6 @@ const docsState = {
   },
   date: {
     type: Date,
-    default: null,
   },
 }
 
@@ -152,16 +142,16 @@ const schema = new Schema(
     grade,
     docs,
     client: Client.dbSchema(),
-    prePrices: prices,
-    prices,
-    finalPrices: prices,
+    prePrices: [OrderPrice.dbSchema],
+    prices: [OrderPrice.dbSchema],
+    finalPrices: [OrderPrice.dbSchema],
     outsourceCosts,
     confirmedCrew,
     route: [RoutePoint.getDbSchema()],
     cargoParams: cargoParams,
     reqTransport: reqTransport,
     state,
-    paymentParts: [paymentPart],
+    paymentParts: [OrderPaymentPart.dbSchema],
     analytics,
     docsState,
     paymentToDriver,
@@ -171,7 +161,6 @@ const schema = new Schema(
     note: { type: String },
     noteAccountant: { type: String },
   },
-  // eslint-disable-next-line comma-dangle
   { timestamps: true }
 )
 

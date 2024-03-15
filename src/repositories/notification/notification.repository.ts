@@ -1,6 +1,5 @@
 import { IdleTruckNotificationMessage } from '../../domain/notifications/idleTruckNotificationMessage'
 import { MESSAGE_STATUS_ENUM } from '../../domain/notifications/interfaces'
-import { IDLE_TRUCK_NOTIFICATION_EVENTS } from '../../services/notification/events/idleTruckNotifications'
 import { IdleTruckNotificationModel } from './models/idleTruckNotificationMessage'
 
 class NotificationRepository {
@@ -31,6 +30,11 @@ class NotificationRepository {
   async getByKey(key: string): Promise<IdleTruckNotificationMessage | null> {
     const message = await IdleTruckNotificationModel.findOne({ key }).lean()
     return !!message ? new IdleTruckNotificationMessage(message) : null
+  }
+
+  async getByOrderId(orderId: string): Promise<IdleTruckNotificationMessage[]> {
+    const docs = await IdleTruckNotificationModel.find({ orderId }).lean()
+    return docs.map((i) => new IdleTruckNotificationMessage(i))
   }
 
   async getCreatedIdleTruckNotificationMessages(

@@ -1,8 +1,10 @@
-// @ts-nocheck
 import { describe, it, expect } from '@jest/globals'
 import { Order } from './order.domain'
 import dayjs from 'dayjs'
 import { Client } from './client'
+import { OrderPrice } from './orderPrice'
+import { ORDER_PRICE_TYPES_ENUM } from '../../constants/priceTypes'
+import { RoutePoint } from '../../values/order/routePoint'
 
 describe('Order.Domain', () => {
   const orderPlannedDate = dayjs('2023-05-27')
@@ -18,32 +20,50 @@ describe('Order.Domain', () => {
   beforeEach(() => {
     orderCompleted1 = new Order({
       _id: 'id',
+      company: '1',
       state: { status: 'completed' },
       orderDate: orderPlannedDate.toISOString(),
       client: new Client({ client: '1' }),
       confirmedCrew: { truck: 'truck_id' },
+      prices: [
+        new OrderPrice({
+          type: ORDER_PRICE_TYPES_ENUM.base,
+          price: 12,
+          priceWOVat: 10,
+          sumVat: 2,
+        }),
+      ],
       route: [
-        {
+        new RoutePoint({
           type: 'loading',
           address: 'address',
           arrivalDate: orderPlannedDate.add(1, 'minute').toISOString(),
           departureDate: orderPlannedDate.add(2, 'minute').toISOString(),
-        },
-        {
+        }),
+        new RoutePoint({
           type: 'unloading',
           address: 'address',
           arrivalDate: orderPlannedDate.add(3, 'minute').toISOString(),
           departureDate: orderPlannedDate.add(4, 'minute').toISOString(),
-        },
+        }),
       ],
     })
 
     orderInProgress1 = new Order({
       _id: 'id',
       state: { status: 'inProgress' },
+      company: '1',
       orderDate: orderPlannedDate.toISOString(),
       confirmedCrew: { truck: 'truck_id' },
       client: new Client({ client: '1' }),
+      prices: [
+        new OrderPrice({
+          type: ORDER_PRICE_TYPES_ENUM.base,
+          price: 12,
+          priceWOVat: 10,
+          sumVat: 2,
+        }),
+      ],
       route: [
         {
           type: 'loading',
@@ -59,10 +79,19 @@ describe('Order.Domain', () => {
 
     orderInProgress2 = new Order({
       _id: 'id',
+      company: '1',
       state: { status: 'inProgress' },
       orderDate: orderPlannedDate.toISOString(),
       confirmedCrew: { truck: 'truck_id' },
       client: new Client({ client: '1' }),
+      prices: [
+        new OrderPrice({
+          type: ORDER_PRICE_TYPES_ENUM.base,
+          price: 12,
+          priceWOVat: 10,
+          sumVat: 2,
+        }),
+      ],
       route: [
         {
           type: 'loading',
@@ -77,10 +106,19 @@ describe('Order.Domain', () => {
 
     orderInProgress3 = new Order({
       _id: 'id',
-      state: { status: 'completed' },
+      company: '1',
+      state: { status: 'inProgress' },
       orderDate: orderPlannedDate.toISOString(),
       confirmedCrew: { truck: 'truck_id' },
       client: new Client({ client: '1' }),
+      prices: [
+        new OrderPrice({
+          type: ORDER_PRICE_TYPES_ENUM.base,
+          price: 12,
+          priceWOVat: 10,
+          sumVat: 2,
+        }),
+      ],
       route: [
         {
           type: 'loading',
@@ -142,7 +180,7 @@ describe('Order.Domain', () => {
           .toISOString()
       )
       const [resDate, updated] = orderCompleted1.fillRouteDatesAndComplete({
-        minDate: orderPlannedDate,
+        minDate: orderPlannedDate.toDate(),
         tripDurationInMinutes,
         unloadingDurationInMinutes,
       })
@@ -160,7 +198,7 @@ describe('Order.Domain', () => {
           .toISOString()
       )
       const [resDate, updated] = orderInProgress1.fillRouteDatesAndComplete({
-        minDate: orderPlannedDate,
+        minDate: orderPlannedDate.toDate(),
         tripDurationInMinutes,
         unloadingDurationInMinutes,
       })
@@ -178,7 +216,7 @@ describe('Order.Domain', () => {
           .toISOString()
       )
       const [resDate, updated] = orderInProgress2.fillRouteDatesAndComplete({
-        minDate: orderPlannedDate,
+        minDate: orderPlannedDate.toDate(),
         tripDurationInMinutes,
         unloadingDurationInMinutes,
       })

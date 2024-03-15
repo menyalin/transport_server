@@ -68,6 +68,9 @@ export default async (params) => {
   tariff = await getPointsTariff(params)
   if (tariff) return { ...PriceDTO.createFromTariff({ tariff, type: 'base' }) }
 
+  tariff = await getZonesTariff(params)
+  if (tariff) return { ...PriceDTO.createFromTariff({ tariff, type: 'base' }) }
+
   tariff = await getDirectDistanceZonesTariff(params)
   if (tariff)
     return {
@@ -78,9 +81,6 @@ export default async (params) => {
         ),
       }),
     }
-
-  tariff = await getZonesTariff(params)
-  if (tariff) return { ...PriceDTO.createFromTariff({ tariff, type: 'base' }) }
 
   return null
 }

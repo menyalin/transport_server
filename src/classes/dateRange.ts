@@ -1,3 +1,4 @@
+import z from 'zod'
 export interface IDateRange {
   start: Date
   end: Date
@@ -33,4 +34,8 @@ export class DateRange implements IDateRange {
   contains(date: Date): boolean {
     return date >= this.start && date <= this.end
   }
+  static validationSchema = z.custom<DateRange>(
+    (value: any) => value instanceof DateRange,
+    { message: 'Must be an instance of DateRange' }
+  )
 }
