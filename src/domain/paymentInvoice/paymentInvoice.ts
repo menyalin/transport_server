@@ -61,10 +61,10 @@ export class PaymentInvoiceDomain {
 
   get invoiceVatSum(): number {
     if (!this.orders || this.orders.length === 0) return 0
-    return this.orders.reduce(
-      (sum, order) => (sum += order.total.price - order.total.priceWOVat),
-      0
-    )
+
+    return this.orders.reduce((sum, order) => {
+      return sum + (order.total.price - order.total.priceWOVat)
+    }, 0)
   }
 
   static create(invoice: any, orders: OrderPickedForInvoiceDTO[] = []) {
