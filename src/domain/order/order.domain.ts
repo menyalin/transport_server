@@ -161,6 +161,7 @@ export class Order {
     Object.getOwnPropertyNames(this).forEach((prop: string) => {
       obj[prop] = (this as any)[prop]
     })
+    obj.route = obj.route.route
     return obj
   }
 
