@@ -326,7 +326,7 @@ class OrderService {
       coll: 'order',
       user,
       opType: 'update',
-      body: JSON.stringify(orderDomain),
+      body: orderDomain.toObject(),
     })
 
     return orderDomain

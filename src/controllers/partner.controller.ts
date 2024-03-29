@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { IController } from './iController'
 import { PartnerService, PermissionService } from '../services'
-import { AuthorizedRequest } from './interfaces/request'
+import { AuthorizedRequest } from '@/controllers/interfaces'
 import { BadRequestError } from '../helpers/errors'
 import { IdleTruckNotification } from '../domain/partner/idleTruckNotification'
 import { Partner as PartnerDomain } from '../domain/partner/partner.domain'

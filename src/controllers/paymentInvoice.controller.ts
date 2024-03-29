@@ -1,14 +1,14 @@
 import { Response } from 'express'
 import { Readable } from 'stream'
-import { AuthorizedRequest } from './interfaces/request'
+import { AuthorizedRequest } from '@/controllers/interfaces'
+import { DateRange } from '@/classes/dateRange'
 import {
   FileService,
   PaymentInvoiceService,
   PermissionService,
-} from '../services'
-import { BadRequestError } from '../helpers/errors'
-import { DateRange } from '../classes/dateRange'
-import { OrderPickedForInvoiceDTO } from '../domain/paymentInvoice/dto/orderPickedForInvoice.dto'
+} from '@/services'
+import { BadRequestError } from '@/helpers/errors'
+import { partialUtil } from 'zod/lib/helpers/partialUtil'
 
 class PaymentInvoiceController {
   service: typeof PaymentInvoiceService
@@ -27,17 +27,17 @@ class PaymentInvoiceController {
 
   async deleteById(req: AuthorizedRequest, res: Response) {
     try {
-      if (this.permissionName)
-        await PermissionService.check({
-          userId: req.userId,
-          companyId: req.companyId,
-          operation: this.permissionName + ':delete',
-        })
+      await PermissionService.check({
+        userId: req.userId,
+        companyId: req.companyId,
+        operation: this.permissionName + ':delete',
+      })
       const data = await this.service.deleteById({
         id: req.params.id,
         user: req.userId,
         company: req.companyId,
       })
+
       res.status(200).json(data)
     } catch (e) {
       if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
@@ -183,8 +183,8 @@ class PaymentInvoiceController {
   ) {
     try {
       const data = await this.service.getAllowedPrintForms(
-        req.query.agreement,
-        req.query.client
+        req.query?.agreement,
+        req.query?.client
       )
       res.status(200).json(data)
     } catch (e) {

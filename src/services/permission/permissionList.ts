@@ -38,6 +38,11 @@ export const admin = {
   'paymentInvoice:readItem': true,
   'paymentInvoice:write': true,
   'paymentInvoice:delete': true,
+
+  'tariffContract:readList': true,
+  'tariffContract:readItem': true,
+  'tariffContract:write': true,
+  'tariffContract:delete': true,
 }
 
 export const outsourceCarriersManager = {
@@ -120,6 +125,9 @@ export const director = {
 
   'paymentInvoice:readList': true,
   'paymentInvoice:readItem': true,
+
+  'tariffContract:readList': true,
+  'tariffContract:readItem': true,
 }
 
 export const dispatcher = {
@@ -273,6 +281,10 @@ export const accountant = {
   'paymentInvoice:readItem': true,
   'paymentInvoice:write': true,
   'paymentInvoice:delete': true,
+
+  'tariffContract:readList': true,
+  'tariffContract:readItem': true,
+  'tariffContract:write': true,
 }
 
 export const mechanic = {
