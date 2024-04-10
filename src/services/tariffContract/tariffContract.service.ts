@@ -42,7 +42,56 @@ class TariffContractService {
       company: contract.company,
       body: contract,
     })
+    return contract
+  }
 
+  async getById(id: string): Promise<TariffContract> {
+    return await this.repository.getById(id)
+  }
+
+  async updateOne(
+    id: string,
+    body: any,
+    user: string
+  ): Promise<TariffContract> {
+    const contract = await this.getById(id)
+
+    contract.update(body)
+
+    contract.events.forEach((event) => {
+      this.bus.publish(event)
+    })
+    contract.clearEvents()
+    await this.logService.add({
+      docId: contract._id,
+      coll: this.modelName,
+      opType: 'update',
+      user,
+      company: contract.company,
+      body: contract,
+    })
+    return contract
+  }
+
+  async getList(options: any) {
+    return await this.repository.getList(options)
+  }
+
+  async deleteById(id: string, user: string): Promise<TariffContract> {
+    const contract = await this.getById(id)
+    contract.delete()
+    contract.events.forEach((event) => {
+      this.bus.publish(event)
+    })
+    contract.clearEvents()
+    await this.logService.add({
+      docId: contract._id,
+      coll: this.modelName,
+      opType: 'delete',
+      user,
+      company: contract.company,
+      body: contract,
+    })
     return contract
   }
 }
