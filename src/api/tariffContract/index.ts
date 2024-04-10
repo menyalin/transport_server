@@ -4,22 +4,32 @@ import ctrl from '@/controllers/tariffContract.controller'
 import { jwtAuth } from '../../utils/auth.middleware'
 import { bodyValidator, queryValidator } from '../../utils/validator'
 
-import { getListSchema, getOrderPrePriceSchema } from './schemes'
+import { getListSchema } from './schemes'
 import { AuthorizedRequest } from '@/controllers/interfaces'
 
 const router = express.Router()
 
 // api/tariff_contracts
-// router.get('/', [jwtAuth, queryValidator(getListSchema)], (...args) =>
-//   ctrl.getList(...args)
-// )
 
-// router.get('/:id', [jwtAuth], (...args) => ctrl.getById(...args))
+router.get(
+  '/',
+  [jwtAuth, queryValidator(getListSchema)],
+  (req: Request, res: Response) => ctrl.getList(req as AuthorizedRequest, res)
+)
+
+router.get('/:id', [jwtAuth], (req: Request, res: Response) =>
+  ctrl.getById(req as AuthorizedRequest, res)
+)
+
 router.post('/', [jwtAuth], (req: Request, res: Response) =>
   ctrl.create(req as AuthorizedRequest, res)
 )
-// router.post('/', [jwtAuth], (...args: any) => ctrl.create(...args))
-// router.put('/:id', [jwtAuth], (...args) => ctrl.updateOne(...args))
-// router.delete('/:id', [jwtAuth], (...args) => ctrl.deleteById(...args))
+router.put('/:id', [jwtAuth], (req: Request, res: Response) =>
+  ctrl.updateOne(req as AuthorizedRequest, res)
+)
+
+router.delete('/:id', [jwtAuth], (req: Request, res: Response) =>
+  ctrl.deleteById(req as AuthorizedRequest, res)
+)
 
 export default router

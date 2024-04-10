@@ -20,8 +20,8 @@ export class ZonesBaseTariff implements ICommonTariffFields {
     const parsedData = ZonesBaseTariff.validationSchema.parse(p)
     this.truckKinds = parsedData.truckKinds
     this.liftCapacities = parsedData.liftCapacities
-    this.loadingZone = parsedData.loadingZone
-    this.unloadingZone = parsedData.unloadingZone
+    this.loadingZone = parsedData.loadingZone.toString()
+    this.unloadingZone = parsedData.unloadingZone.toString()
     this.price = parsedData.price
   }
 

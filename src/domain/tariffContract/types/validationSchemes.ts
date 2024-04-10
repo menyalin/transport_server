@@ -1,9 +1,10 @@
 import z from 'zod'
 import { TRUCK_KINDS_ENUM } from '../../../constants/truck'
+import { objectIdSchema } from '@/utils/objectIdSchema'
 
 export const TruckKindsEnumSchema = z.array(z.nativeEnum(TRUCK_KINDS_ENUM))
 export const LiftCapacityEnumSchema = z.array(z.number())
-export const ZoneIdSchema = z.string()
+export const ZoneIdSchema = objectIdSchema
 export const PriceSchema = z.number()
 
 export const TariffZoneSchema = z.object({
