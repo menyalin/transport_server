@@ -24,7 +24,7 @@ export class DirectDistanceZonesBaseTariff implements ICommonTariffFields {
     const parsed = DirectDistanceZonesBaseTariff.validationSchema.parse(p)
     this.truckKinds = parsed.truckKinds
     this.liftCapacities = parsed.liftCapacities
-    this.loadingZone = parsed.loadingZone
+    this.loadingZone = parsed.loadingZone.toString()
     this.zones = parsed.zones.sort((a, b) => a.distance - b.distance)
   }
 
