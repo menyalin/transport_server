@@ -1,8 +1,9 @@
 import { z } from 'zod'
 import { TRUCK_KINDS_ENUM } from '../../../../constants/truck'
-import { ICommonTariffFields } from '../common'
+import { ICommonTariffFields, OrderType } from '../common'
 import {
   LiftCapacityEnumSchema,
+  OrderTypeSchema,
   PriceSchema,
   TruckKindsEnumSchema,
 } from '../validationSchemes'
@@ -12,10 +13,12 @@ export class AdditionalPointsTariff implements ICommonTariffFields {
   liftCapacities: number[]
   includedPoints: number
   price: number
+  orderType: OrderType
 
   constructor(p: any) {
     const parsedData = AdditionalPointsTariff.validationSchema.parse(p)
     this.truckKinds = parsedData.truckKinds
+    this.orderType = parsedData.orderType
     this.liftCapacities = parsedData.liftCapacities
     this.includedPoints = parsedData.includedPoints
     this.price = parsedData.price
@@ -25,6 +28,7 @@ export class AdditionalPointsTariff implements ICommonTariffFields {
     truckKinds: TruckKindsEnumSchema,
     liftCapacities: LiftCapacityEnumSchema,
     includedPoints: z.number().min(0),
+    orderType: OrderTypeSchema,
     price: PriceSchema,
   })
 
@@ -37,6 +41,7 @@ export class AdditionalPointsTariff implements ICommonTariffFields {
           required: true,
         },
       ],
+      orderType: { type: String, required: true, enum: ['region', 'city'] },
       liftCapacities: [{ type: Number, required: true }],
       includedPoints: { type: Number },
       price: { type: Number },
