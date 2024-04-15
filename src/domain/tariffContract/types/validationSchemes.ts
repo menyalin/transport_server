@@ -8,8 +8,8 @@ export const ZoneIdSchema = objectIdSchema
 export const PriceSchema = z.number()
 
 export const TariffZoneSchema = z.object({
-  distance: z.number().min(0), // предположим, что расстояние не может быть отрицательным
-  price: z.number().min(0), // цена также предполагается неотрицательной
+  distance: z.number().min(0),
+  price: z.number(),
 })
 
 const roundByHoursValues = [0.01666666, 0.5, 1, 12, 24] as const
