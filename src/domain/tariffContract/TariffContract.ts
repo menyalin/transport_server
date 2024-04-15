@@ -24,7 +24,6 @@ export class TariffContract {
   startDate: Date
   endDate: Date | null
   isActive: Boolean = true
-  orderType: OrderType
   withVat: Boolean
   zonesTariffs: ZonesBaseTariff[]
   directDistanceZonesTariffs: DirectDistanceZonesBaseTariff[]
@@ -43,7 +42,6 @@ export class TariffContract {
     this.startDate = parsedData.startDate
     this.endDate = parsedData.endDate
     this.isActive = parsedData.isActive
-    this.orderType = parsedData.orderType
     this.withVat = parsedData.withVat
     this.company = parsedData.company.toString()
     this.zonesTariffs = parsedData.zonesTariffs
@@ -89,10 +87,7 @@ export class TariffContract {
       this.endDate = parsedData.endDate
       updated = true
     }
-    if (this.orderType !== parsedData.orderType) {
-      this.orderType = parsedData.orderType
-      updated = true
-    }
+
     if (this.withVat !== parsedData.withVat) {
       this.withVat = parsedData.withVat
       updated = true
@@ -157,7 +152,7 @@ export class TariffContract {
     company: objectIdSchema,
     endDate: z.date().nullable(),
     isActive: z.boolean().default(true),
-    orderType: OrderTypeSchema,
+
     withVat: z.boolean(),
     zonesTariffs: z
       .array(ZonesBaseTariff.validationSchema)
@@ -190,7 +185,6 @@ export class TariffContract {
       startDate: { type: Date, required: true },
       endDate: { type: Date, default: null },
       isActive: { type: Boolean, default: true },
-      orderType: { type: String, required: true, enum: ['region', 'city'] },
       withVat: Boolean,
       zonesTariffs: [ZonesBaseTariff.dbSchema],
       directDistanceZonesTariffs: [DirectDistanceZonesBaseTariff.dbSchema],
