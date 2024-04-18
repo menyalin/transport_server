@@ -17,9 +17,8 @@ import {
 export class IdleTimeTariff implements ICommonTariffFields {
   truckKinds: TRUCK_KINDS_ENUM[]
   liftCapacities: number[]
-  includeHours: number
   orderType: OrderType
-
+  includeHours: number
   roundByHours: RoundByHours
   tariffBy: TariffBy
   price: number
@@ -27,8 +26,8 @@ export class IdleTimeTariff implements ICommonTariffFields {
   constructor(p: any) {
     const parsed = IdleTimeTariff.validationSchema.parse(p)
     this.truckKinds = parsed.truckKinds
-    this.orderType = parsed.orderType
     this.liftCapacities = parsed.liftCapacities
+    this.orderType = parsed.orderType
     this.includeHours = parsed.includeHours
     this.roundByHours = parsed.roundByHours as RoundByHours
     this.tariffBy = parsed.tariffBy

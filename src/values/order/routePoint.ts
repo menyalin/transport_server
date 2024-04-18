@@ -27,6 +27,7 @@ export class RoutePoint {
   isPltReturn: boolean = false
   isAutofilled: boolean = false
   useInterval: boolean = false
+  isMainLoadingPoint: boolean = false
   note?: string
 
   // TODO: add point interface
@@ -68,6 +69,9 @@ export class RoutePoint {
     this.waybills = point.waybills
     this.waitsForWaybills = point.waitsForWaybills || false
     this.note = point.note
+    this.isMainLoadingPoint = Boolean(
+      this.isLoadingPointType && point.isMainLoadingPoint
+    )
   }
 
   static createFromTemplatePoint(
@@ -108,11 +112,16 @@ export class RoutePoint {
       intervalEndDateDoc: intervalEndDate,
       useInterval: templatePoint.useInterval,
       note: templatePoint.note,
+      isMainLoadingPoint: templatePoint.isMainLoadingPoint,
     })
   }
 
   get isLoadingPointType() {
     return this.type === 'loading'
+  }
+
+  setMainLoadingPoint() {
+    this.isMainLoadingPoint = true
   }
 
   get isReturnPoint() {
@@ -209,6 +218,7 @@ export class RoutePoint {
       isPltReturn: { type: Boolean, default: false },
       isAutofilled: { type: Boolean, default: false },
       note: String,
+      isMainLoadingPoint: { type: Boolean, default: false },
     }
   }
 }

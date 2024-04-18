@@ -16,6 +16,7 @@ export class Route {
     this.route = route.map((p) =>
       p instanceof RoutePoint ? p : new RoutePoint(p)
     )
+    if (!this.hasMainLoadingPoints) this.route[0].setMainLoadingPoint()
   }
 
   get activePoints(): RoutePoint[] {
@@ -24,9 +25,16 @@ export class Route {
     if (currentPoint) res.push(currentPoint)
     return res
   }
+  get hasMainLoadingPoints(): boolean {
+    const point = this.route.find((i) => i.isMainLoadingPoint)
+    return Boolean(point)
+  }
 
   get mainLoadingPoint(): RoutePoint {
-    return this.route[0]
+    const point: RoutePoint =
+      this.route.find((i) => i.isMainLoadingPoint) ?? this.route[0]
+    if (!point.isMainLoadingPoint) point.setMainLoadingPoint()
+    return point
   }
 
   get completedPoints(): RoutePoint[] {
