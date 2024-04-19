@@ -13,7 +13,7 @@ export class ZonesBaseTariff implements ICommonTariffFields {
   truckKinds: TRUCK_KINDS_ENUM[]
   liftCapacities: number[]
   loadingZone: string
-  unloadingZone: string
+  unloadingZones: string[]
   price: number
 
   constructor(p: any) {
@@ -21,7 +21,7 @@ export class ZonesBaseTariff implements ICommonTariffFields {
     this.truckKinds = parsedData.truckKinds
     this.liftCapacities = parsedData.liftCapacities
     this.loadingZone = parsedData.loadingZone.toString()
-    this.unloadingZone = parsedData.unloadingZone.toString()
+    this.unloadingZones = parsedData.unloadingZones.map((i) => i.toString())
     this.price = parsedData.price
   }
 
@@ -29,7 +29,7 @@ export class ZonesBaseTariff implements ICommonTariffFields {
     truckKinds: TruckKindsEnumSchema,
     liftCapacities: LiftCapacityEnumSchema,
     loadingZone: ZoneIdSchema,
-    unloadingZone: ZoneIdSchema,
+    unloadingZones: z.array(ZoneIdSchema),
     price: PriceSchema,
   })
 
@@ -44,7 +44,7 @@ export class ZonesBaseTariff implements ICommonTariffFields {
       ],
       liftCapacities: [{ type: Number, required: true }],
       loadingZone: { type: Types.ObjectId, ref: 'Zone' },
-      unloadingZone: { type: Types.ObjectId, ref: 'Zone' },
+      unloadingZones: [{ type: Types.ObjectId, ref: 'Zone' }],
       price: { type: Number },
     }
   }
