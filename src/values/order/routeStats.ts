@@ -6,6 +6,7 @@ export class RouteStats {
   unloadingTimesInMinutes: number[]
   tripTimesInMinutes: number[]
   totalDurationInMinutes: number
+
   constructor(route: Route) {
     if (!route || !(route instanceof Route))
       throw new Error('RouteStats : constructor : invalid route!')
@@ -16,7 +17,7 @@ export class RouteStats {
     this.totalDurationInMinutes = route.totalDuration('minutes')
   }
 
-  static getDbSchema() {
+  static get dbSchema() {
     return {
       countPoints: Number,
       loadingTimesInMinutes: [Number],

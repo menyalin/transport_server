@@ -3,7 +3,8 @@ import { describe, it, expect } from '@jest/globals'
 import { Order } from './order.domain'
 import { Client } from './client'
 import { OrderPrice } from './orderPrice'
-import { ORDER_PRICE_TYPES_ENUM } from '../../constants/priceTypes'
+import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
+import { OrderAnalytics } from './analytics'
 
 describe('Order.Domain static functions', () => {
   const orderPlannedDate1 = dayjs('2023-05-27T06:00:00.000Z')
@@ -16,7 +17,7 @@ describe('Order.Domain static functions', () => {
   let orderInProgress1: Order
   let orderInProgress2: Order
   let orderInProgress3: Order
-
+  const mockAnalytics = { type: 'region', distanceDirect: 0, distanceRoad: 0 }
   beforeEach(() => {
     orderCompleted1 = new Order({
       _id: 'id1',
@@ -33,6 +34,7 @@ describe('Order.Domain static functions', () => {
       orderDate: orderPlannedDate1.toISOString(),
       confirmedCrew: { truck: 'truck_id' },
       client: new Client({ client: '1' }),
+      analytics: mockAnalytics,
       route: [
         {
           type: 'loading',
@@ -55,6 +57,7 @@ describe('Order.Domain static functions', () => {
       orderDate: orderPlannedDate1.add(40, 'minutes').toISOString(),
       confirmedCrew: { truck: 'truck_id' },
       client: new Client({ client: '1' }),
+      analytics: mockAnalytics,
       company: '1',
       prices: [
         new OrderPrice({
@@ -83,6 +86,7 @@ describe('Order.Domain static functions', () => {
       orderDate: orderPlannedDate2.toISOString(),
       confirmedCrew: { truck: 'truck_id' },
       client: new Client({ client: '1' }),
+      analytics: mockAnalytics,
       company: '1',
       prices: [
         new OrderPrice({
@@ -111,6 +115,7 @@ describe('Order.Domain static functions', () => {
       orderDate: orderPlannedDate1.toISOString(),
       confirmedCrew: { truck: 'truck_id' },
       client: new Client({ client: '1' }),
+      analytics: mockAnalytics,
       company: '1',
       prices: [
         new OrderPrice({

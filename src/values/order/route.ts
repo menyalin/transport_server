@@ -37,6 +37,17 @@ export class Route {
     return point
   }
 
+  get unloadingPoints(): RoutePoint[] {
+    let points = this.route.filter((i) => !i.isReturnPoint) // выкидываю все точки с возвратом
+
+    const idxMainLoadingPoint = points.findIndex(
+      (i) => i.address === this.mainLoadingPoint.address
+    )
+    points.splice(0, idxMainLoadingPoint + 1) // Удаляю все точки до основного пункта погрузки
+
+    return points
+  }
+
   get completedPoints(): RoutePoint[] {
     return this.route.filter((point) => point.isCompleted)
   }

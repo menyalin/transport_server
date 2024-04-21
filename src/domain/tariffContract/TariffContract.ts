@@ -1,6 +1,6 @@
 import z from 'zod'
 import { Types } from 'mongoose'
-import { OrderType } from './types/common'
+
 import {
   AdditionalPointsTariff,
   DirectDistanceZonesBaseTariff,
@@ -8,7 +8,6 @@ import {
   ReturnPercentTariff,
   ZonesBaseTariff,
 } from './types/tarriffs'
-import { OrderTypeSchema } from './types/validationSchemes'
 import { objectIdSchema } from '@/utils/objectIdSchema'
 import { BusEvent } from 'ts-bus/types'
 import { TariffContractUpdatedEvent } from './events'
