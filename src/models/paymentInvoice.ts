@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose'
 import { PaymentInvoiceDomain } from '../domain/paymentInvoice/paymentInvoice'
 
-const schema = new Schema(PaymentInvoiceDomain.getDbSchema(), {
+const schema = new Schema(PaymentInvoiceDomain.dbSchema, {
   timestamps: true,
 })
 

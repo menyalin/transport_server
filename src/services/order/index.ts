@@ -17,15 +17,17 @@ import { orsDirections } from '../../helpers/orsClient'
 import { BadRequestError } from '../../helpers/errors'
 import { getDocsRegistryByOrderId } from './getDocsRegistryByOrderId'
 import { getPaymentInvoicesByOrderIds } from './getPaymentInvoicesByOrderIds'
-import OrderRepository from '../../repositories/order/order.repository'
-import { Order as OrderDomain } from '../../domain/order/order.domain'
-import { bus } from '../../eventBus'
+import { OrderRepository, AddressRepository } from '@/repositories'
+import { Order as OrderDomain } from '@/domain/order/order.domain'
+import { bus } from '@/eventBus'
 import {
   OrdersUpdatedEvent,
   OrderTruckChanged,
   OrderReturnedFromInProgressStatus,
-} from '../../domain/order/domainEvents'
-import { Route } from '../../values/order/route'
+} from '@/domain/order/domainEvents'
+import { Route } from '@/values/order/route'
+import { OrderAnalytics } from '@/domain/order/analytics'
+import { RouteStats } from '@/values/order/routeStats'
 
 const _isEqualDatesOfRoute = (oldRoute: Route, newRoute: Route) => {
   if (!(oldRoute instanceof Route) || !(newRoute instanceof Route))
@@ -315,7 +317,7 @@ class OrderService {
       _id: order._id,
     })
     orderDomain.setDisableStatus(false)
-
+    orderDomain.analytics = await this.updateOrderAnalytics(orderDomain)
     bus.publish(OrdersUpdatedEvent([orderDomain]))
 
     emitTo(orderDomain.company, 'order:updated', orderDomain)
@@ -331,6 +333,25 @@ class OrderService {
 
     return orderDomain
   }
+
+  async updateOrderAnalytics(order: OrderDomain): Promise<OrderAnalytics> {
+    const loadingZones: string[] = await AddressRepository.getPointsZones([
+      order.route.mainLoadingPoint,
+    ])
+    const unloadingZones: string[] = await AddressRepository.getPointsZones(
+      order.route.unloadingPoints
+    )
+
+    return new OrderAnalytics({
+      type: order.analytics?.type ?? 'region',
+      distanceDirect: order.analytics?.distanceDirect ?? 0,
+      distanceRoad: order.analytics?.distanceRoad ?? 0,
+      loadingZones,
+      unloadingZones: unloadingZones,
+      routeStats: new RouteStats(order.route),
+    })
+  }
+
   //@ts-ignore
   async getDistance({ coords }) {
     try {

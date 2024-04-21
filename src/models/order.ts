@@ -1,23 +1,19 @@
-import pkg from 'mongoose'
+import { Schema, model, Types } from 'mongoose'
 import {
   TRUCK_KINDS_ENUM_VALUES,
   TRUCK_LIFT_CAPACITY_TYPES,
   LOAD_DIRECTION_ENUM_VALUES,
-} from '../constants/truck'
+} from '@/constants/truck'
 import {
   DOCUMENT_TYPES_ENUM,
   DOCUMENT_STATUSES_ENUM,
-} from '../constants/accounting'
-import {
-  ORDER_STATUSES_ENUM,
-  ORDER_ANALYTIC_TYPES_ENUM,
-} from '../constants/order'
-
-const { Schema, model, Types } = pkg
-import { RoutePoint } from '../values/order/routePoint'
-import { Client } from '../domain/order/client'
-import { OrderPrice } from '../domain/order/orderPrice'
-import { OrderPaymentPart } from '../domain/order/paymentPart'
+} from '@/constants/accounting'
+import { ORDER_STATUSES_ENUM } from '../constants/order'
+import { RoutePoint } from '@/values/order/routePoint'
+import { Client } from '@/domain/order/client'
+import { OrderPrice } from '@/domain/order/orderPrice'
+import { OrderPaymentPart } from '@/domain/order/paymentPart'
+import { OrderAnalytics } from '@/domain/order/analytics'
 
 const outsourceCosts = [
   {
@@ -81,11 +77,6 @@ const grade = {
   grade: Number,
   note: String,
 }
-const analytics = {
-  type: { type: String, enum: ORDER_ANALYTIC_TYPES_ENUM },
-  distanceRoad: { type: Number },
-  distanceDirect: { type: Number },
-}
 
 const cargoParams = {
   weight: Number,
@@ -147,12 +138,12 @@ const schema = new Schema(
     finalPrices: [OrderPrice.dbSchema],
     outsourceCosts,
     confirmedCrew,
-    route: [RoutePoint.getDbSchema()],
+    route: [RoutePoint.dbSchema],
     cargoParams: cargoParams,
     reqTransport: reqTransport,
     state,
     paymentParts: [OrderPaymentPart.dbSchema],
-    analytics,
+    analytics: OrderAnalytics.dbSchema,
     docsState,
     paymentToDriver,
     isActive: { type: Boolean, default: true },

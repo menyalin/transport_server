@@ -2,11 +2,7 @@ import dayjs from 'dayjs'
 import { isDateRangesOverlapping } from '../../utils/isDateRangesOverlapping'
 import { Route } from '../../values/order/route'
 
-import {
-  ORDER_DOMAIN_EVENTS,
-  OrderRemoveEvent,
-  OrdersUpdatedEvent,
-} from './domainEvents'
+import { ORDER_DOMAIN_EVENTS, OrderRemoveEvent } from './domainEvents'
 import { BusEvent } from 'ts-bus/types'
 import { NotifyClientsEvent } from '../../socket/notifyClientsEvent'
 import { Client } from './client'
@@ -14,6 +10,7 @@ import { RoutePoint } from '../../values/order/routePoint'
 import { OrderPrice } from './orderPrice'
 import { ORDER_PRICE_TYPES_ENUM } from '../../constants/priceTypes'
 import { BadRequestError } from '../../helpers/errors'
+import { OrderAnalytics } from './analytics'
 
 export interface IOrderDTO {
   _id: string
@@ -45,7 +42,7 @@ export interface IOrderDTO {
   cargoParams?: object
   reqTransport?: object
   paymentParts?: []
-  analytics?: object
+  analytics?: any
   docsState?: object
   paymentToDriver?: object
   note?: string
@@ -85,7 +82,7 @@ export class Order {
   cargoParams: object
   reqTransport: object
   paymentParts: []
-  analytics?: object
+  analytics?: OrderAnalytics
   docsState?: object
   paymentToDriver?: object
   note?: string
@@ -123,7 +120,7 @@ export class Order {
     this.cargoParams = order.cargoParams || {}
     this.reqTransport = order.reqTransport || {}
     this.paymentParts = order.paymentParts || []
-    this.analytics = order.analytics
+    this.analytics = new OrderAnalytics(order.analytics)
     this.docsState = order.docsState
     this.paymentToDriver = order.paymentToDriver
     this.note = order.note

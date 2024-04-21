@@ -16,7 +16,7 @@ export class TariffPrice {
     this.withVat = p.withVat
     if (p.currency) this.currency = p.currency
   }
-  static getDbSchema() {
+  static get dbSchema() {
     return {
       price: { type: Number, default: 0 },
       withVat: { type: Boolean, default: false },

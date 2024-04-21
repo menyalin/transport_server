@@ -16,7 +16,7 @@ export class InvoiceStats {
     this.invoiceDate = p.invoiceDate
   }
 
-  static getDbSchema() {
+  static get dbSchema() {
     return {
       invoiceId: {
         type: mongoose.Types.ObjectId,

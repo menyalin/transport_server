@@ -20,5 +20,3 @@ export const RoundByHoursSchema = z.union([
   z.literal(roundByHoursValues[3]),
   z.literal(roundByHoursValues[4]),
 ])
-
-export const OrderTypeSchema = z.union([z.literal('region'), z.literal('city')])

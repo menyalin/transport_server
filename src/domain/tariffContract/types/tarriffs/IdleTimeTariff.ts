@@ -1,18 +1,13 @@
-import { TRUCK_KINDS_ENUM } from '../../../../constants/truck'
-import {
-  ICommonTariffFields,
-  OrderType,
-  RoundByHours,
-  TariffBy,
-} from '../common'
-import { TARIFF_ROUND_BY_HOURS_ENUM } from '../../../../constants/tariff'
+import { TRUCK_KINDS_ENUM } from '@/constants/truck'
+import { ICommonTariffFields, RoundByHours, TariffBy } from '../common'
+import { TARIFF_ROUND_BY_HOURS_ENUM } from '@/constants/tariff'
 import { z } from 'zod'
 import {
   LiftCapacityEnumSchema,
-  OrderTypeSchema,
   RoundByHoursSchema,
   TruckKindsEnumSchema,
 } from '../validationSchemes'
+import { OrderType, OrderTypeSchema } from '@/domain/order/types'
 
 export class IdleTimeTariff implements ICommonTariffFields {
   truckKinds: TRUCK_KINDS_ENUM[]

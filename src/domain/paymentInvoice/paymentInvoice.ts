@@ -73,7 +73,7 @@ export class PaymentInvoiceDomain {
     return newInvoice
   }
 
-  static getDbSchema() {
+  static get dbSchema() {
     return {
       company: { type: Types.ObjectId, ref: 'Company', required: true },
       number: { type: String },

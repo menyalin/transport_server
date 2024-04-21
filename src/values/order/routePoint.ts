@@ -191,7 +191,7 @@ export class RoutePoint {
     return this.departureDate
   }
 
-  static getDbSchema() {
+  static get dbSchema() {
     return {
       type: {
         type: String,

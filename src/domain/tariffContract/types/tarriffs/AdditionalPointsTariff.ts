@@ -1,12 +1,12 @@
 import { z } from 'zod'
-import { TRUCK_KINDS_ENUM } from '../../../../constants/truck'
-import { ICommonTariffFields, OrderType } from '../common'
+import { TRUCK_KINDS_ENUM } from '@/constants/truck'
+import { ICommonTariffFields } from '../common'
 import {
   LiftCapacityEnumSchema,
-  OrderTypeSchema,
   PriceSchema,
   TruckKindsEnumSchema,
 } from '../validationSchemes'
+import { OrderType, OrderTypeSchema } from '@/domain/order/types'
 
 export class AdditionalPointsTariff implements ICommonTariffFields {
   truckKinds: TRUCK_KINDS_ENUM[]

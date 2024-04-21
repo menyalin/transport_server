@@ -21,7 +21,7 @@ export class OrderStats {
 
   setInvoiceStats(): void {}
 
-  static getDbSchema() {
+  static get dbSchema() {
     return {
       orderId: {
         type: mongoose.Types.ObjectId,
@@ -35,8 +35,8 @@ export class OrderStats {
         type: mongoose.Types.ObjectId,
         required: true,
       },
-      route: RouteStats.getDbSchema(),
-      invoice: InvoiceStats.getDbSchema(),
+      route: RouteStats.dbSchema,
+      invoice: InvoiceStats.dbSchema,
     }
   }
 }

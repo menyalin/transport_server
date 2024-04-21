@@ -2,7 +2,7 @@
 import mongoose from 'mongoose'
 import { OrderStats } from '../domain/order/orderStats'
 
-const schema = new mongoose.Schema(OrderStats.getDbSchema(), {
+const schema = new mongoose.Schema(OrderStats.dbSchema, {
   timestamps: true,
 })
 

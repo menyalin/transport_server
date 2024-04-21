@@ -47,7 +47,7 @@ export class TemplateRoutePoint implements ITemplateRoutePoint {
     return this.fixedTime !== null
   }
 
-  static getDbSchema(): object {
+  static get dbSchema() {
     return {
       type: { type: String, enum: POINT_TYPE_VALUES },
       address: { type: mongoose.Types.ObjectId, ref: 'Address' },

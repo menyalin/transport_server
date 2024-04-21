@@ -85,9 +85,9 @@ export abstract class Tariff {
     }
   }
 
-  public static getDbSchema() {
+  static get dbSchema() {
     return {
-      price: TariffPrice.getDbSchema(),
+      price: TariffPrice.dbSchema,
       company: { type: Types.ObjectId, ref: 'Company', required: true },
       date: { type: Date, required: true },
       type: { type: String, enum: TARIFF_TYPES_ENUM_VALUES },
