@@ -90,7 +90,7 @@ export class Order {
   isActive: boolean = true
   isDisabled: boolean = false
 
-  constructor(order: IOrderDTO) {
+  constructor(order: IOrderDTO, isBasePriceFilledCheck: boolean = true) {
     Order.orderStatusValidator(order)
 
     if (!order._id) throw new Error('Order : constructor : order ID is missing')
@@ -127,7 +127,11 @@ export class Order {
     this.noteAccountant = order.noteAccountant
     this.isActive = order.isActive !== undefined ? order.isActive : true
     this.isDisabled = order.isDisabled || false
-    if (this.state.status === 'completed' && !this.isReadyToComplete)
+    if (
+      isBasePriceFilledCheck &&
+      this.state.status === 'completed' &&
+      !this.isReadyToComplete
+    )
       throw new BadRequestError(
         'Изменение статуса рейса на "Выполнен" не возможно! Проверьте корректность заполнения базового тарифа и временных отметок в рейсе'
       )

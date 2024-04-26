@@ -44,16 +44,18 @@ class MassUpdateService {
 
     try {
       for await (const orderDoc of this.ordersCursor) {
-        const order = new Order(orderDoc)
+        const order = new Order(orderDoc, false)
         await OrderService.refresh(order)
         this.ordersProcessed++
       }
     } catch (e) {
       this.error = e as Error
+      throw e
+    } finally {
+      this.ordersProcessed = 0
+      this.isOrdersProcessing = false
+      this.ordersCount = 0
     }
-    this.ordersProcessed = 0
-    this.isOrdersProcessing = false
-    this.ordersCount = 0
   }
 }
 
