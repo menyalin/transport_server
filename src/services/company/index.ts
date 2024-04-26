@@ -43,6 +43,10 @@ class CompanyService {
     return res
   }
 
+  async getAll() {
+    return await Company.find()
+  }
+
   async isExistInn(inn) {
     const res = await Company.findOne({ inn })
     return !!res
