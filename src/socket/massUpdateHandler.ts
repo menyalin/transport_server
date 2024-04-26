@@ -38,7 +38,12 @@ const getOrdersCountHandler = async (data: object, userId: string) => {
 const runOrdersProcessing = async (data: object, userId: string) => {
   if (!(await isAcceptedUser(userId))) return
   const parsedProps = new GetDocsCountProps(data)
-  await MassUpdateService.startOrderProcessing(parsedProps)
+  try {
+    await MassUpdateService.startOrderProcessing(parsedProps)
+  } catch (e) {
+    emitTo('admin_room', 'mass_update_orders:processing_error', e)
+    await MassUpdateService.cancelProcessing()
+  }
 }
 
 export const massUpdateHandler = (io: Server, socket: Socket) => {
