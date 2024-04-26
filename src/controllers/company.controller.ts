@@ -14,8 +14,13 @@ class CompanyController {
 
   async getMyCompanies(req, res) {
     try {
-      const companies = await CompanyService.getUserCompanies(req.userId)
-      res.status(200).json({ data: companies })
+      if (!req.userId) throw new Error('user id is missing')
+      let companies
+      const isAdmin = await PermissionService.isAdmin(req.userId)
+      if (isAdmin) companies = await CompanyService.getAll()
+      else companies = await CompanyService.getUserCompanies(req.userId)
+
+      res.status(200).json(companies)
     } catch (e) {
       res.status(e.statusCode || 500).json(e.message)
     }

@@ -334,6 +334,11 @@ class OrderService {
     return orderDomain
   }
 
+  async refresh(order: OrderDomain): Promise<void> {
+    order.analytics = await this.updateOrderAnalytics(order)
+    bus.publish(OrdersUpdatedEvent([order]))
+  }
+
   async updateOrderAnalytics(order: OrderDomain): Promise<OrderAnalytics> {
     const loadingZones: string[] = await AddressRepository.getPointsZones([
       order.route.mainLoadingPoint,

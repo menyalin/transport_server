@@ -54,6 +54,11 @@ class PermissionService {
     if (!user || !user.isAdmin) throw new ForbiddenError('only global admin!')
   }
 
+  async isAdmin(userId: string): Promise<Boolean> {
+    const user = await UserService.findById(userId)
+    return user?.isAdmin ?? false
+  }
+
   async getUserPermissions({ userId, companyId }) {
     const roles = await WorkerService.getWorkerRolesByCompanyIdAndUserId({
       userId,

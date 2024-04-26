@@ -17,6 +17,9 @@ import {
   OrdersRouteUpdateEvent,
 } from '../../domain/order/domainEvents'
 import { FullOrderDataDTO } from '../../domain/order/dto/fullOrderData.dto'
+import { GetDocsCountProps } from '@/classes/getOrdersCountHandlerProps'
+import { getOrdersMatcher } from './pipelines/getOrdersMatcher'
+import { Cursor } from 'mongoose'
 
 class OrderRepository {
   constructor() {
@@ -41,6 +44,17 @@ class OrderRepository {
     if (orders.length === 0)
       throw new Error('getFullOrderDataDTO : order is missing')
     return FullOrderDataDTO.create(orders[0])
+  }
+
+  async getOrdersCount(p: GetDocsCountProps): Promise<number> {
+    const matcher = getOrdersMatcher(p)
+    const [res] = await OrderModel.aggregate([matcher, { $count: 'count' }])
+    return res?.count ?? 0
+  }
+
+  orderAggregationCursor(p: GetDocsCountProps): Cursor {
+    const matcher = getOrdersMatcher(p)
+    return OrderModel.aggregate([matcher]).cursor({})
   }
 
   async getOrdersByTrucksAndPeriod(

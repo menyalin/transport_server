@@ -1,7 +1,5 @@
-import { Order as OrderDomain } from '../../domain/order/order.domain'
-
-import { OrderStats as OrderStatsModel } from '../../models'
-
+import { Order as OrderDomain } from '@/domain/order/order.domain'
+import { OrderStats as OrderStatsModel } from '@/models'
 import { RouteStats } from '../../values/order/routeStats'
 
 class OrderStatsRepository {
