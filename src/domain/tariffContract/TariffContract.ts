@@ -14,6 +14,7 @@ import { TariffContractUpdatedEvent } from './events'
 import { ConflictResourceError } from '@/helpers/errors'
 import { isEqualArraysOfObjects } from '@/utils/isEqualArraysOfObjects'
 import { isEqualDates } from '@/utils/isEqualDates'
+import { dateOrISOStringSchema } from '@/shared/validationSchemes'
 
 export class TariffContract {
   _id?: string
@@ -32,6 +33,7 @@ export class TariffContract {
   note?: string | null
   events: BusEvent[] = []
   _version: number = 0
+  createdAt?: Date
 
   constructor(data: any) {
     const parsedData = TariffContract.validationSchema.parse(data)
@@ -49,6 +51,7 @@ export class TariffContract {
     this.returnPercentTariffs = parsedData.returnPercentTariffs
     this.idleTimeTariffs = parsedData.idleTimeTariffs
     this.note = parsedData.note
+    this.createdAt = parsedData.createdAt
     this._version = parsedData._version
   }
 
@@ -142,7 +145,11 @@ export class TariffContract {
       this.events.push(TariffContractUpdatedEvent(this))
     }
   }
-
+  get sortedZoneTariffs() {
+    return this.zonesTariffs
+      .slice()
+      .sort((a, b) => b.unloadingZones.length - a.unloadingZones.length)
+  }
   static validationSchema = z.object({
     _id: objectIdSchema.optional(),
     agreement: objectIdSchema,
@@ -173,6 +180,7 @@ export class TariffContract {
       .transform((arr) => arr.map((i) => new IdleTimeTariff(i))),
     note: z.string().optional().nullable(),
     events: z.array(z.unknown()).optional(),
+    createdAt: dateOrISOStringSchema.optional(),
     _version: z.number().default(0),
   })
 

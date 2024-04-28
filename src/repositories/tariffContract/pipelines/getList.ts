@@ -22,7 +22,30 @@ export const ListPipelineBuilder = (p: ListQueryPropsDto): PipelineStage[] => {
     },
   }
 
-  const pipeline: PipelineStage[] = [firstMatcher]
+  const aggreemntLookup: PipelineStage[] = [
+    {
+      $lookup: {
+        from: 'agreements',
+        localField: 'agreement',
+        foreignField: '_id',
+        as: 'agreementName',
+      },
+    },
+    {
+      $addFields: {
+        agreementName: {
+          $getField: {
+            field: 'name',
+            input: {
+              $first: '$agreementName',
+            },
+          },
+        },
+      },
+    },
+  ]
+
+  const pipeline: PipelineStage[] = [firstMatcher, ...aggreemntLookup]
   if (p.sortBy.length > 0) pipeline.push(sortingBuilder(p.sortBy, p.sortDesc))
   const finalFacet: PipelineStage.Facet = {
     $facet: {
