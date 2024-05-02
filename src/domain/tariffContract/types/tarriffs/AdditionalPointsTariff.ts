@@ -7,28 +7,34 @@ import {
   TruckKindsEnumSchema,
 } from '../validationSchemes'
 import { OrderType, OrderTypeSchema } from '@/domain/order/types'
+import { Order } from '@/domain/order/order.domain'
 
 export class AdditionalPointsTariff implements ICommonTariffFields {
   truckKinds: TRUCK_KINDS_ENUM[]
   liftCapacities: number[]
   includedPoints: number
   price: number
-  orderType: OrderType
+  orderTypes: OrderType[]
 
   constructor(p: any) {
     const parsedData = AdditionalPointsTariff.validationSchema.parse(p)
     this.truckKinds = parsedData.truckKinds
-    this.orderType = parsedData.orderType
+    this.orderTypes = parsedData.orderTypes
     this.liftCapacities = parsedData.liftCapacities
     this.includedPoints = parsedData.includedPoints
     this.price = parsedData.price
   }
 
+  canApplyToOrder(order: Order): boolean {
+    return false
+  }
+  calculateForOrder(order: Order) {}
+
   static validationSchema = z.object({
     truckKinds: TruckKindsEnumSchema,
     liftCapacities: LiftCapacityEnumSchema,
     includedPoints: z.number().min(0),
-    orderType: OrderTypeSchema,
+    orderTypes: z.array(OrderTypeSchema).nonempty(),
     price: PriceSchema,
   })
 
@@ -41,7 +47,7 @@ export class AdditionalPointsTariff implements ICommonTariffFields {
           required: true,
         },
       ],
-      orderType: { type: String, required: true, enum: ['region', 'city'] },
+      orderTypes: [{ type: String, required: true, enum: ['region', 'city'] }],
       liftCapacities: [{ type: Number, required: true }],
       includedPoints: { type: Number },
       price: { type: Number },

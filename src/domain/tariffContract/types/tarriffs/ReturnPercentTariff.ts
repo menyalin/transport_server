@@ -5,6 +5,7 @@ import {
   LiftCapacityEnumSchema,
   TruckKindsEnumSchema,
 } from '../validationSchemes'
+import { Order } from '@/domain/order/order.domain'
 
 export class ReturnPercentTariff implements ICommonTariffFields {
   truckKinds: TRUCK_KINDS_ENUM[]
@@ -17,7 +18,10 @@ export class ReturnPercentTariff implements ICommonTariffFields {
     this.liftCapacities = parsedData.liftCapacities
     this.percent = parsedData.percent
   }
-
+  canApplyToOrder(order: Order): boolean {
+    return false
+  }
+  calculateForOrder(order: Order) {}
   static validationSchema = z.object({
     truckKinds: TruckKindsEnumSchema,
     liftCapacities: LiftCapacityEnumSchema,

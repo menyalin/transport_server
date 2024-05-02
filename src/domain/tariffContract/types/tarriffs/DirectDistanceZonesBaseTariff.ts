@@ -8,6 +8,7 @@ import {
   TruckKindsEnumSchema,
   ZoneIdSchema,
 } from '../validationSchemes'
+import { Order } from '@/domain/order/order.domain'
 
 type TariffZone = {
   distance: number
@@ -34,6 +35,11 @@ export class DirectDistanceZonesBaseTariff implements ICommonTariffFields {
     loadingZone: ZoneIdSchema,
     zones: z.array(TariffZoneSchema),
   })
+
+  canApplyToOrder(order: Order): boolean {
+    return false
+  }
+  calculateForOrder(order: Order) {}
 
   static get dbSchema() {
     return {

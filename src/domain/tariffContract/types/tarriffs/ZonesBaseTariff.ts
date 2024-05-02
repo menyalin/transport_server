@@ -8,6 +8,7 @@ import {
   PriceSchema,
   TruckKindsEnumSchema,
 } from '../validationSchemes'
+import { Order } from '@/domain/order/order.domain'
 
 export class ZonesBaseTariff implements ICommonTariffFields {
   truckKinds: TRUCK_KINDS_ENUM[]
@@ -32,6 +33,11 @@ export class ZonesBaseTariff implements ICommonTariffFields {
     unloadingZones: z.array(ZoneIdSchema),
     price: PriceSchema,
   })
+
+  canApplyToOrder(order: Order): boolean {
+    return false
+  }
+  calculateForOrder(order: Order) {}
 
   static get dbSchema() {
     return {
