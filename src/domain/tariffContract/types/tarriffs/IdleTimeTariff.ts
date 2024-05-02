@@ -8,11 +8,12 @@ import {
   TruckKindsEnumSchema,
 } from '../validationSchemes'
 import { OrderType, OrderTypeSchema } from '@/domain/order/types'
+import { Order } from '@/domain/order/order.domain'
 
 export class IdleTimeTariff implements ICommonTariffFields {
   truckKinds: TRUCK_KINDS_ENUM[]
   liftCapacities: number[]
-  orderType: OrderType
+  orderTypes: OrderType[]
   includeHours: number
   roundByHours: RoundByHours
   tariffBy: TariffBy
@@ -22,7 +23,7 @@ export class IdleTimeTariff implements ICommonTariffFields {
     const parsed = IdleTimeTariff.validationSchema.parse(p)
     this.truckKinds = parsed.truckKinds
     this.liftCapacities = parsed.liftCapacities
-    this.orderType = parsed.orderType
+    this.orderTypes = parsed.orderTypes
     this.includeHours = parsed.includeHours
     this.roundByHours = parsed.roundByHours as RoundByHours
     this.tariffBy = parsed.tariffBy
@@ -33,10 +34,15 @@ export class IdleTimeTariff implements ICommonTariffFields {
     liftCapacities: LiftCapacityEnumSchema,
     includeHours: z.number(),
     roundByHours: RoundByHoursSchema,
-    orderType: OrderTypeSchema,
+    orderTypes: z.array(OrderTypeSchema).nonempty(),
     tariffBy: z.union([z.literal('hour'), z.literal('day')]),
     price: z.number(),
   })
+
+  canApplyToOrder(order: Order): boolean {
+    return false
+  }
+  calculateForOrder(order: Order) {}
 
   static get dbSchema() {
     return {
@@ -51,7 +57,7 @@ export class IdleTimeTariff implements ICommonTariffFields {
       includeHours: { type: Number },
       roundByHours: { type: Number, enum: TARIFF_ROUND_BY_HOURS_ENUM }, // Кратность округления по часам
       tariffBy: { type: String, enum: ['hour', 'day'] },
-      orderType: { type: String, required: true, enum: ['region', 'city'] },
+      orderTypes: [{ type: String, required: true, enum: ['region', 'city'] }],
       price: { type: Number, required: true },
     }
   }
