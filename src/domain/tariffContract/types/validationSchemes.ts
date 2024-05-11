@@ -1,9 +1,7 @@
 import z from 'zod'
-import { TRUCK_KINDS_ENUM } from '../../../constants/truck'
-import { objectIdSchema } from '@/utils/objectIdSchema'
+import { TRUCK_LIFT_CAPACITY_TYPES } from '@/constants/truck'
+import { objectIdSchema } from '@/shared/validationSchemes'
 
-export const TruckKindsEnumSchema = z.array(z.nativeEnum(TRUCK_KINDS_ENUM))
-export const LiftCapacityEnumSchema = z.array(z.number())
 export const ZoneIdSchema = objectIdSchema
 export const PriceSchema = z.number()
 
@@ -19,4 +17,12 @@ export const RoundByHoursSchema = z.union([
   z.literal(roundByHoursValues[2]),
   z.literal(roundByHoursValues[3]),
   z.literal(roundByHoursValues[4]),
+])
+
+export const LiftCapacityEnumSchema = z.union([
+  z.literal(TRUCK_LIFT_CAPACITY_TYPES[0]),
+  z.literal(TRUCK_LIFT_CAPACITY_TYPES[1]),
+  z.literal(TRUCK_LIFT_CAPACITY_TYPES[2]),
+  z.literal(TRUCK_LIFT_CAPACITY_TYPES[3]),
+  z.literal(TRUCK_LIFT_CAPACITY_TYPES[4]),
 ])

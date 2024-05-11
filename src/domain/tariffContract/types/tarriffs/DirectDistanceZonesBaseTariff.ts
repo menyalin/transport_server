@@ -1,14 +1,18 @@
 import z from 'zod'
 import { Types } from 'mongoose'
 import { TRUCK_KINDS_ENUM } from '../../../../constants/truck'
-import { ICommonTariffFields } from '../common'
+import { ICommonTariffFields, IContractDataForTariff } from '../common'
 import {
   LiftCapacityEnumSchema,
   TariffZoneSchema,
-  TruckKindsEnumSchema,
   ZoneIdSchema,
 } from '../validationSchemes'
 import { Order } from '@/domain/order/order.domain'
+import { OrderPrice } from '@/domain/order/orderPrice'
+import { Agreement } from '@/domain/agreement/agreement.domain'
+import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
+import { TruckKindsEnumSchema } from '@/shared/validationSchemes'
+import { isThisTypeNode } from 'typescript'
 
 type TariffZone = {
   distance: number
@@ -20,6 +24,9 @@ export class DirectDistanceZonesBaseTariff implements ICommonTariffFields {
   liftCapacities: number[]
   loadingZone: string
   zones: TariffZone[]
+  withVat?: boolean
+  contractName?: string
+  contractDate?: Date
 
   constructor(p: any) {
     const parsed = DirectDistanceZonesBaseTariff.validationSchema.parse(p)
@@ -30,16 +37,37 @@ export class DirectDistanceZonesBaseTariff implements ICommonTariffFields {
   }
 
   static validationSchema = z.object({
-    truckKinds: TruckKindsEnumSchema,
-    liftCapacities: LiftCapacityEnumSchema,
+    truckKinds: z.array(TruckKindsEnumSchema),
+    liftCapacities: z.array(LiftCapacityEnumSchema),
     loadingZone: ZoneIdSchema,
     zones: z.array(TariffZoneSchema),
   })
+  setContractData(data: IContractDataForTariff) {
+    this.withVat = data.withVat
+    this.contractName = data.contractName
+    this.contractDate = data.contractDate
+  }
+  getNoteString(): string {
+    return `Тариф расстояния по линейке. Контракт: ${
+      this.contractName || '--'
+    } от ${this.contractDate?.toDateString() || '--'}`
+  }
 
   canApplyToOrder(order: Order): boolean {
     return false
   }
-  calculateForOrder(order: Order) {}
+
+  calculateForOrder(order: Order, agreement: Agreement): OrderPrice[] {
+    const type = ORDER_PRICE_TYPES_ENUM.base
+    return [
+      new OrderPrice({
+        type,
+        priceWOVat: 0,
+        price: 0,
+        sumVat: 0,
+      }),
+    ]
+  }
 
   static get dbSchema() {
     return {

@@ -1,20 +1,20 @@
 import { z } from 'zod'
 import { TRUCK_KINDS_ENUM } from '@/constants/truck'
-import { ICommonTariffFields } from '../common'
-import {
-  LiftCapacityEnumSchema,
-  PriceSchema,
-  TruckKindsEnumSchema,
-} from '../validationSchemes'
+import { LiftCapacityEnumSchema, PriceSchema } from '../validationSchemes'
 import { OrderType, OrderTypeSchema } from '@/domain/order/types'
 import { Order } from '@/domain/order/order.domain'
+import { TruckKindsEnumSchema } from '@/shared/validationSchemes'
+import { Agreement } from '@/domain/agreement/agreement.domain'
+import { OrderPrice } from '@/domain/order/orderPrice'
+import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
 
-export class AdditionalPointsTariff implements ICommonTariffFields {
+export class AdditionalPointsTariff {
   truckKinds: TRUCK_KINDS_ENUM[]
   liftCapacities: number[]
   includedPoints: number
   price: number
   orderTypes: OrderType[]
+  withVat?: boolean | undefined
 
   constructor(p: any) {
     const parsedData = AdditionalPointsTariff.validationSchema.parse(p)
@@ -28,11 +28,22 @@ export class AdditionalPointsTariff implements ICommonTariffFields {
   canApplyToOrder(order: Order): boolean {
     return false
   }
-  calculateForOrder(order: Order) {}
+  calculateForOrder(order: Order, agreement: Agreement): OrderPrice {
+    return new OrderPrice({
+      type: ORDER_PRICE_TYPES_ENUM.additionalPoints,
+      price: 0,
+      priceWOVat: 0,
+      sumVat: 0,
+    })
+  }
+
+  setWithVat(val: boolean) {
+    this.withVat = val
+  }
 
   static validationSchema = z.object({
-    truckKinds: TruckKindsEnumSchema,
-    liftCapacities: LiftCapacityEnumSchema,
+    truckKinds: z.array(TruckKindsEnumSchema),
+    liftCapacities: z.array(LiftCapacityEnumSchema),
     includedPoints: z.number().min(0),
     orderTypes: z.array(OrderTypeSchema).nonempty(),
     price: PriceSchema,

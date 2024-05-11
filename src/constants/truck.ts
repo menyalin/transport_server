@@ -1,5 +1,5 @@
 // Типы транспорта
-export const TRUCK_LIFT_CAPACITY_TYPES = [20, 10, 5, 3.5, 1.5]
+export const TRUCK_LIFT_CAPACITY_TYPES = [20, 10, 5, 3.5, 1.5] as const
 
 export enum TRUCK_TYPES_ENUM {
   truck = 'truck',
@@ -28,12 +28,12 @@ export const TRUCK_KINDS = [
   { value: TRUCK_KINDS_ENUM.tent, text: 'Тент' },
 ]
 
-// Тип погрузки
 export enum LOAD_DIRECTION_ENUM {
   rear = 'rear',
   side = 'side',
   top = 'top',
 }
+
 export const LOAD_DIRECTION_ENUM_VALUES = Object.values(LOAD_DIRECTION_ENUM)
 export const LOAD_DIRECTION = [
   { value: LOAD_DIRECTION_ENUM.rear, text: 'Задняя' },

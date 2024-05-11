@@ -8,13 +8,27 @@ import {
   ReturnPercentTariff,
   ZonesBaseTariff,
 } from './types/tarriffs'
-import { objectIdSchema } from '@/utils/objectIdSchema'
 import { BusEvent } from 'ts-bus/types'
 import { TariffContractUpdatedEvent } from './events'
 import { ConflictResourceError } from '@/helpers/errors'
 import { isEqualArraysOfObjects } from '@/utils/isEqualArraysOfObjects'
 import { isEqualDates } from '@/utils/isEqualDates'
-import { dateOrISOStringSchema } from '@/shared/validationSchemes'
+import {
+  dateOrISOStringSchema,
+  objectIdSchema,
+} from '@/shared/validationSchemes'
+
+const zonesTariffComparator = (
+  a: ZonesBaseTariff,
+  b: ZonesBaseTariff
+): number => {
+  if (a.unloadingZones.length > b.unloadingZones.length) return -1
+  if (a.unloadingZones.length < b.unloadingZones.length) return 1
+  if (a.price > b.price) return -1
+  if (a.price < b.price) return 1
+
+  return 0
+}
 
 export class TariffContract {
   _id?: string
@@ -23,8 +37,8 @@ export class TariffContract {
   company: string
   startDate: Date
   endDate: Date | null
-  isActive: Boolean = true
-  withVat: Boolean
+  isActive: boolean = true
+  withVat: boolean
   zonesTariffs: ZonesBaseTariff[]
   directDistanceZonesTariffs: DirectDistanceZonesBaseTariff[]
   additionalPointsTariffs: AdditionalPointsTariff[]
@@ -38,7 +52,7 @@ export class TariffContract {
   constructor(data: any) {
     const parsedData = TariffContract.validationSchema.parse(data)
     this._id = parsedData._id?.toString()
-    this.agreement = parsedData.agreement.toString()
+    this.agreement = parsedData.agreement
     this.name = parsedData.name
     this.startDate = parsedData.startDate
     this.endDate = parsedData.endDate
@@ -145,17 +159,25 @@ export class TariffContract {
       this.events.push(TariffContractUpdatedEvent(this))
     }
   }
-  get sortedZoneTariffs() {
-    return this.zonesTariffs
-      .slice()
-      .sort((a, b) => b.unloadingZones.length - a.unloadingZones.length)
+
+  getSortedZoneTariffs(): ZonesBaseTariff[] {
+    const res = this.zonesTariffs.slice().sort(zonesTariffComparator)
+    res.forEach((i) => {
+      i.setContractData({
+        withVat: this.withVat,
+        contractName: this.name,
+        contractDate: this.startDate,
+      })
+    })
+    return res
   }
+
   static validationSchema = z.object({
     _id: objectIdSchema.optional(),
-    agreement: objectIdSchema,
+    agreement: objectIdSchema.transform((val) => val.toString()),
     name: z.string(),
     startDate: z.date(),
-    company: objectIdSchema,
+    company: objectIdSchema.transform((val) => val.toString()),
     endDate: z.date().nullable(),
     isActive: z.boolean().default(true),
 
