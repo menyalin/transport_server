@@ -12,6 +12,7 @@ export const createAgreement = (args: object): Agreement => {
     clients: [fakeObjectId],
     vatRate: 20,
     isOutsourceAgreement: false,
+    commission: 0,
     usePriceWithVAT: true,
     useCustomPrices: true,
     auctionNumRequired: false,
