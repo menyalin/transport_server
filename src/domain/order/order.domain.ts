@@ -11,6 +11,7 @@ import { OrderPrice } from './orderPrice'
 import { ORDER_PRICE_TYPES_ENUM } from '../../constants/priceTypes'
 import { BadRequestError } from '../../helpers/errors'
 import { OrderAnalytics } from './analytics'
+import { OrderReqTransport } from './reqTransport'
 
 export interface IOrderDTO {
   _id: string
@@ -40,7 +41,7 @@ export interface IOrderDTO {
   finalPrices?: any[]
   outsourceCosts?: []
   cargoParams?: object
-  reqTransport?: object
+  reqTransport?: OrderReqTransport
   paymentParts?: []
   analytics?: any
   docsState?: object
@@ -80,7 +81,7 @@ export class Order {
   finalPrices?: OrderPrice[]
   outsourceCosts: []
   cargoParams: object
-  reqTransport: object
+  reqTransport?: OrderReqTransport
   paymentParts: []
   analytics?: OrderAnalytics
   docsState?: object
@@ -118,7 +119,9 @@ export class Order {
       this.finalPrices = order.finalPrices?.map((i) => new OrderPrice(i))
     this.outsourceCosts = order.outsourceCosts || []
     this.cargoParams = order.cargoParams || {}
-    this.reqTransport = order.reqTransport || {}
+    this.reqTransport = order.reqTransport
+      ? new OrderReqTransport(order.reqTransport)
+      : undefined
     this.paymentParts = order.paymentParts || []
     this.analytics = new OrderAnalytics(order.analytics)
     this.docsState = order.docsState

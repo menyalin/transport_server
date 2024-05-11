@@ -66,7 +66,7 @@ export class TtlMap<K, V> {
           this.cache.delete(key)
         }
       }
-    }, 10000)
+    }, this.cacheTTL)
   }
   public dispose(): void {
     this.stopCleanup()

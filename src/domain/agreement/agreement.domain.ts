@@ -1,3 +1,4 @@
+import { objectIdSchema } from '@/shared/validationSchemes'
 import { Types } from 'mongoose'
 import { z } from 'zod'
 
@@ -9,19 +10,19 @@ export class Agreement {
   clients: string[]
   isOutsourceAgreement: boolean
   calcWaitingByArrivalDateLoading: boolean = false
-  calcWaitingByArrivalDateUnloading: boolean
-  noWaitingPaymentForAreLateLoading: boolean
-  noWaitingPaymentForAreLateUnloading: boolean
+  calcWaitingByArrivalDateUnloading: boolean = false
+  noWaitingPaymentForAreLateLoading: boolean = false
+  noWaitingPaymentForAreLateUnloading: boolean = false
   outsourceCarriers: string[]
   cashPayment: boolean = false
   vatRate: number = 0
-  closed: boolean
+  closed: boolean = false
   useCustomPrices: boolean
   usePriceWithVAT: boolean
   priceRequired: boolean
   clientNumRequired?: boolean = false
   auctionNumRequired?: boolean = false
-  note?: string
+  note?: string | null
   commission: number = 0
   executorName: string | null
   isActive?: boolean = true
@@ -71,30 +72,84 @@ export class Agreement {
   }
 
   private static validationSchema = z.object({
-    _id: z.string().optional(),
+    _id: objectIdSchema
+      .optional()
+      .transform((val) => (val ? val.toString() : undefined)),
     name: z.string(),
     isActive: z.boolean().optional(),
     date: z.date(),
-    company: z.string(),
-    clients: z.array(z.string()).optional(),
+    company: objectIdSchema.transform((val) => val.toString()),
+    clients: z
+      .array(objectIdSchema)
+      .optional()
+      .transform((val) => {
+        if (!val) return undefined
+        return val.map((i) => i.toString())
+      }),
     isOutsourceAgreement: z.boolean(),
-    calcWaitingByArrivalDateLoading: z.boolean(),
-    calcWaitingByArrivalDateUnloading: z.boolean(),
-    noWaitingPaymentForAreLateLoading: z.boolean(),
-    noWaitingPaymentForAreLateUnloading: z.boolean(),
-    outsourceCarriers: z.array(z.string()).optional(),
+    calcWaitingByArrivalDateLoading: z
+      .boolean()
+      .optional()
+      .transform((val) => Boolean(val)),
+    calcWaitingByArrivalDateUnloading: z
+      .boolean()
+      .optional()
+      .transform((val) => Boolean(val)),
+    noWaitingPaymentForAreLateLoading: z
+      .boolean()
+      .optional()
+      .transform((val) => Boolean(val)),
+    noWaitingPaymentForAreLateUnloading: z
+      .boolean()
+      .optional()
+      .transform((val) => Boolean(val)),
+    outsourceCarriers: z
+      .array(objectIdSchema)
+      .optional()
+      .transform((val) => {
+        if (!val) return undefined
+        return val.map((i) => i.toString())
+      }),
     cashPayment: z.boolean().optional(),
     vatRate: z.number(),
-    closed: z.boolean(),
-    useCustomPrices: z.boolean(),
-    usePriceWithVAT: z.boolean(),
-    priceRequired: z.boolean(),
-    clientNumRequired: z.boolean(),
-    auctionNumRequired: z.boolean(),
-    note: z.string().optional(),
-    commission: z.number().optional(),
+    closed: z
+      .boolean()
+      .nullable()
+      .transform((val) => Boolean(val)),
+    useCustomPrices: z
+      .boolean()
+      .optional()
+      .transform((val) => Boolean(val)),
+    usePriceWithVAT: z
+      .boolean()
+      .optional()
+      .transform((val) => Boolean(val)),
+    priceRequired: z
+      .boolean()
+      .optional()
+      .transform((val) => Boolean(val)),
+    clientNumRequired: z
+      .boolean()
+      .optional()
+      .transform((val) => Boolean(val)),
+    auctionNumRequired: z
+      .boolean()
+      .optional()
+      .transform((val) => Boolean(val)),
+    note: z.string().nullable().optional(),
+    commission: z
+      .number()
+      .nullable()
+      .optional()
+      .transform((val) => (val ? val : 0)),
     executorName: z.string().optional(),
-    allowedCarriers: z.array(z.string()).optional(),
+    allowedCarriers: z
+      .array(objectIdSchema)
+      .optional()
+      .transform((val) => {
+        if (!val) return undefined
+        return val.map((i) => i.toString())
+      }),
   })
 
   static dbSchema = {

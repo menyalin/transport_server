@@ -35,7 +35,7 @@ class MassUpdateService {
     this.ordersCursor?.close()
   }
 
-  async startOrderProcessing(p: GetDocsCountProps): Promise<void> {
+  async startOrderProcessing(p: GetDocsCountProps): Promise<any> {
     if (this.isOrdersProcessing) return
     this.isOrdersProcessing = true
     this.currentSettings = p
@@ -50,11 +50,17 @@ class MassUpdateService {
       }
     } catch (e) {
       this.error = e as Error
-      throw e
     } finally {
+      const tmpOrderCount = this.ordersProcessed
+      const tmpError = this.error?.message
+      this.error = undefined
       this.ordersProcessed = 0
       this.isOrdersProcessing = false
       this.ordersCount = 0
+      return {
+        error: tmpError,
+        ordersCount: tmpOrderCount,
+      }
     }
   }
 }

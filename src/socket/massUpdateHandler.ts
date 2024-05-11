@@ -39,7 +39,8 @@ const runOrdersProcessing = async (data: object, userId: string) => {
   if (!(await isAcceptedUser(userId))) return
   const parsedProps = new GetDocsCountProps(data)
   try {
-    await MassUpdateService.startOrderProcessing(parsedProps)
+    const res = await MassUpdateService.startOrderProcessing(parsedProps)
+    emitTo('admin_room', 'mass_update_orders:processing_finished', res)
   } catch (e) {
     emitTo('admin_room', 'mass_update_orders:processing_error', e)
     await MassUpdateService.cancelProcessing()

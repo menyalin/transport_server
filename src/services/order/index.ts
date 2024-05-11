@@ -7,7 +7,12 @@ import {
 import { emitTo } from '../../socket'
 import { getSchedulePipeline } from './pipelines/getSchedulePipeline'
 import { getOrderListPipeline } from './pipelines/getOrderListPipeline'
-import { ChangeLogService, PermissionService, TariffService } from '..'
+import {
+  AgreementService,
+  ChangeLogService,
+  PermissionService,
+  TariffService,
+} from '..'
 import checkCrossItems from './checkCrossItems'
 import checkRefusedOrder from './checkRefusedOrder'
 import getRouteFromTemplate from './getRouteFromTemplate'
@@ -17,7 +22,11 @@ import { orsDirections } from '../../helpers/orsClient'
 import { BadRequestError } from '../../helpers/errors'
 import { getDocsRegistryByOrderId } from './getDocsRegistryByOrderId'
 import { getPaymentInvoicesByOrderIds } from './getPaymentInvoicesByOrderIds'
-import { OrderRepository, AddressRepository } from '@/repositories'
+import {
+  OrderRepository,
+  AddressRepository,
+  TariffContractRepository,
+} from '@/repositories'
 import { Order as OrderDomain } from '@/domain/order/order.domain'
 import { bus } from '@/eventBus'
 import {
@@ -28,6 +37,10 @@ import {
 import { Route } from '@/values/order/route'
 import { OrderAnalytics } from '@/domain/order/analytics'
 import { RouteStats } from '@/values/order/routeStats'
+import { OrderPriceCalculator } from '@/domain/orderPriceCalculator/orderPriceCalculator'
+import { Agreement } from '@/domain/agreement/agreement.domain'
+import { OrderPrice } from '@/domain/order/orderPrice'
+import { TariffContract } from '@/domain/tariffContract'
 
 const _isEqualDatesOfRoute = (oldRoute: Route, newRoute: Route) => {
   if (!(oldRoute instanceof Route) || !(newRoute instanceof Route))
@@ -318,6 +331,9 @@ class OrderService {
     })
     orderDomain.setDisableStatus(false)
     orderDomain.analytics = await this.updateOrderAnalytics(orderDomain)
+    const prePrices = await this.updatePrePrices(orderDomain)
+    orderDomain.analytics.setPrePrices(prePrices)
+
     bus.publish(OrdersUpdatedEvent([orderDomain]))
 
     emitTo(orderDomain.company, 'order:updated', orderDomain)
@@ -336,6 +352,8 @@ class OrderService {
 
   async refresh(order: OrderDomain): Promise<void> {
     order.analytics = await this.updateOrderAnalytics(order)
+    const prePrices = await this.updatePrePrices(order)
+    order.analytics.setPrePrices(prePrices)
     bus.publish(OrdersUpdatedEvent([order]))
   }
 
@@ -355,6 +373,25 @@ class OrderService {
       unloadingZones: unloadingZones,
       routeStats: new RouteStats(order.route),
     })
+  }
+
+  async updatePrePrices(order: OrderDomain): Promise<OrderPrice[]> {
+    const priceCalculator = new OrderPriceCalculator()
+    const prePrices: OrderPrice[] = []
+    if (order.client.agreement !== undefined) {
+      const agreement = await AgreementService.getById(
+        order.client.agreement.toString()
+      )
+      const tariffContracts: TariffContract[] =
+        await TariffContractRepository.getByAgreementAndDate(
+          agreement,
+          order.orderDate
+        )
+      prePrices.push(
+        ...priceCalculator.basePrice(order, tariffContracts, agreement)
+      )
+    }
+    return prePrices
   }
 
   //@ts-ignore

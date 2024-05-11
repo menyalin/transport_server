@@ -1,9 +1,5 @@
 import { Schema, model, Types } from 'mongoose'
-import {
-  TRUCK_KINDS_ENUM_VALUES,
-  TRUCK_LIFT_CAPACITY_TYPES,
-  LOAD_DIRECTION_ENUM_VALUES,
-} from '@/constants/truck'
+
 import {
   DOCUMENT_TYPES_ENUM,
   DOCUMENT_STATUSES_ENUM,
@@ -14,6 +10,7 @@ import { Client } from '@/domain/order/client'
 import { OrderPrice } from '@/domain/order/orderPrice'
 import { OrderPaymentPart } from '@/domain/order/paymentPart'
 import { OrderAnalytics } from '@/domain/order/analytics'
+import { OrderReqTransport } from '@/domain/order/reqTransport'
 
 const outsourceCosts = [
   {
@@ -104,21 +101,6 @@ const state = {
   },
 }
 
-const reqTransport = {
-  kind: {
-    type: String,
-    enum: TRUCK_KINDS_ENUM_VALUES,
-  },
-  liftCapacity: {
-    type: Number,
-    enum: TRUCK_LIFT_CAPACITY_TYPES,
-  },
-  loadDirection: {
-    type: String,
-    enum: LOAD_DIRECTION_ENUM_VALUES,
-  },
-}
-
 const confirmedCrew = {
   truck: { type: Types.ObjectId, ref: 'Truck' },
   trailer: { type: Types.ObjectId, ref: 'Truck' },
@@ -140,7 +122,7 @@ const schema = new Schema(
     confirmedCrew,
     route: [RoutePoint.dbSchema],
     cargoParams: cargoParams,
-    reqTransport: reqTransport,
+    reqTransport: OrderReqTransport.dbSchema,
     state,
     paymentParts: [OrderPaymentPart.dbSchema],
     analytics: OrderAnalytics.dbSchema,

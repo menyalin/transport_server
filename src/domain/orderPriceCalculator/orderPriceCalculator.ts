@@ -4,6 +4,8 @@ import {
   DirectDistanceZonesBaseTariff,
   ZonesBaseTariff,
 } from '../tariffContract/types/tarriffs'
+import { Agreement } from '../agreement/agreement.domain'
+import { OrderPrice } from '../order/orderPrice'
 
 type BaseTariff = ZonesBaseTariff | DirectDistanceZonesBaseTariff
 
@@ -23,17 +25,24 @@ export class OrderPriceCalculator {
       .slice()
       .sort(this.contractsComparator)
       .forEach((contract) => {
-        res.push(...contract.sortedZoneTariffs)
+        res.push(...contract.getSortedZoneTariffs())
         res.push(...contract.directDistanceZonesTariffs)
       })
     return res
   }
 
-  basePrice(order: Order, contracts: TariffContract[]) {
-    const tariffs = this.basePricePrioritySorter(contracts)
-    const tariff = tariffs.find((t) => t.canApplyToOrder(order))
-    if (!tariff) return 0
+  basePrice(
+    order: Order,
+    contracts: TariffContract[],
+    agreement: Agreement | null
+  ): OrderPrice[] {
+    if (!agreement || contracts.length === 0 || order.analytics === undefined)
+      return []
 
-    return tariff.calculateForOrder(order)
+    const tariffs = this.basePricePrioritySorter(contracts)
+    const tariff = tariffs.find((t: BaseTariff) => t.canApplyToOrder(order))
+    if (tariff === undefined) return []
+
+    return tariff.calculateForOrder(order, agreement)
   }
 }

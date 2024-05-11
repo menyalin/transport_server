@@ -116,14 +116,13 @@ export class Route {
     const maxDate = Math.max(...dates.map((date) => date.getTime()))
     return dayjs(maxDate).diff(minDate, unit)
   }
+
   get orderDate(): Date {
-    if (!this.route[0].plannedDateDoc && !this.route[0].plannedDate)
+    if (!this.mainLoadingPoint.plannedDate)
       throw new Error('order date is missing! invalid order')
-    if (isDate(this.route[0].plannedDateDoc))
-      return this.route[0].plannedDateDoc
-    if (isDate(this.route[0].plannedDate)) return this.route[0].plannedDate
-    else throw new Error('order date is missing! invalid order')
+    return this.mainLoadingPoint.plannedDate
   }
+
   toJSON() {
     return this.route
   }
