@@ -11,6 +11,7 @@ class MassUpdateService {
   ordersCursor?: Cursor
   currentSettings?: GetDocsCountProps
   error?: Error
+  currentOrder?: Order
 
   async getOrdersCount(p: GetDocsCountProps): Promise<number> {
     const res = await OrderRepository.getOrdersCount(p)
@@ -45,20 +46,25 @@ class MassUpdateService {
     try {
       for await (const orderDoc of this.ordersCursor) {
         const order = new Order(orderDoc, false)
+        this.currentOrder = order
         await OrderService.refresh(order)
         this.ordersProcessed++
       }
+      this.currentOrder = undefined
     } catch (e) {
       this.error = e as Error
     } finally {
       const tmpOrderCount = this.ordersProcessed
+      const tmpOrder = this.currentOrder
       const tmpError = this.error?.message
+
       this.error = undefined
       this.ordersProcessed = 0
       this.isOrdersProcessing = false
       this.ordersCount = 0
       return {
         error: tmpError,
+        order: tmpOrder,
         ordersCount: tmpOrderCount,
       }
     }
