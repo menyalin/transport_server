@@ -26,7 +26,7 @@ export class OrderPriceCalculator {
       .sort(this.contractsComparator)
       .forEach((contract) => {
         res.push(...contract.getSortedZoneTariffs())
-        res.push(...contract.directDistanceZonesTariffs)
+        res.push(...contract.getDirectDistanceZonesTariffs())
       })
     return res
   }

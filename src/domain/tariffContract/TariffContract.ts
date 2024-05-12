@@ -172,6 +172,18 @@ export class TariffContract {
     return res
   }
 
+  getDirectDistanceZonesTariffs(): DirectDistanceZonesBaseTariff[] {
+    const res = this.directDistanceZonesTariffs.slice()
+    res.forEach((i) => {
+      i.setContractData({
+        withVat: this.withVat,
+        contractName: this.name,
+        contractDate: this.startDate,
+      })
+    })
+    return res
+  }
+
   static validationSchema = z.object({
     _id: objectIdSchema.optional(),
     agreement: objectIdSchema.transform((val) => val.toString()),
