@@ -93,6 +93,13 @@ export class Route {
       .map((i) => i.getDurationInMinutes)
   }
 
+  get returnTimesInMinutes(): number[] {
+    return (
+      this.route.filter((i) => i.isReturn).map((i) => i.getDurationInMinutes) ??
+      []
+    )
+  }
+
   tripTimes(unit: UnitType = 'minutes') {
     const res = []
     for (let i = 1; i < this.route.length; i++) {

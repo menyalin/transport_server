@@ -4,6 +4,7 @@ export class RouteStats {
   countPoints: number
   loadingTimesInMinutes: number[]
   unloadingTimesInMinutes: number[]
+  returnTimesInMinutes: number[]
   tripTimesInMinutes: number[]
   totalDurationInMinutes: number
 
@@ -13,6 +14,7 @@ export class RouteStats {
     this.countPoints = route.countOfPoints
     this.loadingTimesInMinutes = route.loadingTimesInMinutes
     this.unloadingTimesInMinutes = route.unloadingTimesInMinutes
+    this.returnTimesInMinutes = route.returnTimesInMinutes
     this.tripTimesInMinutes = route.tripTimes('minutes')
     this.totalDurationInMinutes = route.totalDuration('minutes')
   }
@@ -22,6 +24,7 @@ export class RouteStats {
       countPoints: Number,
       loadingTimesInMinutes: [Number],
       unloadingTimesInMinutes: [Number],
+      returnTimesInMinutes: [Number],
       tripTimesInMinutes: [Number],
       totalDurationInMinutes: Number,
     }
