@@ -8,6 +8,7 @@ import {
 } from '@/shared/validationSchemes'
 import { OrderPrice } from '@/domain/order/orderPrice'
 import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
+import { Agreement } from '@/domain/agreement/agreement.domain'
 
 export class ReturnPercentTariff implements ICommonTariffFields {
   truckKinds: TRUCK_KINDS_ENUM[]
@@ -30,21 +31,44 @@ export class ReturnPercentTariff implements ICommonTariffFields {
   }
   getNoteString(): string {
     return `Простой. Контракт: ${this.contractName || '--'} от ${
-      this.contractDate?.toDateString() || '--'
+      this.contractDate?.toLocaleDateString() || '--'
     }`
   }
 
-  canApplyToOrder(order: Order): boolean {
-    return false
-  }
-
-  calculateForOrder(order: Order): OrderPrice[] {
-    return [
-      new OrderPrice({
-        type: ORDER_PRICE_TYPES_ENUM.return,
+  private getOrderBasePrice(order: Order): OrderPrice {
+    const basePriceCond = (i: OrderPrice): boolean =>
+      i.type === ORDER_PRICE_TYPES_ENUM.base
+    const price =
+      order.finalPrices?.find(basePriceCond) ||
+      order.prices?.find(basePriceCond) ||
+      order.prePrices?.find(basePriceCond)
+    if (!price)
+      return new OrderPrice({
+        type: ORDER_PRICE_TYPES_ENUM.base,
         price: 0,
         priceWOVat: 0,
         sumVat: 0,
+      })
+    return price
+  }
+
+  canApplyToOrder(order: Order): boolean {
+    if (order.reqTransport === undefined) return false
+    if (!order.route.hasReturn) return false
+    if (!this.truckKinds.includes(order.reqTransport.kind)) return false
+    if (!this.liftCapacities.includes(order.reqTransport.liftCapacity))
+      return false
+    return true
+  }
+
+  calculateForOrder(order: Order, _agreement: Agreement): OrderPrice[] {
+    const basePrice: OrderPrice = this.getOrderBasePrice(order)
+    return [
+      new OrderPrice({
+        type: ORDER_PRICE_TYPES_ENUM.return,
+        price: (basePrice?.price ?? 0) * (this.percent / 100),
+        priceWOVat: basePrice.priceWOVat * (this.percent / 100),
+        sumVat: (basePrice?.sumVat ?? 0) * (this.percent / 100),
       }),
     ]
   }

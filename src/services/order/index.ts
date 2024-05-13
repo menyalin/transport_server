@@ -388,7 +388,8 @@ class OrderService {
           order.orderDate
         )
       prePrices.push(
-        ...priceCalculator.basePrice(order, tariffContracts, agreement)
+        ...priceCalculator.basePrice(order, tariffContracts, agreement),
+        ...priceCalculator.returnPrice(order, tariffContracts, agreement)
       )
     }
     return prePrices
