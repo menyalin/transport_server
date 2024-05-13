@@ -2,15 +2,17 @@ import { Order } from '../order/order.domain'
 import { TariffContract } from '../tariffContract'
 import {
   DirectDistanceZonesBaseTariff,
+  ReturnPercentTariff,
   ZonesBaseTariff,
 } from '../tariffContract/types/tarriffs'
 import { Agreement } from '../agreement/agreement.domain'
 import { OrderPrice } from '../order/orderPrice'
 
+type ReturnTariff = ReturnPercentTariff
 type BaseTariff = ZonesBaseTariff | DirectDistanceZonesBaseTariff
 
 export class OrderPriceCalculator {
-  contractsComparator(a: TariffContract, b: TariffContract): number {
+  private contractsComparator(a: TariffContract, b: TariffContract): number {
     if (+a.startDate > +b.startDate) return -1
     if (+a.startDate < +b.startDate) return 1
     if (!a.createdAt || !b.createdAt) return 0
@@ -31,6 +33,17 @@ export class OrderPriceCalculator {
     return res
   }
 
+  returnPriceSorter(contracts: TariffContract[]): ReturnTariff[] {
+    let res: ReturnTariff[] = []
+    contracts
+      .slice()
+      .sort(this.contractsComparator)
+      .forEach((contract) => {
+        res.push(...contract.getReturnPercentTariffs())
+      })
+    return res
+  }
+
   basePrice(
     order: Order,
     contracts: TariffContract[],
@@ -43,6 +56,19 @@ export class OrderPriceCalculator {
     const tariff = tariffs.find((t: BaseTariff) => t.canApplyToOrder(order))
     if (tariff === undefined) return []
 
+    return tariff.calculateForOrder(order, agreement)
+  }
+
+  returnPrice(
+    order: Order,
+    contracts: TariffContract[],
+    agreement: Agreement | null
+  ): OrderPrice[] {
+    if (!agreement || contracts.length === 0 || order.analytics === undefined)
+      return []
+    const tariffs = this.returnPriceSorter(contracts)
+    const tariff = tariffs.find((t) => t.canApplyToOrder(order))
+    if (tariff === undefined) return []
     return tariff.calculateForOrder(order, agreement)
   }
 }
