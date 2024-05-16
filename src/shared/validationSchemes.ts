@@ -5,6 +5,7 @@ import {
   TRUCK_KINDS_ENUM,
   TRUCK_LIFT_CAPACITY_TYPES,
 } from '@/constants/truck'
+import { IdleTimeRoundingIntervalEnum } from '@/constants/tariff'
 
 export const dateOrISOStringSchema = z
   .union([z.date(), z.string().datetime({ offset: true })])
@@ -38,3 +39,7 @@ const objectSchema = z
   })
 
 export const objectIdSchema = z.union([stringSchema, objectSchema])
+
+export const idleTimeRoundingIntervalSchema = z.nativeEnum(
+  IdleTimeRoundingIntervalEnum
+)

@@ -362,7 +362,7 @@ class OrderService {
       order.route.mainLoadingPoint,
     ])
     const unloadingZones: string[] = await AddressRepository.getPointsZones(
-      order.route.unloadingPoints
+      order.route.pointsAfterMainLoadingPoint
     )
 
     return new OrderAnalytics({
@@ -389,6 +389,7 @@ class OrderService {
         )
       prePrices.push(
         ...priceCalculator.basePrice(order, tariffContracts, agreement),
+        ...priceCalculator.idlePrice(order, tariffContracts, agreement),
         ...priceCalculator.returnPrice(order, tariffContracts, agreement)
       )
     }

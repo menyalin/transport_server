@@ -184,6 +184,18 @@ export class TariffContract {
     return res
   }
 
+  getIdleTimeTariffs(): IdleTimeTariff[] {
+    const res = this.idleTimeTariffs.slice()
+    res.forEach((i) => {
+      i.setContractData({
+        withVat: this.withVat,
+        contractName: this.name,
+        contractDate: this.startDate,
+      })
+    })
+    return res
+  }
+
   getReturnPercentTariffs(): ReturnPercentTariff[] {
     const res = this.returnPercentTariffs.slice()
     res.forEach((i) => {

@@ -29,7 +29,11 @@ import {
   DOCUMENT_STATUSES,
   SALARY_TARIFF_TYPES,
 } from '../../constants/accounting'
-import { TARIFF_TYPES, TARIFF_ROUND_BY_HOURS } from '../../constants/tariff'
+import {
+  TARIFF_TYPES,
+  TARIFF_ROUND_BY_HOURS,
+  IDLE_TIME_ROUNDING_INTERVALS,
+} from '../../constants/tariff'
 import { emitTo } from '../../socket'
 
 import {
@@ -77,6 +81,7 @@ class UserService {
       tariffTypes: TARIFF_TYPES,
       salaryTariffTypes: SALARY_TARIFF_TYPES,
       roundingWaitingByHours: TARIFF_ROUND_BY_HOURS,
+      idleTimeRoundingIntervals: IDLE_TIME_ROUNDING_INTERVALS,
       docsRegistryStatuses: DOCS_REGISTRY_STATUSES,
       paymentInvoiceStatuses: PAIMENT_INVOICE_STATUSES,
       allTruckParams: allTruckParams,

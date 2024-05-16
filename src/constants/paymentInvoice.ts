@@ -1,4 +1,3 @@
-// @ts-nocheck
 const statuses = [
   { text: 'Подготовка', value: 'inProcess' },
   { text: 'Готов к отправке', value: 'prepared' },
