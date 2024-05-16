@@ -30,7 +30,6 @@ export class RoutePoint {
   isMainLoadingPoint: boolean = false
   note?: string
 
-  // TODO: add point interface
   constructor(point: any) {
     if (!POINT_TYPE_VALUES.includes(point.type))
       throw new Error('RoutePoint : constructor error : invalid point type')
@@ -118,6 +117,12 @@ export class RoutePoint {
 
   get isLoadingPointType() {
     return this.type === 'loading'
+  }
+  get isLate(): boolean {
+    const plannedDate: Date | null = this.plannedDateDoc || this.plannedDate
+    const arrivalDate: Date | null = this.firstDate
+    if (!plannedDate || !arrivalDate) return false
+    return dayjs(plannedDate).isBefore(arrivalDate, 'minute')
   }
 
   setMainLoadingPoint() {

@@ -18,9 +18,9 @@ export const createAgreement = (args: object): Agreement => {
     auctionNumRequired: false,
     calcWaitingByArrivalDateLoading: false,
     calcWaitingByArrivalDateUnloading: false,
-    clientNumRequired: false,
-    noWaitingPaymentForAreLateUnloading: false,
     noWaitingPaymentForAreLateLoading: false,
+    noWaitingPaymentForAreLateUnloading: false,
+    clientNumRequired: false,
     priceRequired: false,
     ...args,
   })

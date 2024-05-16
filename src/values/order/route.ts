@@ -41,8 +41,21 @@ export class Route {
     if (!point.isMainLoadingPoint) point.setMainLoadingPoint()
     return point
   }
+  get allLoadingPoints(): RoutePoint[] {
+    return this.route.filter((i) => i.type === 'loading').slice()
+  }
 
-  get unloadingPoints(): RoutePoint[] {
+  get allUnloadingPoints(): RoutePoint[] {
+    return this.route
+      .filter((i) => i.type === 'unloading' && !i.isReturn)
+      .slice()
+  }
+
+  get allReturnPoints(): RoutePoint[] {
+    return this.route.filter((i) => i.isReturn).slice()
+  }
+
+  get pointsAfterMainLoadingPoint(): RoutePoint[] {
     let points = this.route.filter((i) => !i.isReturnPoint) // выкидываю все точки с возвратом
 
     const idxMainLoadingPoint = points.findIndex(
