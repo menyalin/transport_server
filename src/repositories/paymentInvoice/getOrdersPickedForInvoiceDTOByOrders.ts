@@ -1,12 +1,12 @@
 import { PipelineStage, Types } from 'mongoose'
-import { OrderPickedForInvoiceDTO } from '../../domain/paymentInvoice/dto/orderPickedForInvoice.dto'
+import { OrderPickedForInvoiceDTO } from '@/domain/paymentInvoice/dto/orderPickedForInvoice.dto'
 import {
   GetOrdersPickedForInvoiceProps,
   GetOrdersPickedForInvoicePropsSchema,
-} from '../../domain/paymentInvoice/interfaces'
-import { Order as OrderModel } from '../../models'
-import { orderPlannedDateBuilder } from '../../services/_pipelineFragments/orderPlannedDateBuilder'
-import { orderDriverFullNameBuilder } from '../../services/_pipelineFragments/orderDriverFullNameBuilder'
+} from '@/domain/paymentInvoice/interfaces'
+import { Order as OrderModel } from '@/models'
+import { orderDriverFullNameBuilder } from '@/shared/pipelineFragments/orderDriverFullNameBuilder'
+import { orderPlannedDateBuilder } from '@/shared/pipelineFragments/orderPlannedDateBuilder'
 
 export const getOrdersPickedForInvoiceDTOByOrders = async ({
   orderIds,

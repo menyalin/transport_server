@@ -1,33 +1,35 @@
-// @ts-nocheck
-import mongoose from 'mongoose'
-import { BadRequestError } from '../../../helpers/errors'
-import { DOCUMENT_TYPES } from '../../../constants/accounting'
-import { orderDocNumbersStringFragment } from '../../_pipelineFragments/orderDocNumbersStringBuilder'
-import { orderDriverFullNameBuilder } from '../../_pipelineFragments/orderDriverFullNameBuilder'
+import { PipelineStage, Types } from 'mongoose'
+import { BadRequestError } from '@/helpers/errors'
+import { DOCUMENT_TYPES } from '@/constants/accounting'
+import { orderDocNumbersStringFragment } from '@/shared/pipelineFragments/orderDocNumbersStringBuilder'
+import { orderDriverFullNameBuilder } from '@/shared/pipelineFragments/orderDriverFullNameBuilder'
 
-export function getOrdersByDocsRegistryId({ docsRegistryId, orderIds }) {
+export function getOrdersByDocsRegistryId({
+  docsRegistryId,
+  orderIds,
+}: {
+  docsRegistryId: string
+  orderIds: string[]
+}) {
   if (!docsRegistryId && !orderIds)
     throw new BadRequestError(
       'DocsRegistryService:getOrdersByDocsRegistryId: requered params is missing'
     )
-  const firstMatcher = {
+  const firstMatcher: PipelineStage.Match = {
     $match: { $expr: { $and: [] } },
   }
 
   if (docsRegistryId)
     firstMatcher.$match.$expr.$and.push({
-      $eq: ['$docsRegistry', new mongoose.Types.ObjectId(docsRegistryId)],
+      $eq: ['$docsRegistry', new Types.ObjectId(docsRegistryId)],
     })
 
   if (orderIds)
     firstMatcher.$match.$expr.$and.push({
-      $in: [
-        '$order',
-        orderIds.map((order) => new mongoose.Types.ObjectId(order)),
-      ],
+      $in: ['$order', orderIds.map((order) => new Types.ObjectId(order))],
     })
 
-  const orderLookup = [
+  const orderLookup: PipelineStage[] = [
     {
       $lookup: {
         from: 'orders',
@@ -42,7 +44,7 @@ export function getOrdersByDocsRegistryId({ docsRegistryId, orderIds }) {
       },
     },
   ]
-  const driverLookup = [
+  const driverLookup: PipelineStage[] = [
     {
       $lookup: {
         from: 'drivers',
@@ -54,7 +56,7 @@ export function getOrdersByDocsRegistryId({ docsRegistryId, orderIds }) {
     { $addFields: { driver: { $first: '$driver' } } },
   ]
 
-  const loadingAddressLookup = [
+  const loadingAddressLookup: PipelineStage[] = [
     {
       $addFields: {
         loadingAddress: {
@@ -82,7 +84,7 @@ export function getOrdersByDocsRegistryId({ docsRegistryId, orderIds }) {
     },
   ]
 
-  const addFields = {
+  const addFields: PipelineStage.AddFields = {
     $addFields: {
       placeName: '$loadingAddress.shortName',
       orderDate: {

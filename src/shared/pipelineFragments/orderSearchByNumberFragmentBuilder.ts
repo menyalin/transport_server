@@ -1,5 +1,5 @@
 import { Expression } from 'mongoose'
-import { BadRequestError } from '../../helpers/errors'
+import { BadRequestError } from '@/helpers/errors'
 
 export const orderSearchByNumberFragmentBuilder = (
   search: string

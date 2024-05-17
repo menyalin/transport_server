@@ -1,6 +1,6 @@
 import { PipelineStage } from 'mongoose'
-import { orderPlannedDateBuilder } from '../../../services/_pipelineFragments/orderPlannedDateBuilder'
-import { orderDriverFullNameBuilder } from '../../../services/_pipelineFragments/orderDriverFullNameBuilder'
+import { orderDriverFullNameBuilder } from '@/shared/pipelineFragments/orderDriverFullNameBuilder'
+import { orderPlannedDateBuilder } from '@/shared/pipelineFragments/orderPlannedDateBuilder'
 
 const driverLookup: PipelineStage[] = [
   {

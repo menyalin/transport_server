@@ -1,4 +1,4 @@
-import { ORDER_PRICE_TYPES_ENUM_VALUES } from '../../constants/priceTypes'
+import { ORDER_PRICE_TYPES_ENUM_VALUES } from '@/constants/priceTypes'
 const priceGroups = ['$finalPrices', '$prices', '$prePrices']
 
 const getTotalPriceByType = (type: string) => ({

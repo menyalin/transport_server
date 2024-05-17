@@ -5,20 +5,21 @@ import {
   PipelineStage,
   Types,
 } from 'mongoose'
-import { Order as OrderModel } from '../../models'
-import { OrderPickedForInvoiceDTO } from '../../domain/paymentInvoice/dto/orderPickedForInvoice.dto'
-import { orderLoadingZoneFragmentBuilder } from '../../services/_pipelineFragments/orderLoadingZoneFragmentBuilder'
-import { orderSearchByNumberFragmentBuilder } from '../../services/_pipelineFragments/orderSearchByNumberFragmentBuilder'
-import { orderPlannedDateBuilder } from '../../services/_pipelineFragments/orderPlannedDateBuilder'
-import {
-  IPickOrdersForPaymentInvoiceProps,
-  IStaticticData,
-  OrderPickedForInvoiceDTOProps,
-} from '../../domain/paymentInvoice/interfaces'
+
 import {
   finalPricesWOVatFragmentBuilder,
   totalSumWOVatFragmentBuilder,
 } from './pipelineFragments/orderFinalPricesFragmentBuilder'
+import { OrderPickedForInvoiceDTO } from '@/domain/paymentInvoice/dto/orderPickedForInvoice.dto'
+import {
+  IStaticticData,
+  IPickOrdersForPaymentInvoiceProps,
+  OrderPickedForInvoiceDTOProps,
+} from '@/domain/paymentInvoice/interfaces'
+import { OrderModel } from '@/models/order'
+import { orderLoadingZoneFragmentBuilder } from '@/shared/pipelineFragments/orderLoadingZoneFragmentBuilder'
+import { orderPlannedDateBuilder } from '@/shared/pipelineFragments/orderPlannedDateBuilder'
+import { orderSearchByNumberFragmentBuilder } from '@/shared/pipelineFragments/orderSearchByNumberFragmentBuilder'
 
 const setStatisticData = (res: any): IStaticticData => {
   if (!res.total?.length)
