@@ -34,6 +34,7 @@ const IPropsValidator = z.object({
   clients: z.array(z.string()).optional(),
   agreements: z.array(z.string()).optional(),
   status: z.string().optional(),
+  statuses: z.array(z.string()).optional(),
   trucks: z.array(z.string()).optional(),
   accountingMode: z.string().optional(),
   driver: z.string().optional(),
@@ -83,6 +84,11 @@ export const getOrderListPipeline = (p: IProps): PipelineStage[] => {
 
   if (p.status && !p.accountingMode)
     firstMatcher.$match['state.status'] = p.status
+  else if (p.statuses?.length) {
+    firstMatcher.$match.$expr.$and.push({
+      $in: ['$state.status', p.statuses.map((i) => new Types.ObjectId(i))],
+    })
+  }
 
   if (p?.clients?.length)
     firstMatcher.$match.$expr.$and.push({
