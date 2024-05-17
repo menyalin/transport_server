@@ -1,11 +1,8 @@
 import './orderStats.repository'
-
-import {
-  IOrderDTO,
-  Order as OrderDomain,
-} from '../../domain/order/order.domain'
 import { bus } from '../../eventBus'
-import { Order as OrderModel } from '../../models'
+import { Cursor } from 'mongoose'
+import { IOrderDTO, Order as OrderDomain } from '@/domain/order/order.domain'
+import { Order as OrderModel } from '@/models'
 import {
   getOrdersByTrucksAndPeriodPipeline,
   IGetOrdersByTrucksAndPeriodPipelineProps,
@@ -15,11 +12,11 @@ import {
   OrderRemoveEvent,
   OrdersUpdatedEvent,
   OrdersRouteUpdateEvent,
-} from '../../domain/order/domainEvents'
-import { FullOrderDataDTO } from '../../domain/order/dto/fullOrderData.dto'
+} from '@/domain/order/domainEvents'
+import { FullOrderDataDTO } from '@/domain/order/dto/fullOrderData.dto'
 import { GetDocsCountProps } from '@/classes/getOrdersCountHandlerProps'
 import { getOrdersMatcher } from './pipelines/getOrdersMatcher'
-import { Cursor } from 'mongoose'
+import { getOrderListPipeline } from './pipelines/getOrderListPipeline'
 
 class OrderRepository {
   constructor() {
@@ -92,6 +89,12 @@ class OrderRepository {
   async removeById({ orderId }: { orderId: string }): Promise<boolean> {
     await OrderModel.findByIdAndDelete(orderId)
     return true
+  }
+
+  async getList(params: any) {
+    const pipeline = getOrderListPipeline(params)
+    const res = await OrderModel.aggregate(pipeline)
+    return res[0]
   }
 }
 

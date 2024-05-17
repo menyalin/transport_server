@@ -1,4 +1,4 @@
-import { BadRequestError } from '../../helpers/errors'
+import { BadRequestError } from '@/helpers/errors'
 
 /* 
 const _docStatuses = [

@@ -6,7 +6,6 @@ import {
 } from '../../models'
 import { emitTo } from '../../socket'
 import { getSchedulePipeline } from './pipelines/getSchedulePipeline'
-import { getOrderListPipeline } from './pipelines/getOrderListPipeline'
 import {
   AgreementService,
   ChangeLogService,
@@ -38,7 +37,6 @@ import { Route } from '@/values/order/route'
 import { OrderAnalytics } from '@/domain/order/analytics'
 import { RouteStats } from '@/values/order/routeStats'
 import { OrderPriceCalculator } from '@/domain/orderPriceCalculator/orderPriceCalculator'
-import { Agreement } from '@/domain/agreement/agreement.domain'
 import { OrderPrice } from '@/domain/order/orderPrice'
 import { TariffContract } from '@/domain/tariffContract'
 
@@ -166,13 +164,7 @@ class OrderService {
   }
 
   async getList(params: any) {
-    try {
-      const pipeline = getOrderListPipeline(params)
-      const res = await OrderModel.aggregate(pipeline)
-      return res[0]
-    } catch (e: any) {
-      throw new Error(e?.message)
-    }
+    return await OrderRepository.getList(params)
   }
 
   async getListForSchedule({

@@ -1,9 +1,9 @@
 import z from 'zod'
 import { PipelineStage, Types } from 'mongoose'
-import { orderDocNumbersStringFragment } from '../../_pipelineFragments/orderDocNumbersStringBuilder'
-import { orderDocsStatusConditionBuilder } from '../../_pipelineFragments/orderDocsStatusConditionBuilder'
-import { orderLoadingZoneFragmentBuilder } from '../../_pipelineFragments/orderLoadingZoneFragmentBuilder'
-import { DateRange } from '../../../classes/dateRange'
+import { DateRange } from '@/classes/dateRange'
+import { orderDocNumbersStringFragment } from '@/shared/pipelineFragments/orderDocNumbersStringBuilder'
+import { orderDocsStatusConditionBuilder } from '@/shared/pipelineFragments/orderDocsStatusConditionBuilder'
+import { orderLoadingZoneFragmentBuilder } from '@/shared/pipelineFragments/orderLoadingZoneFragmentBuilder'
 
 const getSortingStage = (
   sortBy: string[] = [],
@@ -34,6 +34,7 @@ const IPropsValidator = z.object({
   clients: z.array(z.string()).optional(),
   agreements: z.array(z.string()).optional(),
   status: z.string().optional(),
+  statuses: z.array(z.string()).optional(),
   trucks: z.array(z.string()).optional(),
   accountingMode: z.string().optional(),
   driver: z.string().optional(),
@@ -83,6 +84,11 @@ export const getOrderListPipeline = (p: IProps): PipelineStage[] => {
 
   if (p.status && !p.accountingMode)
     firstMatcher.$match['state.status'] = p.status
+  else if (p.statuses?.length) {
+    firstMatcher.$match.$expr.$and.push({
+      $in: ['$state.status', p.statuses],
+    })
+  }
 
   if (p?.clients?.length)
     firstMatcher.$match.$expr.$and.push({

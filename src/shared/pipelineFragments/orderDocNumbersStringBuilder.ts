@@ -1,7 +1,9 @@
-// @ts-nocheck
 export const orderDocNumbersStringFragment = ({
   docsFieldName,
   onlyForAddToRegistry,
+}: {
+  docsFieldName: string
+  onlyForAddToRegistry: boolean
 }) => ({
   $trim: {
     chars: ', ',
