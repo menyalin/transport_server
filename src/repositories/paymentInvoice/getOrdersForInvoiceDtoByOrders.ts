@@ -1,13 +1,13 @@
 import { PipelineStage, Types } from 'mongoose'
-import { OrderPickedForInvoiceDTO } from '../../domain/paymentInvoice/dto/orderPickedForInvoice.dto'
-import { Order as OrderModel } from '../../models'
+import { OrderPickedForInvoiceDTO } from '@/domain/paymentInvoice/dto/orderPickedForInvoice.dto'
+import { Order as OrderModel } from '@/models'
 import { paymentPartsSumWOVatFragemt } from './pipelineFragments/paymentPartsSumWOVatFragemt'
+import { orderDriverFullNameBuilder } from '@/shared/pipelineFragments/orderDriverFullNameBuilder'
 import {
   finalPricesFragmentBuilder,
   totalSumFragmentBuilder,
-} from '../../services/_pipelineFragments/orderFinalPricesFragmentBuilder'
-import { orderPlannedDateBuilder } from '../../services/_pipelineFragments/orderPlannedDateBuilder'
-import { orderDriverFullNameBuilder } from '../../services/_pipelineFragments/orderDriverFullNameBuilder'
+} from '@/shared/pipelineFragments/orderFinalPricesFragmentBuilder'
+import { orderPlannedDateBuilder } from '@/shared/pipelineFragments/orderPlannedDateBuilder'
 
 export const getOrdersForInvoiceDtoByOrders = async (
   orders: string[],
