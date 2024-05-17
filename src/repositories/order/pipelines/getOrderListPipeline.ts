@@ -86,7 +86,7 @@ export const getOrderListPipeline = (p: IProps): PipelineStage[] => {
     firstMatcher.$match['state.status'] = p.status
   else if (p.statuses?.length) {
     firstMatcher.$match.$expr.$and.push({
-      $in: ['$state.status', p.statuses.map((i) => new Types.ObjectId(i))],
+      $in: ['$state.status', p.statuses],
     })
   }
 
