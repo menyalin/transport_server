@@ -16,6 +16,7 @@ class TariffContractRepository {
   constructor() {
     this.contractsByAgreementAndDateMap = new TtlMap(1000 * 60 * 5)
     bus.subscribe(TariffContractUpdatedEvent, async ({ payload }) => {
+      this.contractsByAgreementAndDateMap.clear()
       await this.updateOne(payload)
     })
   }
