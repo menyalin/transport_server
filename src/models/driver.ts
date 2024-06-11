@@ -41,6 +41,7 @@ const driverSchema = new Schema(
     hideInFines: { type: Boolean, default: false },
     isActive: { type: Boolean, default: true },
     isCalcSalary: { type: Boolean, default: false },
+    inn: { type: String },
   },
   { timestamps: true, toJSON: { virtuals: true } }
 )
