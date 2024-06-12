@@ -1,17 +1,16 @@
 // @ts-nocheck
-import { Driver, Order, Truck } from '../../models'
+import { Driver, Order, Truck } from '@/models'
+import { IDateRange } from '@/classes/dateRange'
+import { PipelineStage } from 'mongoose'
+import { Readable } from 'stream'
 import { FileService } from '..'
 import getReportDaysControlPipeline from '../report/pipelines/reportDaysControlPipeline'
 import getInProgressOrdersPipeline from './pipelines/inProgressOrdersPipeline'
 import getTruckStateOnDatePipeline from './pipelines/truckStateOnDatePipeline'
 import getDriversGradesAppayPipeline from './pipelines/driversGradesArray'
-import getGrossProfitPipeline from './pipelines/grossProfitPipeline'
 import getGrossProfitPivotPipeline from './pipelines/grossProfitPivotPipeline'
 import getGrossProfitDetailsPipeline from './pipelines/getGrossProfitDetailsPipeline'
 import getOrderDocsPipeline from './pipelines/getOrderDocs'
-import { IDateRange } from '../../classes/dateRange'
-import { PipelineStage } from 'mongoose'
-import { Readable } from 'stream'
 
 export interface IDriversGradesXlsxReportProps {
   company: string
@@ -43,8 +42,6 @@ export interface IReportService {
   truckStateOnDate: (props: ITruckStateOnDateProps) => Promise<unknown[]>
 
   orderDocs: (props: unknown) => Promise<unknown>
-
-  grossProfit: (props: unknown) => Promise<unknown>
 
   grossProfitPivot: (props: unknown) => Promise<unknown>
 
@@ -82,12 +79,6 @@ class ReportService implements IReportService {
 
   async orderDocs(params: unknown) {
     const pipeline = getOrderDocsPipeline(params)
-    const res = await Order.aggregate(pipeline as PipelineStage[])
-    return res[0] || {}
-  }
-
-  async grossProfit(props: unknown) {
-    const pipeline = getGrossProfitPipeline(props)
     const res = await Order.aggregate(pipeline as PipelineStage[])
     return res[0] || {}
   }
