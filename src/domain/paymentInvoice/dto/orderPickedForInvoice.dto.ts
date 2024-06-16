@@ -99,9 +99,9 @@ export class OrderPickedForInvoiceDTO {
     if (
       preparedProps._total &&
       preparedProps._totalWOVat &&
-      (Math.ceil(preparedProps._total) !== Math.ceil(this.total.price) ||
-        Math.ceil(preparedProps._totalWOVat) !==
-          Math.ceil(this.total.priceWOVat))
+      (preparedProps._total.toFixed(2) !== this.total.price.toFixed(2) ||
+        preparedProps._totalWOVat.toFixed(2) !==
+          this.total.priceWOVat.toFixed(2))
     ) {
       console.log('Ошибка запроса. не корректный расчет итогов по рейсу')
     }
