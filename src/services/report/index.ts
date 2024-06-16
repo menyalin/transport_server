@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ ts-nocheck
 import { Driver, Order, Truck } from '@/models'
 import { IDateRange } from '@/classes/dateRange'
 import { PipelineStage } from 'mongoose'
@@ -20,8 +20,8 @@ export interface IDriversGradesXlsxReportProps {
 interface ITruckStateOnDateProps {
   company: string
   date: Date
-  truckType: string
-  tkName: string
+  truckType?: string
+  tkName?: string
 }
 
 export interface IReportService {
@@ -30,6 +30,7 @@ export interface IReportService {
   ) => Promise<Readable>
 
   daysControl: (days: number, profile: string) => Promise<unknown[]>
+  truckStateOnDate: (props: ITruckStateOnDateProps) => Promise<unknown[]>
 
   inProgressOrders: ({
     profile,
@@ -38,8 +39,6 @@ export interface IReportService {
     profile: string
     client: string
   }) => Promise<unknown[]>
-
-  truckStateOnDate: (props: ITruckStateOnDateProps) => Promise<unknown[]>
 
   orderDocs: (props: unknown) => Promise<unknown>
 
@@ -77,13 +76,13 @@ class ReportService implements IReportService {
     return res
   }
 
-  async orderDocs(params: unknown) {
+  async orderDocs(params: any) {
     const pipeline = getOrderDocsPipeline(params)
     const res = await Order.aggregate(pipeline as PipelineStage[])
     return res[0] || {}
   }
 
-  async grossProfitPivot({ company, dateRange, groupBy, mainFilters }) {
+  async grossProfitPivot({ company, dateRange, groupBy, mainFilters }: any) {
     const pipeline = getGrossProfitPivotPipeline({
       company,
       dateRange,
@@ -102,7 +101,7 @@ class ReportService implements IReportService {
     mainFilters,
     additionalFilters,
     listOptions,
-  }) {
+  }: any) {
     const pipeline = getGrossProfitDetailsPipeline({
       company,
       dateRange,

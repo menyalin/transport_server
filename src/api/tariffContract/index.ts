@@ -1,8 +1,8 @@
 import express, { Response, Request } from 'express'
 import ctrl from '@/controllers/tariffContract.controller'
 
-import { jwtAuth } from '../../utils/auth.middleware'
-import { bodyValidator, queryValidator } from '../../utils/validator'
+import { jwtAuth } from '@/utils/auth.middleware'
+import { bodyValidator, queryValidator } from '@/utils/validator'
 
 import { getListSchema } from './schemes'
 import { AuthorizedRequest } from '@/controllers/interfaces'
