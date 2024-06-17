@@ -60,8 +60,8 @@ class TruckService {
   }
 
   async getById(id) {
-    const data = await Truck.findById(id).populate('tkName').lean()
-    return data
+    const data = await Truck.findById(id).populate('tkName')
+    return data?.toObject() || null
   }
 
   async deleteById({ id, user }) {

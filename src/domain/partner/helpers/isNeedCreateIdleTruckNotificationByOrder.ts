@@ -7,14 +7,15 @@ export const isNeedCreateNotificationByOrder = (
   order: Order
 ): boolean => {
   if (
-    notification.useTruckFilter === USE_TRUCK_FILTER_ENUM.included &&
-    !notification.trucks.includes(order.confirmedCrew.truck)
+    !order.confirmedCrew?.truck ||
+    (notification.useTruckFilter === USE_TRUCK_FILTER_ENUM.included &&
+      !notification.trucks.includes(order.confirmedCrew.truck.toString()))
   )
     return false
 
   if (
     notification.useTruckFilter === USE_TRUCK_FILTER_ENUM.excluded &&
-    notification.trucks.includes(order.confirmedCrew.truck)
+    notification.trucks.includes(order.confirmedCrew.truck.toString())
   )
     return false
 

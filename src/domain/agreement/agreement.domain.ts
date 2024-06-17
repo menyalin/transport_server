@@ -142,7 +142,7 @@ export class Agreement {
       .nullable()
       .optional()
       .transform((val) => (val ? val : 0)),
-    executorName: z.string().optional(),
+    executorName: z.string().nullable().optional(),
     allowedCarriers: z
       .array(objectIdSchema)
       .optional()
