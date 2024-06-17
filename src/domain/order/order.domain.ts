@@ -1,12 +1,13 @@
 import dayjs from 'dayjs'
+import { Types } from 'mongoose'
+import { BusEvent } from 'ts-bus/types'
 import { isDateRangesOverlapping } from '../../utils/isDateRangesOverlapping'
-import { Route } from '../../values/order/route'
+import { Route } from '@/values/order/route'
 
 import { ORDER_DOMAIN_EVENTS, OrderRemoveEvent } from './domainEvents'
-import { BusEvent } from 'ts-bus/types'
-import { NotifyClientsEvent } from '../../socket/notifyClientsEvent'
+import { NotifyClientsEvent } from '@/socket/notifyClientsEvent'
 import { Client } from './client'
-import { RoutePoint } from '../../values/order/routePoint'
+import { RoutePoint } from '@/values/order/routePoint'
 import { OrderPrice } from './orderPrice'
 import { ORDER_PRICE_TYPES_ENUM } from '../../constants/priceTypes'
 import { BadRequestError } from '../../helpers/errors'
@@ -14,7 +15,7 @@ import { OrderAnalytics } from './analytics'
 import { OrderReqTransport } from './reqTransport'
 
 export interface IOrderDTO {
-  _id: string
+  _id?: string | Types.ObjectId
   orderDate?: string | Date
   startPositionDate?: Date | string
   route: RoutePoint[] | any[]
@@ -68,11 +69,11 @@ export class Order {
   orderDate: Date
   route: Route
   confirmedCrew: {
-    truck: string
-    trailer?: string
-    driver?: string
-    outsourceAgreement?: string
-    tkName?: string
+    truck: string | null | Types.ObjectId
+    trailer?: string | null | Types.ObjectId
+    driver?: string | null | Types.ObjectId
+    outsourceAgreement?: string | null | Types.ObjectId
+    tkName?: string | null | Types.ObjectId
   }
   docs: []
   client: Client
@@ -102,7 +103,7 @@ export class Order {
       ? new Date(order.startPositionDate)
       : null
 
-    this._id = order._id.toString()
+    this._id = order._id?.toString()
     this.state = order.state
     this.grade = order.grade || {}
     this.company = order.company.toString()
@@ -224,8 +225,8 @@ export class Order {
     return this.state.status === 'inProgress'
   }
 
-  get truckId() {
-    return this.confirmedCrew.truck.toString()
+  get truckId(): string | null {
+    return this.confirmedCrew.truck?.toString() || null
   }
 
   get routeDateRange(): [Date, Date] | null {

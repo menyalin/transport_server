@@ -16,7 +16,7 @@ import checkCrossItems from './checkCrossItems'
 import checkRefusedOrder from './checkRefusedOrder'
 import getRouteFromTemplate from './getRouteFromTemplate'
 import getClientAgreementId from './getClientAgreement'
-import getOutsourceAgreementId from './getOutsourceAgreementId'
+import { getOutsourceAgreementId } from './getOutsourceAgreementId'
 import { orsDirections } from '../../helpers/orsClient'
 import { BadRequestError } from '../../helpers/errors'
 import { getDocsRegistryByOrderId } from './getDocsRegistryByOrderId'
@@ -39,12 +39,7 @@ import { RouteStats } from '@/values/order/routeStats'
 import { OrderPriceCalculator } from '@/domain/orderPriceCalculator/orderPriceCalculator'
 import { OrderPrice } from '@/domain/order/orderPrice'
 import { TariffContract } from '@/domain/tariffContract'
-
-const _isEqualDatesOfRoute = (oldRoute: Route, newRoute: Route) => {
-  if (!(oldRoute instanceof Route) || !(newRoute instanceof Route))
-    throw new Error(' _isEqualDatesOfRoute : is invalid route')
-  return oldRoute.totalDuration('minutes') === newRoute.totalDuration('minutes')
-}
+import * as helpers from '@/shared/helpers'
 
 class OrderService {
   async create({ body, user }: { body: any; user: string }) {
@@ -64,20 +59,28 @@ class OrderService {
     if (!body.confirmedCrew.outsourceAgreement && body.route[0].plannedDate)
       body.confirmedCrew.outsourceAgreement =
         await getOutsourceAgreementId(body)
-    if (body.client.agreement && body.analytics.type) {
-      body.prePrices = await TariffService.getPrePricesByOrderData(
-        PriceDTO.prepareOrderForPrePriceQuery(body)
-      )
-    }
-    const order = await OrderModel.create(body)
-    emitTo(order.company.toString(), 'order:created', order.toJSON())
+
+    // TODO: Удалить getPrePricesByOrderData после перехода на новый тариф
+
+    // if (body.client.agreement && body.analytics.type) {
+    //   body.prePrices = await TariffService.getPrePricesByOrderData(
+    //     PriceDTO.prepareOrderForPrePriceQuery(body)
+    //   )
+    // }
+
+    const order = await OrderRepository.create(body)
+    order.prePrices = await this.updatePrePrices(order)
+    // TODO: Удалить сохранение тарифов в аналитику
+    order.analytics?.setPrePrices(order.prePrices)
+    bus.publish(OrdersUpdatedEvent([order]))
+    emitTo(order.company.toString(), 'order:created', order.toObject())
     await ChangeLogService.add({
-      docId: order._id.toString(),
-      company: order.company.toString(),
+      docId: order._id,
+      company: order.company,
       coll: 'order',
       user,
       opType: 'create',
-      body: JSON.stringify(order.toObject({ flattenMaps: true })),
+      body: order.toObject(),
     })
     return order
   }
@@ -137,7 +140,7 @@ class OrderService {
     }: { orderId: any; truck: any; startPositionDate: any },
     user: string
   ) {
-    const order: any = await OrderModel.findById(orderId)
+    const order = await OrderRepository.getById(orderId)
     if (!truck) {
       order.confirmedCrew.truck = null
       order.confirmedCrew.outsourceAgreement = null
@@ -151,15 +154,16 @@ class OrderService {
     order.confirmedCrew.tkName = null
     order.startPositionDate = startPositionDate
     order.isDisabled = false
-    emitTo(order.company.toString(), 'order:updated', order)
-    await order.save()
+    emitTo(order.company, 'order:updated', order.toObject())
+    bus.publish(OrdersUpdatedEvent([order]))
+
     await ChangeLogService.add({
       docId: order._id.toString(),
       company: order.company.toString(),
       coll: 'order',
       user,
       opType: 'move order',
-      body: JSON.stringify(order.toJSON()),
+      body: order.toObject(),
     })
   }
 
@@ -277,7 +281,7 @@ class OrderService {
 
     // если в маршруте изменились даты проверяется пересечение с другими записями
     if (body.route) {
-      const datesNotChanged = _isEqualDatesOfRoute(
+      const datesNotChanged = helpers.isEqualDatesOfRoute(
         new Route(order.route),
         new Route(body.route)
       )
@@ -324,6 +328,9 @@ class OrderService {
     orderDomain.setDisableStatus(false)
     orderDomain.analytics = await this.updateOrderAnalytics(orderDomain)
     const prePrices = await this.updatePrePrices(orderDomain)
+    orderDomain.prePrices = prePrices
+
+    // TODO: Удалить сохранение тарифов в аналитику
     orderDomain.analytics.setPrePrices(prePrices)
 
     bus.publish(OrdersUpdatedEvent([orderDomain]))
@@ -345,7 +352,9 @@ class OrderService {
   async refresh(order: OrderDomain): Promise<void> {
     order.analytics = await this.updateOrderAnalytics(order)
     const prePrices = await this.updatePrePrices(order)
+    // TODO: Удалить сохранение тарифов в аналитику
     order.analytics.setPrePrices(prePrices)
+    order.prePrices = prePrices
     bus.publish(OrdersUpdatedEvent([order]))
   }
 
