@@ -163,7 +163,6 @@ export class RoutePoint {
     return this.firstDate
   }
 
-  // TODO: add point interface
   autofillDates({ minDate, unloadingDurationInMinutes }: any) {
     if (
       !minDate ||
@@ -174,12 +173,12 @@ export class RoutePoint {
       )
 
     if (this.arrivalDate && this.departureDate)
-      return new Date(dayjs(this.departureDate).toISOString())
+      return dayjs(this.departureDate).toDate()
 
     let tmpDate = dayjs(minDate)
 
     if (!this.arrivalDate) {
-      this.arrivalDate = new Date(tmpDate.toISOString())
+      this.arrivalDate = tmpDate.toDate()
       this.arrivalDateDoc = this.arrivalDate
       this.isAutofilled = true
     }
@@ -189,7 +188,7 @@ export class RoutePoint {
         unloadingDurationInMinutes || 15,
         'minutes'
       )
-      this.departureDate = new Date(tmpDate.toISOString())
+      this.departureDate = tmpDate.toDate()
       this.departureDateDoc = this.departureDate
       this.isAutofilled = true
     }

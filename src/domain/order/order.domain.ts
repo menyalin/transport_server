@@ -248,17 +248,14 @@ export class Order {
     let tmpDate =
       !minDate || minDate < this.orderDate ? this.orderDate : minDate
 
-    // TODO: Перенести логику заполнения в Route.js
     this.route.route.forEach((point) => {
       tmpDate = point.autofillDates({
         minDate: tmpDate,
         unloadingDurationInMinutes,
       })
-      tmpDate = new Date(
-        dayjs(tmpDate)
-          .add(tripDurationInMinutes || 30, 'minutes')
-          .toISOString()
-      )
+      tmpDate = dayjs(tmpDate)
+        .add(tripDurationInMinutes || 30, 'minutes')
+        .toDate()
     })
 
     if (this.route.routeDatesFilled && this.isInProgress) {
