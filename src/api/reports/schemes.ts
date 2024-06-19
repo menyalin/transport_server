@@ -1,4 +1,3 @@
-// @ts-nocheck
 export const daysControlSchema = {
   type: 'object',
   properties: {
@@ -14,19 +13,6 @@ export const daysControlSchema = {
 }
 
 export const driversGradesSchema = {
-  type: 'object',
-  properties: {
-    company: {
-      type: 'string',
-    },
-    dateRange: {
-      type: 'array',
-    },
-  },
-  required: ['company', 'dateRange'],
-  additionalProperties: true,
-}
-export const grossProfitSchema = {
   type: 'object',
   properties: {
     company: {
@@ -77,5 +63,15 @@ export const orderDocsSchema = {
     },
   },
   required: ['company'],
+  additionalProperties: true,
+}
+
+export const truckStateOnDateSchema = {
+  type: 'object',
+  properties: {
+    date: { type: 'string' },
+    truckType: { type: 'string' },
+    tkName: { type: 'string' },
+  },
   additionalProperties: true,
 }

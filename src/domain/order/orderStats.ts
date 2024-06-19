@@ -1,20 +1,27 @@
-// @ts-nocheck
 import mongoose from 'mongoose'
 import { RouteStats } from '../../values/order/routeStats'
 import { Order as OrderDomain } from '../order/order.domain'
 import { InvoiceStats } from '../../values/order/invoiceStats'
 
 export class OrderStats {
-  constructor(order) {
-    if (!order || !order instanceof OrderDomain)
+  orderId: string
+  company: string
+  orderDate: Date
+  route: RouteStats
+  invoice?: InvoiceStats
+
+  constructor(order: OrderDomain) {
+    if (!order || !(order instanceof OrderDomain))
       throw new Error('OrderStatsService : updateRoute : invalid order')
-    this.orderId = order._id.toString()
-    this.company = order.company.toString()
-    this.orderDate = this.orderDate
+    this.orderId = order.id
+    this.company = order.company
+    this.orderDate = order.orderDate
     this.route = new RouteStats(order.route)
   }
 
-  static getDbSchema() {
+  setInvoiceStats(): void {}
+
+  static get dbSchema() {
     return {
       orderId: {
         type: mongoose.Types.ObjectId,
@@ -28,8 +35,8 @@ export class OrderStats {
         type: mongoose.Types.ObjectId,
         required: true,
       },
-      route: RouteStats.getDbSchema(),
-      invoice: InvoiceStats.getDbSchema(),
+      route: RouteStats.dbSchema,
+      invoice: InvoiceStats.dbSchema,
     }
   }
 }

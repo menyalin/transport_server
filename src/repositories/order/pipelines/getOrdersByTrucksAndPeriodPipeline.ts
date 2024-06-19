@@ -1,6 +1,6 @@
 import { PipelineStage, Types } from 'mongoose'
-import { orderPlannedDateBuilder } from '../../../services/_pipelineFragments/orderPlannedDateBuilder'
-import { DateRange } from '../../../classes/dateRange'
+import { DateRange } from '@/classes/dateRange'
+import { orderPlannedDateBuilder } from '@/shared/pipelineFragments/orderPlannedDateBuilder'
 
 export interface IGetOrdersByTrucksAndPeriodPipelineProps {
   company: string

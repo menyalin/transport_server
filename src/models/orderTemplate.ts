@@ -72,7 +72,7 @@ const schema = new Schema(
     },
     analytics,
     fixedTimeSlots: { type: Boolean, default: false },
-    route: [TemplateRoutePoint.getDbSchema()],
+    route: [TemplateRoutePoint.dbSchema],
     cargoParams: cargoParams,
     reqTransport: reqTransport,
     state,

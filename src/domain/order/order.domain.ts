@@ -1,22 +1,21 @@
 import dayjs from 'dayjs'
-import { isDateRangesOverlapping } from '../../utils/isDateRangesOverlapping'
-import { Route } from '../../values/order/route'
-
-import {
-  ORDER_DOMAIN_EVENTS,
-  OrderRemoveEvent,
-  OrdersUpdatedEvent,
-} from './domainEvents'
+import { Types } from 'mongoose'
 import { BusEvent } from 'ts-bus/types'
-import { NotifyClientsEvent } from '../../socket/notifyClientsEvent'
+import { isDateRangesOverlapping } from '../../utils/isDateRangesOverlapping'
+import { Route } from '@/values/order/route'
+
+import { ORDER_DOMAIN_EVENTS, OrderRemoveEvent } from './domainEvents'
+import { NotifyClientsEvent } from '@/socket/notifyClientsEvent'
 import { Client } from './client'
-import { RoutePoint } from '../../values/order/routePoint'
+import { RoutePoint } from '@/values/order/routePoint'
 import { OrderPrice } from './orderPrice'
 import { ORDER_PRICE_TYPES_ENUM } from '../../constants/priceTypes'
 import { BadRequestError } from '../../helpers/errors'
+import { OrderAnalytics } from './analytics'
+import { OrderReqTransport } from './reqTransport'
 
 export interface IOrderDTO {
-  _id: string
+  _id?: string | Types.ObjectId
   orderDate?: string | Date
   startPositionDate?: Date | string
   route: RoutePoint[] | any[]
@@ -43,9 +42,9 @@ export interface IOrderDTO {
   finalPrices?: any[]
   outsourceCosts?: []
   cargoParams?: object
-  reqTransport?: object
+  reqTransport?: OrderReqTransport
   paymentParts?: []
-  analytics?: object
+  analytics?: any
   docsState?: object
   paymentToDriver?: object
   note?: string
@@ -70,11 +69,11 @@ export class Order {
   orderDate: Date
   route: Route
   confirmedCrew: {
-    truck: string
-    trailer?: string
-    driver?: string
-    outsourceAgreement?: string
-    tkName?: string
+    truck: string | null | Types.ObjectId
+    trailer?: string | null | Types.ObjectId
+    driver?: string | null | Types.ObjectId
+    outsourceAgreement?: string | null | Types.ObjectId
+    tkName?: string | null | Types.ObjectId
   }
   docs: []
   client: Client
@@ -83,9 +82,9 @@ export class Order {
   finalPrices?: OrderPrice[]
   outsourceCosts: []
   cargoParams: object
-  reqTransport: object
+  reqTransport?: OrderReqTransport
   paymentParts: []
-  analytics?: object
+  analytics?: OrderAnalytics
   docsState?: object
   paymentToDriver?: object
   note?: string
@@ -93,7 +92,7 @@ export class Order {
   isActive: boolean = true
   isDisabled: boolean = false
 
-  constructor(order: IOrderDTO) {
+  constructor(order: IOrderDTO, isBasePriceFilledCheck: boolean = true) {
     Order.orderStatusValidator(order)
 
     if (!order._id) throw new Error('Order : constructor : order ID is missing')
@@ -104,7 +103,7 @@ export class Order {
       ? new Date(order.startPositionDate)
       : null
 
-    this._id = order._id.toString()
+    this._id = order._id?.toString()
     this.state = order.state
     this.grade = order.grade || {}
     this.company = order.company.toString()
@@ -121,16 +120,22 @@ export class Order {
       this.finalPrices = order.finalPrices?.map((i) => new OrderPrice(i))
     this.outsourceCosts = order.outsourceCosts || []
     this.cargoParams = order.cargoParams || {}
-    this.reqTransport = order.reqTransport || {}
+    this.reqTransport = order.reqTransport
+      ? new OrderReqTransport(order.reqTransport)
+      : undefined
     this.paymentParts = order.paymentParts || []
-    this.analytics = order.analytics
+    this.analytics = new OrderAnalytics(order.analytics)
     this.docsState = order.docsState
     this.paymentToDriver = order.paymentToDriver
     this.note = order.note
     this.noteAccountant = order.noteAccountant
     this.isActive = order.isActive !== undefined ? order.isActive : true
     this.isDisabled = order.isDisabled || false
-    if (this.state.status === 'completed' && !this.isReadyToComplete)
+    if (
+      isBasePriceFilledCheck &&
+      this.state.status === 'completed' &&
+      !this.isReadyToComplete
+    )
       throw new BadRequestError(
         'Изменение статуса рейса на "Выполнен" не возможно! Проверьте корректность заполнения базового тарифа и временных отметок в рейсе'
       )
@@ -161,6 +166,7 @@ export class Order {
     Object.getOwnPropertyNames(this).forEach((prop: string) => {
       obj[prop] = (this as any)[prop]
     })
+    obj.route = obj.route.route
     return obj
   }
 
@@ -219,8 +225,8 @@ export class Order {
     return this.state.status === 'inProgress'
   }
 
-  get truckId() {
-    return this.confirmedCrew.truck.toString()
+  get truckId(): string | null {
+    return this.confirmedCrew.truck?.toString() || null
   }
 
   get routeDateRange(): [Date, Date] | null {
@@ -242,17 +248,14 @@ export class Order {
     let tmpDate =
       !minDate || minDate < this.orderDate ? this.orderDate : minDate
 
-    // TODO: Перенести логику заполнения в Route.js
     this.route.route.forEach((point) => {
       tmpDate = point.autofillDates({
         minDate: tmpDate,
         unloadingDurationInMinutes,
       })
-      tmpDate = new Date(
-        dayjs(tmpDate)
-          .add(tripDurationInMinutes || 30, 'minutes')
-          .toISOString()
-      )
+      tmpDate = dayjs(tmpDate)
+        .add(tripDurationInMinutes || 30, 'minutes')
+        .toDate()
     })
 
     if (this.route.routeDatesFilled && this.isInProgress) {

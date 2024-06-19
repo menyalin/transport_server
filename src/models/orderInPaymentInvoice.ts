@@ -3,4 +3,8 @@ import { OrderInPaymentInvoice } from '../domain/paymentInvoice/orderInPaymentIn
 
 const schema = new Schema(OrderInPaymentInvoice.dbSchema, { timestamps: true })
 
-export default model('OrderInPaymentInvoice', schema, 'ordersInPaymentInvoices')
+export default model<OrderInPaymentInvoice>(
+  'OrderInPaymentInvoice',
+  schema,
+  'ordersInPaymentInvoices'
+)

@@ -27,9 +27,9 @@ export class RoutePoint {
   isPltReturn: boolean = false
   isAutofilled: boolean = false
   useInterval: boolean = false
+  isMainLoadingPoint: boolean = false
   note?: string
 
-  // TODO: add point interface
   constructor(point: any) {
     if (!POINT_TYPE_VALUES.includes(point.type))
       throw new Error('RoutePoint : constructor error : invalid point type')
@@ -68,6 +68,9 @@ export class RoutePoint {
     this.waybills = point.waybills
     this.waitsForWaybills = point.waitsForWaybills || false
     this.note = point.note
+    this.isMainLoadingPoint = Boolean(
+      this.isLoadingPointType && point.isMainLoadingPoint
+    )
   }
 
   static createFromTemplatePoint(
@@ -108,11 +111,22 @@ export class RoutePoint {
       intervalEndDateDoc: intervalEndDate,
       useInterval: templatePoint.useInterval,
       note: templatePoint.note,
+      isMainLoadingPoint: templatePoint.isMainLoadingPoint,
     })
   }
 
   get isLoadingPointType() {
     return this.type === 'loading'
+  }
+  get isLate(): boolean {
+    const plannedDate: Date | null = this.plannedDateDoc || this.plannedDate
+    const arrivalDate: Date | null = this.firstDate
+    if (!plannedDate || !arrivalDate) return false
+    return dayjs(plannedDate).isBefore(arrivalDate, 'minute')
+  }
+
+  setMainLoadingPoint() {
+    this.isMainLoadingPoint = true
   }
 
   get isReturnPoint() {
@@ -149,7 +163,6 @@ export class RoutePoint {
     return this.firstDate
   }
 
-  // TODO: add point interface
   autofillDates({ minDate, unloadingDurationInMinutes }: any) {
     if (
       !minDate ||
@@ -160,12 +173,12 @@ export class RoutePoint {
       )
 
     if (this.arrivalDate && this.departureDate)
-      return new Date(dayjs(this.departureDate).toISOString())
+      return dayjs(this.departureDate).toDate()
 
     let tmpDate = dayjs(minDate)
 
     if (!this.arrivalDate) {
-      this.arrivalDate = new Date(tmpDate.toISOString())
+      this.arrivalDate = tmpDate.toDate()
       this.arrivalDateDoc = this.arrivalDate
       this.isAutofilled = true
     }
@@ -175,14 +188,14 @@ export class RoutePoint {
         unloadingDurationInMinutes || 15,
         'minutes'
       )
-      this.departureDate = new Date(tmpDate.toISOString())
+      this.departureDate = tmpDate.toDate()
       this.departureDateDoc = this.departureDate
       this.isAutofilled = true
     }
     return this.departureDate
   }
 
-  static getDbSchema() {
+  static get dbSchema() {
     return {
       type: {
         type: String,
@@ -209,6 +222,7 @@ export class RoutePoint {
       isPltReturn: { type: Boolean, default: false },
       isAutofilled: { type: Boolean, default: false },
       note: String,
+      isMainLoadingPoint: { type: Boolean, default: false },
     }
   }
 }

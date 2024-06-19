@@ -21,6 +21,7 @@ import orderTemplateRouter from './api/orderTemplate'
 import scheduleNoteRouter from './api/scheduleNote'
 import agreementRouter from './api/agreement'
 import tariffRouter from './api/tariff'
+import tariffContractRouter from './api/tariffContract'
 import salaryTariffRouter from './api/salaryTariff'
 import documentRouter from './api/document'
 import zoneRouter from './api/zone'
@@ -43,6 +44,8 @@ app.use(
       'http://localhost:8080',
       'https://s4log.ru',
       'https://alfa.s4log.ru',
+      'https://carrier.logicore.ru',
+      'https://logicore.ru',
     ],
   })
 )
@@ -69,6 +72,7 @@ app.use('/api/order_templates', orderTemplateRouter)
 app.use('/api/schedule_notes', scheduleNoteRouter)
 app.use('/api/agreements', agreementRouter)
 app.use('/api/tariffs', tariffRouter)
+app.use('/api/tariff_contracts', tariffContractRouter)
 app.use('/api/salary_tariffs', salaryTariffRouter)
 app.use('/api/documents', documentRouter)
 app.use('/api/zones', zoneRouter)

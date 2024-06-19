@@ -6,7 +6,7 @@ import {
   TotalPrice,
 } from './interfaces'
 import { OrderPickedForInvoiceDTO } from './dto/orderPickedForInvoice.dto'
-import { ORDER_PRICE_TYPES_ENUM } from '../../constants/priceTypes'
+import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
 
 export class OrderInPaymentInvoice {
   order: string

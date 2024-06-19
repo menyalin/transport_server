@@ -30,16 +30,16 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/alfa_server:latest
 
-  deploy:
-    runs-on: self-hosted
-    needs: build
-    steps:
-      - name: executing remote ssh commands using ssh key
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: alfa.s4log.ru
-          username: alexey
-          key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
-          port: 2233
-          script: |
-            docker service update --image ${{ secrets.DOCKERHUB_USERNAME }}/alfa_server:latest alfa_stack_api
+  # deploy:
+  #   runs-on: self-hosted
+  #   needs: build
+  #   steps:
+  #     - name: executing remote ssh commands using ssh key
+  #       uses: appleboy/ssh-action@v0.1.10
+  #       with:
+  #         host: alfa.s4log.ru
+  #         username: alexey
+  #         key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
+  #         port: 2233
+  #         script: |
+  #           docker service update --image ${{ secrets.DOCKERHUB_USERNAME }}/alfa_server:latest alfa_stack_api

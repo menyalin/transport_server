@@ -1,11 +1,8 @@
 import './orderStats.repository'
-
-import {
-  IOrderDTO,
-  Order as OrderDomain,
-} from '../../domain/order/order.domain'
 import { bus } from '../../eventBus'
-import { Order as OrderModel } from '../../models'
+import { Cursor } from 'mongoose'
+import { IOrderDTO, Order as OrderDomain } from '@/domain/order/order.domain'
+import { Order as OrderModel } from '@/models'
 import {
   getOrdersByTrucksAndPeriodPipeline,
   IGetOrdersByTrucksAndPeriodPipelineProps,
@@ -15,8 +12,11 @@ import {
   OrderRemoveEvent,
   OrdersUpdatedEvent,
   OrdersRouteUpdateEvent,
-} from '../../domain/order/domainEvents'
-import { FullOrderDataDTO } from '../../domain/order/dto/fullOrderData.dto'
+} from '@/domain/order/domainEvents'
+import { FullOrderDataDTO } from '@/domain/order/dto/fullOrderData.dto'
+import { GetDocsCountProps } from '@/classes/getOrdersCountHandlerProps'
+import { getOrdersMatcher } from './pipelines/getOrdersMatcher'
+import { getOrderListPipeline } from './pipelines/getOrderListPipeline'
 
 class OrderRepository {
   constructor() {
@@ -28,7 +28,10 @@ class OrderRepository {
       this.save(payload)
     })
   }
-
+  async create(orderBody: IOrderDTO): Promise<OrderDomain> {
+    const orderDoc = await OrderModel.create(orderBody)
+    return new OrderDomain(orderDoc.toObject())
+  }
   async getById(orderId: string): Promise<OrderDomain> {
     const order = await OrderModel.findById<IOrderDTO>(orderId)
     if (!order) throw new Error(`${orderId} not found`)
@@ -41,6 +44,17 @@ class OrderRepository {
     if (orders.length === 0)
       throw new Error('getFullOrderDataDTO : order is missing')
     return FullOrderDataDTO.create(orders[0])
+  }
+
+  async getOrdersCount(p: GetDocsCountProps): Promise<number> {
+    const matcher = getOrdersMatcher(p)
+    const [res] = await OrderModel.aggregate([matcher, { $count: 'count' }])
+    return res?.count ?? 0
+  }
+
+  orderAggregationCursor(p: GetDocsCountProps): Cursor {
+    const matcher = getOrdersMatcher(p)
+    return OrderModel.aggregate([matcher]).cursor({})
   }
 
   async getOrdersByTrucksAndPeriod(
@@ -78,6 +92,12 @@ class OrderRepository {
   async removeById({ orderId }: { orderId: string }): Promise<boolean> {
     await OrderModel.findByIdAndDelete(orderId)
     return true
+  }
+
+  async getList(params: any) {
+    const pipeline = getOrderListPipeline(params)
+    const res = await OrderModel.aggregate(pipeline)
+    return res[0]
   }
 }
 

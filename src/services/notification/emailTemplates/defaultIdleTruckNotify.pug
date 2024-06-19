@@ -1,0 +1,24 @@
+doctype html
+html(lang="ru")
+  head
+    meta(charset="UTF-8")
+    title= emailTitle
+  body
+    h4 Уважаемые коллеги!
+    p
+      | Простой по рейсу: #{orderNum}
+      br
+      | #{routeAddressesString}
+      br
+      b Плановое время: #{plannedDate}
+      br
+      b ТС простаивает!
+    p
+      | #{fullDriverName}, тел. #{driverPhones}
+      br
+      | #{truckBrand} #{truckNum} #{trailerNum} 
+    p
+      | 
+      | Просим Вас оказать содействие в погрузке ТС! 
+      br
+      | С уважением, #{companyName}
