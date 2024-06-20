@@ -337,4 +337,54 @@ describe('IdleTimeTariff: calculate for order', () => {
     expect(unloadingDowntime.price).toEqual(230000)
     expect(returnDowntime.price).toEqual(0)
   })
+
+  it('calculateForOrder: расчет простоя на выгрузке по плановому времени прибытия, внесенному бухгалтером', () => {
+    const agreement = createAgreement({
+      vatRate: 0,
+      calcWaitingByArrivalDateLoading: false,
+      calcWaitingByArrivalDateUnloading: false,
+      noWaitingPaymentForAreLateLoading: false,
+      noWaitingPaymentForAreLateUnloading: false,
+    })
+    const order: Order = createTestOrder({
+      analytics: createOrderAnalytics({}),
+      route: [
+        new RoutePoint({
+          type: 'loading',
+          address: '1',
+          isMainLoadingPoint: true,
+          plannedDate: new Date('2024-01-02T00:00:00.000Z'),
+          arrivalDate: new Date('2024-01-02T00:00:00.000Z'),
+          departureDate: new Date('2024-01-02T00:10:00.000Z'),
+        }),
+
+        new RoutePoint({
+          type: 'unloading',
+          address: '1',
+          plannedDate: new Date('2024-01-03T00:00:00.000Z'),
+          plannedDateDoc: new Date('2024-01-03T22:00:00.000Z'),
+          arrivalDate: new Date('2024-01-03T20:00:00.000Z'),
+          departureDate: new Date('2024-01-03T23:10:01.000Z'),
+        }),
+      ],
+    })
+    const tariff = createTariff({
+      includeHours: 0,
+      roundingInterval: 'hour',
+      tariffBy: 'hour',
+      price: 10000,
+    })
+
+    tariff.setContractData({
+      withVat: false,
+      contractName: 'fake contract',
+      contractDate: new Date('2024-05-15'),
+    })
+    const [loadingDowntime, unloadingDowntime, returnDowntime] =
+      tariff.calculateForOrder(order, agreement)
+
+    expect(loadingDowntime.price).toEqual(0)
+    expect(unloadingDowntime.price).toEqual(10000)
+    expect(returnDowntime.price).toEqual(0)
+  })
 })

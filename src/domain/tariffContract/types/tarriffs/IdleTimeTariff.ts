@@ -111,19 +111,11 @@ export class IdleTimeTariff implements ICommonTariffFields {
     }
     const res: number[] = []
     points.forEach((point) => {
-      if (
-        !point.firstDate ||
-        !point.isCompleted ||
-        (noWaitingPaymentForAreLate && point.isLate)
-      )
-        res.push(0)
-      else {
-        const startDate =
-          !point.plannedDate ||
-          +point.plannedDate < +point.firstDate ||
+      const idleTimeCalcEnabled = !point.isLate || !noWaitingPaymentForAreLate
+      if (point.isStarted && point.isCompleted && idleTimeCalcEnabled) {
+        const startDate = point.getFirstDateForCalcIdleTimeTariff(
           calcWaitingByArrivalDate
-            ? point.firstDate
-            : point.plannedDate
+        )
         const minutesDiff = dayjs(point.lastDate).diff(startDate, 'm')
         res.push(minutesDiff)
       }

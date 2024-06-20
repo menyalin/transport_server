@@ -114,7 +114,9 @@ export class RoutePoint {
       isMainLoadingPoint: templatePoint.isMainLoadingPoint,
     })
   }
-
+  private get _plannedDate() {
+    return this.plannedDateDoc || this.plannedDate
+  }
   get isLoadingPointType() {
     return this.type === 'loading'
   }
@@ -123,6 +125,17 @@ export class RoutePoint {
     const arrivalDate: Date | null = this.firstDate
     if (!plannedDate || !arrivalDate) return false
     return dayjs(plannedDate).isBefore(arrivalDate, 'minute')
+  }
+
+  getFirstDateForCalcIdleTimeTariff(
+    calcByArrivalDate: boolean = false
+  ): Date | null {
+    if (!this.firstDate) return null
+    if (calcByArrivalDate || !this._plannedDate) return this.firstDate
+
+    return +this.firstDate < +this._plannedDate
+      ? this._plannedDate
+      : this.firstDate
   }
 
   setMainLoadingPoint() {
@@ -147,10 +160,10 @@ export class RoutePoint {
     )
   }
   get isStarted(): boolean {
-    return !!this.arrivalDate
+    return !!this.arrivalDateDoc || !!this.arrivalDate
   }
   get isCompleted(): boolean {
-    return this.departureDate !== null
+    return !!this.departureDateDoc || !!this.departureDate
   }
 
   get firstDate() {
