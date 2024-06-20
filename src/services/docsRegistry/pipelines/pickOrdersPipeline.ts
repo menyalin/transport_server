@@ -1,8 +1,8 @@
+import { BadRequestError } from '@/helpers/errors'
 import { PipelineStage, Types } from 'mongoose'
-import { BadRequestError } from '../../../helpers/errors'
-import { orderLoadingZoneFragmentBuilder } from '../../_pipelineFragments/orderLoadingZoneFragmentBuilder'
-import { orderDocsStatusConditionBuilder } from '../../_pipelineFragments/orderDocsStatusConditionBuilder'
-import { orderSearchByNumberFragmentBuilder } from '../../_pipelineFragments/orderSearchByNumberFragmentBuilder'
+import { orderDocsStatusConditionBuilder } from '@/shared/pipelineFragments/orderDocsStatusConditionBuilder'
+import { orderLoadingZoneFragmentBuilder } from '@/shared/pipelineFragments/orderLoadingZoneFragmentBuilder'
+import { orderSearchByNumberFragmentBuilder } from '@/shared/pipelineFragments/orderSearchByNumberFragmentBuilder'
 
 function selectableOrdersFilter(onlySelectable: boolean) {
   if (!onlySelectable) return []

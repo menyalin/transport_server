@@ -1,8 +1,9 @@
 import { Request, Response } from 'express'
-import { IReportService } from '../services/report'
+import { IReportService } from '@/services/report'
 import { BadRequestError } from '../helpers/errors'
 import { DateRange } from '../classes/dateRange'
-import { ReportService, PaymentInvoiceService } from '../services'
+import { ReportService, PaymentInvoiceService } from '@/services'
+import { AuthorizedRequest } from './interfaces'
 
 interface IServiceProps {
   service: IReportService
@@ -14,8 +15,7 @@ interface IDaysControlProps {
   profile: string
 }
 
-interface ITruckStateOnDateProps {
-  company: string
+export interface ITruckStateOnDateProps {
   date: string
   truckType: string
   tkName: string
@@ -34,16 +34,13 @@ class ReportController {
     this.paymentInvoiceService = paymentInvoiceService
   }
 
-  async daysControl(
-    req: Request<{}, {}, {}, IDaysControlProps>,
-    res: Response
-  ) {
+  async daysControl(req: AuthorizedRequest, res: Response) {
     try {
       let days: number = 30
       if (!!req.query.days && !isNaN(parseInt(req.query.days as string)))
         days = parseInt(req.query.days as string)
 
-      const data = await this.service.daysControl(days, req.query.profile)
+      const data = await this.service.daysControl(days, req.companyId)
       res.status(200).json(data)
     } catch (e) {
       if (e instanceof BadRequestError) {
@@ -71,15 +68,15 @@ class ReportController {
   }
 
   async truckStateOnDate(
-    req: Request<{}, {}, {}, ITruckStateOnDateProps>,
+    req: AuthorizedRequest<{}, {}, {}, ITruckStateOnDateProps>,
     res: Response
   ) {
     try {
       const data = await this.service.truckStateOnDate({
-        company: req.query.company,
-        date: new Date(req.query.date),
-        truckType: req.query.truckType,
-        tkName: req.query.tkName,
+        company: req!.companyId,
+        date: new Date(req.query?.date),
+        truckType: req.query?.truckType,
+        tkName: req.query?.tkName,
       })
       res.status(200).json(data)
     } catch (e) {
@@ -102,22 +99,6 @@ class ReportController {
       })
       res.status(200)
       report.pipe(res)
-    } catch (e) {
-      if (e instanceof BadRequestError) {
-        res.status(e.statusCode || 500).json(e.message)
-      } else {
-        res.status(500).json(e)
-      }
-    }
-  }
-
-  async grossProfit(req: Request, res: Response) {
-    try {
-      const data = await this.service.grossProfit({
-        company: req.body.company,
-        dateRange: req.body.dateRange,
-      })
-      res.status(200).json(data)
     } catch (e) {
       if (e instanceof BadRequestError) {
         res.status(e.statusCode || 500).json(e.message)

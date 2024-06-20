@@ -3,8 +3,8 @@ import { Order } from './order.domain'
 import dayjs from 'dayjs'
 import { Client } from './client'
 import { OrderPrice } from './orderPrice'
-import { ORDER_PRICE_TYPES_ENUM } from '../../constants/priceTypes'
-import { RoutePoint } from '../../values/order/routePoint'
+import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
+import { RoutePoint } from '@/values/order/routePoint'
 
 describe('Order.Domain', () => {
   const orderPlannedDate = dayjs('2023-05-27')
@@ -16,7 +16,7 @@ describe('Order.Domain', () => {
   let orderInProgress1: Order
   let orderInProgress2: Order
   let orderInProgress3: Order
-
+  const mockAnalytics = { type: 'region', distanceDirect: 0, distanceRoad: 0 }
   beforeEach(() => {
     orderCompleted1 = new Order({
       _id: 'id',
@@ -25,6 +25,7 @@ describe('Order.Domain', () => {
       orderDate: orderPlannedDate.toISOString(),
       client: new Client({ client: '1' }),
       confirmedCrew: { truck: 'truck_id' },
+      analytics: mockAnalytics,
       prices: [
         new OrderPrice({
           type: ORDER_PRICE_TYPES_ENUM.base,
@@ -56,6 +57,7 @@ describe('Order.Domain', () => {
       orderDate: orderPlannedDate.toISOString(),
       confirmedCrew: { truck: 'truck_id' },
       client: new Client({ client: '1' }),
+      analytics: mockAnalytics,
       prices: [
         new OrderPrice({
           type: ORDER_PRICE_TYPES_ENUM.base,
@@ -84,6 +86,7 @@ describe('Order.Domain', () => {
       orderDate: orderPlannedDate.toISOString(),
       confirmedCrew: { truck: 'truck_id' },
       client: new Client({ client: '1' }),
+      analytics: mockAnalytics,
       prices: [
         new OrderPrice({
           type: ORDER_PRICE_TYPES_ENUM.base,
@@ -111,6 +114,7 @@ describe('Order.Domain', () => {
       orderDate: orderPlannedDate.toISOString(),
       confirmedCrew: { truck: 'truck_id' },
       client: new Client({ client: '1' }),
+      analytics: mockAnalytics,
       prices: [
         new OrderPrice({
           type: ORDER_PRICE_TYPES_ENUM.base,

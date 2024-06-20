@@ -16,6 +16,7 @@ export class Route {
     this.route = route.map((p) =>
       p instanceof RoutePoint ? p : new RoutePoint(p)
     )
+    if (!this.hasMainLoadingPoints) this.route[0].setMainLoadingPoint()
   }
 
   get activePoints(): RoutePoint[] {
@@ -24,9 +25,45 @@ export class Route {
     if (currentPoint) res.push(currentPoint)
     return res
   }
+  get hasMainLoadingPoints(): boolean {
+    const point = this.route.find((i) => i.isMainLoadingPoint)
+    return Boolean(point)
+  }
+
+  get hasReturn(): boolean {
+    const point = this.route.find((i) => i.isReturn)
+    return Boolean(point)
+  }
 
   get mainLoadingPoint(): RoutePoint {
-    return this.route[0]
+    const point: RoutePoint =
+      this.route.find((i) => i.isMainLoadingPoint) ?? this.route[0]
+    if (!point.isMainLoadingPoint) point.setMainLoadingPoint()
+    return point
+  }
+  get allLoadingPoints(): RoutePoint[] {
+    return this.route.filter((i) => i.type === 'loading').slice()
+  }
+
+  get allUnloadingPoints(): RoutePoint[] {
+    return this.route
+      .filter((i) => i.type === 'unloading' && !i.isReturn)
+      .slice()
+  }
+
+  get allReturnPoints(): RoutePoint[] {
+    return this.route.filter((i) => i.isReturn).slice()
+  }
+
+  get pointsAfterMainLoadingPoint(): RoutePoint[] {
+    let points = this.route.filter((i) => !i.isReturnPoint) // выкидываю все точки с возвратом
+
+    const idxMainLoadingPoint = points.findIndex(
+      (i) => i.address === this.mainLoadingPoint.address
+    )
+    points.splice(0, idxMainLoadingPoint + 1) // Удаляю все точки до основного пункта погрузки
+
+    return points
   }
 
   get completedPoints(): RoutePoint[] {
@@ -57,16 +94,23 @@ export class Route {
     return this.route.filter((i) => !i.isReturnPoint).length
   }
 
-  get loadingTimesInMinutes() {
+  get loadingTimesInMinutes(): number[] {
     return this.route
       .filter((i) => i.isLoadingPointType)
       .map((i) => i.getDurationInMinutes)
   }
 
-  get unloadingTimesInMinutes() {
+  get unloadingTimesInMinutes(): number[] {
     return this.route
       .filter((i) => !i.isLoadingPointType)
       .map((i) => i.getDurationInMinutes)
+  }
+
+  get returnTimesInMinutes(): number[] {
+    return (
+      this.route.filter((i) => i.isReturn).map((i) => i.getDurationInMinutes) ??
+      []
+    )
   }
 
   tripTimes(unit: UnitType = 'minutes') {
@@ -97,14 +141,13 @@ export class Route {
     const maxDate = Math.max(...dates.map((date) => date.getTime()))
     return dayjs(maxDate).diff(minDate, unit)
   }
+
   get orderDate(): Date {
-    if (!this.route[0].plannedDateDoc && !this.route[0].plannedDate)
+    if (!this.mainLoadingPoint.plannedDate)
       throw new Error('order date is missing! invalid order')
-    if (isDate(this.route[0].plannedDateDoc))
-      return this.route[0].plannedDateDoc
-    if (isDate(this.route[0].plannedDate)) return this.route[0].plannedDate
-    else throw new Error('order date is missing! invalid order')
+    return this.mainLoadingPoint.plannedDate
   }
+
   toJSON() {
     return this.route
   }

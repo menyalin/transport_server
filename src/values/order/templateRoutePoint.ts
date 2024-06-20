@@ -11,6 +11,7 @@ export interface ITemplateRoutePoint {
   offsetDays?: number
   note?: string
   get hasFixedTime(): boolean
+  isMainLoadingPoint?: boolean
 }
 
 function setFixedTime(
@@ -29,6 +30,7 @@ export class TemplateRoutePoint implements ITemplateRoutePoint {
   useInterval: boolean = false
   offsetDays?: number = 0
   note?: string
+  isMainLoadingPoint: boolean = false
 
   constructor(point: ITemplateRoutePoint) {
     this.type = point.type
@@ -38,32 +40,21 @@ export class TemplateRoutePoint implements ITemplateRoutePoint {
     this.useInterval = point.useInterval
     this.offsetDays = point.offsetDays
     this.note = point.note
+    this.isMainLoadingPoint = Boolean(point.isMainLoadingPoint)
   }
 
   get hasFixedTime() {
     return this.fixedTime !== null
   }
 
-  static getDbSchema(): object {
+  static get dbSchema() {
     return {
-      type: {
-        type: String,
-        enum: POINT_TYPE_VALUES,
-      },
-      address: {
-        type: mongoose.Types.ObjectId,
-        ref: 'Address',
-      },
+      type: { type: String, enum: POINT_TYPE_VALUES },
+      address: { type: mongoose.Types.ObjectId, ref: 'Address' },
       fixedTime: String,
-      hoursInterval: {
-        type: Number,
-        min: 0,
-        default: 0,
-      },
-      useInterval: {
-        type: Boolean,
-        default: false,
-      },
+      hoursInterval: { type: Number, min: 0, default: 0 },
+      useInterval: { type: Boolean, default: false },
+      isMainLoadingPoint: { type: Boolean, default: false },
       offsetDays: Number,
       note: String,
     }

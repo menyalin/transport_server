@@ -35,6 +35,8 @@ import FileService from './file'
 import DocTemplateService from './docTemplate/docTemplate.service'
 import OrderStatsService from './orderStats/orderStats.service'
 import SchedulerService from './scheduler/scheduler.service'
+import TariffContractService from './tariffContract/tariffContract.service'
+import MassUpdateService from './massUpdate/massUpdate.service'
 
 export {
   UserService,
@@ -71,4 +73,6 @@ export {
   DocTemplateService,
   OrderStatsService,
   SchedulerService,
+  TariffContractService,
+  MassUpdateService,
 }

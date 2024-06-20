@@ -1,15 +1,13 @@
-// @ts-nocheck
-import pkg from 'mongoose'
-const { Schema, model, Types } = pkg
+import { Schema, model } from 'mongoose'
 
 const changeLogSchema = new Schema({
-  docId: { type: Types.ObjectId },
-  company: { type: Types.ObjectId, ref: 'Company' },
-  user: { type: Types.ObjectId, ref: 'User' },
+  docId: { type: Schema.Types.ObjectId },
+  company: { type: Schema.Types.ObjectId, ref: 'Company' },
+  user: { type: Schema.Types.ObjectId, ref: 'User' },
   createdAt: { type: Date, default: Date.now },
   coll: String,
   opType: String,
-  body: String,
+  body: { type: Schema.Types.Mixed },
 })
 
 export default model('ChangeLog', changeLogSchema, 'changeLog')

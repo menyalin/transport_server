@@ -6,7 +6,8 @@ export enum ORDER_DOMAIN_EVENTS {
   remove = 'order:remove',
   route_updated = 'orders:route_updated',
   truck_changed = 'order:truck_changed',
-  deleted = 'order:deleted', // используется для оповещения клиента
+  returned_from_in_progress_status = 'order:returned_from_in_progress_status',
+  deleted = 'order:deleted',
 }
 
 export const OrdersRouteUpdateEvent = createEventDefinition<Order[]>()(
@@ -27,4 +28,4 @@ export const OrderTruckChanged = createEventDefinition<{ orderId: string }>()(
 
 export const OrderReturnedFromInProgressStatus = createEventDefinition<{
   orderId: string
-}>()('OrderReturnedFromInProgressStatus')
+}>()(ORDER_DOMAIN_EVENTS.returned_from_in_progress_status)
