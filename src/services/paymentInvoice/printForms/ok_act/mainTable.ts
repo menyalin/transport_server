@@ -9,7 +9,7 @@ import {
   VerticalAlign,
   WidthType,
 } from 'docx'
-import { IOkAktBuilderProps } from './interfaces'
+import { IOkAktBuilderProps } from '../shared/interfaces'
 
 export const okActMainTableBuilder = (p: IOkAktBuilderProps): Table =>
   new Table({

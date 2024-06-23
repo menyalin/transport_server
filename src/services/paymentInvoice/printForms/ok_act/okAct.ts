@@ -15,6 +15,7 @@ export async function okAktBuilder({
     contractNumber: pf.data.contractNumber,
     contractDate: pf.data.contractDate,
     actHeader: pf.data.actHeader,
+    actHeaderFragments: pf.data.actHeaderFragments,
     signatories: pf.data.signatories,
     startPeriod:
       invoice.invoicePeriod?.start.toLocaleDateString(locale) ||
