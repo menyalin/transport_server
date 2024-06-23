@@ -10,7 +10,7 @@ import {
   VerticalAlign,
   WidthType,
 } from 'docx'
-import { ISignatute } from './interfaces'
+import { ISignatute } from '../shared/interfaces'
 
 export const okActSignatoriesTableBuilder = (
   signatories: ISignatute[]
