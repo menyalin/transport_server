@@ -9,7 +9,9 @@ import {
 import { IOkAktBuilderProps } from '../shared/interfaces'
 import { okActMainTableBuilder } from './mainTable'
 import { okActSignatoriesTableBuilder } from './signatoriesTable'
+
 import * as utils from '../shared'
+import { headerBuilder } from './header'
 export const formBuilder = (p: IOkAktBuilderProps): Document => {
   return new Document({
     numbering: {
@@ -105,14 +107,7 @@ export const formBuilder = (p: IOkAktBuilderProps): Document => {
             style: HeadingLevel.HEADING_1,
           }),
           utils.twoColumnsTableWithCityAndDate('г. Москва', p.date),
-          new Paragraph({
-            text: p.actHeader,
-            spacing: {
-              before: 400,
-              after: 200,
-              line: 300,
-            },
-          }),
+          headerBuilder(p.actHeaderFragments),
           new Paragraph({
             text:
               'В соответствии с заключенным между Исполнителем и Заказчиком Договором ' +
@@ -125,6 +120,7 @@ export const formBuilder = (p: IOkAktBuilderProps): Document => {
               reference: 'main-numbering',
               level: 0,
             },
+            alignment: AlignmentType.THAI_DISTRIBUTE,
           }),
           new Paragraph({
             text:
@@ -137,6 +133,7 @@ export const formBuilder = (p: IOkAktBuilderProps): Document => {
               reference: 'main-numbering',
               level: 0,
             },
+            alignment: AlignmentType.THAI_DISTRIBUTE,
           }),
           okActMainTableBuilder(p),
           new Paragraph({
@@ -145,7 +142,7 @@ export const formBuilder = (p: IOkAktBuilderProps): Document => {
               p.totalSum +
               'руб., в т. ч. НДС ' +
               p.vatSum +
-              ' руб.',
+              'руб.',
             spacing: {
               before: 300,
             },
@@ -153,6 +150,7 @@ export const formBuilder = (p: IOkAktBuilderProps): Document => {
               reference: 'main-numbering',
               level: 0,
             },
+            alignment: AlignmentType.THAI_DISTRIBUTE,
           }),
           new Paragraph({
             text: 'По качеству предоставленных Исполнителем услуг Заказчик претензий не имеет.',
@@ -160,13 +158,15 @@ export const formBuilder = (p: IOkAktBuilderProps): Document => {
               reference: 'main-numbering',
               level: 0,
             },
+            alignment: AlignmentType.THAI_DISTRIBUTE,
           }),
           new Paragraph({
-            text: 'Документы, подтверждающие выполнение услуг по перевозке грузов, согласно Приложению №6 настоящего Договора прилагаются в соответствии с реестром перевозок.',
+            text: 'Документы, подтверждающие выполнение услуг по перевозке грузов, согласно Приложению №7 настоящего Договора прилагаются в соответствии с реестром перевозок.',
             numbering: {
               reference: 'main-numbering',
               level: 0,
             },
+            alignment: AlignmentType.THAI_DISTRIBUTE,
           }),
           new Paragraph({
             spacing: {
