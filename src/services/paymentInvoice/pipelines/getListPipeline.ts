@@ -9,7 +9,7 @@ interface IProps {
   company: string
   limit: string
   skip: string
-  status?: string
+  statuses?: string[]
   search?: string
   agreements?: string[]
   sortBy?: string[]
@@ -80,8 +80,8 @@ export const getListPipeline = (p: IProps): PipelineStage[] => {
       $in: ['$agreement', p.agreements.map((i) => new Types.ObjectId(i))],
     })
   }
-  if (p.status)
-    firstMatcher.$match.$expr.$and.push({ $eq: ['$status', p.status] })
+  if (p.statuses?.length)
+    firstMatcher.$match.$expr.$and.push({ $in: ['$status', p.statuses] })
 
   const clientLookup: PipelineStage[] = [
     {
