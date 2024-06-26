@@ -276,8 +276,6 @@ class OrderService {
     let order = await OrderModel.findById(id)
 
     if (!order) return null
-    if (order.company.toString() !== body.company)
-      throw new BadRequestError('The order is owned by another company')
 
     // если в маршруте изменились даты проверяется пересечение с другими записями
     if (body.route) {
