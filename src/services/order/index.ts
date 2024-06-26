@@ -278,7 +278,7 @@ class OrderService {
     if (!order) return null
 
     // если в маршруте изменились даты проверяется пересечение с другими записями
-    if (body.route) {
+    if (order.state?.status !== 'completed' && body.route) {
       const datesNotChanged = helpers.isEqualDatesOfRoute(
         new Route(order.route),
         new Route(body.route)
