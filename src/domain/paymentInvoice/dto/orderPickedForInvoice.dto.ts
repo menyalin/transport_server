@@ -39,6 +39,7 @@ export class OrderPickedForInvoiceDTO {
     distanceDirect: number
   }
   docs?: any[]
+  docNumbers?: string
   docsState?: {
     getted?: boolean | null
     date?: Date | null
@@ -78,6 +79,7 @@ export class OrderPickedForInvoiceDTO {
     this.route = preparedProps.route
     this.analytics = preparedProps.analytics
     this.docsState = preparedProps?.docsState
+    this.docNumbers = preparedProps?.docNumbers
     this.paymentParts = preparedProps.paymentParts
     this.paymentToDriver = preparedProps.paymentToDriver
     this.paymentInvoices = preparedProps.paymentInvoices
@@ -86,6 +88,7 @@ export class OrderPickedForInvoiceDTO {
     this.driverName = preparedProps.driverName
     this.itemType = preparedProps.itemType
     this.rowId = preparedProps.rowId
+
     this.savedTotal = preparedProps.savedTotal
     this.savedTotalByTypes = preparedProps.savedTotalByTypes
     this.totalByTypes = utils.calcTotalByTypes(preparedProps)
