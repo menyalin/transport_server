@@ -12,7 +12,7 @@ export const PickOrdersForPaymentInvoicePropsSchema = z.object({
   agreements: z.string().array().optional(),
   tks: z.string().array().optional(),
   paymentInvoiceId: z.string().optional(),
-  docStatus: z.string().optional(),
+  docStatuses: z.array(z.string()).optional(),
   onlySelectable: z.boolean().optional(),
   truck: z.string().optional(),
   driver: z.string().optional(),
@@ -131,6 +131,7 @@ export const orderPickedForInvoiceDTOSchema = z
       })
       .optional(),
     docs: z.array(z.unknown()).optional(),
+    docNumbers: z.string().optional(),
     docsState: z
       .object({
         getted: z.union([z.boolean(), z.null()]).optional(),

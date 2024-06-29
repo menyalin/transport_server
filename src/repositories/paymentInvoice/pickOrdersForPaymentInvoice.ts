@@ -20,6 +20,8 @@ import { OrderModel } from '@/models/order'
 import { orderLoadingZoneFragmentBuilder } from '@/shared/pipelineFragments/orderLoadingZoneFragmentBuilder'
 import { orderPlannedDateBuilder } from '@/shared/pipelineFragments/orderPlannedDateBuilder'
 import { orderSearchByNumberFragmentBuilder } from '@/shared/pipelineFragments/orderSearchByNumberFragmentBuilder'
+import { orderDocNumbersStringFragment } from '@/shared/pipelineFragments/orderDocNumbersStringBuilder'
+import { orderDocsStatusConditionBuilder } from '@/shared/pipelineFragments/orderDocsStatusConditionBuilder'
 
 const setStatisticData = (res: any): IStaticticData => {
   if (!res.total?.length)
@@ -53,6 +55,7 @@ export async function pickOrdersForPaymentInvoice({
   truck,
   driver,
   search,
+  docStatuses,
   agreement,
   agreements,
   tks,
@@ -90,7 +93,12 @@ export async function pickOrdersForPaymentInvoice({
   if (search) {
     filters.push(orderSearchByNumberFragmentBuilder(search))
   }
-
+  if (docStatuses?.length)
+    filters.push({
+      $or: docStatuses.map((docStatus) =>
+        orderDocsStatusConditionBuilder(docStatus)
+      ),
+    })
   if (truck)
     filters.push({
       $eq: ['$confirmedCrew.truck', new Types.ObjectId(truck)],
@@ -162,6 +170,10 @@ export async function pickOrdersForPaymentInvoice({
         isSelectable: true,
         agreementVatRate: '$agreement.vatRate',
         itemType: 'order',
+        docNumbers: orderDocNumbersStringFragment({
+          docsFieldName: '$docs',
+          onlyForAddToRegistry: false,
+        }),
         paymentPartsSumWOVat: {
           $reduce: {
             initialValue: 0,
