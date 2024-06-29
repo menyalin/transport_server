@@ -395,8 +395,7 @@ class OrderService {
     return prePrices
   }
 
-  //@ts-ignore
-  async getDistance({ coords }) {
+  async getDistance({ coords }: { coords: any[] }) {
     try {
       const radiusesArray: any[] = []
       coords.forEach(() => {
@@ -415,7 +414,7 @@ class OrderService {
         durationStr: 'TODO',
       }
     } catch (e) {
-      return null
+      return { distanceRoad: 0, durationInSec: 0, durationStr: 'TODO' }
     }
   }
 
