@@ -165,6 +165,32 @@ describe('ZonesBaseTariff', () => {
       })
       expect(tariff.canApplyToOrder(order)).toBeFalsy()
     })
+
+    it('Запрет на применение тарифа при совпадении зоны погрузки и расхождении зон разгрузки', () => {
+      const loadingZoneId = new Types.ObjectId().toString()
+      const unloadingZoneId = new Types.ObjectId().toString()
+      const otherZone = new Types.ObjectId().toString()
+
+      const order: Order = createTestOrder({
+        analytics: createOrderAnalytics({
+          loadingZones: [loadingZoneId],
+          unloadingZones: [otherZone],
+        }),
+      })
+
+      const tariff = createTariff({
+        loadingZone: loadingZoneId,
+        unloadingZones: [unloadingZoneId],
+        price: 1000,
+      })
+
+      tariff.setContractData({
+        withVat: false,
+        contractName: 'fake contract',
+        contractDate: new Date('2024-05-11'),
+      })
+      expect(tariff.canApplyToOrder(order)).toBeFalsy()
+    })
   })
 
   describe('calculateForOrder', () => {
