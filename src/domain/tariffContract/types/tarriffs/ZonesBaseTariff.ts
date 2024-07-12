@@ -68,7 +68,7 @@ export class ZonesBaseTariff implements ICommonTariffFields {
       )
     )
     return (
-      allOrderZones.length >= 1 &&
+      allOrderZones.length > 1 &&
       isStringArrayEqual(allOrderZones, this.unloadingZones)
     )
   }
