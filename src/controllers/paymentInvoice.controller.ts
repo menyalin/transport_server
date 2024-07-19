@@ -27,6 +27,7 @@ class PaymentInvoiceController {
 
   async deleteById(req: AuthorizedRequest, res: Response) {
     try {
+      if (!req.companyId) throw new BadRequestError('Missing companyId')
       await PermissionService.check({
         userId: req.userId,
         companyId: req.companyId,
@@ -47,6 +48,7 @@ class PaymentInvoiceController {
 
   async create(req: AuthorizedRequest, res: Response) {
     try {
+      if (!req.companyId) throw new BadRequestError('Missing companyId')
       await PermissionService.check({
         userId: req.userId,
         companyId: req.companyId,
@@ -216,6 +218,7 @@ class PaymentInvoiceController {
     res: Response
   ) {
     try {
+      if (!req.companyId) throw new BadRequestError('Missing companyId')
       const data = await this.service.pickOrders({
         ...req.query,
         company: req.companyId,
@@ -230,6 +233,7 @@ class PaymentInvoiceController {
 
   async addOrdersToInvoice(req: AuthorizedRequest, res: Response) {
     try {
+      if (!req.companyId) throw new BadRequestError('Missing companyId')
       await PermissionService.check({
         userId: req.userId,
         companyId: req.companyId,
@@ -254,6 +258,7 @@ class PaymentInvoiceController {
     res: Response
   ) {
     try {
+      if (!req.companyId) throw new BadRequestError('Missing companyId')
       await PermissionService.check({
         userId: req.userId,
         companyId: req.companyId,
@@ -273,6 +278,7 @@ class PaymentInvoiceController {
 
   async removeOrdersFromPaymentInvoice(req: AuthorizedRequest, res: Response) {
     try {
+      if (!req.companyId) throw new BadRequestError('Missing companyId')
       await PermissionService.check({
         userId: req.userId,
         companyId: req.companyId,
