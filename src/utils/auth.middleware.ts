@@ -23,8 +23,6 @@ export const jwtAuth = async (
       const user = await UserService.findById(payload.userId)
 
       if (user === null) next(new UnauthorizedError('invalid userId'))
-      if (!user?.directoriesProfile)
-        next(new UnauthorizedError('company profile is undefined'))
       else {
         const authReq = req as AuthorizedRequest
         authReq.userId = user._id.toString()
