@@ -8,5 +8,5 @@ export interface AuthorizedRequest<
   ReqQuery = core.Query,
 > extends Request<P, ResBody, ReqBody, ReqQuery> {
   userId: string
-  companyId: string
+  companyId?: string
 }

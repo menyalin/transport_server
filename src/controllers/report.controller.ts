@@ -36,6 +36,7 @@ class ReportController {
 
   async daysControl(req: AuthorizedRequest, res: Response) {
     try {
+      if (!req.companyId) throw new BadRequestError('Missing companyId')
       let days: number = 30
       if (!!req.query.days && !isNaN(parseInt(req.query.days as string)))
         days = parseInt(req.query.days as string)
@@ -72,8 +73,9 @@ class ReportController {
     res: Response
   ) {
     try {
+      if (!req.companyId) throw new BadRequestError('Missing companyId')
       const data = await this.service.truckStateOnDate({
-        company: req!.companyId,
+        company: req.companyId,
         date: new Date(req.query?.date),
         truckType: req.query?.truckType,
         tkName: req.query?.tkName,
