@@ -1,6 +1,6 @@
 import { Types } from 'mongoose'
 import { z } from 'zod'
-import { TRUCK_KINDS_ENUM } from '../../../../constants/truck'
+import { TRUCK_KINDS_ENUM } from '@/constants/truck'
 import { ICommonTariffFields, IContractDataForTariff } from '../common'
 import { ZoneIdSchema, PriceSchema } from '../validationSchemes'
 import { Order } from '@/domain/order/order.domain'
@@ -12,6 +12,7 @@ import {
   LiftCapacityEnumSchema,
 } from '@/shared/validationSchemes'
 import { mergeStringArrays } from '@/utils/mergeStringArrays'
+import { AddressZone } from '@/domain/address'
 
 export class ZonesBaseTariff implements ICommonTariffFields {
   truckKinds: TRUCK_KINDS_ENUM[]
@@ -23,6 +24,7 @@ export class ZonesBaseTariff implements ICommonTariffFields {
   pointPrice: number = 0
   withVat?: boolean
   contractName?: string
+  priority: number = 1
   contractDate?: Date
 
   constructor(p: any) {
@@ -35,7 +37,13 @@ export class ZonesBaseTariff implements ICommonTariffFields {
     this.pointPrice = parsedData.pointPrice
     this.price = parsedData.price
   }
-
+  setPriority(zones: AddressZone[]): void {
+    this.priority = this.unloadingZones.reduce((sum, zoneId) => {
+      const zone = zones?.find((i) => i._id === zoneId)
+      if (!zone) return sum
+      return sum + zone.priority
+    }, 0)
+  }
   setContractData(contract: IContractDataForTariff): void {
     this.withVat = contract.withVat
     this.contractName = contract.contractName

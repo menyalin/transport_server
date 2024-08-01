@@ -17,18 +17,7 @@ import {
   dateOrISOStringSchema,
   objectIdSchema,
 } from '@/shared/validationSchemes'
-
-const zonesTariffComparator = (
-  a: ZonesBaseTariff,
-  b: ZonesBaseTariff
-): number => {
-  if (a.unloadingZones.length > b.unloadingZones.length) return -1
-  if (a.unloadingZones.length < b.unloadingZones.length) return 1
-  if (a.price > b.price) return -1
-  if (a.price < b.price) return 1
-
-  return 0
-}
+import { AddressZone } from '../address'
 
 export class TariffContract {
   _id?: string
@@ -160,16 +149,26 @@ export class TariffContract {
     }
   }
 
-  getSortedZoneTariffs(): ZonesBaseTariff[] {
-    const res = this.zonesTariffs.slice().sort(zonesTariffComparator)
-    res.forEach((i) => {
+  getAllZones(): string[] {
+    let zones: string[] = []
+    this.zonesTariffs.forEach((i) => {
+      zones = zones.concat(
+        ...i.unloadingZones.filter((zone) => !zones.includes(zone))
+      )
+    })
+    return zones
+  }
+
+  getSortedZoneTariffs(zones: AddressZone[]): ZonesBaseTariff[] {
+    this.zonesTariffs.forEach((i) => {
+      i.setPriority(zones)
       i.setContractData({
         withVat: this.withVat,
         contractName: this.name,
         contractDate: this.startDate,
       })
     })
-    return res
+    return this.zonesTariffs
   }
 
   getDirectDistanceZonesTariffs(): DirectDistanceZonesBaseTariff[] {
