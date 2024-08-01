@@ -40,6 +40,7 @@ import { OrderPriceCalculator } from '@/domain/orderPriceCalculator/orderPriceCa
 import { OrderPrice } from '@/domain/order/orderPrice'
 import { TariffContract } from '@/domain/tariffContract'
 import * as helpers from '@/shared/helpers'
+import { AddressZone } from '@/domain/address'
 
 class OrderService {
   async create({ body, user }: { body: any; user: string }) {
@@ -386,8 +387,18 @@ class OrderService {
           agreement,
           order.orderDate
         )
+      // Поучаем зоны из тарифных контрактов
+      let zoneIds: string[] = []
+      tariffContracts.forEach((i) => {
+        zoneIds = zoneIds.concat(
+          ...i.getAllZones().filter((zone) => !zoneIds.includes(zone))
+        )
+      })
+      const zones: AddressZone[] =
+        await AddressRepository.getZonesByIds(zoneIds)
+
       prePrices.push(
-        ...priceCalculator.basePrice(order, tariffContracts, agreement),
+        ...priceCalculator.basePrice(order, tariffContracts, agreement, zones),
         ...priceCalculator.idlePrice(order, tariffContracts, agreement),
         ...priceCalculator.returnPrice(order, tariffContracts, agreement)
       )
