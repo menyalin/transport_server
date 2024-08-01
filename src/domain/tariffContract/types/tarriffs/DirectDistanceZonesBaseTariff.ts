@@ -28,6 +28,7 @@ export class DirectDistanceZonesBaseTariff implements ICommonTariffFields {
   contractDate?: Date
   includedPoints: number = 2
   pointPrice: number = 0
+  priority: number = 1
 
   constructor(p: any) {
     const parsed = DirectDistanceZonesBaseTariff.validationSchema.parse(p)

@@ -1,6 +1,7 @@
 import { RoutePoint } from '@/values/order/routePoint'
-import { Address as AddressModel } from '@/models'
+import { Address as AddressModel, Zone as ZoneModel } from '@/models'
 import { TtlMap } from '@/utils/ttlMap'
+import { AddressZone } from '@/domain/address'
 
 interface ConstructorProps {
   addressModel: typeof AddressModel
@@ -40,5 +41,13 @@ class AddressRepository {
     })
     return zones
   }
+
+  async getZonesByIds(zoneIds: string[]): Promise<AddressZone[]> {
+    const zones = await ZoneModel.find<AddressZone>({
+      _id: { $in: zoneIds },
+    }).lean()
+    return zones.map((i) => new AddressZone(i))
+  }
 }
+
 export default new AddressRepository({ addressModel: AddressModel })
