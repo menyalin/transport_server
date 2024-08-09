@@ -1,4 +1,3 @@
-// @ts-nocheck
 import pkg from 'mongoose'
 import bcrypt from 'bcryptjs'
 const { Schema, model, Types } = pkg
@@ -24,7 +23,7 @@ const userSchema = new Schema(
   { timestamps: true }
 )
 
-userSchema.methods.isCorrectPassword = async function (pass) {
+userSchema.methods.isCorrectPassword = async function (pass: any) {
   const res = await bcrypt.compare(pass, this.password)
   return !!res || pass === this.password
 }
@@ -32,7 +31,7 @@ userSchema.methods.isCorrectPassword = async function (pass) {
 userSchema.pre('save', function (next) {
   const tmpUser = this
   if (this.isModified('password')) {
-    bcrypt.hash(tmpUser.password, 10, (_, hash) => {
+    bcrypt.hash(tmpUser.password, 10, (_: any, hash: string) => {
       tmpUser.password = hash
       next()
     })

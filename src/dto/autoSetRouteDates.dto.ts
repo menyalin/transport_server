@@ -1,5 +1,4 @@
-import dayjs from 'dayjs'
-import { DateRange } from '../classes/dateRange'
+import { DateRange } from '@/classes/dateRange'
 
 export function truckIdsValidator(truckIds: string[]) {
   if (!Array.isArray(truckIds) || truckIds.length === 0)
@@ -8,16 +7,6 @@ export function truckIdsValidator(truckIds: string[]) {
     throw new Error('AutoSetRouteDatesDTO: invalid params: truckIds not string')
   return null
 }
-
-// export function parsePeriod(period) {
-//   if (!Array.isArray(period) || period.length !== 2)
-//     throw new Error('AutoSetRouteDatesDTO: invalid params: period')
-//   if (period.some((date) => !dayjs(date).isValid()))
-//     throw new Error(
-//       'AutoSetRouteDatesDTO: invalid params: period dates not valid'
-//     )
-//   return period.map((p) => new Date(p)).sort((a, b) => a - b)
-// }
 
 interface IProps {
   truckIds: string[]

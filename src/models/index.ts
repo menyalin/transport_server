@@ -1,4 +1,3 @@
-// @ts-nocheck
 import User from './user'
 import Token from './token'
 import Company from './company'
@@ -15,8 +14,6 @@ import ChangeLog from './changeLog'
 import OrderTemplate from './orderTemplate'
 import ScheduleNote from './scheduleNote'
 import Agreement from './agreement'
-import Tariff from './tariff'
-import Document from './document'
 import Zone from './zone'
 import Region from './region'
 import City from './city'
@@ -47,8 +44,6 @@ export {
   OrderTemplate,
   ScheduleNote,
   Agreement,
-  Tariff,
-  Document,
   Zone,
   Region,
   City,
