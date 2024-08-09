@@ -58,6 +58,7 @@ export async function pickOrdersForPaymentInvoice({
   docStatuses,
   agreement,
   agreements,
+  loadingZones,
   tks,
   numbers,
   limit,
@@ -288,8 +289,6 @@ export async function pickOrdersForPaymentInvoice({
     },
   }
 
-  const loadingZoneFragment = orderLoadingZoneFragmentBuilder()
-
   const sortingBuilder = (
     sortBy: string[] = [],
     sortDesc: boolean[] = []
@@ -362,7 +361,7 @@ export async function pickOrdersForPaymentInvoice({
     ...addAgreementBuilder('client.agreement'),
     ...addFields,
     unionWithPaymentPartsOrders,
-    ...loadingZoneFragment,
+    ...orderLoadingZoneFragmentBuilder(loadingZones),
     sortingBuilder(sortBy, sortDesc),
     ...finalFacet,
   ])

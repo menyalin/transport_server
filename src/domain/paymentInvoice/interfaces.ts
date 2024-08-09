@@ -3,6 +3,7 @@ import { Types } from 'mongoose'
 import { DateRange } from '../../classes/dateRange'
 import { OrderPickedForInvoiceDTO } from './dto/orderPickedForInvoice.dto'
 import { OrderPaymentPartPropsSchema } from '../order/paymentPart'
+import { objectIdSchema } from '@/shared/validationSchemes'
 
 export const PickOrdersForPaymentInvoicePropsSchema = z.object({
   company: z.string(),
@@ -17,6 +18,7 @@ export const PickOrdersForPaymentInvoicePropsSchema = z.object({
   truck: z.string().optional(),
   driver: z.string().optional(),
   loadingZone: z.string().optional(),
+  loadingZones: z.array(z.string()).optional(),
   search: z.string().optional(),
   numbers: z.array(z.string()).optional(),
   limit: z.number().int().optional(),
@@ -144,6 +146,15 @@ export const orderPickedForInvoiceDTOSchema = z
     note: z.string().optional(),
     paymentInvoices: z.array(z.unknown()).optional(),
     agreement: z.unknown().optional(),
+    _loadingZones: z
+      .array(
+        z.object({
+          _id: objectIdSchema,
+          name: z.string(),
+          priority: z.number().optional(),
+        })
+      )
+      .optional(),
     // total: TotalPriceSchema,
     // totalByTypes: z.record(PriceByTypeSchema).optional(),
     savedTotal: TotalPriceSchema.optional(),
