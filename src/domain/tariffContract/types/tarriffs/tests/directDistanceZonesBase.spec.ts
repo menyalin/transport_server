@@ -19,7 +19,6 @@ const createOrderAnalytics = (args: object): OrderAnalytics =>
     distanceDirect: 50,
     distanceRoad: 50,
     type: 'region',
-    prePrices: [],
     ...args,
   })
 

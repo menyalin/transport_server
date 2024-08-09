@@ -5,7 +5,6 @@ import { OrderType, OrderTypeSchema } from './types'
 import { objectIdSchema } from '@/shared/validationSchemes'
 import { RouteStats } from '@/values/order/routeStats'
 import { Route } from '@/values/order/route'
-import { OrderPrice } from './orderPrice'
 
 interface Props {
   type: OrderType
@@ -15,7 +14,6 @@ interface Props {
   unloadingZones?: string[]
   route?: Route
   routeStats?: RouteStats
-  prePrices?: OrderPrice[]
 }
 
 export class OrderAnalytics {
@@ -25,7 +23,6 @@ export class OrderAnalytics {
   loadingZones?: string[]
   unloadingZones?: string[]
   routeStats?: RouteStats
-  prePrices?: OrderPrice[] = []
 
   constructor(p: Props) {
     OrderAnalytics.validationSchema.parse(p)
@@ -34,13 +31,9 @@ export class OrderAnalytics {
     this.distanceRoad = p.distanceRoad
     this.loadingZones = p.loadingZones ? p.loadingZones : undefined
     this.unloadingZones = p.unloadingZones ? p.unloadingZones : undefined
-    this.prePrices = p.prePrices
+
     if (p.route) this.routeStats = new RouteStats(p.route)
     else if (p.routeStats) this.routeStats = p.routeStats
-  }
-
-  setPrePrices(prices: OrderPrice[]): void {
-    this.prePrices = prices
   }
 
   static get dbSchema() {
@@ -51,7 +44,6 @@ export class OrderAnalytics {
       loadingZones: [{ type: Types.ObjectId, ref: 'Zone' }],
       unloadingZones: [{ type: Types.ObjectId, ref: 'Zone' }],
       routeStats: RouteStats.dbSchema,
-      prePrices: [OrderPrice.dbSchema],
     }
   }
   static get validationSchema() {
@@ -68,7 +60,6 @@ export class OrderAnalytics {
         .transform((val) => val.map((i) => i.toString()))
         .optional(),
       routeStats: z.unknown().optional(),
-      prePrices: z.array(z.unknown()).optional(),
     })
   }
 }

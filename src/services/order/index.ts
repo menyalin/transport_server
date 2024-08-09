@@ -58,7 +58,6 @@ class OrderService {
     const order = await OrderRepository.create(body)
     order.analytics = await this.updateOrderAnalytics(order)
     order.prePrices = await this.updatePrePrices(order)
-
     bus.publish(OrdersUpdatedEvent([order]))
     emitTo(order.company.toString(), 'order:created', order.toObject())
     await ChangeLogService.add({
@@ -306,11 +305,7 @@ class OrderService {
     })
     orderDomain.setDisableStatus(false)
     orderDomain.analytics = await this.updateOrderAnalytics(orderDomain)
-    const prePrices = await this.updatePrePrices(orderDomain)
-    orderDomain.prePrices = prePrices
-
-    // TODO: Удалить сохранение тарифов в аналитику
-    orderDomain.analytics.setPrePrices(prePrices)
+    orderDomain.prePrices = await this.updatePrePrices(orderDomain)
 
     bus.publish(OrdersUpdatedEvent([orderDomain]))
 
@@ -330,10 +325,8 @@ class OrderService {
 
   async refresh(order: OrderDomain): Promise<void> {
     order.analytics = await this.updateOrderAnalytics(order)
-    const prePrices = await this.updatePrePrices(order)
-    // TODO: Удалить сохранение тарифов в аналитику
-    order.analytics.setPrePrices(prePrices)
-    order.prePrices = prePrices
+    order.prePrices = await this.updatePrePrices(order)
+
     bus.publish(OrdersUpdatedEvent([order]))
   }
 
