@@ -1,13 +1,12 @@
-import { Types } from 'mongoose'
+import { ObjectExpression, Types } from 'mongoose'
 import {
   ILoaderData,
-  LoaderDataSchema,
   OrderPickedForInvoiceDTOProps,
   PriceByType,
   TotalPrice,
   orderPickedForInvoiceDTOSchema,
 } from '../interfaces'
-import { ORDER_PRICE_TYPES_ENUM } from '../../../constants/priceTypes'
+import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
 import { utils } from './utils'
 
 export class OrderPickedForInvoiceDTO {
@@ -49,7 +48,7 @@ export class OrderPickedForInvoiceDTO {
   note?: string
   paymentInvoices?: any[]
   agreement?: any
-
+  _loadingZones?: object[]
   totalByTypes: Record<ORDER_PRICE_TYPES_ENUM, PriceByType>
   total: TotalPrice
   savedTotalByTypes?: any
@@ -88,7 +87,7 @@ export class OrderPickedForInvoiceDTO {
     this.driverName = preparedProps.driverName
     this.itemType = preparedProps.itemType
     this.rowId = preparedProps.rowId
-
+    this._loadingZones = preparedProps._loadingZones
     this.savedTotal = preparedProps.savedTotal
     this.savedTotalByTypes = preparedProps.savedTotalByTypes
     this.totalByTypes = utils.calcTotalByTypes(preparedProps)
