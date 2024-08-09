@@ -1,17 +1,11 @@
 import mongoose from 'mongoose'
-import PriceDTO from '../../dto/price.dto'
 import {
   Order as OrderModel,
   OrderTemplate as OrderTemplateModel,
 } from '../../models'
 import { emitTo } from '../../socket'
 import { getSchedulePipeline } from './pipelines/getSchedulePipeline'
-import {
-  AgreementService,
-  ChangeLogService,
-  PermissionService,
-  TariffService,
-} from '..'
+import { AgreementService, ChangeLogService, PermissionService } from '..'
 import checkCrossItems from './checkCrossItems'
 import checkRefusedOrder from './checkRefusedOrder'
 import getRouteFromTemplate from './getRouteFromTemplate'
@@ -61,18 +55,10 @@ class OrderService {
       body.confirmedCrew.outsourceAgreement =
         await getOutsourceAgreementId(body)
 
-    // TODO: Удалить getPrePricesByOrderData после перехода на новый тариф
-
-    // if (body.client.agreement && body.analytics.type) {
-    //   body.prePrices = await TariffService.getPrePricesByOrderData(
-    //     PriceDTO.prepareOrderForPrePriceQuery(body)
-    //   )
-    // }
-
     const order = await OrderRepository.create(body)
+    order.analytics = await this.updateOrderAnalytics(order)
     order.prePrices = await this.updatePrePrices(order)
-    // TODO: Удалить сохранение тарифов в аналитику
-    order.analytics?.setPrePrices(order.prePrices)
+
     bus.publish(OrdersUpdatedEvent([order]))
     emitTo(order.company.toString(), 'order:created', order.toObject())
     await ChangeLogService.add({
@@ -264,12 +250,6 @@ class OrderService {
 
     if (!body.client.agreement && body.route[0].plannedDate)
       body.client.agreement = await getClientAgreementId(body)
-
-    if (body.client.agreement && body.analytics.type) {
-      body.prePrices = await TariffService.getPrePricesByOrderData(
-        PriceDTO.prepareOrderForPrePriceQuery(body)
-      )
-    }
 
     if (!body.confirmedCrew.outsourceAgreement && body.confirmedCrew.truck)
       body.confirmedCrew.outsourceAgreement =

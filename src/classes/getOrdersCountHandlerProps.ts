@@ -1,5 +1,6 @@
 import { DateRange } from './dateRange'
 
+// TODO: Переместить в нужную папку и добавить валидацию в конструкторе
 export class GetDocsCountProps {
   period: DateRange
   company: string

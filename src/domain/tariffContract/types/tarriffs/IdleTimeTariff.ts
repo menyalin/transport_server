@@ -17,10 +17,7 @@ import { Agreement } from '@/domain/agreement/agreement.domain'
 import { OrderPrice } from '@/domain/order/orderPrice'
 import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
 import { RoutePoint } from '@/values/order/routePoint'
-import {
-  IdleTimeRoundingIntervalEnum,
-  TARIFF_ROUND_BY_HOURS_ENUM,
-} from '@/constants/tariff'
+import { IdleTimeRoundingIntervalEnum } from '@/constants/tariff'
 
 type IdleType =
   | ORDER_PRICE_TYPES_ENUM.loadingDowntime
@@ -248,7 +245,7 @@ export class IdleTimeTariff implements ICommonTariffFields {
       liftCapacities: [{ type: Number, required: true }],
       includeHours: { type: Number },
       roundingInterval: { type: String },
-      roundByHours: { type: Number, enum: TARIFF_ROUND_BY_HOURS_ENUM }, // Кратность округления по часам
+      roundByHours: { type: Number },
       tariffBy: { type: String, enum: ['hour', 'day'] },
       orderTypes: [{ type: String, required: true, enum: ['region', 'city'] }],
       price: { type: Number, required: true },

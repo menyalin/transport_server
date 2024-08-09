@@ -1,4 +1,3 @@
-// @ts-nocheck
 import UserService from './user'
 import CompanyService from './company'
 import TaskService from './task'
@@ -16,9 +15,7 @@ import OrderTemplateService from './orderTemplate'
 import ScheduleNoteService from './scheduleNote'
 import AgreementService from './agreement'
 import PermissionService from './permission'
-import TariffService from './tariff'
 import SalaryTariffService from './salaryTariff'
-import DocumentService from './document'
 import ZoneService from './zone'
 import RegionService from './region'
 import CityService from './city'
@@ -57,8 +54,6 @@ export {
   AgreementService,
   PermissionService,
   FileService,
-  TariffService,
-  DocumentService,
   ZoneService,
   RegionService,
   CityService,

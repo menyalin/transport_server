@@ -20,10 +20,8 @@ import reportRouter from './api/reports'
 import orderTemplateRouter from './api/orderTemplate'
 import scheduleNoteRouter from './api/scheduleNote'
 import agreementRouter from './api/agreement'
-import tariffRouter from './api/tariff'
 import tariffContractRouter from './api/tariffContract'
 import salaryTariffRouter from './api/salaryTariff'
-import documentRouter from './api/document'
 import zoneRouter from './api/zone'
 import regionRouter from './api/region'
 import cityRouter from './api/city'
@@ -71,10 +69,8 @@ app.use('/api/reports', reportRouter)
 app.use('/api/order_templates', orderTemplateRouter)
 app.use('/api/schedule_notes', scheduleNoteRouter)
 app.use('/api/agreements', agreementRouter)
-app.use('/api/tariffs', tariffRouter)
 app.use('/api/tariff_contracts', tariffContractRouter)
 app.use('/api/salary_tariffs', salaryTariffRouter)
-app.use('/api/documents', documentRouter)
 app.use('/api/zones', zoneRouter)
 app.use('/api/regions', regionRouter)
 app.use('/api/cities', cityRouter)
