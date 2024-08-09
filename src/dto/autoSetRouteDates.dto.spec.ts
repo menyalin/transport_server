@@ -1,8 +1,6 @@
-// @ts-nocheck
 import { describe, it, expect } from '@jest/globals'
 
 import {
-  parsePeriod,
   truckIdsValidator,
   AutoSetRouteDatesDTO,
 } from './autoSetRouteDates.dto'
@@ -14,7 +12,7 @@ describe('autoSetRouteDates.dto', () => {
   })
 
   it('truckIdsValidator: should throw an error if truckIds is not an array', () => {
-    expect(() => truckIdsValidator('truck-1')).toThrow(
+    expect(() => truckIdsValidator('truck-1' as any)).toThrow(
       'AutoSetRouteDatesDTO: invalid params: truckIds'
     )
   })
@@ -27,7 +25,7 @@ describe('autoSetRouteDates.dto', () => {
 
   it('truckIdsValidator: should throw an error if any of the truckIds is not a string', () => {
     const truckIds = ['truck-1', 2]
-    expect(() => truckIdsValidator(truckIds)).toThrow(
+    expect(() => truckIdsValidator(truckIds as any)).toThrow(
       'AutoSetRouteDatesDTO: invalid params: truckIds not string'
     )
   })
@@ -40,7 +38,7 @@ describe('autoSetRouteDates.dto', () => {
           period: ['2023-05-25T21:00:00.000Z', '2023-05-24T21:00:00.000Z'],
           tripDurationInMinutes: 30,
           unloadingDurationInMinutes: 30,
-        })
+        } as any)
     ).toBeDefined()
   })
 
@@ -52,7 +50,7 @@ describe('autoSetRouteDates.dto', () => {
           period: ['2023-05-25T21:00:00.000Z', '2023-05-24T21:00:00.000Z'],
           tripDurationInMinutes: 30,
           unloadingDurationInMinutes: 30,
-        })
+        } as any)
     ).not.toThrow()
   })
 })

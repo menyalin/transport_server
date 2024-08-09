@@ -90,7 +90,7 @@ class PartnerService {
     return partner
   }
 
-  async getByProfile(profile: string) {
+  async getByProfile(profile: any) {
     const data = await this.model
       .find({ company: profile, isActive: true })
       .lean()
