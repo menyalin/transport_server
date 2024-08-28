@@ -1,11 +1,14 @@
 // @ts-nocheck
-/* eslint-disable no-unused-vars */
 import express from 'express'
 
 import { jwtAuth } from '../../utils/auth.middleware'
 import { bodyValidator, queryValidator } from '../../utils/validator'
 
-import { getListSchema, getDriverSalarySchema } from './schemes'
+import {
+  getListSchema,
+  getDriverSalarySchema,
+  driversSalaryReportSchema,
+} from './schemes'
 import ctrl from '../../controllers/salaryTariff.controller'
 
 const router = express.Router()
@@ -20,6 +23,12 @@ router.post(
   '/get_drivers_salary_by_period',
   [jwtAuth, bodyValidator(getDriverSalarySchema)],
   (...args) => ctrl.getDriversSalaryByPeriod(...args)
+)
+
+router.post(
+  '/drivers_salary_by_period_report',
+  [jwtAuth, bodyValidator(driversSalaryReportSchema)],
+  (...args) => ctrl.driversSalaryByPeriodReport(...args)
 )
 
 router.post('/', [jwtAuth], (...args) => ctrl.create(...args))

@@ -82,7 +82,17 @@ export default ({
     {
       $addFields: {
         _driverFullName: {
-          $concat: ['$_driver.surname', '$_driver.name', '$_driver.patronymic'],
+          $trim: {
+            input: {
+              $concat: [
+                '$_driver.surname',
+                ' ',
+                '$_driver.name',
+                ' ',
+                '$_driver.patronymic',
+              ],
+            },
+          },
         },
       },
     },
