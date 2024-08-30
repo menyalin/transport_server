@@ -1,7 +1,6 @@
-// @ts-nocheck
-import mongoose from 'mongoose'
+import mongoose, { PipelineStage } from 'mongoose'
 
-export default (company) => {
+export default (company: string): PipelineStage[] => {
   return [
     {
       $lookup: {

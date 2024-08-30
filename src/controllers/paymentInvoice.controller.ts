@@ -8,7 +8,6 @@ import {
   PermissionService,
 } from '@/services'
 import { BadRequestError } from '@/helpers/errors'
-import { partialUtil } from 'zod/lib/helpers/partialUtil'
 
 class PaymentInvoiceController {
   service: typeof PaymentInvoiceService

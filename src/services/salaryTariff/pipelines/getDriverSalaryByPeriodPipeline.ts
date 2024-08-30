@@ -1,11 +1,22 @@
-// @ts-nocheck
-import mongoose from 'mongoose'
+import mongoose, { PipelineStage } from 'mongoose'
 import getAddressesLookupFragment from './fragments/getAddressesLookupFragment'
 import getBaseSalaryTariffFragment from './fragments/getBaseSalaryTariffFragment'
 import getDriverOrdersFragment from './fragments/getDriverOrdersFragment'
 import getWaitingSalaryTariffFragment from './fragments/getWaitingSalaryTariffFragment'
 import getReturnSalaryTariff from './fragments/getReturnSalaryTariff'
 import getAdditionalPointsTariff from './fragments/getAdditionPointsSalaryTariff'
+import { DateRange } from '@/classes/dateRange'
+
+interface IProps {
+  company: string
+  period: [string, string]
+  driver?: string
+  clients?: string[]
+  consigneeType?: string
+  orderType?: string
+  allData?: boolean
+  tks?: string[]
+}
 
 export default ({
   company,
@@ -14,10 +25,10 @@ export default ({
   clients,
   consigneeType,
   orderType,
+  allData,
   tks,
-}) => {
-  const startPeriod = new Date(period[0])
-  const endPeriod = new Date(period[1])
+}: IProps) => {
+  const parsedPeriod = new DateRange(period[0], period[1])
   const partnerFilter = []
 
   const orderPeriodDate = {
@@ -29,15 +40,15 @@ export default ({
     },
   }
 
-  const firstMatcher = {
+  const firstMatcher: PipelineStage.Match = {
     $match: {
       company: new mongoose.Types.ObjectId(company),
       isActive: true,
       'state.status': 'completed',
       $expr: {
         $and: [
-          { $lt: [orderPeriodDate, endPeriod] },
-          { $gte: [orderPeriodDate, startPeriod] },
+          { $lt: [orderPeriodDate, parsedPeriod.end] },
+          { $gte: [orderPeriodDate, parsedPeriod.start] },
           { $ne: [{ $ifNull: ['$confirmedCrew.driver', null] }, null] },
         ],
       },
@@ -68,7 +79,7 @@ export default ({
       $eq: ['$confirmedCrew.driver', new mongoose.Types.ObjectId(driver)],
     })
 
-  const driverFilter = [
+  const driverFilter: PipelineStage[] = [
     {
       $lookup: {
         from: 'drivers',
@@ -82,7 +93,17 @@ export default ({
     {
       $addFields: {
         _driverFullName: {
-          $concat: ['$_driver.surname', '$_driver.name', '$_driver.patronymic'],
+          $trim: {
+            input: {
+              $concat: [
+                '$_driver.surname',
+                ' ',
+                '$_driver.name',
+                ' ',
+                '$_driver.patronymic',
+              ],
+            },
+          },
         },
       },
     },
@@ -128,7 +149,7 @@ export default ({
     },
   ]
 
-  const addFields = [
+  const addFields: PipelineStage[] = [
     {
       $addFields: {
         _orderTKNameId: '$confirmedCrew.tkName',
@@ -149,9 +170,9 @@ export default ({
   const waitingTariff = getWaitingSalaryTariffFragment(company)
   const returnTariff = getReturnSalaryTariff(company)
   const additionalPointsTariff = getAdditionalPointsTariff(company)
-  const driverOrdersDetailes = getDriverOrdersFragment()
+  const driverOrdersDetailes: PipelineStage[] = getDriverOrdersFragment()
 
-  const group = [
+  const group: PipelineStage[] = [
     {
       $group: {
         _id: '$confirmedCrew.driver',
@@ -202,8 +223,7 @@ export default ({
     ...returnTariff,
     ...additionalPointsTariff,
   ]
-
-  if (driver) pipeline.push(...driverOrdersDetailes)
+  if (allData || driver) pipeline.push(...driverOrdersDetailes)
   else pipeline.push(...group)
 
   return pipeline

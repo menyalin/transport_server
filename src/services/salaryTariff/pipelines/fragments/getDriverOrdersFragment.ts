@@ -1,7 +1,7 @@
-// @ts-nocheck
-import { SALARY_TARIFF_TYPES } from '../../../../constants/accounting'
-import { ORDER_ANALYTIC_TYPES } from '../../../../constants/order'
-const getAddressShortName = (pointType) => ({
+import { PipelineStage } from 'mongoose'
+import { SALARY_TARIFF_TYPES } from '@/constants/accounting'
+import { ORDER_ANALYTIC_TYPES } from '@/constants/order'
+const getAddressShortName = (pointType: string) => ({
   $trim: {
     chars: ', ',
     input: {
@@ -19,7 +19,7 @@ const getAddressShortName = (pointType) => ({
   },
 })
 
-const getTariffTypeStr = (tariffTypeFieldPath) => ({
+const getTariffTypeStr = (tariffTypeFieldPath: string) => ({
   $switch: {
     branches: SALARY_TARIFF_TYPES.map((type) => ({
       case: { $eq: [tariffTypeFieldPath, type.value] },
@@ -29,7 +29,7 @@ const getTariffTypeStr = (tariffTypeFieldPath) => ({
   },
 })
 
-export default () => {
+export default (): PipelineStage[] => {
   return [
     {
       $lookup: {
@@ -42,7 +42,13 @@ export default () => {
     {
       $project: {
         orderDate: '$_orderPeriodDate',
-        _client: { $first: '$_client' },
+        _clientName: {
+          $getField: {
+            input: { $first: '$_client' },
+            field: 'name',
+          },
+        },
+        _driverFullName: '$_driverFullName',
         _loadingAddressesStr: getAddressShortName('loading'),
         _unloadingAddressesStr: getAddressShortName('unloading'),
         _truckRegNum: '$_truck.regNum',
@@ -54,7 +60,7 @@ export default () => {
               case: { $eq: [item.value, '$analytics.type'] },
               then: item.text,
             })),
-            default: 'Ошибка',
+            default: '__error__',
           },
         },
         route: '$route',
@@ -75,10 +81,11 @@ export default () => {
         // _unloadingDurationsMinutes: '$_unloadingDurationsMinutes',
         // _roundedMinutes: '$_roundedMinutes',
         grade: '$grade',
-        _clientAgreemenent: '$_clientAgreement',
-        // returnTariff: '$_returnTariff',
+        // _clientAgreemenent: '$_clientAgreement',
+        _executorName: '$_clientAgreement.executorName',
       },
     },
+
     {
       $addFields: {
         totalSum: {
