@@ -1,4 +1,3 @@
-// @ts-nocheck
 export const getListSchema = {
   type: 'object',
   properties: {
@@ -27,3 +26,13 @@ export const getDriverSalarySchema = {
   additionalProperties: true,
 }
 
+export const driversSalaryReportSchema = {
+  type: 'object',
+  properties: {
+    company: {
+      type: 'string',
+    },
+  },
+  required: ['company'],
+  additionalProperties: true,
+}
