@@ -1,8 +1,13 @@
 import { IController } from './iController'
-import { SalaryTariffService, PermissionService } from '../services'
+import {
+  SalaryTariffService,
+  PermissionService,
+  FileService,
+} from '../services'
 import { AuthorizedRequest } from './interfaces'
 import { Response } from 'express'
 import { BadRequestError } from '@/helpers/errors'
+import { ReportItemDTO } from '@/services/salaryTariff/reportItem.dto'
 interface IConstructorProps {
   service: typeof SalaryTariffService
   permissionName: string
@@ -31,7 +36,31 @@ class SalaryTariffController extends IController {
       else res.status(500).json(e)
     }
   }
-  // async driversSalaryByPeriodReport(req: AuthorizedRequest, res: Response) {}
+
+  async driversSalaryByPeriodReport(req: AuthorizedRequest, res: Response) {
+    try {
+      if (!req.companyId) throw new BadRequestError('Missing companyId')
+      await PermissionService.check({
+        userId: req.userId,
+        companyId: req.companyId,
+        operation: this.permissionName + ':readList',
+      })
+      const data = await this.service.getDriversSalaryByPeriod({
+        ...req.query,
+        allData: true,
+      })
+
+      const stream = await FileService.createExcelFile(
+        data.map((i) => new ReportItemDTO(i).tableData)
+      )
+
+      res.status(200)
+      stream.pipe(res)
+    } catch (e) {
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
+    }
+  }
 
   async getDriversSalaryByPeriod(req: AuthorizedRequest, res: Response) {
     try {
