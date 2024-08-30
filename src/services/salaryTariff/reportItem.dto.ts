@@ -53,6 +53,7 @@ export class ReportItemDTO {
       _id: this.orderId,
       'Дата рейса': this.orderDate,
       Клиент: this.clientName,
+      Исполнитель: this.executorName || '---',
       Водитель: this.driverName,
       Грузовик: this.truckNum,
       Прицеп: this.trailerNum,
