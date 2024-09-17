@@ -5,19 +5,22 @@ import { IdleTruckNotification } from '../../partner/idleTruckNotification'
 export const getIdleTruckNotificationMessageSendDate = (
   notification: IdleTruckNotification,
   point: RoutePoint
-): Date => {
-  if (!point.plannedDate && !point.arrivalDate)
-    throw new Error(
-      'getIdleTruckNotificationMessageSendDate : point dates is missing'
-    )
-
-  let date = point.plannedDate || point.arrivalDate
-
-  if (point.arrivalDate && point.plannedDate) {
-    date = dayjs(point.arrivalDate).isAfter(point.plannedDate)
-      ? point.arrivalDate
-      : point.plannedDate
+): Date | null => {
+  const addHours = (date: Date, hours: number): Date => {
+    return dayjs(date).add(hours, 'hours').toDate()
   }
+  const hours = notification.idleHoursBeforeNotify
 
-  return dayjs(date).add(notification.idleHoursBeforeNotify, 'hours').toDate()
+  if (notification.usePlannedDate && point.plannedDate)
+    return addHours(point.plannedDate, hours)
+
+  if (!notification.usePlannedDate && point.plannedDate && point.arrivalDate)
+    return dayjs(point.arrivalDate).isAfter(point.plannedDate)
+      ? addHours(point.arrivalDate, hours)
+      : addHours(point.plannedDate, hours)
+
+  if (!point.plannedDate && point.arrivalDate)
+    return addHours(point.arrivalDate, hours)
+
+  return null
 }
