@@ -6,7 +6,7 @@ export const isNeedUpdateNotificationMessage = (
   existedMessage: IdleTruckNotificationMessage | null
 ): boolean => {
   if (!existedMessage) return true
-
+  if (!existedMessage.sendDate || !newMessage.sendDate) return true
   if (
     existedMessage.status === MESSAGE_STATUS_ENUM.created ||
     existedMessage.status === MESSAGE_STATUS_ENUM.deleted
@@ -21,7 +21,7 @@ export const isNeedUpdateNotificationMessage = (
 
   if (
     existedMessage.status !== newMessage.status &&
-    existedMessage.sendDate.valueOf() !== newMessage.sendDate.valueOf()
+    +existedMessage.sendDate !== +newMessage.sendDate
   )
     return true
 

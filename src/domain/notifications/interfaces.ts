@@ -39,7 +39,7 @@ export interface IIdleTruckNotificationMessageProps {
   key: string
   status: MESSAGE_STATUS_ENUM
   body: IDefaultIdleTruckNotification
-  sendDate: Date
+  sendDate: Date | null
   sended?: Date[]
   createdAt?: Date
 }

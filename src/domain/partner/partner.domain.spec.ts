@@ -9,12 +9,6 @@ describe('Partner domain', () => {
   let notification: IdleTruckNotification
   let point: RoutePoint
   beforeEach(() => {
-    // partner1 = new PartnerDomain({
-    //   company: '1',
-    //   name: '1',
-    //   fullName: '1',
-    //   group: PARTNER_GROUPS_ENUM.fts,
-    // })
     notification = new IdleTruckNotification({
       emails: '1@1.ru',
       isActive: true,
@@ -23,7 +17,6 @@ describe('Partner domain', () => {
       idleHoursBeforeNotify: 2,
       usePlannedDate: true,
       templateName: '1',
-      companyName: '1',
     })
     point = new RoutePoint({
       address: '1',
