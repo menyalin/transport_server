@@ -3,11 +3,11 @@ import { PipelineStage, Types, isObjectIdOrHexString } from 'mongoose'
 export const getFullOrderDataPipeline = (
   orderId: string | Types.ObjectId
 ): PipelineStage[] => {
-  const companyLookup: PipelineStage[] = [
+  const agreementLookup: PipelineStage[] = [
     {
       $lookup: {
-        from: 'companies',
-        localField: 'company',
+        from: 'agreements',
+        localField: 'client.agreement',
         foreignField: '_id',
         as: 'companyName',
       },
@@ -16,7 +16,7 @@ export const getFullOrderDataPipeline = (
       $addFields: {
         companyName: {
           $getField: {
-            field: 'fullName',
+            field: 'executorName',
             input: { $first: '$companyName' },
           },
         },
@@ -96,7 +96,7 @@ export const getFullOrderDataPipeline = (
         orderNum: '$client.num',
       },
     },
-    ...companyLookup,
+    ...agreementLookup,
     ...driverLookup,
     ...truckLookup,
     ...trailerLookup,

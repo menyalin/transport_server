@@ -37,7 +37,7 @@ export class IdleTruckNotificationMessage {
   key: string
   status: MESSAGE_STATUS_ENUM
   body: IDefaultIdleTruckNotification
-  sendDate: Date
+  sendDate: Date | null
   sended?: Date[]
   createdAt?: Date
 
@@ -47,7 +47,7 @@ export class IdleTruckNotificationMessage {
     this.pointId = p.pointId
     this.notificationId = p.notificationId
     this.key = p.key
-    this.status = p.status
+    this.status = p.sendDate ? p.status : MESSAGE_STATUS_ENUM.canceled
     this.body = p.body
     this.sendDate = p.sendDate
     this.sended = p.sended
@@ -103,7 +103,7 @@ export class IdleTruckNotificationMessage {
       isLoading: point.isLoadingPointType,
       templateName: notification.templateName || 'defaultIdleTruckNotify',
       emailTitle: getEmailTitle(order, point),
-      companyName: notification.companyName || order.companyName,
+      companyName: order.companyName,
       orderNum: order.orderNum || null,
       plannedDate:
         point.plannedDate?.toLocaleString('ru') ||
