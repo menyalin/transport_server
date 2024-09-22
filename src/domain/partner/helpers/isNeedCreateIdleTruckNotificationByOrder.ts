@@ -5,22 +5,13 @@ export const isNeedCreateNotificationByOrder = (
   notification: IdleTruckNotification,
   order: Order
 ): boolean => {
-  // TODO: remove this
-  // if (
-  //   !order.confirmedCrew?.truck ||
-  //   (notification.useTruckFilter === USE_TRUCK_FILTER_ENUM.included &&
-  //     !notification.trucks.includes(order.confirmedCrew.truck.toString()))
-  // )
-  //   return false
+  const agreement =
+    !notification.agreement ||
+    notification.agreement === order.client.agreement?.toString()
 
-  // if (
-  //   notification.useTruckFilter === USE_TRUCK_FILTER_ENUM.excluded &&
-  //   notification.trucks.includes(order.confirmedCrew.truck.toString())
-  // )
-  //   return false
+  const address = notification.includeAddress(
+    order.route.mainLoadingPoint.address
+  )
 
-  if (notification.addresses?.includes(order.route.mainLoadingPoint.address))
-    return true
-
-  return false
+  return agreement || address
 }

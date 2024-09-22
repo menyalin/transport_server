@@ -13,6 +13,7 @@ export interface IAuthProps {
 export interface IDefaultIdleTruckNotification {
   to: string
   cc: string | null
+  bcc: string | null
   templateName?: string
   isLoading: boolean
   emailTitle: string

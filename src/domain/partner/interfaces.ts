@@ -31,10 +31,11 @@ export interface IPartnerWithIdProps extends IParterProps {
 export interface IIdleTruckNotifyProps {
   _id?: string
   title: string
-  //  companyName: string
+  agreement?: string
   addresses?: string[]
   emails: string
   ccEmails?: string
+  bccEmails?: string
   idleHoursBeforeNotify?: number
   templateName: string
   note?: string
