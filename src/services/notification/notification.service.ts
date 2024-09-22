@@ -176,6 +176,7 @@ class NotificationService {
       from: `${props.companyName} <${this.senderEmail}>`,
       to: props.to,
       cc: props.cc || ''.trim(),
+      bcc: props.bcc || ''.trim(),
       subject: props.emailTitle,
       html,
     })

@@ -14,6 +14,7 @@ describe('notifications utils - isNeedUpdateNotificationMessage', () => {
     const body: IDefaultIdleTruckNotification = {
       to: '1',
       cc: '1',
+      bcc: '1',
       companyName: '1',
       driverPhones: '1',
       emailTitle: '1',
