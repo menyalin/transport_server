@@ -4,10 +4,11 @@ import { IIdleTruckNotifyProps } from './interfaces'
 export class IdleTruckNotification {
   _id?: string
   title: string
-  // companyName: string
+  agreement?: string
   addresses?: string[]
   emails: string
   ccEmails?: string
+  bccEmails?: string
   templateName: string
   idleHoursBeforeNotify: number = 0
   note?: string
@@ -20,17 +21,20 @@ export class IdleTruckNotification {
     if (p._id) this._id = p._id?.toString()
     this.title = p.title
     this.addresses = p.addresses
-    // this.companyName = p.companyName
+    this.agreement = p.agreement
+
     this.emails = p.emails
     this.ccEmails = p.ccEmails
+    this.bccEmails = p.bccEmails
     this.templateName = p.templateName
     this.note = p.note
+
     this.idleHoursBeforeNotify =
       p.idleHoursBeforeNotify !== undefined ? p.idleHoursBeforeNotify : 0
+
     this.usePlannedDate =
       p.usePlannedDate !== undefined ? !!p.usePlannedDate : false
-    // if (p.useTruckFilter) this.useTruckFilter = p.useTruckFilter
-    // this.trucks = p.trucks || []
+
     this.isActive = p.isActive || false
   }
 
@@ -38,19 +42,22 @@ export class IdleTruckNotification {
     return this.addresses?.includes(address) || false
   }
 
+  allowedAgreement(agreementId: string): boolean {
+    return !this.agreement || this.agreement === agreementId
+  }
+
   static dbSchema() {
     return {
       title: { type: String, required: true },
       addresses: [{ type: Types.ObjectId, ref: 'Address' }],
-      // companyName: { type: String, required: true },
+      agreement: { type: Types.ObjectId, ref: 'Agreement' },
       idleHoursBeforeNotify: Number,
       emails: { type: String, required: true },
       ccEmails: String,
+      bccEmails: String,
       templateName: String,
       note: String,
       usePlannedDate: { type: Boolean, default: false },
-      // useTruckFilter: { type: String, enum: USE_TRUCK_FILTER_ENUM },
-      // trucks: [{ type: Types.ObjectId, ref: 'Truck' }],
       isActive: Boolean,
     }
   }
