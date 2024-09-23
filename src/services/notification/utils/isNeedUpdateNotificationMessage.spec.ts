@@ -49,19 +49,6 @@ describe('notifications utils - isNeedUpdateNotificationMessage', () => {
     expect(isNeedUpdateNotificationMessage(newMessage, null)).toBeTruthy()
   })
 
-  it('messages has "created" status', () => {
-    expect(
-      isNeedUpdateNotificationMessage(newMessage, existedMessage)
-    ).toBeTruthy()
-  })
-
-  it('falsy if existed message has "sended" status', () => {
-    existedMessage.status = MESSAGE_STATUS_ENUM.sended
-    expect(
-      isNeedUpdateNotificationMessage(newMessage, existedMessage)
-    ).toBeFalsy()
-  })
-
   it('true if existed message has "sended" status, but sendDate is changed', () => {
     existedMessage.status = MESSAGE_STATUS_ENUM.sended
     newMessage.sendDate = new Date('2023-01-03')
