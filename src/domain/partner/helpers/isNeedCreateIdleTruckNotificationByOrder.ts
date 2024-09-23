@@ -13,5 +13,5 @@ export const isNeedCreateNotificationByOrder = (
     order.route.mainLoadingPoint.address
   )
 
-  return agreement || address
+  return agreement && address
 }
