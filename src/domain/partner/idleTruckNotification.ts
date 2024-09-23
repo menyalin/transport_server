@@ -4,7 +4,7 @@ import { IIdleTruckNotifyProps } from './interfaces'
 export class IdleTruckNotification {
   _id?: string
   title: string
-  agreement?: string
+  agreement?: string | null
   addresses?: string[]
   emails: string
   ccEmails?: string
@@ -21,7 +21,7 @@ export class IdleTruckNotification {
     if (p._id) this._id = p._id?.toString()
     this.title = p.title
     this.addresses = p.addresses
-    this.agreement = p.agreement
+    this.agreement = p.agreement ? p.agreement.toString() : null
 
     this.emails = p.emails
     this.ccEmails = p.ccEmails

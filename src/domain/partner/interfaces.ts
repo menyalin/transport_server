@@ -31,7 +31,7 @@ export interface IPartnerWithIdProps extends IParterProps {
 export interface IIdleTruckNotifyProps {
   _id?: string
   title: string
-  agreement?: string
+  agreement?: string | null
   addresses?: string[]
   emails: string
   ccEmails?: string
