@@ -47,7 +47,7 @@ export class IdleTruckNotificationMessage {
     this.pointId = p.pointId
     this.notificationId = p.notificationId
     this.key = p.key
-    this.status = p.sendDate ? p.status : MESSAGE_STATUS_ENUM.canceled
+    this.status = p.sendDate !== null ? p.status : MESSAGE_STATUS_ENUM.canceled
     this.body = p.body
     this.sendDate = p.sendDate
     this.sended = p.sended
