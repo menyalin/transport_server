@@ -120,11 +120,13 @@ class NotificationService {
   ): Promise<void> {
     const orderData: FullOrderDataDTO =
       await OrderRepository.getFullOrderDataDTO(order.id)
+
     const message = IdleTruckNotificationMessage.create(
       orderData,
       notification,
       point
     )
+
     const existedMessage = await NotificationRepository.getByKey(message.key)
 
     if (utils.isNeedUpdateNotificationMessage(message, existedMessage))
