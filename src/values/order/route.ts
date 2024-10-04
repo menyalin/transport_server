@@ -20,6 +20,7 @@ export class Route {
   }
 
   get activePoints(): RoutePoint[] {
+    // Ищем все выполненные точки и первую незавершенную
     const res: RoutePoint[] = this.route.filter((point) => point.isCompleted)
     const currentPoint = this.route.find((p) => !p.isCompleted)
     if (currentPoint) res.push(currentPoint)

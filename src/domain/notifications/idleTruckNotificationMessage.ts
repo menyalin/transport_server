@@ -121,6 +121,7 @@ export class IdleTruckNotificationMessage {
       waybills: point.waybills || '',
       currentStatus: utils.getCurrentPointStatusString(point),
     }
+
     return new IdleTruckNotificationMessage({
       orderId: order._id.toString(),
       pointId: point._id.toString(),
@@ -131,6 +132,7 @@ export class IdleTruckNotificationMessage {
       sendDate,
     })
   }
+
   static dbSchema() {
     return {
       orderId: Types.ObjectId,
@@ -140,7 +142,7 @@ export class IdleTruckNotificationMessage {
       status: { type: String, required: true },
       body: Schema.Types.Mixed,
       sendDate: { type: Date, required: true },
-      sended: [Date],
+      sended: [{ type: Date }],
     }
   }
 }
