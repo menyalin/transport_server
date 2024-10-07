@@ -9,7 +9,8 @@ export const isNeedUpdateNotificationMessage = (
   if (!existedMessage.sendDate || !newMessage.sendDate) return true
   if (+existedMessage.sendDate !== +newMessage.sendDate) return true
   if (
-    newMessage.status === MESSAGE_STATUS_ENUM.created &&
+    (newMessage.status === MESSAGE_STATUS_ENUM.canceled ||
+      newMessage.status === MESSAGE_STATUS_ENUM.created) &&
     existedMessage.status !== MESSAGE_STATUS_ENUM.sended
   )
     return true
