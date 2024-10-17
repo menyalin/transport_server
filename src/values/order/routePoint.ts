@@ -69,7 +69,9 @@ export class RoutePoint {
     this.waitsForWaybills = point.waitsForWaybills || false
     this.note = point.note
     this.isMainLoadingPoint = Boolean(
-      this.isLoadingPointType && point.isMainLoadingPoint
+      this.isLoadingPointType &&
+        point.isMainLoadingPoint &&
+        (point.plannedDate || point.plannedDateDoc)
     )
   }
 
