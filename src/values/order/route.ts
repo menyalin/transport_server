@@ -27,8 +27,7 @@ export class Route {
     return res
   }
   get hasMainLoadingPoints(): boolean {
-    const point = this.route.find((i) => i.isMainLoadingPoint)
-    return Boolean(point)
+    return this.route.some((i) => i.isMainLoadingPoint)
   }
 
   get hasReturn(): boolean {
