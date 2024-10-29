@@ -11,8 +11,8 @@ import {
   TruckKindsEnumSchema,
   LiftCapacityEnumSchema,
 } from '@/shared/validationSchemes'
-import { mergeStringArrays } from '@/utils/mergeStringArrays'
 import { AddressZone } from '@/domain/address'
+import { isSubsequence } from '@/utils/isSubsequence'
 
 export class ZonesBaseTariff implements ICommonTariffFields {
   truckKinds: TRUCK_KINDS_ENUM[]
@@ -56,9 +56,6 @@ export class ZonesBaseTariff implements ICommonTariffFields {
   }
 
   canApplyToOrder(order: Order): boolean {
-    const isStringArrayEqual = (a: string[], b: string[]): boolean =>
-      a.length === b.length && a.every((val, idx) => val === b[idx])
-
     if (order.reqTransport === undefined) return false
     if (!this.truckKinds.includes(order.reqTransport.kind)) return false
     if (!this.liftCapacities.includes(order.reqTransport.liftCapacity))
@@ -67,17 +64,11 @@ export class ZonesBaseTariff implements ICommonTariffFields {
     if (!order.analytics?.loadingZones?.includes(this.loadingZone)) return false
     if (!order.analytics?.unloadingZones) return false
 
-    const allOrderZones: string[] = mergeStringArrays(
-      order.analytics.loadingZones.filter((i) =>
-        this.unloadingZones.includes(i)
-      ),
+    return isSubsequence(
       order.analytics.unloadingZones.filter((i) =>
         this.unloadingZones.includes(i)
-      )
-    )
-    return (
-      allOrderZones.length >= 1 &&
-      isStringArrayEqual(allOrderZones, this.unloadingZones)
+      ),
+      this.unloadingZones
     )
   }
 

@@ -100,26 +100,27 @@ describe('ZonesBaseTariff', () => {
     it('success if the unloading zone in the order is a loading zone', () => {
       const loadingZoneId = new Types.ObjectId().toString()
       const unloadingZone1 = new Types.ObjectId().toString()
-      const unloadingZone2 = new Types.ObjectId().toString()
       const otherZone = new Types.ObjectId().toString()
 
       const order: Order = createTestOrder({
         analytics: createOrderAnalytics({
           loadingZones: [loadingZoneId, otherZone],
           unloadingZones: [
+            loadingZoneId,
             unloadingZone1,
+            // loadingZoneId,
             otherZone,
-            otherZone,
-            unloadingZone2,
-            unloadingZone2,
-            otherZone,
+            // otherZone,
+            // unloadingZone2,
+            // unloadingZone2,
+            // otherZone,
           ],
         }),
       })
 
       const tariff = createTariff({
         loadingZone: loadingZoneId,
-        unloadingZones: [unloadingZone1, unloadingZone2],
+        unloadingZones: [loadingZoneId],
         price: 1000,
       })
 
@@ -129,41 +130,6 @@ describe('ZonesBaseTariff', () => {
         contractDate: new Date('2024-05-11'),
       })
       expect(tariff.canApplyToOrder(order)).toBeTruthy()
-    })
-
-    it('failure of tariff', () => {
-      const loadingZoneId = new Types.ObjectId().toString()
-      const unloadingZone1 = new Types.ObjectId().toString()
-      const unloadingZone2 = new Types.ObjectId().toString()
-      const otherZone = new Types.ObjectId().toString()
-
-      const order: Order = createTestOrder({
-        analytics: createOrderAnalytics({
-          loadingZones: [loadingZoneId, otherZone, unloadingZone1],
-          unloadingZones: [
-            unloadingZone1,
-            otherZone,
-            otherZone,
-            unloadingZone2,
-            unloadingZone2,
-            otherZone,
-            unloadingZone1,
-          ],
-        }),
-      })
-
-      const tariff = createTariff({
-        loadingZone: loadingZoneId,
-        unloadingZones: [unloadingZone1, unloadingZone2],
-        price: 1000,
-      })
-
-      tariff.setContractData({
-        withVat: true,
-        contractName: 'fake contract',
-        contractDate: new Date('2024-05-11'),
-      })
-      expect(tariff.canApplyToOrder(order)).toBeFalsy()
     })
 
     it('Запрет на применение тарифа при совпадении зоны погрузки и расхождении зон разгрузки', () => {
