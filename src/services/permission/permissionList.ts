@@ -1,4 +1,3 @@
-// @ts-nocheck
 export const admin = {
   fullAccess: true,
   'modules:accounting': true, // Для отображения вкладки "Учет"
@@ -57,6 +56,7 @@ export const outsourceCarriersManager = {
   'tkName:readItem': true,
   'tkName:write': true,
   'tkName:delete': true,
+  'order:create': true,
   'order:daysForReadOutsourceCosts': -1,
   'order:daysForWriteOutsourceCosts': -1,
   'order:daysForWrite': -1,
@@ -163,6 +163,7 @@ export const dispatcher = {
   'orderTemplate:readList': true,
   'orderTemplate:readItem': true,
   'order:move': true,
+  'order:create': true,
   'order:daysForRead': 30,
   'order:daysForWrite': 4,
   'order:daysForReadPrice': 4,
