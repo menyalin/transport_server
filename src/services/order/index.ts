@@ -335,7 +335,7 @@ class OrderService {
       order.route.mainLoadingPoint,
     ])
     const unloadingZones: string[] = await AddressRepository.getPointsZones(
-      order.route.pointsAfterMainLoadingPoint
+      order.route.allUnloadingPoints
     )
 
     return new OrderAnalytics({
@@ -343,7 +343,7 @@ class OrderService {
       distanceDirect: order.analytics?.distanceDirect ?? 0,
       distanceRoad: order.analytics?.distanceRoad ?? 0,
       loadingZones,
-      unloadingZones: unloadingZones,
+      unloadingZones,
       routeStats: new RouteStats(order.route),
     })
   }
