@@ -21,11 +21,13 @@ describe('route methods', () => {
       new RoutePoint({
         type: 'loading',
         address: 'addr1',
+        plannedDate: new Date('2023-01-01'),
       }),
       new RoutePoint({
         type: 'loading',
         address: 'addr2',
         isMainLoadingPoint: true,
+        plannedDate: new Date('2023-01-01'),
       }),
       new RoutePoint({
         type: 'unloading',

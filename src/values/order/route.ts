@@ -58,9 +58,8 @@ export class Route {
   get pointsAfterMainLoadingPoint(): RoutePoint[] {
     let points = this.route.filter((i) => !i.isReturnPoint) // выкидываю все точки с возвратом
 
-    const idxMainLoadingPoint = points.findIndex(
-      (i) => i.address === this.mainLoadingPoint.address
-    )
+    const idxMainLoadingPoint = points.findIndex((i) => i.isMainLoadingPoint)
+
     points.splice(0, idxMainLoadingPoint + 1) // Удаляю все точки до основного пункта погрузки
 
     return points
