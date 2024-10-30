@@ -50,15 +50,23 @@ export default ({
         avgWithVat: { $avg: '$totalWithVat' },
         avgWOVat: { $avg: '$totalWOVat' },
         outsourceCostsWOVat: { $sum: '$outsourceCostsWOVat' },
+        outsourceCostsWithVat: { $sum: '$outsourceCostsWithVat' },
         totalProfitWOVat: {
-          $sum: {
-            $subtract: ['$totalWOVat', '$outsourceCostsWOVat'],
-          },
+          $sum: { $subtract: ['$totalWOVat', '$outsourceCostsWOVat'] },
         },
-        avgOutsourceCostsWOVat: { $avg: '$outsourceCostsWOVat' },
+        totalProfitWithVat: {
+          $sum: { $subtract: ['$totalWithVat', '$outsourceCostsWithVat'] },
+        },
+        avgOutsourceCostsWOVat: { $avg: '$outsourceCostsWithVat' },
+        avgOutsourceCostsWithVat: { $avg: '$outsourceCostsWithVat' },
         avgProfitWOVat: {
           $avg: {
             $subtract: ['$totalWOVat', '$outsourceCostsWOVat'],
+          },
+        },
+        avgProfitWithVat: {
+          $avg: {
+            $subtract: ['$totalWithVat', '$outsourceCostsWithVat'],
           },
         },
         avgProfitWOVatPercent: {
@@ -92,7 +100,11 @@ export default ({
       totalWithVat: { $sum: '$totalWithVat' },
       totalWOVat: { $sum: '$totalWOVat' },
       outsourceCostsWOVat: { $sum: '$outsourceCostsWOVat' },
+      outsourceCostsWithVat: { $sum: '$outsourceCostsWithVat' },
+      // avgOutsourceCostsWOVat: { $avg: { $sum: '$outsourceCostsWOVat' } },
+      // avgOutsourceCostsWithVat: { $avg: '$outsourceCostsWithVat' },
       totalProfitWOVat: { $sum: '$totalProfitWOVat' },
+      totalProfitWithVat: { $sum: '$totalProfitWithVat' },
       avgProfitWOVatPercent: {
         $avg: {
           $cond: {
