@@ -6,8 +6,14 @@ import { lookupAddressParams } from './grossProfitReportFragments/lookupAddressP
 import { secondMatcher } from './grossProfitReportFragments/secondMatcher'
 import { addTotalPriceFields } from '../pipelines/grossProfitReportFragments/addTotalPriceFields'
 import { lookupAgreements } from './grossProfitReportFragments/lookupAgreements'
+import { PipelineStage } from 'mongoose'
 
-export default ({ dateRange, company, groupBy, mainFilters }) => {
+export default ({
+  dateRange,
+  company,
+  groupBy,
+  mainFilters,
+}): PipelineStage[] => {
   const group = (groupBy) => {
     let groupType
     switch (groupBy) {
@@ -43,6 +49,37 @@ export default ({ dateRange, company, groupBy, mainFilters }) => {
         totalWOVat: { $sum: '$totalWOVat' },
         avgWithVat: { $avg: '$totalWithVat' },
         avgWOVat: { $avg: '$totalWOVat' },
+        outsourceCostsWOVat: { $sum: '$outsourceCostsWOVat' },
+        totalProfitWOVat: {
+          $sum: {
+            $subtract: ['$totalWOVat', '$outsourceCostsWOVat'],
+          },
+        },
+        avgOutsourceCostsWOVat: { $avg: '$outsourceCostsWOVat' },
+        avgProfitWOVat: {
+          $avg: {
+            $subtract: ['$totalWOVat', '$outsourceCostsWOVat'],
+          },
+        },
+        avgProfitWOVatPercent: {
+          $avg: {
+            $cond: {
+              if: { $eq: ['$totalWOVat', 0] },
+              then: 0,
+              else: {
+                $multiply: [
+                  {
+                    $divide: [
+                      { $subtract: ['$totalWOVat', '$outsourceCostsWOVat'] },
+                      '$totalWOVat',
+                    ],
+                  },
+                  100,
+                ],
+              },
+            },
+          },
+        },
       },
     }
   }
@@ -54,6 +91,27 @@ export default ({ dateRange, company, groupBy, mainFilters }) => {
       totalCount: { $sum: '$totalCount' },
       totalWithVat: { $sum: '$totalWithVat' },
       totalWOVat: { $sum: '$totalWOVat' },
+      outsourceCostsWOVat: { $sum: '$outsourceCostsWOVat' },
+      totalProfitWOVat: { $sum: '$totalProfitWOVat' },
+      avgProfitWOVatPercent: {
+        $avg: {
+          $cond: {
+            if: { $eq: ['$totalWOVat', 0] },
+            then: 0,
+            else: {
+              $multiply: [
+                {
+                  $divide: [
+                    { $subtract: ['$totalWOVat', '$outsourceCostsWOVat'] },
+                    '$totalWOVat',
+                  ],
+                },
+                100,
+              ],
+            },
+          },
+        },
+      },
     },
   }
 
