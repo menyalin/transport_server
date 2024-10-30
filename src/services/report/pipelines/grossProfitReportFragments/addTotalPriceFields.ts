@@ -1,4 +1,4 @@
-import { ORDER_PRICE_TYPES_ENUM } from '../../../../constants/priceTypes'
+import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
 
 const getTotalPrice = (
   priceTypes: ORDER_PRICE_TYPES_ENUM[],
