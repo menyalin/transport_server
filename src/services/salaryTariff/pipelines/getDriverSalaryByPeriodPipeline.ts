@@ -55,19 +55,19 @@ export default ({
     },
   }
   if (tks && tks.length)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $in: [
         '$confirmedCrew.tkName',
         tks.map((tk) => new mongoose.Types.ObjectId(tk)),
       ],
     })
   if (orderType)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $eq: ['$analytics.type', orderType],
     })
 
   if (clients && clients.length)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $in: [
         '$client.client',
         clients.map((client) => new mongoose.Types.ObjectId(client)),
@@ -75,7 +75,7 @@ export default ({
     })
 
   if (driver)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $eq: ['$confirmedCrew.driver', new mongoose.Types.ObjectId(driver)],
     })
 

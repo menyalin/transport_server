@@ -1,10 +1,10 @@
-import { ORDER_PRICE_TYPES_ENUM } from '../../constants/priceTypes'
+import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
 import { z } from 'zod'
 
 export interface IOrderPriceProps {
   type: ORDER_PRICE_TYPES_ENUM
   priceWOVat: number
-  price?: number
+  price: number
   sumVat?: number
   note?: string
 }
@@ -12,7 +12,7 @@ export interface IOrderPriceProps {
 export class OrderPrice {
   type: ORDER_PRICE_TYPES_ENUM
   priceWOVat: number
-  price?: number
+  price: number
   sumVat?: number
   note?: string
 
@@ -20,7 +20,7 @@ export class OrderPrice {
     OrderPrice.propsValidationSchema.parse(p)
     this.type = p.type
     this.priceWOVat = p.priceWOVat
-    this.price = p.price ?? undefined
+    this.price = p.price
     this.sumVat = p.sumVat ?? undefined
     this.note = p.note
   }

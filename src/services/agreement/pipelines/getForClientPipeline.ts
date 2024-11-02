@@ -29,11 +29,11 @@ export default (p: IProps): PipelineStage[] => {
     },
   }
   if (p.client)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $in: [new Types.ObjectId(p.client), '$clients'],
     })
   if (p.clients && p.clients.length)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $or: p.clients.map((i) => ({ $in: [new Types.ObjectId(i), '$clients'] })),
     })
 
