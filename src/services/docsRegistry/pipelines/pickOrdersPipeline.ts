@@ -61,7 +61,7 @@ export const getPickOrdersPipeline = ({
     firstMatcher.$match['client.agreement'] = new Types.ObjectId(agreement)
 
   if (period.length === 2)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $and: [
         { $gte: [orderPlannedDateFragment, new Date(period[0])] },
         { $lt: [orderPlannedDateFragment, new Date(period[1])] },
@@ -69,13 +69,13 @@ export const getPickOrdersPipeline = ({
     })
 
   if (search) {
-    firstMatcher.$match.$expr.$and.push(
+    firstMatcher.$match.$expr?.$and.push(
       orderSearchByNumberFragmentBuilder(search)
     )
   }
 
   if (allowedLoadingPoints && allowedLoadingPoints.length > 0)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $in: [
         { $getField: { field: 'address', input: { $first: '$route' } } },
         allowedLoadingPoints.map((p) => new Types.ObjectId(p)),
@@ -83,17 +83,17 @@ export const getPickOrdersPipeline = ({
     })
 
   if (docStatus)
-    firstMatcher.$match.$expr.$and.push(
+    firstMatcher.$match.$expr?.$and.push(
       orderDocsStatusConditionBuilder(docStatus)
     )
 
   if (truck)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $eq: ['$confirmedCrew.truck', new Types.ObjectId(truck)],
     })
 
   if (driver)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $eq: ['$confirmedCrew.driver', new Types.ObjectId(driver)],
     })
 
@@ -157,7 +157,7 @@ export const getPickOrdersPipeline = ({
     },
   }
   if (loadingZone)
-    secondMatcher.$match.$expr.$and.push({
+    secondMatcher.$match.$expr?.$and.push({
       $in: [new Types.ObjectId(loadingZone), '$_loadingZoneIds'],
     })
 

@@ -224,18 +224,18 @@ export async function pickOrdersForPaymentInvoice({
       },
     }
     if (agreement)
-      matcher.$match.$expr.$and.push({
+      matcher.$match.$expr?.$and.push({
         $eq: ['$paymentParts.agreement', new Types.ObjectId(agreement)],
       })
     if (agreements?.length)
-      matcher.$match.$expr.$and.push({
+      matcher.$match.$expr?.$and.push({
         $in: [
           '$paymentParts.agreement',
           agreements.map((i) => new Types.ObjectId(i)),
         ],
       })
     if (client)
-      matcher.$match.$expr.$and.push({
+      matcher.$match.$expr?.$and.push({
         $eq: ['$paymentParts.client', new Types.ObjectId(client)],
       })
     return matcher

@@ -8,23 +8,27 @@ import { ORDER_DOMAIN_EVENTS, OrderRemoveEvent } from './domainEvents'
 import { NotifyClientsEvent } from '@/socket/notifyClientsEvent'
 import { Client } from './client'
 import { RoutePoint } from '@/values/order/routePoint'
-import { OrderPrice } from './orderPrice'
+import { IOrderPriceProps, OrderPrice } from './orderPrice'
 import { ORDER_PRICE_TYPES_ENUM } from '../../constants/priceTypes'
 import { BadRequestError } from '../../helpers/errors'
 import { OrderAnalytics } from './analytics'
 import { OrderReqTransport } from './reqTransport'
+import { TotalPrice } from '../commonInterfaces'
 
 export interface IOrderDTO {
   _id?: string | Types.ObjectId
   orderDate?: string | Date
   startPositionDate?: Date | string
   route: RoutePoint[] | any[]
-  state: {
+  state?: {
     status: string
     driverNotified?: boolean
     clientNotified?: boolean
   }
-  grade?: object
+  grade?: {
+    grade: number
+    note?: string
+  }
   company: string
   confirmedCrew: {
     truck: string
@@ -45,7 +49,10 @@ export interface IOrderDTO {
   reqTransport?: OrderReqTransport
   paymentParts?: []
   analytics?: any
-  docsState?: object
+  docsState?: {
+    getted: boolean
+    date?: Date
+  }
   paymentToDriver?: object
   note?: string
   noteAccountant?: string
@@ -56,14 +63,14 @@ export interface IOrderDTO {
 export class Order {
   events: BusEvent<any>[] = []
   _id: string
-  state: {
+  state?: {
     status: string
     driverNotified?: boolean
     clientNotified?: boolean
   }
   startPositionDate?: Date | null
-  grade: {
-    grade?: number
+  grade?: {
+    grade: number
   }
   company: string
   orderDate: Date
@@ -75,24 +82,27 @@ export class Order {
     outsourceAgreement?: string | null | Types.ObjectId
     tkName?: string | null | Types.ObjectId
   }
-  docs: []
+  docs: any
   client: Client
   prePrices?: OrderPrice[]
   prices?: OrderPrice[]
   finalPrices?: OrderPrice[]
-  outsourceCosts: []
+  outsourceCosts?: OrderPrice[]
   cargoParams: object
   reqTransport?: OrderReqTransport
   paymentParts: []
   analytics?: OrderAnalytics
-  docsState?: object
+  docsState?: {
+    getted: boolean
+    date?: Date
+  }
   paymentToDriver?: object
   note?: string
   noteAccountant?: string
   isActive: boolean = true
   isDisabled: boolean = false
 
-  constructor(order: IOrderDTO, isBasePriceFilledCheck: boolean = true) {
+  constructor(order: any, isBasePriceFilledCheck: boolean = true) {
     Order.orderStatusValidator(order)
 
     if (!order._id) throw new Error('Order : constructor : order ID is missing')
@@ -105,7 +115,7 @@ export class Order {
 
     this._id = order._id?.toString()
     this.state = order.state
-    this.grade = order.grade || {}
+    this.grade = order.grade
     this.company = order.company.toString()
     this.orderDate = Order.getOrderDate(order)
     this.route = new Route(order.route)
@@ -113,12 +123,20 @@ export class Order {
     this.docs = order.docs || []
     this.client = new Client(order.client)
     if (Array.isArray(order.prePrices))
-      this.prePrices = order.prePrices?.map((i) => new OrderPrice(i))
+      this.prePrices = order.prePrices?.map(
+        (i: IOrderPriceProps) => new OrderPrice(i)
+      )
     if (Array.isArray(order.prices))
-      this.prices = order.prices?.map((i) => new OrderPrice(i))
+      this.prices = order.prices?.map(
+        (i: IOrderPriceProps) => new OrderPrice(i)
+      )
     if (Array.isArray(order.finalPrices))
-      this.finalPrices = order.finalPrices?.map((i) => new OrderPrice(i))
-    this.outsourceCosts = order.outsourceCosts || []
+      this.finalPrices = order.finalPrices?.map(
+        (i: IOrderPriceProps) => new OrderPrice(i)
+      )
+    this.outsourceCosts =
+      order.outsourceCosts?.map((i: IOrderPriceProps) => new OrderPrice(i)) ||
+      []
     this.cargoParams = order.cargoParams || {}
     this.reqTransport = order.reqTransport
       ? new OrderReqTransport(order.reqTransport)
@@ -133,7 +151,7 @@ export class Order {
     this.isDisabled = order.isDisabled || false
     if (
       isBasePriceFilledCheck &&
-      this.state.status === 'completed' &&
+      this.state?.status === 'completed' &&
       !this.isReadyToComplete
     )
       throw new BadRequestError(
@@ -197,6 +215,7 @@ export class Order {
   get id() {
     return this._id?.toString()
   }
+
   get basePrice(): OrderPrice | null {
     const finalPrice =
       this.finalPrices?.find((i) => i.type === ORDER_PRICE_TYPES_ENUM.base) ||
@@ -214,7 +233,7 @@ export class Order {
   }
 
   get isCompleted() {
-    return this.state.status === 'completed' && this.route.routeDatesFilled
+    return this.state?.status === 'completed' && this.route.routeDatesFilled
   }
 
   isEqual(inputId: string) {
@@ -222,7 +241,7 @@ export class Order {
   }
 
   get isInProgress() {
-    return this.state.status === 'inProgress'
+    return this.state?.status === 'inProgress'
   }
 
   get truckId(): string | null {
@@ -233,6 +252,29 @@ export class Order {
     if (!this.isCompleted) return null
     if (!this.route.firstArrivalDate || !this.route.lastRouteDate) return null
     else return [this.route.firstArrivalDate, this.route.lastRouteDate]
+  }
+
+  get totalOutsourceCosts(): TotalPrice {
+    if (!this.outsourceCosts) return { price: 0, priceWOVat: 0 }
+    return this.outsourceCosts.reduce(
+      (res, item) => {
+        return {
+          price: res.price + item?.price || 0,
+          priceWOVat: res.priceWOVat + item.priceWOVat,
+        }
+      },
+      { priceWOVat: 0, price: 0 }
+    )
+  }
+
+  get totalOutsourceCostsByTypes(): Record<string, TotalPrice> {
+    if (!this.outsourceCosts) return {}
+    return this.outsourceCosts.reduce((res, item) => {
+      return {
+        ...res,
+        [item.type]: item,
+      }
+    }, {})
   }
 
   fillRouteDatesAndComplete({
@@ -321,6 +363,8 @@ export class Order {
   }
 
   static orderStatusValidator(orderBody: IOrderDTO) {
+    if (!orderBody?.state?.status)
+      throw new Error('Сохранение не возможно. Статус рейса отсутствует')
     // Проверка наличия комментария,
     const STATUSES = ['weRefused', 'clientRefused', 'notСonfirmedByClient']
     if (STATUSES.includes(orderBody?.state?.status) && !orderBody.note)

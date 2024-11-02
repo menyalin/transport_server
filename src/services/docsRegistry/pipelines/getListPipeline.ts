@@ -30,12 +30,12 @@ export const getListPipeline = ({
   }
 
   if (clients && clients.length) {
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $in: ['$client', clients.map((i) => new Types.ObjectId(i))],
     })
   }
 
-  if (status) firstMatcher.$match.$expr.$and.push({ $eq: ['$status', status] })
+  if (status) firstMatcher.$match.$expr?.$and.push({ $eq: ['$status', status] })
 
   // const sorting = (sortBy, sortDesc) => {
   //   const res = { $sort: {} }

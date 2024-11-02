@@ -1,9 +1,8 @@
-import { ORDER_PRICE_TYPES_ENUM_VALUES } from '../../../constants/priceTypes'
-import { OrderPaymentPartPropsSchema } from '../../order/paymentPart'
+import { TotalPrice, PriceByType } from '@/domain/commonInterfaces'
+import { ORDER_PRICE_TYPES_ENUM_VALUES } from '@/constants/priceTypes'
+
 import {
   OrderPickedForInvoiceDTOProps,
-  PriceByType,
-  TotalPrice,
   orderPickedForInvoiceDTOSchema,
 } from '../interfaces'
 
@@ -33,7 +32,7 @@ const getPriceWOVatByType = (
   return (
     finalPrices.find((i) => i.type === type) ||
     prices.find((i) => i.type === type) ||
-    prePrices.find((i) => i.type === type) || { type, priceWOVat: 0 }
+    prePrices.find((i) => i.type === type) || { type, priceWOVat: 0, price: 0 }
   )
 }
 

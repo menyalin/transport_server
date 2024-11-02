@@ -20,7 +20,7 @@ import {
   AddressRepository,
   TariffContractRepository,
 } from '@/repositories'
-import { Order as OrderDomain } from '@/domain/order/order.domain'
+import { IOrderDTO, Order as OrderDomain } from '@/domain/order/order.domain'
 import { bus } from '@/eventBus'
 import {
   OrdersUpdatedEvent,
@@ -253,26 +253,26 @@ class OrderService {
     if (!body.confirmedCrew.outsourceAgreement && body.confirmedCrew.truck)
       body.confirmedCrew.outsourceAgreement =
         await getOutsourceAgreementId(body)
-    let order = await OrderModel.findById(id)
+    let order = await OrderRepository.getById(id)
 
     if (!order) return null
 
     // если в маршруте изменились даты проверяется пересечение с другими записями
-    if (order.state?.status !== 'completed' && body.route) {
+    if (!order.isCompleted && body.route) {
       const datesNotChanged = helpers.isEqualDatesOfRoute(
-        new Route(order.route),
+        order.route,
         new Route(body.route)
       )
       if (!datesNotChanged) await checkCrossItems({ body, id })
     }
 
     // контроль разрешения на редактирвоание выполненного рейса
-    if (order.state?.status === 'completed')
+    if (order.isCompleted)
       await PermissionService.checkPeriod({
         userId: user,
         companyId: body.company,
         operation: 'order:daysForWrite',
-        startDate: order.route.reverse()[0].departureDate,
+        startDate: order.route.lastRouteDate,
       })
 
     // если в рейсе есть массив с документами, то заполняю признак получения документов
@@ -283,44 +283,41 @@ class OrderService {
       }
     }
 
-    if (
-      body.confirmedCrew?.truck?.toString() !==
-      order.confirmedCrew?.truck?.toString()
-    )
+    if (body.confirmedCrew?.truck?.toString() !== order.truckId)
       bus.publish(OrderTruckChanged({ orderId: order._id.toString() }))
 
     if (
-      order.state?.status === 'inProgress' &&
-      ['getted', 'needGet'].includes(body.state.status)
+      order.isInProgress &&
+      ['getted', 'needGet'].includes(body.state?.status || '')
     ) {
       bus.publish(
         OrderReturnedFromInProgressStatus({ orderId: order._id.toString() })
       )
     }
 
-    const orderDomain = new OrderDomain({
-      ...order.toJSON(),
+    const updatedOrder = new OrderDomain({
+      ...order.toObject(),
       ...body,
       _id: order._id,
     })
-    orderDomain.setDisableStatus(false)
-    orderDomain.analytics = await this.updateOrderAnalytics(orderDomain)
-    orderDomain.prePrices = await this.updatePrePrices(orderDomain)
+    updatedOrder.setDisableStatus(false)
+    updatedOrder.analytics = await this.updateOrderAnalytics(updatedOrder)
+    updatedOrder.prePrices = await this.updatePrePrices(updatedOrder)
 
-    bus.publish(OrdersUpdatedEvent([orderDomain]))
+    bus.publish(OrdersUpdatedEvent([updatedOrder]))
 
-    emitTo(orderDomain.company, 'order:updated', orderDomain)
+    emitTo(updatedOrder.company, 'order:updated', updatedOrder)
 
     await ChangeLogService.add({
-      docId: new mongoose.Types.ObjectId(orderDomain.id),
-      company: orderDomain.company,
+      docId: new mongoose.Types.ObjectId(updatedOrder.id),
+      company: updatedOrder.company,
       coll: 'order',
       user,
       opType: 'update',
-      body: orderDomain.toObject(),
+      body: updatedOrder.toObject(),
     })
 
-    return orderDomain
+    return updatedOrder
   }
 
   async refresh(order: OrderDomain): Promise<void> {

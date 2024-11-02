@@ -61,7 +61,7 @@ export const getListPipeline = (p: IProps): PipelineStage[] => {
   }
 
   if (p.search) {
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $or: [
         { $regexMatch: { input: '$number', regex: p.search, options: 'i' } },
         {
@@ -76,12 +76,12 @@ export const getListPipeline = (p: IProps): PipelineStage[] => {
   }
 
   if (p.agreements && p.agreements.length) {
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $in: ['$agreement', p.agreements.map((i) => new Types.ObjectId(i))],
     })
   }
   if (p.statuses?.length)
-    firstMatcher.$match.$expr.$and.push({ $in: ['$status', p.statuses] })
+    firstMatcher.$match.$expr?.$and.push({ $in: ['$status', p.statuses] })
 
   const clientLookup: PipelineStage[] = [
     {

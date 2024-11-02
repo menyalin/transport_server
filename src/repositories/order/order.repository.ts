@@ -28,10 +28,12 @@ class OrderRepository {
       this.save(payload)
     })
   }
+
   async create(orderBody: IOrderDTO): Promise<OrderDomain> {
     const orderDoc = await OrderModel.create(orderBody)
-    return new OrderDomain(orderDoc.toObject())
+    return new OrderDomain(orderDoc)
   }
+
   async getById(orderId: string): Promise<OrderDomain> {
     const order = await OrderModel.findById<IOrderDTO>(orderId)
     if (!order) throw new Error(`${orderId} not found`)

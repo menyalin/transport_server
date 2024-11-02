@@ -21,12 +21,12 @@ export default ({ company, limit, skip, client, clientsOnly }: IProps) => {
   }
 
   if (client)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $in: [new Types.ObjectId(client), '$clients'],
     })
 
   if (clientsOnly === 'true')
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $eq: ['$isOutsourceAgreement', false],
     })
 

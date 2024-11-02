@@ -67,7 +67,7 @@ export const getOrderListPipeline = (p: IProps): PipelineStage[] => {
   }
 
   if (p?.agreements?.length)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $in: [
         '$client.agreement',
         p.agreements.map((i) => new Types.ObjectId(i)),
@@ -75,7 +75,7 @@ export const getOrderListPipeline = (p: IProps): PipelineStage[] => {
     })
 
   if (p.accountingMode)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $or: [
         { $eq: ['$state.status', 'inProgress'] },
         { $eq: ['$state.status', 'completed'] },
@@ -85,17 +85,17 @@ export const getOrderListPipeline = (p: IProps): PipelineStage[] => {
   if (p.status && !p.accountingMode)
     firstMatcher.$match['state.status'] = p.status
   else if (p.statuses?.length) {
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $in: ['$state.status', p.statuses],
     })
   }
 
   if (p?.clients?.length)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $in: ['$client.client', p.clients.map((i) => new Types.ObjectId(i))],
     })
   if (p.tkNames?.length)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $in: [
         '$confirmedCrew.tkName',
         p.tkNames.map((i) => new Types.ObjectId(i)),
@@ -103,7 +103,7 @@ export const getOrderListPipeline = (p: IProps): PipelineStage[] => {
     })
 
   if (p.trucks?.length)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $in: ['$confirmedCrew.truck', p.trucks.map((i) => new Types.ObjectId(i))],
     })
 
@@ -155,14 +155,14 @@ export const getOrderListPipeline = (p: IProps): PipelineStage[] => {
     firstMatcher.$match['confirmedCrew.driver'] = new Types.ObjectId(p.driver)
 
   if (p.docStatuses?.length)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $or: p.docStatuses.map((docStatus) =>
         orderDocsStatusConditionBuilder(docStatus)
       ),
     })
 
   if (p.searchNum) {
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $or: [
         {
           $regexMatch: {
@@ -210,7 +210,7 @@ export const getOrderListPipeline = (p: IProps): PipelineStage[] => {
   }
 
   if (p.loadingZones?.length) {
-    secondMatcher.$match.$expr.$and.push({
+    secondMatcher.$match.$expr?.$and.push({
       $or: p.loadingZones.map((zone) => ({
         $in: [new Types.ObjectId(zone), '$_loadingZoneIds'],
       })),

@@ -11,6 +11,7 @@ import { OrderPrice } from '@/domain/order/orderPrice'
 import { OrderPaymentPart } from '@/domain/order/paymentPart'
 import { OrderAnalytics } from '@/domain/order/analytics'
 import { OrderReqTransport } from '@/domain/order/reqTransport'
+import { Order } from '@/domain/order/order.domain'
 
 const outsourceCosts = [
   {
@@ -137,4 +138,4 @@ const schema = new Schema(
   { timestamps: true }
 )
 
-export const OrderModel = model('Order', schema, 'orders')
+export const OrderModel = model<Order>('Order', schema, 'orders')

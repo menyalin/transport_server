@@ -21,11 +21,11 @@ export async function getOrdersPickedForInvoice(
     },
   }
   if (p.invoiceId)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $eq: ['$paymentInvoice', new Types.ObjectId(p.invoiceId)],
     })
   else if (p.orderIds?.length)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $in: ['$order', p.orderIds.map((i) => new Types.ObjectId(i))],
     })
 
