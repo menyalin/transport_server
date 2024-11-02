@@ -102,14 +102,14 @@ const _checkCrossDowntimes = async ({
   if (dates.length >= 2) {
     const eDate = new Date(dates[dates.length - 1])
     // пересечение по последней дате нового рейса
-    matcher.$match.$expr.$or.push({
+    matcher.$match.$expr?.$or.push({
       $and: [
         { $lte: ['$startPositionDate', eDate] },
         { $gte: ['$endPositionDate', eDate] },
       ],
     })
     // перекрытие рейса
-    matcher.$match.$expr.$or.push({
+    matcher.$match.$expr?.$or.push({
       $and: [
         { $gte: ['$startPositionDate', sDate] },
         { $lte: ['$endPositionDate', eDate] },
@@ -181,7 +181,7 @@ const _checkCrossOrders = async ({
   if (dates.length >= 2) {
     const eDate = new Date(dates[dates.length - 1])
     // пересечение по последней дате нового рейса
-    matcher.$match.$expr.$or.push({
+    matcher.$match.$expr?.$or.push({
       $and: [
         {
           $lte: [
@@ -209,7 +209,7 @@ const _checkCrossOrders = async ({
     })
 
     // перекрытие рейса
-    matcher.$match.$expr.$or.push({
+    matcher.$match.$expr?.$or.push({
       $and: [
         {
           $gte: [

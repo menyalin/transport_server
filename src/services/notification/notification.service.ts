@@ -7,26 +7,26 @@ import Mail from 'nodemailer/lib/mailer'
 import {
   IAuthProps,
   IDefaultIdleTruckNotification,
-} from '../../domain/notifications/interfaces'
+} from '@/domain/notifications/interfaces'
 import {
   toCancelIdleTruckNotificationMessagesEvent,
   toSendIdleTruckNotificationMessageEvent,
-} from '../../domain/partner/domainEvents'
+} from '@/domain/partner/domainEvents'
 import { toCreateIdleTruckNotificationEvent } from './events/idleTruckNotifications'
-import { FullOrderDataDTO } from '../../domain/order/dto/fullOrderData.dto'
-import { IdleTruckNotification } from '../../domain/partner/idleTruckNotification'
-import { RoutePoint } from '../../values/order/routePoint'
-import { Order } from '../../domain/order/order.domain'
+import { FullOrderDataDTO } from '@/domain/order/dto/fullOrderData.dto'
+import { IdleTruckNotification } from '@/domain/partner/idleTruckNotification'
+import { RoutePoint } from '@/values/order/routePoint'
+import { Order } from '@/domain/order/order.domain'
 import OrderRepository from '../../repositories/order/order.repository'
-import { IdleTruckNotificationMessage } from '../../domain/notifications/idleTruckNotificationMessage'
-import NotificationRepository from '../../repositories/notification/notification.repository'
+import { IdleTruckNotificationMessage } from '@/domain/notifications/idleTruckNotificationMessage'
+import NotificationRepository from '@/repositories/notification/notification.repository'
 import { transporterConfig } from './transporterConfig'
 import * as utils from './utils/index'
 import {
   OrderRemoveEvent,
   OrderTruckChanged,
   OrderReturnedFromInProgressStatus,
-} from '../../domain/order/domainEvents'
+} from '@/domain/order/domainEvents'
 
 import { emitTo } from '../../socket/index'
 import { IEmitTo, NotifyClientsEvent } from '../../socket/notifyClientsEvent'

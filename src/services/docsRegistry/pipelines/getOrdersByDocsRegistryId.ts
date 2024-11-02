@@ -20,12 +20,12 @@ export function getOrdersByDocsRegistryId({
   }
 
   if (docsRegistryId)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $eq: ['$docsRegistry', new Types.ObjectId(docsRegistryId)],
     })
 
   if (orderIds)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $in: ['$order', orderIds.map((order) => new Types.ObjectId(order))],
     })
 

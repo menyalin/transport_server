@@ -1,12 +1,8 @@
 import { Types, Schema } from 'mongoose'
-import {
-  ICreateOrderInPaymentInvoiceProps,
-  ILoaderData,
-  PriceByType,
-  TotalPrice,
-} from './interfaces'
+import { ICreateOrderInPaymentInvoiceProps, ILoaderData } from './interfaces'
 import { OrderPickedForInvoiceDTO } from './dto/orderPickedForInvoice.dto'
 import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
+import { TotalPrice, PriceByType } from '../commonInterfaces'
 
 export class OrderInPaymentInvoice {
   order: string

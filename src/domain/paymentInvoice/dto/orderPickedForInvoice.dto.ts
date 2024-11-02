@@ -1,13 +1,12 @@
-import { ObjectExpression, Types } from 'mongoose'
+import { Types } from 'mongoose'
 import {
   ILoaderData,
   OrderPickedForInvoiceDTOProps,
-  PriceByType,
-  TotalPrice,
   orderPickedForInvoiceDTOSchema,
 } from '../interfaces'
 import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
 import { utils } from './utils'
+import { PriceByType, TotalPrice } from '@/domain/commonInterfaces'
 
 export class OrderPickedForInvoiceDTO {
   _id: string

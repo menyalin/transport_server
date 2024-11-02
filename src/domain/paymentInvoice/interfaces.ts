@@ -4,6 +4,7 @@ import { DateRange } from '../../classes/dateRange'
 import { OrderPickedForInvoiceDTO } from './dto/orderPickedForInvoice.dto'
 import { OrderPaymentPartPropsSchema } from '../order/paymentPart'
 import { objectIdSchema } from '@/shared/validationSchemes'
+import { PriceByTypeSchema, TotalPriceSchema } from '../commonInterfaces'
 
 export const PickOrdersForPaymentInvoicePropsSchema = z.object({
   company: z.string(),
@@ -71,32 +72,6 @@ export interface ICreateOrderInPaymentInvoiceProps {
   invoiceId: string
   loaderData?: ILoaderData
 }
-
-// for order DTO
-export const PriceByTypeSchema = z
-  .object({
-    note: z.string().optional(),
-    type: z.string().optional(),
-    priceWOVat: z.number(),
-    sumVat: z.number().optional(),
-    price: z.number().optional(),
-    _id: z.union([z.string(), z.instanceof(Types.ObjectId)]).optional(),
-  })
-  .refine(() => true, {
-    message: 'PriceByTypeSchema error',
-  })
-
-export const TotalPriceSchema = z
-  .object({
-    price: z.number(),
-    priceWOVat: z.number(),
-  })
-  .refine(() => true, {
-    message: 'TotalPriceSchema error',
-  })
-
-export type PriceByType = z.infer<typeof PriceByTypeSchema>
-export type TotalPrice = z.infer<typeof TotalPriceSchema>
 
 export const orderPickedForInvoiceDTOSchema = z
   .object({

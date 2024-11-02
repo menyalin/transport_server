@@ -60,15 +60,15 @@ export default (p: IProps): PipelineStage[] => {
   }
 
   if (p.truck)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $eq: ['$confirmedCrew.truck', new mongoose.Types.ObjectId(p.truck)],
     })
   if (p.driver)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $eq: ['$confirmedCrew.driver', new mongoose.Types.ObjectId(p.driver)],
     })
   if (p.date)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $lt: [
         { $getField: { field: 'plannedDate', input: { $first: '$route' } } },
         new Date(p.date),
@@ -76,7 +76,7 @@ export default (p: IProps): PipelineStage[] => {
     })
 
   if (p.tks?.filter(isString).length) {
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $in: [
         '$confirmedCrew.tkName',
         p.tks.filter(isString).map((i) => new mongoose.Types.ObjectId(i)),
@@ -84,7 +84,7 @@ export default (p: IProps): PipelineStage[] => {
     })
   }
   if (p.clients?.filter(isString).length)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $in: [
         '$client.client',
         p.clients.filter(isString).map((i) => new mongoose.Types.ObjectId(i)),
@@ -92,10 +92,10 @@ export default (p: IProps): PipelineStage[] => {
     })
 
   if (p.state?.length)
-    firstMatcher.$match.$expr.$and.push({
+    firstMatcher.$match.$expr?.$and.push({
       $or: p.state.map((i) => switchConditionByDocsState(i)),
     })
-  else firstMatcher.$match.$expr.$and.push(switchConditionByDocsState(null))
+  else firstMatcher.$match.$expr?.$and.push(switchConditionByDocsState(null))
   const addFields = [
     {
       $lookup: {
@@ -241,14 +241,14 @@ export default (p: IProps): PipelineStage[] => {
     },
   }
   if (p.getDocsDays?.filter(isVariantOfIntervalDays).length)
-    secondMatcher.$match.$expr.$and.push({
+    secondMatcher.$match.$expr?.$and.push({
       $or: p.getDocsDays
         .filter(isVariantOfIntervalDays)
         .map((i) => daysCondition(i, '$getDocsDays')),
     })
 
   if (p.reviewDocsDays?.filter(isVariantOfIntervalDays).length)
-    secondMatcher.$match.$expr.$and.push({
+    secondMatcher.$match.$expr?.$and.push({
       $or: p.reviewDocsDays
         .filter(isVariantOfIntervalDays)
         .map((i) => daysCondition(i, '$reviewDocsDays')),
