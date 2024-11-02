@@ -35,6 +35,9 @@ import utilsRouter from './api/utils/utils'
 
 const app = express()
 
+app.set('query parser', 'extended')
+app.set('x-powered-by', false)
+
 app.use(
   cors({
     credentials: true,
