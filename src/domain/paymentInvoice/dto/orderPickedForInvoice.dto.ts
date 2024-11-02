@@ -44,7 +44,7 @@ export class OrderPickedForInvoiceDTO {
   }
   paymentParts?: any
   paymentToDriver: any
-  note?: string
+  note?: string | null
   paymentInvoices?: any[]
   agreement?: any
   _loadingZones?: object[]

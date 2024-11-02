@@ -118,7 +118,7 @@ export const orderPickedForInvoiceDTOSchema = z
 
     paymentParts: OrderPaymentPartPropsSchema.optional(),
     paymentToDriver: z.unknown(),
-    note: z.string().optional(),
+    note: z.string().nullable().optional(),
     paymentInvoices: z.array(z.unknown()).optional(),
     agreement: z.unknown().optional(),
     _loadingZones: z
