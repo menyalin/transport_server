@@ -1,15 +1,16 @@
-import { Response } from 'express'
+import { Request, Response, ErrorRequestHandler, NextFunction } from 'express'
 
 interface CustomError extends Error {
   statusCode: number
 }
 
-const errorMiddleware = async (err: CustomError, res: Response) => {
-  if (err.hasOwnProperty('statusCode')) {
-    return res.status(err.statusCode).json(err.message)
-  } else {
-    return res.status(500).json(err.message)
-  }
+export const errorMiddleware: ErrorRequestHandler = async (
+  err: CustomError,
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  if (err.hasOwnProperty('statusCode'))
+    res.status(err.statusCode).json(err.message)
+  else res.status(500).json(err.message)
 }
-
-export default errorMiddleware

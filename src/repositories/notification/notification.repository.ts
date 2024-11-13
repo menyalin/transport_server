@@ -1,5 +1,5 @@
-import { IdleTruckNotificationMessage } from '../../domain/notifications/idleTruckNotificationMessage'
-import { MESSAGE_STATUS_ENUM } from '../../domain/notifications/interfaces'
+import { IdleTruckNotificationMessage } from '@/domain/notifications/idleTruckNotificationMessage'
+import { MESSAGE_STATUS_ENUM } from '@/domain/notifications/interfaces'
 import { IdleTruckNotificationModel } from './models/idleTruckNotificationMessage'
 
 class NotificationRepository {

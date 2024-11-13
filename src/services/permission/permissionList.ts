@@ -45,6 +45,7 @@ export const admin = {
 }
 
 export const outsourceCarriersManager = {
+  'modules:accounting': true,
   'order:readPaymentToDriver': true,
   'order:writePaymentToDriver': true,
   'report:orderDocs': true,
@@ -66,6 +67,16 @@ export const outsourceCarriersManager = {
   'tariff:readItem': true,
   'tariff:write': true,
   'tariff:delete': true,
+
+  'paymentInvoice:readList': true,
+  'paymentInvoice:readItem': true,
+  'paymentInvoice:write': true,
+  'paymentInvoice:delete': true,
+
+  'docsRegistry:readList': true,
+  'docsRegistry:readItem': true,
+  'docsRegistry:write': true,
+  'docsRegistry:delete': true,
 }
 
 export const director = {

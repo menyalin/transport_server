@@ -1,3 +1,4 @@
+import { ORDER_DOC_STATUSES_ENUM } from '@/constants/orderDocsStatus'
 import { BadRequestError } from '@/helpers/errors'
 
 /* 
@@ -10,12 +11,12 @@ const _docStatuses = [
 */
 
 export const orderDocsStatusConditionBuilder = (
-  docStatus: string,
+  docStatus: ORDER_DOC_STATUSES_ENUM,
   docsFieldName = '$docs',
   docStateField = '$docsState.getted'
 ) => {
   switch (docStatus) {
-    case 'accepted':
+    case ORDER_DOC_STATUSES_ENUM.accepted:
       return {
         $and: [
           { $eq: [docStateField, true] },
@@ -28,7 +29,7 @@ export const orderDocsStatusConditionBuilder = (
                   $filter: {
                     input: docsFieldName,
                     cond: {
-                      $ne: ['$$this.status', 'accepted'],
+                      $ne: ['$$this.status', ORDER_DOC_STATUSES_ENUM.accepted],
                     },
                   },
                 },
@@ -38,7 +39,7 @@ export const orderDocsStatusConditionBuilder = (
           },
         ],
       }
-    case 'needFix':
+    case ORDER_DOC_STATUSES_ENUM.needFix:
       return {
         $and: [
           { $eq: [docStateField, true] },
@@ -53,7 +54,10 @@ export const orderDocsStatusConditionBuilder = (
                       $filter: {
                         input: docsFieldName,
                         cond: {
-                          $eq: ['$$this.status', 'needFix'],
+                          $eq: [
+                            '$$this.status',
+                            ORDER_DOC_STATUSES_ENUM.needFix,
+                          ],
                         },
                       },
                     },
@@ -68,7 +72,10 @@ export const orderDocsStatusConditionBuilder = (
                       $filter: {
                         input: docsFieldName,
                         cond: {
-                          $eq: ['$$this.status', 'missing'],
+                          $eq: [
+                            '$$this.status',
+                            ORDER_DOC_STATUSES_ENUM.missing,
+                          ],
                         },
                       },
                     },
@@ -81,7 +88,7 @@ export const orderDocsStatusConditionBuilder = (
         ],
       }
 
-    case 'onCheck':
+    case ORDER_DOC_STATUSES_ENUM.onCheck:
       return {
         $and: [
           { $eq: [docStateField, true] },
@@ -93,7 +100,7 @@ export const orderDocsStatusConditionBuilder = (
           },
         ],
       }
-    case 'missing':
+    case ORDER_DOC_STATUSES_ENUM.missing:
       return {
         $and: [
           { $ne: [docStateField, true] },

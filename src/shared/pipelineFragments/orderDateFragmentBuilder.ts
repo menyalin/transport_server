@@ -1,14 +1,17 @@
-export const orderDateFragmentBuilder = () => ({
+export const orderDateFragmentBuilder = (routePath = 'route') => ({
   $getField: {
     field: 'plannedDate',
     input: {
       $ifNull: [
         {
           $first: {
-            $filter: { input: '$route', cond: '$$this.isMainLoadingPoint' },
+            $filter: {
+              input: `$${routePath}`,
+              cond: '$$this.isMainLoadingPoint',
+            },
           },
         },
-        { $first: '$route' },
+        { $first: `$${routePath}` },
       ],
     },
   },
