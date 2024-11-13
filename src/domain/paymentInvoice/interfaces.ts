@@ -5,6 +5,7 @@ import { OrderPickedForInvoiceDTO } from './dto/orderPickedForInvoice.dto'
 import { OrderPaymentPartPropsSchema } from '../order/paymentPart'
 import { objectIdSchema } from '@/shared/validationSchemes'
 import { PriceByTypeSchema, TotalPriceSchema } from '../commonInterfaces'
+import { ORDER_DOC_STATUSES_ENUM } from '@/constants/orderDocsStatus'
 
 export const PickOrdersForPaymentInvoicePropsSchema = z.object({
   company: z.string(),
@@ -14,7 +15,7 @@ export const PickOrdersForPaymentInvoicePropsSchema = z.object({
   agreements: z.string().array().optional(),
   tks: z.string().array().optional(),
   paymentInvoiceId: z.string().optional(),
-  docStatuses: z.array(z.string()).optional(),
+  docStatuses: z.array(z.nativeEnum(ORDER_DOC_STATUSES_ENUM)).optional(),
   onlySelectable: z.boolean().optional(),
   truck: z.string().optional(),
   driver: z.string().optional(),
