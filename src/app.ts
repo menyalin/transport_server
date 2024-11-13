@@ -1,9 +1,8 @@
-// @ts-nocheck
 import express from 'express'
 import logger from 'morgan'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
-import errorMiddleware from './utils/error.middleware'
+import { errorMiddleware } from './utils/error.middleware'
 
 import authRouter from './api/auth'
 import companiesRouter from './api/company'
@@ -32,6 +31,7 @@ import paymentInvoiceRouter from './api/paymentInvoice'
 import docTemplateRouter from './api/docTemplate'
 import adminRouter from './api/admin'
 import utilsRouter from './api/utils/utils'
+import incomingInvoiceRouter from '@/api/incomingInvoice/incomingInvoice.router'
 
 const app = express()
 
@@ -81,6 +81,7 @@ app.use('/api/workers', workerRouter)
 app.use('/api/fines', fineRouter)
 app.use('/api/docs_registry', docsRegistryRouter)
 app.use('/api/payment_invoice', paymentInvoiceRouter)
+app.use('/api/incoming_invoice', incomingInvoiceRouter)
 app.use('/api/doc_templates', docTemplateRouter)
 app.use('/api/utils', utilsRouter)
 
