@@ -3,6 +3,7 @@ import { PipelineStage, Types } from 'mongoose'
 import { orderDocsStatusConditionBuilder } from '@/shared/pipelineFragments/orderDocsStatusConditionBuilder'
 import { orderLoadingZoneFragmentBuilder } from '@/shared/pipelineFragments/orderLoadingZoneFragmentBuilder'
 import { orderSearchByNumberFragmentBuilder } from '@/shared/pipelineFragments/orderSearchByNumberFragmentBuilder'
+import { ORDER_DOC_STATUSES_ENUM } from '@/constants/orderDocsStatus'
 
 function selectableOrdersFilter(onlySelectable: boolean) {
   if (!onlySelectable) return []
@@ -13,7 +14,7 @@ interface IProps {
   company: string
   client: string
   allowedLoadingPoints?: string[]
-  docStatus: string
+  docStatus: ORDER_DOC_STATUSES_ENUM
   onlySelectable: boolean
   truck: string
   driver: string
