@@ -4,6 +4,7 @@ import PartnerRepository from './partner/partner.repository'
 import TariffContractRepository from './tariffContract/tariffContract.repository'
 import AddressRepository from './address/address.repository'
 import OrderRepository from './order/order.repository'
+
 export {
   PrintFormRepository,
   PaymentInvoiceRepository,

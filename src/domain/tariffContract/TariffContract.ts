@@ -12,7 +12,8 @@ import { BusEvent } from 'ts-bus/types'
 import { TariffContractUpdatedEvent } from './events'
 import { ConflictResourceError } from '@/helpers/errors'
 import { isEqualArraysOfObjects } from '@/utils/isEqualArraysOfObjects'
-import { isEqualDates } from '@/utils/isEqualDates'
+import { DateUtils } from '@/utils/dateUtils'
+
 import {
   dateOrISOStringSchema,
   objectIdSchema,
@@ -84,11 +85,11 @@ export class TariffContract {
       this.name = parsedData.name
       updated = true
     }
-    if (!isEqualDates(this.startDate, parsedData.startDate)) {
+    if (!DateUtils.isEqualDates(this.startDate, parsedData.startDate)) {
       this.startDate = parsedData.startDate
       updated = true
     }
-    if (!isEqualDates(this.endDate, parsedData.endDate)) {
+    if (!DateUtils.isEqualDates(this.endDate, parsedData.endDate)) {
       this.endDate = parsedData.endDate
       updated = true
     }

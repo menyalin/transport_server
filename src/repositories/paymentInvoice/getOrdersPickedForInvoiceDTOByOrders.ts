@@ -6,7 +6,7 @@ import {
 } from '@/domain/paymentInvoice/interfaces'
 import { Order as OrderModel } from '@/models'
 import { orderDriverFullNameBuilder } from '@/shared/pipelineFragments/orderDriverFullNameBuilder'
-import { orderPlannedDateBuilder } from '@/shared/pipelineFragments/orderPlannedDateBuilder'
+import { orderDateFragmentBuilder } from '@/shared/pipelineFragments/orderDateFragmentBuilder'
 
 export const getOrdersPickedForInvoiceDTOByOrders = async ({
   orderIds,
@@ -149,7 +149,7 @@ export const getOrdersPickedForInvoiceDTOByOrders = async ({
   const addFields: PipelineStage[] = [
     {
       $addFields: {
-        plannedDate: orderPlannedDateBuilder(),
+        plannedDate: orderDateFragmentBuilder(),
         driverName: orderDriverFullNameBuilder(),
       },
     },

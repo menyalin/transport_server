@@ -7,7 +7,7 @@ import {
   finalPricesFragmentBuilder,
   totalSumFragmentBuilder,
 } from '@/shared/pipelineFragments/orderFinalPricesFragmentBuilder'
-import { orderPlannedDateBuilder } from '@/shared/pipelineFragments/orderPlannedDateBuilder'
+import { orderDateFragmentBuilder } from '@/shared/pipelineFragments/orderDateFragmentBuilder'
 
 export const getOrdersForInvoiceDtoByOrders = async (
   orders: string[],
@@ -103,7 +103,7 @@ export const getOrdersForInvoiceDtoByOrders = async (
       $addFields: {
         needUpdate: false,
         isSelectable: true,
-        plannedDate: orderPlannedDateBuilder(),
+        plannedDate: orderDateFragmentBuilder(),
       },
     },
     {

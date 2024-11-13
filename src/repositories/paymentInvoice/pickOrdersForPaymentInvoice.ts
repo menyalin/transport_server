@@ -18,10 +18,10 @@ import {
 } from '@/domain/paymentInvoice/interfaces'
 import { OrderModel } from '@/models/order'
 import { orderLoadingZoneFragmentBuilder } from '@/shared/pipelineFragments/orderLoadingZoneFragmentBuilder'
-import { orderPlannedDateBuilder } from '@/shared/pipelineFragments/orderPlannedDateBuilder'
 import { orderSearchByNumberFragmentBuilder } from '@/shared/pipelineFragments/orderSearchByNumberFragmentBuilder'
 import { orderDocNumbersStringFragment } from '@/shared/pipelineFragments/orderDocNumbersStringBuilder'
 import { orderDocsStatusConditionBuilder } from '@/shared/pipelineFragments/orderDocsStatusConditionBuilder'
+import { orderDateFragmentBuilder } from '@/shared/pipelineFragments/orderDateFragmentBuilder'
 
 const setStatisticData = (res: any): IStaticticData => {
   if (!res.total?.length)
@@ -79,8 +79,8 @@ export async function pickOrdersForPaymentInvoice({
           { $eq: ['$state.status', 'completed'] },
           {
             $and: [
-              { $gte: [orderPlannedDateBuilder(), period.start] },
-              { $lt: [orderPlannedDateBuilder(), period.end] },
+              { $gte: [orderDateFragmentBuilder(), period.start] },
+              { $lt: [orderDateFragmentBuilder(), period.end] },
             ],
           },
 
@@ -166,7 +166,7 @@ export async function pickOrdersForPaymentInvoice({
   const addFields: PipelineStage[] = [
     {
       $addFields: {
-        plannedDate: orderPlannedDateBuilder(),
+        plannedDate: orderDateFragmentBuilder(),
         orderId: '$_id',
         isSelectable: true,
         agreementVatRate: '$agreement.vatRate',
@@ -259,7 +259,7 @@ export async function pickOrdersForPaymentInvoice({
           $addFields: {
             orderId: '$_id',
             _id: '$paymentParts._id',
-            plannedDate: orderPlannedDateBuilder(),
+            plannedDate: orderDateFragmentBuilder(),
             isSelectable: true,
             agreementVatRate: '$agreement.vatRate',
             itemType: 'paymentPart',

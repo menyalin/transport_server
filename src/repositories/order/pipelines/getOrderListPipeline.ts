@@ -4,6 +4,7 @@ import { DateRange } from '@/classes/dateRange'
 import { orderDocNumbersStringFragment } from '@/shared/pipelineFragments/orderDocNumbersStringBuilder'
 import { orderDocsStatusConditionBuilder } from '@/shared/pipelineFragments/orderDocsStatusConditionBuilder'
 import { orderLoadingZoneFragmentBuilder } from '@/shared/pipelineFragments/orderLoadingZoneFragmentBuilder'
+import { ORDER_DOC_STATUSES_ENUM } from '@/constants/orderDocsStatus'
 
 const getSortingStage = (
   sortBy: string[] = [],
@@ -24,12 +25,12 @@ const getSortingStage = (
 }
 
 const IPropsValidator = z.object({
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
   profile: z.string(),
-  startDate: z.string(),
-  endDate: z.string(),
   limit: z.string(),
   skip: z.string(),
-  docStatuses: z.array(z.string()).optional(),
+  docStatuses: z.array(z.nativeEnum(ORDER_DOC_STATUSES_ENUM)).optional(),
   invoiceStatus: z.string().optional(),
   clients: z.array(z.string()).optional(),
   agreements: z.array(z.string()).optional(),
@@ -45,26 +46,34 @@ const IPropsValidator = z.object({
   address: z.string().optional(),
   sortBy: z.array(z.string()).optional(),
   sortDesc: z.array(z.string()).optional(),
+  orders: z.array(z.string()).optional(),
 })
 
 type IProps = z.infer<typeof IPropsValidator>
 
 export const getOrderListPipeline = (p: IProps): PipelineStage[] => {
   IPropsValidator.parse(p)
-  const period = new DateRange(p.startDate, p.endDate)
 
   const firstMatcher: PipelineStage.Match = {
     $match: {
       isActive: true,
       company: new Types.ObjectId(p.profile),
       $expr: {
-        $and: [
-          { $gte: ['$startPositionDate', period.start] },
-          { $lt: ['$startPositionDate', period.end] },
-        ],
+        $and: [],
       },
     },
   }
+  if (p.startDate && p.endDate) {
+    const period = new DateRange(p.startDate, p.endDate)
+    firstMatcher.$match.$expr?.$and.push(
+      { $gte: ['$startPositionDate', period.start] },
+      { $lt: ['$startPositionDate', period.end] }
+    )
+  }
+  if (p.orders?.length)
+    firstMatcher.$match.$expr?.$and.push({
+      $in: ['$_id', p.orders.map((i) => new Types.ObjectId(i))],
+    })
 
   if (p?.agreements?.length)
     firstMatcher.$match.$expr?.$and.push({
@@ -235,7 +244,7 @@ export const getOrderListPipeline = (p: IProps): PipelineStage[] => {
               input: '$items',
               cond: {
                 ...orderDocsStatusConditionBuilder(
-                  'accepted',
+                  ORDER_DOC_STATUSES_ENUM.accepted,
                   '$$this.docs',
                   '$$this.docsState.getted'
                 ),
@@ -249,7 +258,7 @@ export const getOrderListPipeline = (p: IProps): PipelineStage[] => {
               input: '$items',
               cond: {
                 ...orderDocsStatusConditionBuilder(
-                  'needFix',
+                  ORDER_DOC_STATUSES_ENUM.needFix,
                   '$$this.docs',
                   '$$this.docsState.getted'
                 ),
@@ -263,7 +272,7 @@ export const getOrderListPipeline = (p: IProps): PipelineStage[] => {
               input: '$items',
               cond: {
                 ...orderDocsStatusConditionBuilder(
-                  'onCheck',
+                  ORDER_DOC_STATUSES_ENUM.onCheck,
                   '$$this.docs',
                   '$$this.docsState.getted'
                 ),
@@ -277,7 +286,7 @@ export const getOrderListPipeline = (p: IProps): PipelineStage[] => {
               input: '$items',
               cond: {
                 ...orderDocsStatusConditionBuilder(
-                  'missing',
+                  ORDER_DOC_STATUSES_ENUM.missing,
                   '$$this.docs',
                   '$$this.docsState.getted'
                 ),
