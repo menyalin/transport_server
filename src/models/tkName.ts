@@ -1,26 +1,7 @@
-// @ts-nocheck
+import { Carrier } from '@/domain/carrier/carrier'
 import pkg from 'mongoose'
-const { Schema, model, Types } = pkg
+const { Schema, model } = pkg
 
-const schema = new Schema(
-  {
-    name: {
-      type: String,
-    },
-    company: {
-      type: Types.ObjectId,
-      ref: 'Company',
-    },
-    outsource: {
-      type: Boolean,
-      default: false,
-    },
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
-  },
-  { timestamps: true },
-)
+const schema = new Schema(Carrier.dbSchema, { timestamps: true })
 
 export default model('TkName', schema, 'tknames')
