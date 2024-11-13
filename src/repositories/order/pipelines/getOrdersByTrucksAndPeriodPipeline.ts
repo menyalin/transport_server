@@ -1,6 +1,6 @@
 import { PipelineStage, Types } from 'mongoose'
 import { DateRange } from '@/classes/dateRange'
-import { orderPlannedDateBuilder } from '@/shared/pipelineFragments/orderPlannedDateBuilder'
+import { orderDateFragmentBuilder } from '@/shared/pipelineFragments/orderDateFragmentBuilder'
 
 export interface IGetOrdersByTrucksAndPeriodPipelineProps {
   company: string
@@ -28,13 +28,13 @@ export function getOrdersByTrucksAndPeriodPipeline({
                 truckIds.map((id) => new Types.ObjectId(id)),
               ],
             },
-            { $gte: [orderPlannedDateBuilder(), period.start] },
-            { $lt: [orderPlannedDateBuilder(), period.end] },
+            { $gte: [orderDateFragmentBuilder(), period.start] },
+            { $lt: [orderDateFragmentBuilder(), period.end] },
           ],
         },
       },
     },
-    { $addFields: { orderDate: orderPlannedDateBuilder() } },
+    { $addFields: { orderDate: orderDateFragmentBuilder() } },
     { $sort: { orderDate: 1 } },
   ]
 }

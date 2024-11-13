@@ -23,7 +23,7 @@ import WorkerService from './worker'
 import FineService from './fine'
 import DocsRegistryService from './docsRegistry'
 import PaymentInvoiceService from './paymentInvoice'
-
+import IncomingInvoiceService from './incomingInvoice/IncomingInvoiceService'
 import GlobalSettingsService from './globalSettings'
 
 import TokenService from './token'
@@ -70,4 +70,5 @@ export {
   SchedulerService,
   TariffContractService,
   MassUpdateService,
+  IncomingInvoiceService,
 }

@@ -1,6 +1,6 @@
 import { PipelineStage } from 'mongoose'
 import { orderDriverFullNameBuilder } from '@/shared/pipelineFragments/orderDriverFullNameBuilder'
-import { orderPlannedDateBuilder } from '@/shared/pipelineFragments/orderPlannedDateBuilder'
+import { orderDateFragmentBuilder } from '@/shared/pipelineFragments/orderDateFragmentBuilder'
 
 const driverLookup: PipelineStage[] = [
   {
@@ -115,7 +115,7 @@ export function lookupOrdersForOrderInInvoice(): PipelineStage[] {
           ...agreementLookup,
           {
             $addFields: {
-              plannedDate: orderPlannedDateBuilder(),
+              plannedDate: orderDateFragmentBuilder(),
               driverName: orderDriverFullNameBuilder(),
             },
           },

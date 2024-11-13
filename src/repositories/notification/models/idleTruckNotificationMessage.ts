@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose'
-import { IdleTruckNotificationMessage } from '../../../domain/notifications/idleTruckNotificationMessage'
+import { IdleTruckNotificationMessage } from '@/domain/notifications/idleTruckNotificationMessage'
 const schema = new Schema(IdleTruckNotificationMessage.dbSchema(), {
   timestamps: true,
 })

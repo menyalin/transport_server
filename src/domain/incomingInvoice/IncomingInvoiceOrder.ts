@@ -1,7 +1,14 @@
 import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
-import { PriceByType, TotalPrice } from '../commonInterfaces'
+import {
+  PriceByType,
+  PriceByTypeSchema,
+  TotalPrice,
+  TotalPriceSchema,
+} from '../commonInterfaces'
 import { Types } from 'mongoose'
 import { Order } from '../order/order.domain'
+import { IIncomingInvoiceOrderConstructorProps } from './interfaces'
+import { z } from 'zod'
 
 export class IncomingInvoiceOrder {
   order: string
@@ -10,13 +17,14 @@ export class IncomingInvoiceOrder {
   total: TotalPrice
   totalByTypes: Record<ORDER_PRICE_TYPES_ENUM, PriceByType>
 
-  constructor(p: any) {
+  constructor(p: IIncomingInvoiceOrderConstructorProps) {
     this.order = p.order
     this.incomingInvoice = p.incomingInvoice
     this.company = p.company
     this.total = p.total
     this.totalByTypes = p.totalByTypes
   }
+
   static create(order: Order, invoiceId: string) {
     return new IncomingInvoiceOrder({
       order: order._id,
@@ -26,7 +34,15 @@ export class IncomingInvoiceOrder {
       totalByTypes: order.totalOutsourceCostsByTypes,
     })
   }
-
+  static get validationSchema() {
+    return z.object({
+      order: z.string(),
+      incomingInvoice: z.string(),
+      company: z.string(),
+      total: TotalPriceSchema,
+      totalByTypes: z.record(PriceByTypeSchema),
+    })
+  }
   static get dbSchema() {
     const PriceTypeSchema = {
       price: Number,
@@ -34,7 +50,7 @@ export class IncomingInvoiceOrder {
     }
 
     return {
-      order: { type: Types.ObjectId, unique: true }, // orderID or paymentPartId
+      order: { type: Types.ObjectId, unique: true, index: true },
       incomingInvoice: {
         type: Types.ObjectId,
         ref: 'IncomingInvoice',

@@ -1,4 +1,4 @@
-import { PipelineStage, Types, isObjectIdOrHexString } from 'mongoose'
+import { PipelineStage, Types } from 'mongoose'
 
 export const getFullOrderDataPipeline = (
   orderId: string | Types.ObjectId
