@@ -3,12 +3,14 @@ import { Types } from 'mongoose'
 import { objectIdSchema } from '@/shared/validationSchemes'
 import { BankAccountInfo } from '../bankAccountInfo'
 import { CompanyInfo } from '../companyInfo'
+import { ContactInfo } from '../сontactInfo'
 
 export class Carrier {
   name: string
   company: string
   bankAccountInfo?: BankAccountInfo
   companyInfo?: CompanyInfo
+  contacts?: ContactInfo[]
   outsource: boolean
   isActive: boolean
 
@@ -22,6 +24,7 @@ export class Carrier {
     this.companyInfo = p.companyInfo
       ? new CompanyInfo(p.companyInfo)
       : undefined
+    this.contacts = p.contacts
     this.outsource = p.outsource
     this.isActive = p.isActive
   }
@@ -32,6 +35,7 @@ export class Carrier {
       company: objectIdSchema,
       companyInfo: CompanyInfo.validationSchema.optional(),
       bankAccountInfo: BankAccountInfo.validationSchema.optional(),
+      contacts: z.array(ContactInfo.validationSchema).optional(),
       outsource: z.boolean().default(false),
       isActive: z.boolean().default(true),
     })
@@ -46,6 +50,7 @@ export class Carrier {
       },
       companyInfo: CompanyInfo.dbSchema,
       bankAccountInfo: BankAccountInfo.dbSchema,
+      contacts: [ContactInfo.dbSchema],
       outsource: {
         type: Boolean,
         default: false,
