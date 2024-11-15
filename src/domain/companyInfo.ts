@@ -27,7 +27,7 @@ class Director {
 
   static get dbSchema() {
     return {
-      name: { type: String, required: true },
+      name: { type: String },
       isMainSignatory: Boolean,
       position: String,
     }
@@ -59,8 +59,8 @@ class Signatory {
 
   static get dbSchema() {
     return {
-      position: { type: String, required: true },
-      fullName: { type: String, required: true },
+      position: { type: String },
+      fullName: { type: String },
       number: String,
       date: Date,
     }
