@@ -6,15 +6,20 @@ import { z } from 'zod'
 
 class Director {
   name: string
+  isMainSignatory: boolean = true
   position?: string
 
   constructor(props: unknown) {
     const p = Director.validationSchema.parse(props)
+    this.isMainSignatory = p.isMainSignatory
     this.name = p.name
     this.position = p.position
   }
   static get validationSchema() {
     return z.object({
+      isMainSignatory: z
+        .union([z.boolean(), z.string()])
+        .transform((v) => Boolean(v)),
       name: z.string(),
       position: z.string().optional(),
     })
@@ -22,7 +27,8 @@ class Director {
 
   static get dbSchema() {
     return {
-      name: { type: String, required: true },
+      name: { type: String },
+      isMainSignatory: Boolean,
       position: String,
     }
   }
@@ -53,8 +59,8 @@ class Signatory {
 
   static get dbSchema() {
     return {
-      position: { type: String, required: true },
-      fullName: { type: String, required: true },
+      position: { type: String },
+      fullName: { type: String },
       number: String,
       date: Date,
     }
