@@ -18,9 +18,9 @@ export class IncomingInvoiceOrder {
   totalByTypes: Record<ORDER_PRICE_TYPES_ENUM, PriceByType>
 
   constructor(p: IIncomingInvoiceOrderConstructorProps) {
-    this.order = p.order
-    this.incomingInvoice = p.incomingInvoice
-    this.company = p.company
+    this.order = p.order.toString()
+    this.incomingInvoice = p.incomingInvoice.toString()
+    this.company = p.company.toString()
     this.total = p.total
     this.totalByTypes = p.totalByTypes
   }

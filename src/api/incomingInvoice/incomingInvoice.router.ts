@@ -30,20 +30,21 @@ router.delete('/:id', [jwtAuth], (req: Request, res: Response) =>
 )
 
 // api/incoming_invoices/orders
+router.get('/orders/:id', [jwtAuth], (req: Request, res: Response) =>
+  IncomingInvoiceController.getInvoiceOrders(req as AuthorizedRequest, res)
+)
+
 router.post('/orders/:id', [jwtAuth], (req: Request, res: Response) =>
   IncomingInvoiceController.addOrdersToInvoice(req as AuthorizedRequest, res)
 )
 router.put('/orders/:id/:orderId', [jwtAuth], (req: Request, res: Response) =>
   IncomingInvoiceController.updateOrderInInvoice(req as AuthorizedRequest, res)
 )
-router.delete(
-  '/orders/:id/:orderId',
-  [jwtAuth],
-  (req: Request, res: Response) =>
-    IncomingInvoiceController.deleteOrderFromInvoice(
-      req as AuthorizedRequest,
-      res
-    )
+router.delete('/orders/:id', [jwtAuth], (req: Request, res: Response) =>
+  IncomingInvoiceController.deleteOrderFromInvoice(
+    req as AuthorizedRequest,
+    res
+  )
 )
 
 export default router

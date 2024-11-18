@@ -4,6 +4,7 @@ import {
   IncomingInvoice,
   IncomingInvoiceOrder,
   IncomingInvoiceUpdatedEvent,
+  OrdersRemovedFromIncomingInvoiceEvent,
 } from '@/domain/incomingInvoice'
 import { IncomingInvoiceModel, IncomingInvoiceOrderModel } from './models'
 import { ListResultDTO } from './dto/listResult.dto'
@@ -38,6 +39,10 @@ class IncomingInvoiceRepository {
     this.bus.subscribe(IncomingInvoiceUpdatedEvent, async (e) => {
       await this.update(e.payload)
     })
+
+    this.bus.subscribe(OrdersRemovedFromIncomingInvoiceEvent, async (e) => {
+      await this.deleteOrderFromInvoice(e.payload)
+    })
   }
 
   async update(invoice: IncomingInvoice) {
@@ -68,7 +73,7 @@ class IncomingInvoiceRepository {
   ): Promise<InvoiceOrdersResultDTO> {
     const pipeline = getInvoiceOrdersPipeline(invoiceId, limit, skip)
     const result = await this.invoiceOrderModel.aggregate(pipeline)
-    return new InvoiceOrdersResultDTO(result[0])
+    return new InvoiceOrdersResultDTO(result[0] || null)
   }
 
   async getByOrders(orders: string[]): Promise<IncomingInvoiceOrder[]> {
@@ -107,7 +112,19 @@ class IncomingInvoiceRepository {
     await this.invoiceOrderModel.create(items)
   }
 
-  async deleteOrderFromInvoice() {}
+  async deleteOrderFromInvoice({
+    invoiceId,
+    orderIds,
+  }: {
+    invoiceId: string
+    orderIds: string[]
+  }): Promise<void> {
+    const res = await this.invoiceOrderModel.deleteMany({
+      incomingInvoice: invoiceId,
+      order: orderIds,
+    })
+    console.log(res)
+  }
 
   async updateOrderInInvoice() {}
 }

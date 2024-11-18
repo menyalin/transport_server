@@ -3,7 +3,11 @@ import { IncomingInvoiceOrder } from './IncomingInvoiceOrder'
 import { DateUtils } from '@/utils/dateUtils'
 import { CreateIncomingInvoiceDTO } from './dto/createIncomingInvoice.dto'
 import { BusEvent } from 'ts-bus/types'
-import { IncomingInvoiceUpdatedEvent } from './events'
+import {
+  IncomingInvoiceUpdatedEvent,
+  OrdersRemovedFromIncomingInvoiceEvent,
+} from './events'
+import { INCOMING_INVOICE_STATUSES_ENUM } from '@/constants/incomingInvoice'
 
 interface IIncomingInvoiceProps {
   _id: string
@@ -16,6 +20,9 @@ interface IIncomingInvoiceProps {
   isActive: boolean
   note?: string
   orders?: IncomingInvoiceOrder[]
+  ordersCount?: number
+  priceWithVat?: number
+  priceWOVat?: number
 }
 
 export class IncomingInvoice {
@@ -29,6 +36,9 @@ export class IncomingInvoice {
   isActive: boolean
   note?: string
   orders: IncomingInvoiceOrder[] = []
+  ordersCount?: number
+  priceWithVat?: number
+  priceWOVat?: number
 
   constructor(invoice: IIncomingInvoiceProps) {
     this._id = invoice?._id.toString()
@@ -40,11 +50,14 @@ export class IncomingInvoice {
     this.status = invoice.status
     this.isActive = invoice.isActive
     this.note = invoice.note
+    this.ordersCount = invoice.ordersCount
+    this.priceWithVat = invoice.priceWithVat
+    this.priceWOVat = invoice.priceWOVat
     if (invoice.orders) this.orders = invoice.orders
   }
 
-  get allowedToAddOrders(): boolean {
-    return true
+  get allowedToChangeOrders(): boolean {
+    return this.status === INCOMING_INVOICE_STATUSES_ENUM.preparing
   }
 
   hasOrders(orderIds?: string[]): boolean {
@@ -55,16 +68,36 @@ export class IncomingInvoice {
     this.orders = orders
   }
 
-  pushOrders(orders: IncomingInvoiceOrder[]) {
+  pushOrders(orders: IncomingInvoiceOrder[]): BusEvent[] {
     this.orders.push(...orders)
+    this.refreshAnalytics()
+    return [IncomingInvoiceUpdatedEvent(this)]
   }
 
-  static create(p: CreateIncomingInvoiceDTO): IncomingInvoice {
-    return new IncomingInvoice(p)
+  removeOrders(orderIds: string[]): BusEvent[] {
+    this.orders = this.orders.filter((o) => !orderIds.includes(o.order))
+    this.refreshAnalytics()
+    return [
+      IncomingInvoiceUpdatedEvent(this),
+      OrdersRemovedFromIncomingInvoiceEvent({
+        orderIds,
+        invoiceId: this._id.toString(),
+      }),
+    ]
   }
-
+  private refreshAnalytics() {
+    this.ordersCount = this.orders.length
+    this.priceWithVat = this.orders.reduce(
+      (sum, order) => (sum += order.total.price),
+      0
+    )
+    this.priceWOVat = this.orders.reduce(
+      (sum, order) => (sum += order.total.priceWOVat),
+      0
+    )
+  }
   update(body: Omit<CreateIncomingInvoiceDTO, '_id' | 'company'>): BusEvent[] {
-    if (this.orders.length === 0) {
+    if (this.ordersCount === 0) {
       this.agreement = body.agreement
     }
     this.date = body.date
@@ -73,7 +106,12 @@ export class IncomingInvoice {
     this.status = body.status
     this.isActive = body.isActive
     this.note = body.note
+    this.refreshAnalytics()
     return [IncomingInvoiceUpdatedEvent(this)]
+  }
+
+  static create(p: CreateIncomingInvoiceDTO): IncomingInvoice {
+    return new IncomingInvoice(p)
   }
 
   static get dbSchema() {
@@ -86,6 +124,9 @@ export class IncomingInvoice {
       status: String,
       isActive: Boolean,
       note: String,
+      ordersCount: Number,
+      priceWithVat: Number,
+      priceWOVat: Number,
     }
   }
 }
