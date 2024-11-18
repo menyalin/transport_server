@@ -11,6 +11,7 @@ import {
   ListResultDTO,
 } from '@/repositories/incomingInvoice'
 import { EventBus } from 'ts-bus'
+import { z } from 'zod'
 
 interface IProps {
   incomingInvoiceRepository: typeof IncomingInvoiceRepository
@@ -86,7 +87,7 @@ class IncomingInvoiceService {
 
     if (!invoice) throw new BadRequestError('Invoice not found')
 
-    if (!invoice.allowedToAddOrders)
+    if (!invoice.allowedToChangeOrders)
       throw new BadRequestError('Добавление рейсов запрещено')
 
     if (invoice.hasOrders(orderIds))
@@ -114,7 +115,28 @@ class IncomingInvoiceService {
         IncomingInvoiceOrder.create(new Order(order), invoice._id)
     )
     await this.incomingInvoiceRepository.addOrderToInvoice(invoiceRows)
-    invoice.pushOrders(invoiceRows)
+    const events = invoice.pushOrders(invoiceRows)
+    events.forEach((event) => this.bus.publish(event))
+  }
+
+  async removeOrdersFromInvoice(props: unknown): Promise<boolean> {
+    const propsSchema = z.object({
+      invoiceId: z.string(),
+      orderIds: z.array(z.string()),
+    })
+
+    const p = propsSchema.parse(props)
+
+    const invoice = await this.incomingInvoiceRepository.getById(p.invoiceId)
+    if (!invoice) throw new BadRequestError('Invoice not found')
+
+    if (!invoice.allowedToChangeOrders)
+      throw new BadRequestError('Удаление рейсов запрещено')
+
+    const events = invoice.removeOrders(p.orderIds)
+    events.forEach((event) => this.bus.publish(event))
+
+    return true
   }
 
   async deleteById(id: string, companyId?: string): Promise<boolean> {
