@@ -38,6 +38,11 @@ export const admin = {
   'paymentInvoice:write': true,
   'paymentInvoice:delete': true,
 
+  'incomingInvoice:readList': true,
+  'incomingInvoice:readItem': true,
+  'incomingInvoice:write': true,
+  'incomingInvoice:delete': true,
+
   'tariffContract:readList': true,
   'tariffContract:readItem': true,
   'tariffContract:write': true,
@@ -72,6 +77,11 @@ export const outsourceCarriersManager = {
   'paymentInvoice:readItem': true,
   'paymentInvoice:write': true,
   'paymentInvoice:delete': true,
+
+  'incomingInvoice:readList': true,
+  'incomingInvoice:readItem': true,
+  'incomingInvoice:write': true,
+  'incomingInvoice:delete': true,
 
   'docsRegistry:readList': true,
   'docsRegistry:readItem': true,
@@ -136,6 +146,9 @@ export const director = {
 
   'paymentInvoice:readList': true,
   'paymentInvoice:readItem': true,
+
+  'incomingInvoice:readList': true,
+  'incomingInvoice:readItem': true,
 
   'tariffContract:readList': true,
   'tariffContract:readItem': true,
@@ -293,6 +306,11 @@ export const accountant = {
   'paymentInvoice:readItem': true,
   'paymentInvoice:write': true,
   'paymentInvoice:delete': true,
+
+  'incomingInvoice:readList': true,
+  'incomingInvoice:readItem': true,
+  'incomingInvoice:write': true,
+  'incomingInvoice:delete': true,
 
   'tariffContract:readList': true,
   'tariffContract:readItem': true,

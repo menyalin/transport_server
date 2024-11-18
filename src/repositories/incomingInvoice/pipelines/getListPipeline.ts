@@ -1,5 +1,6 @@
 import { PipelineStage, Types } from 'mongoose'
 import { GetListPropsDTO } from '../dto/getListProps.dto'
+import { INCOMING_INVOICE_STATUSES_ENUM } from '@/constants/incomingInvoice'
 
 export const getListPipeline = (props: GetListPropsDTO): PipelineStage[] => {
   //#region: firstMatcher
@@ -43,7 +44,6 @@ export const getListPipeline = (props: GetListPropsDTO): PipelineStage[] => {
 
   const addFields: PipelineStage.AddFields = {
     $addFields: {
-      total: 0,
       agreementName: {
         $getField: { field: 'name', input: { $first: '$agreement' } },
       },
@@ -51,19 +51,21 @@ export const getListPipeline = (props: GetListPropsDTO): PipelineStage[] => {
         $switch: {
           branches: [
             {
-              case: { $eq: ['$status', 'preparing'] },
+              case: {
+                $eq: ['$status', INCOMING_INVOICE_STATUSES_ENUM.preparing],
+              },
               then: 'Подготовка',
             },
             {
-              case: { $eq: ['$status', 'toPay'] },
-              then: 'Не оплачено',
+              case: { $eq: ['$status', INCOMING_INVOICE_STATUSES_ENUM.toPay] },
+              then: 'К оплате',
             },
             {
-              case: { $eq: ['$status', 'paid'] },
-              then: 'Не оплачено',
+              case: { $eq: ['$status', INCOMING_INVOICE_STATUSES_ENUM.paid] },
+              then: 'Оплачен',
             },
           ],
-          default: 'undefined status',
+          default: '_статус не определен_',
         },
       },
     },
@@ -71,8 +73,8 @@ export const getListPipeline = (props: GetListPropsDTO): PipelineStage[] => {
 
   const finalGroup: PipelineStage.Facet = {
     $facet: {
-      items: [{ $skip: props.skip }, { $limit: props.limit }],
       totalCount: [{ $count: 'count' }],
+      items: [{ $skip: props.skip }, { $limit: props.limit }],
     },
   }
   return [firstMatcher, aggrementLookup, addFields, finalGroup]

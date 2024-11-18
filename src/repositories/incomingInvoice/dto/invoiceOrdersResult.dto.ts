@@ -11,9 +11,10 @@ class Item {
     priceWithVat: number
     priceWOVat: number
   }
-  note?: string
+  note?: string | null
 
-  constructor(p: any) {
+  constructor(props: any) {
+    const p = Item.validationSchema.parse(props)
     this._id = p._id.toString()
     this.orderId = p.orderId.toString()
     this.orderNum = p.orderNum
@@ -36,16 +37,24 @@ class Item {
       priceWithVat: z.number(),
       priceWOVat: z.number(),
     }),
+    outsourceTotalPrice: z.object({
+      priceWithVat: z.number(),
+      priceWOVat: z.number(),
+    }),
     note: z.string().nullable().optional(),
   })
 }
 
 export class InvoiceOrdersResultDTO {
+  totalPriceWithVat: number
+  totalPriceWOVat: number
   totalCount: number
   items: Item[]
 
   constructor(p: any) {
-    this.totalCount = p.totalCount
-    this.items = p.items.map((i: any) => new Item(i))
+    this.totalCount = p.total[0]?.count ?? 0
+    this.totalPriceWithVat = p.total[0]?.totalPriceWithVat ?? 0
+    this.totalPriceWOVat = p.total[0]?.totalPriceWOVat ?? 0
+    this.items = p.items?.map((i: any) => new Item(i)) ?? []
   }
 }

@@ -58,6 +58,22 @@ class IncomingInvoiceController {
     }
   }
 
+  async getInvoiceOrders(req: AuthorizedRequest, res: Response) {
+    try {
+      const invoiceId = req.params.id
+      const { skip = 0, limit = 100 } = req.query
+      const data = await this.service.getInvoiceOrders({
+        invoiceId,
+        skip: +skip,
+        limit: +limit,
+      })
+      res.status(200).json(data)
+    } catch (e) {
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
+    }
+  }
+
   async create(req: AuthorizedRequest, res: Response) {
     try {
       await PermissionService.check({
@@ -126,7 +142,27 @@ class IncomingInvoiceController {
     }
   }
 
-  async deleteOrderFromInvoice(req: AuthorizedRequest, res: Response) {}
+  async deleteOrderFromInvoice(req: AuthorizedRequest, res: Response) {
+    try {
+      const invoiceId = req.params.id
+      const orderIds = req.body.orderIds
+      if (!orderIds?.length) throw new BadRequestError('OrderIds not provided')
+
+      await PermissionService.check({
+        userId: req.userId,
+        companyId: req.companyId,
+        operation: this.permissionName + ':write',
+      })
+      const data = await this.service.removeOrdersFromInvoice({
+        invoiceId,
+        orderIds,
+      })
+      res.status(200).json(data)
+    } catch (e) {
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
+    }
+  }
 
   async updateOrderInInvoice(req: AuthorizedRequest, res: Response) {}
 }

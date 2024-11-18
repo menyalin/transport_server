@@ -1,11 +1,13 @@
 import { PipelineStage } from 'mongoose'
 
-export const orderOutsourcePriceBuilder = (): PipelineStage[] => [
+export const orderOutsourcePriceBuilder = (
+  field = '$outsourceCosts'
+): PipelineStage[] => [
   {
     $addFields: {
       outsourceTotalPrice: {
         $reduce: {
-          input: '$outsourceCosts',
+          input: field,
           initialValue: { priceWithVat: 0, priceWOVat: 0 },
           in: {
             priceWithVat: { $add: ['$$value.priceWithVat', '$$this.price'] },

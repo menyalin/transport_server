@@ -9,7 +9,9 @@ class IncomingInvoiceListItemDTO {
   plannedPayDate: Date | null
   agreementName: string
   status: string
-  total: number = 0
+  ordersCount: number = 0
+  priceWithVat: number = 0
+  priceWOVat: number = 0
   note: string | null = null
 
   constructor(invoice: unknown) {
@@ -23,7 +25,9 @@ class IncomingInvoiceListItemDTO {
     this.agreementName = parsedProps.agreementName
     this.status = parsedProps.status
     this.note = parsedProps.note ?? null
-    this.total = parsedProps.total
+    this.ordersCount = parsedProps.ordersCount
+    this.priceWithVat = parsedProps.priceWithVat
+    this.priceWOVat = parsedProps.priceWOVat
   }
 
   static validationSchema = z.object({
@@ -34,7 +38,9 @@ class IncomingInvoiceListItemDTO {
     plannedPayDate: z.date().nullable(),
     agreementName: z.string(),
     status: z.string(),
-    total: z.number().default(0),
+    ordersCount: z.number().default(0),
+    priceWithVat: z.number().default(0),
+    priceWOVat: z.number().default(0),
     note: z.string().nullable().optional(),
   })
 }

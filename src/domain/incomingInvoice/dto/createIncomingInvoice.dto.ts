@@ -27,7 +27,6 @@ export class CreateIncomingInvoiceDTO {
       this.note = p.note
       this.orders = p.orders?.map((i) => new IncomingInvoiceOrder(i)) || []
     } catch (error) {
-      console.log(error)
       throw error
     }
   }
