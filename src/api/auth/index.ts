@@ -1,7 +1,7 @@
 // @ts-nocheck
 import express from 'express'
-import { bodyValidator } from '../../utils/validator'
-import { jwtAuth } from '../../utils/auth.middleware'
+import { bodyValidator } from '@/utils/validator'
+import { jwtAuth } from '@/utils/auth.middleware'
 
 import {
   loginSchema,

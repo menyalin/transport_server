@@ -1,7 +1,7 @@
 import { getIdleTruckNotificationMessageSendDate } from './getIdleTruckNotifMessageSendDate' // замените на имя вашего модуля
 import MockDate from 'mockdate'
 import { IdleTruckNotification } from '../../partner/idleTruckNotification'
-import { RoutePoint } from '../../../values/order/routePoint'
+import { RoutePoint } from '@/domain/order/route/routePoint'
 
 describe('getIdleTruckNotificationMessageSendDate', () => {
   let notification: IdleTruckNotification

@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express'
-import { jwtAuth } from '../../utils/auth.middleware'
+import { jwtAuth } from '@/utils/auth.middleware'
 import multer from 'multer'
 import XLSX from 'xlsx'
 const upload = multer({ storage: multer.memoryStorage() })

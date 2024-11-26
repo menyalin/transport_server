@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 import { POINT_TYPE_VALUES, POINT_TYPES_ENUM } from '../../constants/enums'
-import { convertTimeToHours } from '../../utils/convertTimeToHours'
+import { convertTimeToHours } from '@/utils/convertTimeToHours'
 
 export interface ITemplateRoutePoint {
   type: POINT_TYPES_ENUM

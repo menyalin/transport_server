@@ -1,6 +1,6 @@
 import { Order } from '@/domain/order/order.domain'
 import { OrderReqTransport } from '@/domain/order/reqTransport'
-import { RoutePoint } from '@/values/order/routePoint'
+import { RoutePoint } from '@/domain/order/route/routePoint'
 import { Types } from 'mongoose'
 
 export const createTestOrder = (args: object): Order => {

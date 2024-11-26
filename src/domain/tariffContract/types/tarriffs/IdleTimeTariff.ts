@@ -16,8 +16,8 @@ import {
 import { Agreement } from '@/domain/agreement/agreement.domain'
 import { OrderPrice } from '@/domain/order/orderPrice'
 import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
-import { RoutePoint } from '@/values/order/routePoint'
 import { IdleTimeRoundingIntervalEnum } from '@/constants/tariff'
+import { RoutePoint } from '@/domain/order/route/routePoint'
 
 type IdleType =
   | ORDER_PRICE_TYPES_ENUM.loadingDowntime

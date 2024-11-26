@@ -1,4 +1,4 @@
-import { Route } from '@/values/order/route'
+import { Route } from '@/domain/order/route/route'
 
 const isEqualDatesOfRoute = (oldRoute: Route, newRoute: Route) => {
   if (!(oldRoute instanceof Route) || !(newRoute instanceof Route))

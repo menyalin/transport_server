@@ -1,5 +1,4 @@
 import { Schema, Types } from 'mongoose'
-import { RoutePoint } from '../../values/order/routePoint'
 import { FullOrderDataDTO } from '../order/dto/fullOrderData.dto'
 import { IdleTruckNotification } from '../partner/idleTruckNotification'
 import {
@@ -9,6 +8,7 @@ import {
 } from './interfaces'
 
 import * as utils from './utils'
+import { RoutePoint } from '../order/route/routePoint'
 
 const getMessageKey = (
   orderId: string,

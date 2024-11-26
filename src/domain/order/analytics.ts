@@ -3,8 +3,8 @@ import { Types } from 'mongoose'
 import { ORDER_ANALYTIC_TYPES_ENUM } from '@/constants/order'
 import { OrderType, OrderTypeSchema } from './types'
 import { objectIdSchema } from '@/shared/validationSchemes'
-import { RouteStats } from '@/values/order/routeStats'
-import { Route } from '@/values/order/route'
+import { Route } from './route/route'
+import { RouteStats } from './route/routeStats'
 
 interface Props {
   type: OrderType

@@ -1,8 +1,8 @@
 // @ts-nocheck
 import express from 'express'
 
-import { jwtAuth } from '../../utils/auth.middleware'
-import { bodyValidator, queryValidator } from '../../utils/validator'
+import { jwtAuth } from '@/utils/auth.middleware'
+import { bodyValidator, queryValidator } from '@/utils/validator'
 
 import { getListSchema, addOrdersToRegistrySchema } from './schemes'
 import ctrl from '../../controllers/docsRegistry.controller'
