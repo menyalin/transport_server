@@ -4,6 +4,7 @@ import { objectIdSchema } from '@/shared/validationSchemes'
 import { BankAccountInfo } from '../bankAccountInfo'
 import { CompanyInfo } from '../companyInfo'
 import { ContactInfo } from '../сontactInfo'
+import { ICarreierPFData } from './interfaces'
 
 export class Carrier {
   name: string
@@ -27,6 +28,28 @@ export class Carrier {
     this.contacts = p.contacts
     this.outsource = p.outsource
     this.isActive = p.isActive
+  }
+
+  get getPFdata(): ICarreierPFData {
+    const signatoryPosition = this.companyInfo?.director?.isMainSignatory
+      ? this.companyInfo.director.position
+      : this.companyInfo?.signatory?.position
+
+    const signatoryName = this.companyInfo?.director?.isMainSignatory
+      ? this.companyInfo.director.name
+      : this.companyInfo?.signatory?.fullName
+
+    return {
+      fullName: this.companyInfo?.fullName || this.name,
+      legalAddress: this.companyInfo?.legalAddress || '',
+      inn: this.companyInfo?.inn || '',
+      kpp: this.companyInfo?.kpp || '',
+      ogrn: this.companyInfo?.ogrn,
+      ogrnip: this.companyInfo?.ogrnip,
+      signatoryPosition: signatoryPosition || '',
+      signatoryName: signatoryName || '',
+      bankInfo: this.bankAccountInfo,
+    }
   }
 
   static get validationSchema() {

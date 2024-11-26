@@ -2,11 +2,11 @@
 /* eslint-disable no-unused-vars */
 import express from 'express'
 
-import { jwtAuth } from '../../utils/auth.middleware'
+import { jwtAuth } from '@/utils/auth.middleware'
 import {
   queryValidator,
   // bodyValidator
-} from '../../utils/validator'
+} from '@/utils/validator'
 
 import { getListSchema } from './schemes'
 import ctrl from '../../controllers/orderTemplate.controller'

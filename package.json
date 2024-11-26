@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev:debug": "ts-node-dev --transpile-only --respawn --inspect=4321 --project tsconfig.json ./src/bin/www",
-    "dev": "ts-node-dev --trace-deprecation --transpile-only --respawn -r tsconfig-paths/register ./src/bin/www",
-    "test:watch": "jest --watchAll",
+    "dev": "ts-node-dev  --transpile-only --respawn -r tsconfig-paths/register ./src/bin/www",
+    "test": "jest",
     "lint": "eslint . --ext .ts,.js",
     "build": "tsc && tsc-alias"
   },

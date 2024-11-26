@@ -1,8 +1,8 @@
 // @ts-nocheck
 import express from 'express'
 
-import { bodyValidator, queryValidator } from '../../utils/validator'
-import { jwtAuth } from '../../utils/auth.middleware'
+import { bodyValidator, queryValidator } from '@/utils/validator'
+import { jwtAuth } from '@/utils/auth.middleware'
 import ctrl from '../../controllers/company.controller'
 import {
   createCompanySchema,

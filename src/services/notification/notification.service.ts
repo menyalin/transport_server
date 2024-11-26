@@ -15,7 +15,6 @@ import {
 import { toCreateIdleTruckNotificationEvent } from './events/idleTruckNotifications'
 import { FullOrderDataDTO } from '@/domain/order/dto/fullOrderData.dto'
 import { IdleTruckNotification } from '@/domain/partner/idleTruckNotification'
-import { RoutePoint } from '@/values/order/routePoint'
 import { Order } from '@/domain/order/order.domain'
 import OrderRepository from '../../repositories/order/order.repository'
 import { IdleTruckNotificationMessage } from '@/domain/notifications/idleTruckNotificationMessage'
@@ -30,6 +29,7 @@ import {
 
 import { emitTo } from '../../socket/index'
 import { IEmitTo, NotifyClientsEvent } from '../../socket/notifyClientsEvent'
+import { RoutePoint } from '@/domain/order/route/routePoint'
 
 class NotificationService {
   senderEmail?: string

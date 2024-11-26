@@ -2,7 +2,7 @@ import { PARTNER_GROUPS_ENUM } from '../../constants/partner'
 import { Types } from 'mongoose'
 import { LoadingDock } from './loadingDock.domain'
 import { IdleTruckNotification } from './idleTruckNotification'
-import { RoutePoint } from '../../values/order/routePoint'
+import { RoutePoint } from '../order/route/routePoint'
 
 // export enum USE_TRUCK_FILTER_ENUM {
 //   included = 'included',

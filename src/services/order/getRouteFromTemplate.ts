@@ -1,8 +1,8 @@
-import { RoutePoint } from '../../values/order/routePoint'
+import { RoutePoint } from '@/domain/order/route/routePoint'
 import {
   ITemplateRoutePoint,
   TemplateRoutePoint,
-} from '../../values/order/templateRoutePoint'
+} from '@/domain/orderTemplate/templateRoutePoint'
 
 const getRouteFromTemplate = ({ template, date }: any): RoutePoint[] => {
   return template.route.map((point: ITemplateRoutePoint, idx: number) =>

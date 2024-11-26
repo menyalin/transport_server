@@ -5,8 +5,8 @@ import express from 'express'
 import {
   // bodyValidator,
   queryValidator,
-} from '../../utils/validator'
-import { jwtAuth } from '../../utils/auth.middleware'
+} from '@/utils/validator'
+import { jwtAuth } from '@/utils/auth.middleware'
 import { taskConfirmHandler } from './handlers'
 import { taskConfirmSchema } from './schemes'
 

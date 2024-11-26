@@ -2,9 +2,9 @@
 /* eslint-disable no-unused-vars */
 import express from 'express'
 
-import { jwtAuth } from '../../utils/auth.middleware'
-import requestIdMiddleware from '../../utils/requestId.middleware'
-import { queryValidator, bodyValidator } from '../../utils/validator'
+import { jwtAuth } from '@/utils/auth.middleware'
+import requestIdMiddleware from '@/utils/requestId.middleware'
+import { queryValidator, bodyValidator } from '@/utils/validator'
 import ctrl from '../../controllers/order.controller'
 import {
   createSchema,
@@ -25,7 +25,15 @@ router.get(
   [jwtAuth, queryValidator(getListForScheduleSchema)],
   ctrl.getListForSchedule
 )
+router.get('/allowed_print_forms', [jwtAuth], (...args) =>
+  ctrl.getAllowedPrintForms(...args)
+)
+
 router.get('/:id', [jwtAuth], ctrl.getById)
+
+router.post('/:id/download_doc', [jwtAuth], (...args) =>
+  ctrl.downloadDoc(...args)
+)
 
 router.post('/get_distance', [jwtAuth], ctrl.getDistance)
 router.post('/from_template', [jwtAuth], ctrl.createFromTemplate)

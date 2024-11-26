@@ -5,13 +5,13 @@ import {
   DOCUMENT_STATUSES_ENUM,
 } from '@/constants/accounting'
 import { ORDER_STATUSES_ENUM } from '../constants/order'
-import { RoutePoint } from '@/values/order/routePoint'
 import { Client } from '@/domain/order/client'
 import { OrderPrice } from '@/domain/order/orderPrice'
 import { OrderPaymentPart } from '@/domain/order/paymentPart'
 import { OrderAnalytics } from '@/domain/order/analytics'
 import { OrderReqTransport } from '@/domain/order/reqTransport'
 import { Order } from '@/domain/order/order.domain'
+import { RoutePoint } from '@/domain/order/route/routePoint'
 
 const outsourceCosts = [
   {

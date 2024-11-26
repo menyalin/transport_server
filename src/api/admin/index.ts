@@ -1,9 +1,9 @@
 // @ts-nocheck
 /* eslint-disable no-unused-vars */
 import express from 'express'
-import { jwtAuth } from '../../utils/auth.middleware'
+import { jwtAuth } from '@/utils/auth.middleware'
 // import { getProfileListSchema, createSchema } from './schemes'
-// import { queryValidator, bodyValidator } from '../../utils/validator'
+// import { queryValidator, bodyValidator } from '@/utils/validator'
 
 import ctrl from '../../controllers/globalSettings.controller'
 

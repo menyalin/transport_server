@@ -1,6 +1,8 @@
 // @ts-nocheck
 import { AutoSetRouteDatesDTO } from '../dto/autoSetRouteDates.dto'
 import { OrderService as service, PermissionService } from '../services'
+import { BadRequestError } from '@/helpers/errors'
+import { Readable } from 'stream'
 
 class OrderController {
   async create(req, res) {
@@ -132,6 +134,31 @@ class OrderController {
       res.status(200).json(data)
     } catch (e) {
       res.status(e.statusCode || 500).json(e.message)
+    }
+  }
+
+  async getAllowedPrintForms(req, res) {
+    try {
+      const data = await service.getAllowedPrintForms(req.query)
+      res.status(200).json(data)
+    } catch (e) {
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
+    }
+  }
+
+  async downloadDoc(req, res) {
+    try {
+      const buffer = await service.downloadDoc({
+        orderId: req.params.id,
+        templateName: req.body.templateName,
+      })
+      const stream = Readable.from(buffer)
+      res.status(201)
+      stream.pipe(res)
+    } catch (e) {
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
     }
   }
 

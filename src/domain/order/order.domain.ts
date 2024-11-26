@@ -1,19 +1,18 @@
 import dayjs from 'dayjs'
 import { Types } from 'mongoose'
 import { BusEvent } from 'ts-bus/types'
-import { isDateRangesOverlapping } from '../../utils/isDateRangesOverlapping'
-import { Route } from '@/values/order/route'
-
+import { isDateRangesOverlapping } from '@/utils/isDateRangesOverlapping'
 import { ORDER_DOMAIN_EVENTS, OrderRemoveEvent } from './domainEvents'
 import { NotifyClientsEvent } from '@/socket/notifyClientsEvent'
 import { Client } from './client'
-import { RoutePoint } from '@/values/order/routePoint'
 import { IOrderPriceProps, OrderPrice } from './orderPrice'
 import { ORDER_PRICE_TYPES_ENUM } from '../../constants/priceTypes'
 import { BadRequestError } from '../../helpers/errors'
 import { OrderAnalytics } from './analytics'
 import { OrderReqTransport } from './reqTransport'
 import { TotalPrice } from '../commonInterfaces'
+import { Route } from './route/route'
+import { RoutePoint } from './route/routePoint'
 
 export interface IOrderDTO {
   _id?: string | Types.ObjectId

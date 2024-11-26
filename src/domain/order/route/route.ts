@@ -1,6 +1,6 @@
 import dayjs, { UnitType } from 'dayjs'
 import { RoutePoint } from './routePoint'
-import { isDate } from '../../utils/typeGuards'
+import { isDate } from '@/utils/typeGuards'
 
 export class Route {
   route: RoutePoint[]

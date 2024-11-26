@@ -1,7 +1,7 @@
-import { RoutePoint } from '@/values/order/routePoint'
 import { Address as AddressModel, Zone as ZoneModel } from '@/models'
 import { TtlMap } from '@/utils/ttlMap'
 import { AddressZone } from '@/domain/address'
+import { RoutePoint } from '@/domain/order/route/routePoint'
 
 interface ConstructorProps {
   addressModel: typeof AddressModel

@@ -1,8 +1,9 @@
 // import { PARTNER_GROUPS_ENUM } from '../../constants/partner'
-import { RoutePoint } from '../../values/order/routePoint'
+
 import { IdleTruckNotification } from './idleTruckNotification'
 import { Partner as PartnerDomain } from './partner.domain'
 import * as utils from './helpers/index'
+import { RoutePoint } from '../order/route/routePoint'
 
 describe('Partner domain', () => {
   let partner1: PartnerDomain

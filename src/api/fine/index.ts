@@ -1,8 +1,8 @@
 // @ts-nocheck
 import express from 'express'
 
-import { jwtAuth } from '../../utils/auth.middleware'
-import { queryValidator } from '../../utils/validator'
+import { jwtAuth } from '@/utils/auth.middleware'
+import { queryValidator } from '@/utils/validator'
 
 import { getListSchema } from './schemes'
 import ctrl from '../../controllers/fine.controller'
