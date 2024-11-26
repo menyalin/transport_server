@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
 import mongoose from 'mongoose'
-import { POINT_TYPES_ENUM, POINT_TYPE_VALUES } from '../../constants/enums'
-import { ITemplateRoutePoint } from './templateRoutePoint'
+import { POINT_TYPES_ENUM, POINT_TYPE_VALUES } from '@/constants/enums'
+import { ITemplateRoutePoint } from '@/domain/orderTemplate/templateRoutePoint'
 
 function setDate(date: Date | string | null): Date | null {
   if (!date) return null

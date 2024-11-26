@@ -1,6 +1,6 @@
+import { Response } from 'express'
 import { IncomingInvoiceService, PermissionService } from '@/services'
 import { AuthorizedRequest } from './interfaces'
-import { Response } from 'express'
 import { BadRequestError } from '@/helpers/errors'
 
 interface IConstructorProps {
@@ -11,7 +11,7 @@ interface IConstructorProps {
 class IncomingInvoiceController {
   service: typeof IncomingInvoiceService
   permissionService: typeof PermissionService
-  permissionName = 'incoming_invoice'
+  permissionName = 'incomingInvoice'
 
   constructor({ service, permissionService }: IConstructorProps) {
     this.permissionService = permissionService
@@ -23,7 +23,7 @@ class IncomingInvoiceController {
       await PermissionService.check({
         userId: req.userId,
         companyId: req.companyId,
-        operation: this.permissionName + ':readItem',
+        operation: this.permissionName + ':write',
       })
       const data = await this.service.pickOrders(req.query)
       res.status(200).json(data)
@@ -50,6 +50,11 @@ class IncomingInvoiceController {
 
   async getById(req: AuthorizedRequest, res: Response) {
     try {
+      await PermissionService.check({
+        userId: req.userId,
+        companyId: req.companyId,
+        operation: this.permissionName + ':readItem',
+      })
       const data = await this.service.getById(req.params.id)
       res.status(200).json(data)
     } catch (e) {

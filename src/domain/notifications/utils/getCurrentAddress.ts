@@ -1,4 +1,4 @@
-import { RoutePoint } from '../../../values/order/routePoint'
+import { RoutePoint } from '@/domain/order/route/routePoint'
 import { FullOrderDataDTO } from '../../order/dto/fullOrderData.dto'
 
 export const getCurrentAddress = (

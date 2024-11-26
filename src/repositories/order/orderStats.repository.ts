@@ -1,6 +1,6 @@
 import { Order as OrderDomain } from '@/domain/order/order.domain'
+import { RouteStats } from '@/domain/order/route/routeStats'
 import { OrderStats as OrderStatsModel } from '@/models'
-import { RouteStats } from '../../values/order/routeStats'
 
 class OrderStatsRepository {
   static validateOrders(orders: OrderDomain[], method = '') {

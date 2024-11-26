@@ -1,4 +1,4 @@
-import { RoutePoint } from '../../../values/order/routePoint'
+import { RoutePoint } from '@/domain/order/route/routePoint'
 import { IdleTruckNotification } from '../idleTruckNotification'
 
 export const isNeedCreateNotificationByPoint = (

@@ -9,55 +9,15 @@ import {
 import { IOkAktBuilderProps } from '../shared/interfaces'
 import { okActMainTableBuilder } from './mainTable'
 import { okActSignatoriesTableBuilder } from './signatoriesTable'
-
-import * as utils from '../shared'
 import { headerBuilder } from './header'
+import * as utils from '../shared'
+import { styles, numbering } from '@/shared/printForms'
+
 export const formBuilder = (p: IOkAktBuilderProps): Document => {
   return new Document({
-    numbering: {
-      config: [
-        {
-          reference: 'main-numbering',
-          levels: [
-            {
-              level: 0,
-              format: LevelFormat.DECIMAL,
-              text: '%1',
-              alignment: AlignmentType.START,
-              style: {
-                paragraph: {
-                  indent: { left: 400, hanging: 300, firstLine: 600 },
-                  spacing: { after: 250, line: 300 },
-                },
-              },
-            },
-          ],
-        },
-      ],
-    },
+    numbering: numbering.mainNumbering(),
     styles: {
-      default: {
-        heading1: {
-          run: {
-            size: '12pt',
-          },
-
-          paragraph: {
-            alignment: AlignmentType.CENTER,
-            spacing: {
-              after: 250,
-            },
-          },
-        },
-
-        document: {
-          run: { size: '10pt', font: 'Arial' },
-          paragraph: {
-            indent: { firstLine: 500 },
-            alignment: AlignmentType.LEFT,
-          },
-        },
-      },
+      default: styles.defaultDocStyles,
       paragraphStyles: [
         {
           id: 'wihtoutIndent',

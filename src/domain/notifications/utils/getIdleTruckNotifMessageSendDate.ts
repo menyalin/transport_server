@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
-import { RoutePoint } from '../../../values/order/routePoint'
 import { IdleTruckNotification } from '../../partner/idleTruckNotification'
+import { RoutePoint } from '@/domain/order/route/routePoint'
 
 export const getIdleTruckNotificationMessageSendDate = (
   notification: IdleTruckNotification,

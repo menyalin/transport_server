@@ -3,8 +3,8 @@ import { ZonesBaseTariff } from '../ZonesBaseTariff'
 import { OrderAnalytics } from '@/domain/order/analytics'
 import { Order } from '@/domain/order/order.domain'
 import { createTestOrder } from './createOrder'
-import { RoutePoint } from '@/values/order/routePoint'
 import { createAgreement } from './createAgreement'
+import { RoutePoint } from '@/domain/order/route/routePoint'
 
 const createTariff = (args: object): ZonesBaseTariff =>
   new ZonesBaseTariff({

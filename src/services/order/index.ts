@@ -19,22 +19,25 @@ import {
   OrderRepository,
   AddressRepository,
   TariffContractRepository,
+  PrintFormRepository,
 } from '@/repositories'
-import { IOrderDTO, Order as OrderDomain } from '@/domain/order/order.domain'
+import { Order as OrderDomain } from '@/domain/order/order.domain'
 import { bus } from '@/eventBus'
 import {
   OrdersUpdatedEvent,
   OrderTruckChanged,
   OrderReturnedFromInProgressStatus,
 } from '@/domain/order/domainEvents'
-import { Route } from '@/values/order/route'
 import { OrderAnalytics } from '@/domain/order/analytics'
-import { RouteStats } from '@/values/order/routeStats'
 import { OrderPriceCalculator } from '@/domain/orderPriceCalculator/orderPriceCalculator'
 import { OrderPrice } from '@/domain/order/orderPrice'
 import { TariffContract } from '@/domain/tariffContract'
 import * as helpers from '@/shared/helpers'
 import { AddressZone } from '@/domain/address'
+import { PrintForm } from '@/domain/printForm/printForm.domain'
+import { orderPFBuilder } from './printForms/pfBuilder'
+import { Route } from '@/domain/order/route/route'
+import { RouteStats } from '@/domain/order/route/routeStats'
 
 class OrderService {
   async create({ body, user }: { body: any; user: string }) {
@@ -213,6 +216,26 @@ class OrderService {
     }
 
     return order
+  }
+
+  async getAllowedPrintForms(): Promise<PrintForm[]> {
+    return await PrintFormRepository.getTemplatesByType({
+      docType: 'order',
+    })
+  }
+
+  async downloadDoc({
+    orderId,
+    templateName,
+  }: {
+    orderId: string
+    templateName: string
+  }): Promise<Buffer> {
+    const docBuffer: Buffer = await orderPFBuilder({
+      orderId,
+      templateName,
+    })
+    return docBuffer
   }
 
   async updateFinalPrices({

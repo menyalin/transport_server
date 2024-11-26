@@ -2,8 +2,8 @@
 import dayjs from 'dayjs'
 import { describe, it, expect } from '@jest/globals'
 import { RoutePoint } from './routePoint'
-import { TemplateRoutePoint } from './templateRoutePoint'
-import { POINT_TYPES_ENUM } from '../../constants/enums'
+import { POINT_TYPES_ENUM } from '@/constants/enums'
+import { TemplateRoutePoint } from '@/domain/orderTemplate/templateRoutePoint'
 
 describe('RoutePoint value-object', () => {
   const unloadingDurationInMinutes = 15

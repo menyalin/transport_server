@@ -1,4 +1,4 @@
-import { PAIMENT_INVOICE_STATUSES_ENUM } from '../../constants/paymentInvoice'
+import { PAIMENT_INVOICE_STATUSES_ENUM } from '@/constants/paymentInvoice'
 
 export interface IInvoiceStatsProps {
   invoiceId: string

@@ -9,7 +9,7 @@ import {
 } from '../constants/order'
 
 import pkg from 'mongoose'
-import { TemplateRoutePoint } from '../values/order/templateRoutePoint'
+import { TemplateRoutePoint } from '@/domain/orderTemplate/templateRoutePoint'
 
 const { Schema, model, Types } = pkg
 

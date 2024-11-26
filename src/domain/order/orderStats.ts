@@ -1,7 +1,8 @@
 import mongoose from 'mongoose'
-import { RouteStats } from '../../values/order/routeStats'
+
 import { Order as OrderDomain } from '../order/order.domain'
 import { InvoiceStats } from '../../values/order/invoiceStats'
+import { RouteStats } from './route/routeStats'
 
 export class OrderStats {
   orderId: string

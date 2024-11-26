@@ -1,5 +1,5 @@
-import { POINT_TYPES_ENUM } from '../../../constants/enums'
-import { RoutePoint } from '../../../values/order/routePoint'
+import { POINT_TYPES_ENUM } from '@/constants/enums'
+import { RoutePoint } from '@/domain/order/route/routePoint'
 
 export const getCurrentPointStatusString = (point: RoutePoint): string => {
   if (!point.isStarted) return ''

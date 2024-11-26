@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 import { Client } from './client'
 import { OrderPrice } from './orderPrice'
 import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
-import { RoutePoint } from '@/values/order/routePoint'
+import { RoutePoint } from './route/routePoint'
 
 describe('Order.Domain', () => {
   const orderPlannedDate = dayjs('2023-05-27')
