@@ -29,6 +29,7 @@
     "node-cron": "^3.0.2",
     "node-mocks-http": "^1.12.2",
     "nodemailer": "^6.9.3",
+    "number-to-words-ru": "^2.4.1",
     "openrouteservice-js": "^0.3.0",
     "socket.io": "^4.7.1",
     "ts-bus": "^2.3.1",

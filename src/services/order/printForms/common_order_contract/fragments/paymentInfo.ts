@@ -1,7 +1,13 @@
 import { Paragraph, TextRun, UnderlineType } from 'docx'
 import { BLOCK_SPACE } from '../config'
+import { IPaymentInfoProps } from '../interfaces'
+import { moneyFormatter } from '@/utils/moneyFormatter'
+import { convert } from 'number-to-words-ru'
 
-export const paymentInfo = (): Paragraph => {
+export const paymentInfo = (p: IPaymentInfoProps): Paragraph => {
+  const fomattedSum = moneyFormatter(p.paymentSum)
+  const writtenSum = convert(p.paymentSum)
+
   return new Paragraph({
     spacing: {
       before: BLOCK_SPACE,
@@ -13,9 +19,8 @@ export const paymentInfo = (): Paragraph => {
         underline: { type: UnderlineType.SINGLE },
       }),
       new TextRun({
-        text: `21 000,00 (Двадцать одна тысяча рублей). Безналичный расчет в т.ч. НДС 20%, по оригинальным ТТН, ТН, счет, акт, договор, заявки,
-заверенные подписью и печатью Уставных документов, квиток о сдаче декларации НДС. 14 рабочих дней.`,
-        break: 1,
+        text: `${fomattedSum} (${writtenSum}). ${p.paymentDescription}`,
+        break: 2,
       }),
     ],
   })

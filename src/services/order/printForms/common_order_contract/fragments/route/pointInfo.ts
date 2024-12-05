@@ -48,7 +48,7 @@ export const pointInfo = (point: IRoutePointPFData): Table =>
                       })
                     : new TextRun({ text: '' }),
                 ],
-                alignment: AlignmentType.LEFT,
+                alignment: AlignmentType.CENTER,
               }),
             ],
           }),
@@ -61,7 +61,7 @@ export const pointInfo = (point: IRoutePointPFData): Table =>
                     text: point.partnerName,
                   }),
                 ],
-                alignment: AlignmentType.LEFT,
+                alignment: AlignmentType.CENTER,
               }),
             ],
           }),
@@ -88,7 +88,7 @@ export const pointInfo = (point: IRoutePointPFData): Table =>
               new Paragraph({
                 children: [
                   new TextRun({
-                    text: `Примечание: ${point.note}`,
+                    text: `Примечание: ${point.note || ''}`,
                     italics: true,
                   }),
                 ],

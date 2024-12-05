@@ -1,6 +1,5 @@
 import {
   AlignmentType,
-  HeightRule,
   Paragraph,
   Table,
   TableBorders,
@@ -11,11 +10,14 @@ import {
 } from 'docx'
 import { FileChild } from 'docx/build/file/file-child'
 import { companyInfo } from './companyInfo'
-import { mockExecutor } from '../mockData'
 import { signatoryCell } from './signatoryCell'
 import { BLOCK_SPACE } from '../config'
+import { ICarreierPFData } from '@/domain/carrier/interfaces'
 
-export const signatoriesInfo = (): FileChild[] => {
+export const signatoriesInfo = (
+  customer: ICarreierPFData,
+  carrier: ICarreierPFData
+): FileChild[] => {
   return [
     new Paragraph({
       spacing: {
@@ -68,10 +70,10 @@ export const signatoriesInfo = (): FileChild[] => {
         new TableRow({
           children: [
             new TableCell({
-              children: [companyInfo(mockExecutor)],
+              children: [companyInfo(customer)],
             }),
             new TableCell({
-              children: [companyInfo(mockExecutor)],
+              children: [companyInfo(carrier)],
             }),
           ],
         }),
@@ -82,8 +84,8 @@ export const signatoriesInfo = (): FileChild[] => {
               margins: { top: 200, bottom: 200, left: 0, right: 400 },
               children: [
                 signatoryCell({
-                  position: mockExecutor.signatoryPosition,
-                  name: mockExecutor.signatoryName,
+                  position: customer.signatoryPosition,
+                  name: customer.signatoryName,
                 }),
               ],
             }),
@@ -91,8 +93,8 @@ export const signatoriesInfo = (): FileChild[] => {
               margins: { top: 200, bottom: 200, left: 0, right: 0 },
               children: [
                 signatoryCell({
-                  position: mockExecutor.signatoryPosition,
-                  name: mockExecutor.signatoryName,
+                  position: carrier.signatoryPosition,
+                  name: carrier.signatoryName,
                 }),
               ],
             }),

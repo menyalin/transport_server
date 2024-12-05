@@ -1,37 +1,60 @@
-// @ts-nocheck
-import mongoose from 'mongoose'
-import { DocTemplate } from '../../models'
+import { DocTemplate } from '@/models'
+import { Condition, isValidObjectId, PipelineStage, Types } from 'mongoose'
+
+interface IProps {
+  docTemplateModel: typeof DocTemplate
+}
 
 class DocTemplateService {
-  constructor({ docTemplateModel }) {
+  docTemplateModel: typeof DocTemplate
+  constructor({ docTemplateModel }: IProps) {
     this.docTemplateModel = docTemplateModel
   }
 
-  async getAllowedTemplates({ client, company, type }) {
-    const templates = await this.docTemplateModel.aggregate([
-      {
-        $match: {
-          $expr: {
-            $or: [
-              { $eq: [0, { $size: '$companies' }] },
-              {
-                $and: [
-                  { $in: [new mongoose.Types.ObjectId(company), '$companies'] },
-                  {
-                    $or: [
-                      { $eq: [0, { $size: '$clients' }] },
-                      {
-                        $in: [new mongoose.Types.ObjectId(client), '$clients'],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
+  async getAllowedTemplates({
+    client,
+    company,
+    agreement,
+    type,
+  }: {
+    client: string
+    company: string
+    type: string
+    agreement?: string
+  }) {
+    const tmpAgreement: Types.ObjectId | null =
+      agreement && isValidObjectId(agreement)
+        ? new Types.ObjectId(agreement)
+        : null
+
+    const matcher: PipelineStage.Match = {
+      $match: {
+        $expr: {
+          $or: [
+            { $eq: [0, { $size: '$companies' }] },
+            {
+              $and: [
+                { $in: [new Types.ObjectId(company), '$companies'] },
+                {
+                  $or: [
+                    { $eq: [0, { $size: '$clients' }] },
+                    { $in: [new Types.ObjectId(client), '$clients'] },
+                  ],
+                },
+                {
+                  $or: [
+                    { $eq: [{ $ifNull: ['$agreement', null] }, null] },
+                    { $eq: [{ $ifNull: ['$agreement', null] }, tmpAgreement] },
+                  ],
+                },
+              ],
+            },
+          ],
         },
       },
-    ])
+    }
+
+    const templates = await this.docTemplateModel.aggregate([matcher])
     return templates
   }
 }
