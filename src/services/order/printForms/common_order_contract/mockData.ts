@@ -1,6 +1,7 @@
 import { POINT_TYPES_ENUM } from '@/constants/enums'
 import { ICarreierPFData } from '@/domain/carrier/interfaces'
 import { IRoutePointPFData } from '@/domain/order/route/interfaces'
+import { ICargoInfoProps } from './interfaces'
 
 export const notes = [
   `Оплата услуг «Перевозчика» производится по договору со дня предоставления оригиналов ТТН с подписями, расшифровками подписей
@@ -67,3 +68,13 @@ export const mockRoute: IRoutePointPFData[] = [
     partnerName: 'Тандер',
   },
 ]
+
+export const mockCargoInfo: ICargoInfoProps = {
+  description: 'Алкогольная продукция',
+  weight: 20,
+  plt: 33,
+  volume: 80,
+  note: 'Важное примечание, касающееся груза',
+  truckType: '20т Реф',
+  tRegime: '+5 - +10°C',
+}

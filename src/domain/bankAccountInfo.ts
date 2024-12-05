@@ -1,10 +1,10 @@
 import { z, ZodError } from 'zod'
 
 export class BankAccountInfo {
-  accountNumber?: string
-  bankName?: string
-  bankCode?: string
-  correspondentAccount?: string
+  accountNumber?: string | null
+  bankName?: string | null
+  bankCode?: string | null
+  correspondentAccount?: string | null
 
   constructor(props: unknown) {
     try {
@@ -33,10 +33,10 @@ export class BankAccountInfo {
 
   static get validationSchema() {
     return z.object({
-      accountNumber: z.string().optional(),
-      bankName: z.string().optional(),
-      bankCode: z.string().optional(),
-      correspondentAccount: z.string().optional(),
+      accountNumber: z.string().nullable().optional(),
+      bankName: z.string().nullable().optional(),
+      bankCode: z.string().nullable().optional(),
+      correspondentAccount: z.string().nullable().optional(),
     })
   }
 }

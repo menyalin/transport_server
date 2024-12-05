@@ -31,6 +31,7 @@ export class Partner {
   inn?: string
   company: string
   contacts?: string
+  cargoDescription?: string
   group?: PARTNER_GROUPS_ENUM
   isClient?: boolean = false
   isService?: boolean = false
@@ -47,6 +48,7 @@ export class Partner {
     this.inn = p.inn
     this.contacts = p.contacts
     this.group = p.group
+    this.cargoDescription = p.cargoDescription ?? undefined
     this.isClient = p.isClient
     this.isService = p.isService
     this.isActive = p.isActive === undefined ? true : p.isActive
@@ -141,6 +143,7 @@ export class Partner {
       inn: String,
       company: { type: Types.ObjectId, ref: 'Company', required: true },
       contacts: String,
+      cargoDescription: String,
       group: { type: String, enum: [...PARTNER_GROUPS_ENUM_VALUES, null] },
       isClient: { type: Boolean, default: false },
       isService: { type: Boolean, default: false },

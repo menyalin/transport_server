@@ -13,6 +13,7 @@ import { OrderReqTransport } from './reqTransport'
 import { TotalPrice } from '../commonInterfaces'
 import { Route } from './route/route'
 import { RoutePoint } from './route/routePoint'
+import { CargoInfo } from '../cargoInfo'
 
 export interface IOrderDTO {
   _id?: string | Types.ObjectId
@@ -87,7 +88,7 @@ export class Order {
   prices?: OrderPrice[]
   finalPrices?: OrderPrice[]
   outsourceCosts?: OrderPrice[]
-  cargoParams: object
+  cargoParams: CargoInfo
   reqTransport?: OrderReqTransport
   paymentParts: []
   analytics?: OrderAnalytics
@@ -136,7 +137,7 @@ export class Order {
     this.outsourceCosts =
       order.outsourceCosts?.map((i: IOrderPriceProps) => new OrderPrice(i)) ||
       []
-    this.cargoParams = order.cargoParams || {}
+    this.cargoParams = order.cargoParams ? new CargoInfo(order.cargoParams) : {}
     this.reqTransport = order.reqTransport
       ? new OrderReqTransport(order.reqTransport)
       : undefined

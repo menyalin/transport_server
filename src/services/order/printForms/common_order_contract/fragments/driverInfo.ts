@@ -1,27 +1,28 @@
 import { Paragraph, TextRun, UnderlineType } from 'docx'
 import { BLOCK_SPACE } from '../config'
+import { IDriverInfoProps } from '../interfaces'
 
-export const driverInfo = (): Paragraph => {
+export const driverInfo = (p: IDriverInfoProps): Paragraph => {
   return new Paragraph({
     spacing: {
       before: BLOCK_SPACE,
     },
     children: [
       new TextRun({
-        text: 'Водитель: Щур Анатолий Николаевич',
+        text: `Водитель: ${p.fullName}`,
         bold: true,
         underline: { type: UnderlineType.SINGLE },
       }),
       new TextRun({
-        text: 'Паспорт: 1810 №486629, Отделом УФМС России по Волгоградской области в гор. Камышине, 17.10.2010,',
+        text: `Паспорт: ${p.passport}`,
         break: 2,
       }),
       new TextRun({
-        text: 'Тел.: 89608899152',
+        text: `Тел: ${p.phone}`,
         break: 1,
       }),
       new TextRun({
-        text: 'Гос. номер транспортного средства: Х046ОМ797, ХХ606077',
+        text: `Гос.номер ТС: ${p.tsRegNum}`,
         break: 1,
       }),
     ],

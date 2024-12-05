@@ -12,6 +12,7 @@ import { OrderAnalytics } from '@/domain/order/analytics'
 import { OrderReqTransport } from '@/domain/order/reqTransport'
 import { Order } from '@/domain/order/order.domain'
 import { RoutePoint } from '@/domain/order/route/routePoint'
+import { CargoInfo } from '@/domain/cargoInfo'
 
 const outsourceCosts = [
   {
@@ -76,13 +77,6 @@ const grade = {
   note: String,
 }
 
-const cargoParams = {
-  weight: Number,
-  places: Number,
-  note: String,
-  tRegime: String,
-}
-
 const state = {
   status: {
     type: String,
@@ -122,7 +116,7 @@ const schema = new Schema(
     outsourceCosts,
     confirmedCrew,
     route: [RoutePoint.dbSchema],
-    cargoParams: cargoParams,
+    cargoParams: CargoInfo.dbSchema,
     reqTransport: OrderReqTransport.dbSchema,
     state,
     paymentParts: [OrderPaymentPart.dbSchema],

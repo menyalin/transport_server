@@ -5,7 +5,7 @@ import { z } from 'zod'
 export class Agreement {
   _id?: string
   name: string
-  date: Date
+  date?: Date
   company: string
   clients: string[]
   isOutsourceAgreement: boolean
@@ -24,11 +24,12 @@ export class Agreement {
   auctionNumRequired?: boolean = false
   note?: string | null
   commission: number = 0
+  executor?: string | null
   executorName: string | null
   isActive?: boolean = true
   allowedCarriers?: string[] = []
 
-  constructor(data: z.infer<typeof Agreement.validationSchema>) {
+  constructor(data: unknown) {
     const parsedData = Agreement.validationSchema.parse(data)
     this._id = parsedData._id
     this.name = parsedData.name
@@ -67,6 +68,7 @@ export class Agreement {
     this.auctionNumRequired = parsedData.auctionNumRequired
     this.note = parsedData.note
     this.commission = parsedData.commission || 0
+    this.executor = parsedData.executor?.toString() ?? null
     this.executorName = parsedData.executorName || null
     this.allowedCarriers = parsedData.allowedCarriers
   }
@@ -142,6 +144,7 @@ export class Agreement {
       .nullable()
       .optional()
       .transform((val) => (val ? val : 0)),
+    executor: objectIdSchema.nullable().optional(),
     executorName: z.string().nullable().optional(),
     allowedCarriers: z
       .array(objectIdSchema)
@@ -174,6 +177,7 @@ export class Agreement {
     auctionNumRequired: { type: Boolean, default: false },
     note: String,
     commission: { type: Number, default: 0 },
+    executor: { type: Types.ObjectId, ref: 'TkName' },
     executorName: { type: String },
     allowedCarriers: [{ type: Types.ObjectId, ref: 'Company' }],
   }
