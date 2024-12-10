@@ -1,22 +1,21 @@
 import z from 'zod'
 import { PipelineStage, Types } from 'mongoose'
 
-const IPropsSchema = z
+const propsSchema = z
   .object({
     company: z.string(),
     client: z.string().optional(),
     clients: z.array(z.string()).optional(),
-    date: z.date(),
+    date: z.string().transform((v) => new Date(v)),
   })
   .refine((data) => data.client !== undefined || data.clients !== undefined, {
     message: 'Поле client или clients должно быть заполнено',
     path: ['client'],
   })
 
-type IProps = z.infer<typeof IPropsSchema>
+export default (props: unknown): PipelineStage[] => {
+  const p = propsSchema.parse(props)
 
-export default (p: IProps): PipelineStage[] => {
-  IPropsSchema.parse(p)
   const firstMatcher: PipelineStage.Match = {
     $match: {
       isActive: true,
