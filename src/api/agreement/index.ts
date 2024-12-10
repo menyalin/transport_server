@@ -1,37 +1,46 @@
-// @ts-nocheck
 /* eslint-disable no-unused-vars */
-import express from 'express'
+import express, { Request, Response } from 'express'
 
 import { jwtAuth } from '@/utils/auth.middleware'
-import {
-  queryValidator,
-  // bodyValidator
-} from '@/utils/validator'
+import { queryValidator } from '@/utils/validator'
 
 import { getListSchema, getForOrderSchema, getForClientSchema } from './schemes'
-import ctrl from '../../controllers/agreement.controller'
+import ctrl from '@/controllers/agreement.controller'
+import { AuthorizedRequest } from '@/controllers/interfaces'
 
 const router = express.Router()
 
 // api/agreements
-router.get('/', [jwtAuth, queryValidator(getListSchema)], (...args) =>
-  ctrl.getList(...args)
+router.get(
+  '/',
+  [jwtAuth, queryValidator(getListSchema)],
+  (req: Request, res: Response) => ctrl.getList(req as AuthorizedRequest, res)
 )
 router.get(
   '/get_for_order',
   [jwtAuth, queryValidator(getForOrderSchema)],
-  (...args) => ctrl.getForOrder(...args)
+  (req: Request, res: Response) =>
+    ctrl.getForOrder(req as AuthorizedRequest, res)
 )
 router.get(
   '/get_for_client',
   [jwtAuth, queryValidator(getForClientSchema)],
-  (...args) => ctrl.getForClient(...args)
+  (req: Request, res: Response) =>
+    ctrl.getForClient(req as AuthorizedRequest, res)
 )
 
-router.get('/:id', [jwtAuth], (...args) => ctrl.getById(...args))
+router.get('/:id', [jwtAuth], (req: Request, res: Response) =>
+  ctrl.getById(req as AuthorizedRequest, res)
+)
 
-router.post('/', [jwtAuth], (...args) => ctrl.create(...args))
-router.put('/:id', [jwtAuth], (...args) => ctrl.updateOne(...args))
-router.delete('/:id', [jwtAuth], (...args) => ctrl.deleteById(...args))
+router.post('/', [jwtAuth], (req: Request, res: Response) =>
+  ctrl.create(req as AuthorizedRequest, res)
+)
+router.put('/:id', [jwtAuth], (req: Request, res: Response) =>
+  ctrl.updateOne(req as AuthorizedRequest, res)
+)
+router.delete('/:id', [jwtAuth], (req: Request, res: Response) =>
+  ctrl.deleteById(req as AuthorizedRequest, res)
+)
 
 export default router

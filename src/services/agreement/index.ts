@@ -1,38 +1,46 @@
-// @ts-nocheck
+import { PipelineStage } from 'mongoose'
 import ChangeLogService from '../changeLog'
 import { Agreement as AgreementModel } from '../../models'
 import { emitTo } from '../../socket'
-import IService from '../iService'
 import getListPipeline from './pipelines/getListPipeline'
 import getForOrderPipeline from './pipelines/getForOrderPipeline'
 import getForClientPipeline from './pipelines/getForClientPipeline'
-import { Agreement as AgreementDomain } from '@/domain/agreement/agreement.domain'
+import {
+  Agreement,
+  Agreement as AgreementDomain,
+} from '@/domain/agreement/agreement.domain'
 import { TtlMap } from '@/utils/ttlMap'
 
-class AgreementService extends IService {
+interface IConstructorProps {
+  model: typeof AgreementModel
+  emitter: typeof emitTo
+  modelName: string
+  logService: typeof ChangeLogService
+}
+
+class AgreementService {
   model: typeof AgreementModel
   logService: typeof ChangeLogService
   agreementsMap: TtlMap<string, AgreementDomain>
+  emitter: typeof emitTo
+  modelName: string
 
-  constructor({ model, emitter, modelName, logService }) {
-    super({ model, emitter, modelName, logService })
+  constructor({ model, emitter, modelName, logService }: IConstructorProps) {
+    this.emitter = emitter
     this.model = model
+    this.modelName = modelName
     this.logService = logService
     this.agreementsMap = new TtlMap<string, AgreementDomain>(1000 * 60 * 5)
   }
 
-  async getList(params) {
-    try {
-      const pipeline = getListPipeline(params)
-      const res = await this.model.aggregate(pipeline)
-      return res[0]
-    } catch (e) {
-      throw new Error(e.message)
-    }
+  async getList(params: unknown) {
+    const pipeline = getListPipeline(params)
+    const res = await this.model.aggregate(pipeline)
+    return res[0]
   }
 
   async getById(id: string): Promise<Agreement | null> {
-    if (this.agreementsMap.has(id)) return this.agreementsMap.get(id)
+    if (this.agreementsMap.has(id)) return this.agreementsMap.get(id) ?? null
 
     const data = await this.model.findById(id).lean()
     if (!data) return null
@@ -41,25 +49,74 @@ class AgreementService extends IService {
     return agreement
   }
 
-  async getForOrder(params) {
-    try {
-      const pipeline = getForOrderPipeline(params)
-      const res = await this.model.aggregate(pipeline)
-      return res.length ? res[0] : null
-    } catch (e) {
-      throw new Error(e.message)
-    }
+  async getForOrder(params: unknown) {
+    const pipeline: PipelineStage[] = getForOrderPipeline(params)
+    const res = await this.model.aggregate(pipeline)
+    return res.length ? res[0] : null
   }
 
-  async getForClient(props: {
-    client?: string
-    clients?: string[]
-    company: string
-    date: Date
-  }): any[] {
+  async getForClient(props: unknown): Promise<unknown[]> {
     const pipeline = getForClientPipeline(props)
     const res = await this.model.aggregate(pipeline)
     return res
+  }
+
+  async create({ body, user }: { body: any; user: string }) {
+    const data = await this.model.create(body)
+    if (this.logService)
+      await this.logService.add({
+        docId: data._id.toString(),
+        coll: this.modelName,
+        opType: 'create',
+        user,
+        company: data.company.toString(),
+        body: JSON.stringify(data.toJSON()),
+      })
+    this.emitter(data.company.toString(), `${this.modelName}:created`, data)
+    return data
+  }
+
+  async updateOne({ id, body, user }: { id: string; body: any; user: string }) {
+    const data = await this.model.findByIdAndUpdate(id, body, { new: true })
+    if (!data) throw new Error('Agreement not found')
+    this.emitter(data.company.toString(), `${this.modelName}:updated`, data)
+    if (this.logService)
+      await this.logService.add({
+        docId: data._id.toString(),
+        coll: this.modelName,
+        opType: 'update',
+        user,
+        company: data.company.toString(),
+        body: JSON.stringify(data.toJSON()),
+      })
+    return data
+  }
+
+  async getByProfile(profile: string) {
+    const data = await this.model
+      .find({ company: profile, isActive: true })
+      .lean()
+    return data
+  }
+
+  async deleteById({ id, user }: { id: string; user: string }) {
+    const data = await this.model.findByIdAndUpdate(
+      id,
+      { isActive: false },
+      { new: true }
+    )
+    if (!data) throw new Error('Agreement not found')
+    this.emitter(data.company.toString(), `${this.modelName}:deleted`, id)
+    if (this.logService)
+      await this.logService.add({
+        docId: data._id.toString(),
+        coll: this.modelName,
+        opType: 'delete',
+        user,
+        company: data.company.toString(),
+        body: JSON.stringify(data.toJSON()),
+      })
+    return data
   }
 }
 

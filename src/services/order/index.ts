@@ -375,6 +375,7 @@ class OrderService {
       const agreement = await AgreementService.getById(
         order.client.agreement.toString()
       )
+      if (!agreement) return []
       const tariffContracts: TariffContract[] =
         await TariffContractRepository.getByAgreementAndDate(
           agreement,
