@@ -53,7 +53,7 @@ export default class IService {
     const data = await this.model.findByIdAndUpdate(
       id,
       { isActive: false },
-      { new: true },
+      { new: true }
     )
     this.emitter(data.company.toString(), `${this.modelName}:deleted`, id)
     if (this.logService)

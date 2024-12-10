@@ -1,15 +1,16 @@
 import { PipelineStage, Types } from 'mongoose'
+import { z } from 'zod'
 
-interface IProps {
-  company: string
-  date?: string
-  limit: string
-  skip: string
-  client?: string
-  clientsOnly?: string
-}
-
-export default ({ company, limit, skip, client, clientsOnly }: IProps) => {
+export default (props: unknown) => {
+  const schemaProps = z.object({
+    company: z.string(),
+    client: z.string().optional(),
+    clientsOnly: z.string().optional(),
+    limit: z.string(),
+    skip: z.string(),
+  })
+  const p = schemaProps.parse(props)
+  const { company, client, clientsOnly, limit, skip } = p
   const firstMatcher: PipelineStage.Match = {
     $match: {
       isActive: true,

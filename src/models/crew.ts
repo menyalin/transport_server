@@ -1,59 +1,36 @@
-// @ts-nocheck
 import pkg from 'mongoose'
 const { Schema, model, Types } = pkg
 
 const transportSchema = new Schema({
   startDate: {
     type: Date,
-    required: true
+    required: true,
   },
   endDate: {
     type: Date,
   },
   truck: {
     type: Types.ObjectId,
-    ref: 'Truck'
+    ref: 'Truck',
   },
   trailer: {
     type: Types.ObjectId,
-    ref: 'Truck'
+    ref: 'Truck',
   },
-  note: String
+  note: String,
 })
 
 const schema = new Schema(
   {
-    startDate: {
-      type: Date,
-      required: true
-    },
-    tkName: {
-      type: Types.ObjectId,
-      ref: 'TkName'
-    },
+    startDate: { type: Date, required: true },
+    tkName: { type: Types.ObjectId, ref: 'TkName' },
     transport: [transportSchema],
-    driver: {
-      type: Types.ObjectId,
-      ref: 'Driver'
-    },
-    endDate: {
-      type: Date
-    },
-    manager: {
-      type: Types.ObjectId,
-      ref: 'User'
-    },
-    note: {
-      type: String
-    },
-    company: {
-      type: Types.ObjectId,
-      ref: 'Company'
-    },
-    isActive: {
-      type: Boolean,
-      default: true
-    }
+    driver: { type: Types.ObjectId, ref: 'Driver' },
+    endDate: { type: Date },
+    manager: { type: Types.ObjectId, ref: 'User' },
+    note: { type: String },
+    company: { type: Types.ObjectId, ref: 'Company' },
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
 )

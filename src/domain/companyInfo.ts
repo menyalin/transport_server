@@ -5,9 +5,9 @@ import {
 import { z } from 'zod'
 
 class Director {
-  name: string
+  name?: string | null
   isMainSignatory: boolean = true
-  position?: string
+  position?: string | null
 
   constructor(props: unknown) {
     const p = Director.validationSchema.parse(props)
@@ -20,8 +20,8 @@ class Director {
       isMainSignatory: z
         .union([z.boolean(), z.string()])
         .transform((v) => Boolean(v)),
-      name: z.string(),
-      position: z.string().optional(),
+      name: z.string().nullable().optional(),
+      position: z.string().nullable().optional(),
     })
   }
 
@@ -35,10 +35,10 @@ class Director {
 }
 
 class Signatory {
-  position: string
-  fullName: string
-  number?: string
-  date?: Date | undefined
+  position?: string | null
+  fullName?: string | null
+  number?: string | null
+  date?: Date | null
 
   constructor(props: unknown) {
     const p = Signatory.validationSchema.parse(props)
@@ -50,10 +50,10 @@ class Signatory {
 
   static get validationSchema() {
     return z.object({
-      position: z.string(),
-      fullName: z.string(),
-      number: z.string().optional(),
-      date: z.string().date().optional(),
+      position: z.string().nullable().optional(),
+      fullName: z.string().nullable().optional(),
+      number: z.string().nullable().optional(),
+      date: z.string().date().nullable().optional(),
     })
   }
 
@@ -68,14 +68,14 @@ class Signatory {
 }
 
 export class CompanyInfo {
-  legalForm?: LEGAL_ENTITY_TYPE_ENUM
-  fullName?: string
-  postalAddress?: string
-  legalAddress?: string
-  inn?: string
-  ogrn?: string
-  ogrnip?: string
-  kpp?: string
+  legalForm?: LEGAL_ENTITY_TYPE_ENUM | null
+  fullName?: string | null
+  postalAddress?: string | null
+  legalAddress?: string | null
+  inn?: string | null
+  ogrn?: string | null
+  ogrnip?: string | null
+  kpp?: string | null
   director?: Director
   signatory?: Signatory
 
@@ -113,14 +113,14 @@ export class CompanyInfo {
 
   static get validationSchema() {
     return z.object({
-      legalForm: z.nativeEnum(LEGAL_ENTITY_TYPE_ENUM).optional(),
-      fullName: z.string().optional(),
-      postalAddress: z.string().optional(),
-      legalAddress: z.string().optional(),
-      inn: z.string().optional(),
-      ogrn: z.string().optional(),
-      ogrnip: z.string().optional(),
-      kpp: z.string().optional(),
+      legalForm: z.nativeEnum(LEGAL_ENTITY_TYPE_ENUM).nullable().optional(),
+      fullName: z.string().nullable().optional(),
+      postalAddress: z.string().nullable().optional(),
+      legalAddress: z.string().nullable().optional(),
+      inn: z.string().nullable().optional(),
+      ogrn: z.string().nullable().optional(),
+      ogrnip: z.string().nullable().optional(),
+      kpp: z.string().nullable().optional(),
       director: Director.validationSchema.optional(),
       signatory: Signatory.validationSchema.optional(),
     })

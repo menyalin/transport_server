@@ -1,27 +1,109 @@
 import { numbering, styles } from '@/shared/printForms'
-import {
-  Packer,
-  Paragraph,
-  TextRun,
-  Document,
-  AlignmentType,
-  HeadingLevel,
-  Table,
-  WidthType,
-  TableRow,
-  TableCell,
-  VerticalAlign,
-  TableBorders,
-} from 'docx'
-import { shipperInfo } from './fragments/shipperInfo'
+import { Packer, Document } from 'docx'
 import { driverInfo } from './fragments/driverInfo'
 import { paymentInfo } from './fragments/paymentInfo'
 import { noteInfo } from './fragments/noteInfo'
-import { mockRoute, notes } from './mockData'
 import { signatoriesInfo } from './fragments/signatoriesInfo'
 import { routeInfo } from './fragments/route/routeInfo'
+import { cargoInfo } from './fragments/cargoInfo'
+import { headerInfo } from './fragments/headerInfo'
+import { ICommonOrderContractProps } from './interfaces'
+import { Order } from '@/domain/order/order.domain'
+import {
+  AgreementRepository,
+  CarrierRepository,
+  OrderRepository,
+  PartnerRepository,
+  DriverRepository,
+} from '@/repositories'
+import { BadRequestError } from '@/helpers/errors'
 
-export const commonOrderContractBuilder = async (): Promise<Buffer> => {
+export const commonOrderContractBuilder = async (
+  order: Order
+): Promise<Buffer> => {
+  const carrierId = order.confirmedCrew.tkName
+    ? order.confirmedCrew.tkName.toString()
+    : null
+  const driverId = order.confirmedCrew?.driver
+    ? order.confirmedCrew.driver.toString()
+    : null
+
+  if (!driverId) throw new BadRequestError('Водитель не определен')
+
+  if (!carrierId) throw new BadRequestError('Перевозчик не определен')
+  const carrierAgreementId = order.confirmedCrew.outsourceAgreement
+    ? order?.confirmedCrew?.outsourceAgreement.toString()
+    : null
+  const clientAgreementId = order.client.agreement
+    ? order.client.agreement
+    : null
+  if (!carrierAgreementId || !clientAgreementId)
+    throw new BadRequestError('Соглашение не найдено')
+  const carrier = await CarrierRepository.getById(carrierId)
+  if (!carrier) throw new BadRequestError('Перевозчик не найден')
+  const clientAgreement = await AgreementRepository.getById(
+    clientAgreementId.toString()
+  )
+  if (!clientAgreement)
+    throw new BadRequestError('Соглашение с клиентом не найдено')
+  if (!clientAgreement.executor)
+    throw new BadRequestError('Основной исполнитель не указан')
+
+  const customer = await CarrierRepository.getById(clientAgreement.executor)
+  if (!customer) throw new BadRequestError('Заказчик не найден')
+  const shipper = await PartnerRepository.getById(order.client.client)
+  const routePFData = await OrderRepository.getRoutePointPFData(order)
+  if (!routePFData) throw new BadRequestError('Маршрут не определен')
+
+  const driver = await DriverRepository.getById(driverId)
+  if (!driver) throw new BadRequestError('Водитель не найден')
+
+  // const carrierAgreement = await AgreementRepository.getById(
+  //   carrierAgreementId.toString()
+  // )
+
+  const data: ICommonOrderContractProps = {
+    headerInfo: {
+      num: order.client.num || 'б/н',
+      date: order.orderDate.toLocaleString('ru-Ru'),
+      customer: customer?.companyInfo?.fullName || 'empty',
+      carrier: carrier?.companyInfo?.fullName || 'empty',
+    },
+    cargoInfo: {
+      description:
+        order.cargoParams?.description ||
+        shipper?.cargoDescription ||
+        'Не указан',
+      weight: order.cargoParams.weight,
+      plt: order.cargoParams.plt,
+      volume: order.cargoParams.volume,
+      note: order.cargoParams.note,
+      tRegime: order.cargoParams.tRegime,
+      truckType: order.reqTransport?.truckTypeDescription,
+    },
+    driverInfo: {
+      fullName: driver.fullName,
+      passport: driver.passportInfo,
+      phone: [driver.phone, driver.phone2].join(' ').trim(),
+      tsRegNum: '1234',
+    },
+    paymentInfo: {
+      paymentSum: 25000.25,
+      paymentDescription: 'Оплата по договору',
+    },
+    notes: [
+      'Замечание 1',
+      'Замечание 2',
+      'Замечание 3',
+      'Замечание 4',
+      'Замечание 5',
+    ],
+    route: routePFData,
+
+    customer: customer?.getPFdata,
+    carrier: carrier?.getPFdata,
+  }
+
   const doc = new Document({
     numbering: numbering.mainNumbering(),
     styles: {
@@ -43,64 +125,13 @@ export const commonOrderContractBuilder = async (): Promise<Buffer> => {
           },
         },
         children: [
-          new Paragraph({
-            style: HeadingLevel.HEADING_1,
-            alignment: AlignmentType.CENTER,
-            children: [
-              new TextRun({
-                text: 'Заявка № 2121 от 21.12.2024',
-                bold: true,
-              }),
-            ],
-          }),
-          new Table({
-            borders: TableBorders.NONE,
-            indent: { size: 0 },
-            margins: {
-              top: 0,
-              bottom: 0,
-              left: 0,
-              right: 0,
-            },
-            width: {
-              size: 90,
-              type: WidthType.PERCENTAGE,
-            },
-            alignment: AlignmentType.CENTER,
-            rows: [
-              new TableRow({
-                tableHeader: true,
-                children: [
-                  new TableCell({
-                    verticalAlign: VerticalAlign.CENTER,
-                    margins: { top: 0, bottom: 0 },
-                    children: [
-                      new Paragraph({
-                        text: 'ЗАКАЗЧИК: ООО «Автокоммерц»',
-                        alignment: AlignmentType.LEFT,
-                      }),
-                    ],
-                  }),
-                  new TableCell({
-                    verticalAlign: VerticalAlign.CENTER,
-                    margins: { top: 0, bottom: 0 },
-                    children: [
-                      new Paragraph({
-                        text: 'ПЕРЕВОЗЧИК: ИП Юдин С.В.',
-                        alignment: AlignmentType.RIGHT,
-                      }),
-                    ],
-                  }),
-                ],
-              }),
-            ],
-          }),
-          shipperInfo(),
-          routeInfo(mockRoute),
-          driverInfo(),
-          paymentInfo(),
-          ...noteInfo(notes),
-          ...signatoriesInfo(),
+          ...headerInfo(data.headerInfo),
+          cargoInfo(data.cargoInfo),
+          routeInfo(data.route),
+          driverInfo(data.driverInfo),
+          paymentInfo(data.paymentInfo),
+          ...noteInfo(data.notes),
+          ...signatoriesInfo(data.customer, data.carrier),
         ],
       },
     ],

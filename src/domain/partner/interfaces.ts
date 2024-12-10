@@ -16,6 +16,7 @@ export interface IParterProps {
   inn?: string
   company: string | Types.ObjectId
   contacts?: string
+  cargoDescription?: string
   group?: PARTNER_GROUPS_ENUM
   isClient?: boolean
   isService?: boolean

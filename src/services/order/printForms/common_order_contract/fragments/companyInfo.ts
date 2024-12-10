@@ -38,7 +38,7 @@ export const companyInfo = (p: ICarreierPFData): Paragraph => {
         break: 1,
       }),
       new TextRun({
-        text: p.bankInfo?.bankName,
+        text: p.bankInfo?.bankName || '',
         break: 1,
       }),
       new TextRun({

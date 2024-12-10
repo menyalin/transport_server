@@ -4,4 +4,4 @@ const { Schema, model } = pkg
 
 const schema = new Schema(Carrier.dbSchema, { timestamps: true })
 
-export default model('TkName', schema, 'tknames')
+export default model<Carrier>('TkName', schema, 'tknames')

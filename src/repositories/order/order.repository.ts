@@ -1,7 +1,11 @@
 import './orderStats.repository'
 import { bus } from '../../eventBus'
 import { Cursor } from 'mongoose'
-import { IOrderDTO, Order as OrderDomain } from '@/domain/order/order.domain'
+import {
+  IOrderDTO,
+  Order,
+  Order as OrderDomain,
+} from '@/domain/order/order.domain'
 import { Order as OrderModel } from '@/models'
 import {
   getOrdersByTrucksAndPeriodPipeline,
@@ -17,6 +21,9 @@ import { FullOrderDataDTO } from '@/domain/order/dto/fullOrderData.dto'
 import { GetDocsCountProps } from '@/classes/getOrdersCountHandlerProps'
 import { getOrdersMatcher } from './pipelines/getOrdersMatcher'
 import { getOrderListPipeline } from './pipelines/getOrderListPipeline'
+import { IRoutePointPFData } from '@/domain/order/route/interfaces'
+import { RoutePointPFDataDTO } from '@/domain/order/dto/routePointPFData.dto'
+import { getRoutePointPFDataPipeline } from './pipelines/getRoutePointPFDataPipeline'
 
 class OrderRepository {
   constructor() {
@@ -37,7 +44,7 @@ class OrderRepository {
   async getById(orderId: string): Promise<OrderDomain> {
     const order = await OrderModel.findById<IOrderDTO>(orderId)
     if (!order) throw new Error(`${orderId} not found`)
-    return new OrderDomain(order)
+    return new OrderDomain(order, false)
   }
 
   async getFullOrderDataDTO(orderId: string): Promise<FullOrderDataDTO> {
@@ -46,6 +53,15 @@ class OrderRepository {
     if (orders.length === 0)
       throw new Error('getFullOrderDataDTO : order is missing')
     return FullOrderDataDTO.create(orders[0])
+  }
+
+  async getRoutePointPFData(
+    order: OrderDomain
+  ): Promise<IRoutePointPFData[] | null> {
+    const pipeline = getRoutePointPFDataPipeline(order)
+    const res = await OrderModel.aggregate(pipeline)
+    if (!res || res.length === 0) return null
+    return res.map((i) => new RoutePointPFDataDTO(i))
   }
 
   async getOrdersCount(p: GetDocsCountProps): Promise<number> {

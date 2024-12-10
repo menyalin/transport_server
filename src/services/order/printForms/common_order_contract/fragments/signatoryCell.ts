@@ -29,7 +29,7 @@ export const signatoryCell = ({
         children: [
           new TableCell({
             width: { size: 40, type: WidthType.PERCENTAGE },
-            verticalAlign: VerticalAlign.CENTER,
+            verticalAlign: VerticalAlign.BOTTOM,
             children: [
               new Paragraph({
                 text: position,
@@ -39,7 +39,7 @@ export const signatoryCell = ({
             ],
           }),
           new TableCell({
-            verticalAlign: VerticalAlign.CENTER,
+            verticalAlign: VerticalAlign.BOTTOM,
             borders: {
               bottom: {
                 style: BorderStyle.SINGLE,
