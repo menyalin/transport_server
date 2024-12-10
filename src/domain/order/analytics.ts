@@ -48,7 +48,10 @@ export class OrderAnalytics {
   }
   static get validationSchema() {
     return z.object({
-      type: OrderTypeSchema,
+      type: z
+        .string()
+        .nullable()
+        .transform((val) => (val as OrderType) ?? 'region'),
       distanceRoad: z.number().nonnegative(),
       distanceDirect: z.number().nonnegative(),
       loadingZones: z
