@@ -23,6 +23,7 @@ export class Agreement {
   clientNumRequired?: boolean = false
   auctionNumRequired?: boolean = false
   note?: string | null
+  paymentDescription?: string | null
   commission: number = 0
   executor?: string | null
   executorName: string | null
@@ -71,6 +72,8 @@ export class Agreement {
     this.executor = parsedData.executor?.toString() ?? null
     this.executorName = parsedData.executorName || null
     this.allowedCarriers = parsedData.allowedCarriers
+
+    this.paymentDescription = parsedData.paymentDescription
   }
 
   private static validationSchema = z.object({
@@ -153,6 +156,7 @@ export class Agreement {
         if (!val) return undefined
         return val.map((i) => i.toString())
       }),
+    paymentDescription: z.string().nullable().optional(),
   })
 
   static dbSchema = {
@@ -180,5 +184,6 @@ export class Agreement {
     executor: { type: Types.ObjectId, ref: 'TkName' },
     executorName: { type: String },
     allowedCarriers: [{ type: Types.ObjectId, ref: 'Company' }],
+    paymentDescription: { type: String },
   }
 }

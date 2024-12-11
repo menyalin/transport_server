@@ -29,7 +29,7 @@ export class Vehicle {
   startServiceDate?: Date | null
   endServiceDate?: Date | null
   type: TRUCK_TYPES_ENUM
-  kind: TRUCK_KINDS_ENUM
+  kind: TRUCK_KINDS_ENUM | null
   liftCapacityType: number
   order: number
   tkName: string
@@ -97,9 +97,9 @@ export class Vehicle {
           .array(AdditionalNotification.validationSchema)
           .optional()
           .nullable(),
-        additionalDetails: AdditionalVehicleInfo.validationSchema,
-        insurance: InsuranceInfo.validationSchema,
-        permits: PermitsInfo.validationSchema,
+        additionalDetails: AdditionalVehicleInfo.validationSchema.optional(),
+        insurance: InsuranceInfo.validationSchema.optional(),
+        permits: PermitsInfo.validationSchema.optional(),
         brand: z.string().optional().nullable(),
         model: z.string().optional().nullable(),
         brigadier: z.string().optional().nullable(),
@@ -110,7 +110,7 @@ export class Vehicle {
         startServiceDate: z.date().optional().nullable(),
         endServiceDate: z.date().optional().nullable(),
         type: z.nativeEnum(TRUCK_TYPES_ENUM),
-        kind: z.nativeEnum(TRUCK_KINDS_ENUM),
+        kind: z.nativeEnum(TRUCK_KINDS_ENUM).nullable(),
         liftCapacityType: z.number(),
         tkName: objectIdSchema,
         regNum: z.string(),
