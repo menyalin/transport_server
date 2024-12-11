@@ -1,4 +1,3 @@
-// @ts-nocheck
 import pkg from 'mongoose'
 const { Schema, model } = pkg
 
@@ -21,6 +20,7 @@ const companySchema = new Schema(
       defaultLiftCapacity: Number,
       loadDirections: [String],
       defaultLoadDirection: String,
+      commonOrderContractNote: String,
     },
     inn: {
       type: String,
@@ -32,7 +32,7 @@ const companySchema = new Schema(
       default: true,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 )
 
 export default model('Company', companySchema, 'companies')

@@ -15,6 +15,8 @@ import {
   OrderRepository,
   PartnerRepository,
   DriverRepository,
+  VehicleRepository,
+  CompanyRepository,
 } from '@/repositories'
 import { BadRequestError } from '@/helpers/errors'
 
@@ -58,14 +60,25 @@ export const commonOrderContractBuilder = async (
   const driver = await DriverRepository.getById(driverId)
   if (!driver) throw new BadRequestError('Водитель не найден')
 
-  // const carrierAgreement = await AgreementRepository.getById(
-  //   carrierAgreementId.toString()
-  // )
+  const truck = order.confirmedCrew.truck
+    ? await VehicleRepository.getById(order.confirmedCrew.truck?.toString())
+    : null
+
+  const trailer = order.confirmedCrew?.trailer
+    ? await VehicleRepository.getById(order.confirmedCrew.trailer.toString())
+    : null
+
+  const carrierAgreement = await AgreementRepository.getById(
+    carrierAgreementId.toString()
+  )
+  const companySettings = await CompanyRepository.getCompanySettings(
+    order.company
+  )
 
   const data: ICommonOrderContractProps = {
     headerInfo: {
       num: order.client.num || 'б/н',
-      date: order.orderDate.toLocaleString('ru-Ru'),
+      date: order.orderDate.toLocaleDateString('ru-Ru'),
       customer: customer?.companyInfo?.fullName || 'empty',
       carrier: carrier?.companyInfo?.fullName || 'empty',
     },
@@ -85,21 +98,18 @@ export const commonOrderContractBuilder = async (
       fullName: driver.fullName,
       passport: driver.passportInfo,
       phone: [driver.phone, driver.phone2].join(' ').trim(),
-      tsRegNum: '1234',
+      tsRegNum:
+        (truck?.regNum ? `${truck.regNum}` : '') +
+        (trailer?.regNum ? `, ${trailer.regNum}` : ''),
     },
     paymentInfo: {
-      paymentSum: 25000.25,
-      paymentDescription: 'Оплата по договору',
+      paymentSum: order.totalOutsourceCosts.price,
+      paymentDescription: carrierAgreement?.paymentDescription || '',
     },
-    notes: [
-      'Замечание 1',
-      'Замечание 2',
-      'Замечание 3',
-      'Замечание 4',
-      'Замечание 5',
-    ],
+    notes:
+      companySettings?.commonOrderContractNote.split('\n').filter(Boolean) ||
+      null,
     route: routePFData,
-
     customer: customer?.getPFdata,
     carrier: carrier?.getPFdata,
   }
