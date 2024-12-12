@@ -24,11 +24,11 @@ export class OrderPickedForInvoiceDTO {
   driverName?: string
   reqTransport: any
   confirmedCrew: {
-    truck: Types.ObjectId | string
-    trailer: Types.ObjectId | string | null
-    driver: Types.ObjectId | string | null
-    outsourceAgreement: Types.ObjectId | string | null
-    tkName: Types.ObjectId | string
+    truck?: Types.ObjectId | string | null
+    trailer?: Types.ObjectId | string | null
+    driver?: Types.ObjectId | string | null
+    outsourceAgreement?: Types.ObjectId | string | null
+    tkName?: Types.ObjectId | string | null
   }
   route: any[]
   analytics?: {
