@@ -8,21 +8,26 @@ export class ContactInfo {
   note?: string
 
   constructor(props: unknown) {
-    const p = ContactInfo.validationSchema.parse(props)
-    this.name = p.name
-    this.position = p.position
-    this.phone = p.phone
-    this.email = p.email
-    this.note = p.note
+    try {
+      const p = ContactInfo.validationSchema.parse(props)
+      this.name = p.name
+      this.position = p.position ?? undefined
+      this.phone = p.phone ?? undefined
+      this.email = p.email ?? undefined
+      this.note = p.note ?? undefined
+    } catch (e) {
+      console.log(e)
+      throw e
+    }
   }
 
   static get validationSchema() {
     return z.object({
       name: z.string(),
-      position: z.string().optional(),
-      phone: z.string().optional(),
-      email: z.string().optional(),
-      note: z.string().optional(),
+      position: z.string().optional().nullable(),
+      phone: z.string().optional().nullable(),
+      email: z.string().optional().nullable(),
+      note: z.string().optional().nullable(),
     })
   }
 

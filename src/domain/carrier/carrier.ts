@@ -25,7 +25,7 @@ export class Carrier {
     this.companyInfo = p.companyInfo
       ? new CompanyInfo(p.companyInfo)
       : undefined
-    this.contacts = p.contacts
+    this.contacts = p.contacts?.map((i) => new ContactInfo(i)) ?? undefined
     this.outsource = p.outsource
     this.isActive = p.isActive
   }
@@ -57,8 +57,8 @@ export class Carrier {
       name: z.string(),
       company: objectIdSchema,
       companyInfo: CompanyInfo.validationSchema.optional(),
-      bankAccountInfo: BankAccountInfo.validationSchema.optional(),
-      contacts: z.array(ContactInfo.validationSchema).optional(),
+      bankAccountInfo: BankAccountInfo.validationSchema.optional().nullable(),
+      contacts: z.array(ContactInfo.validationSchema).optional().nullable(),
       outsource: z.boolean().default(false),
       isActive: z.boolean().default(true),
     })
