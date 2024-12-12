@@ -4,7 +4,7 @@ import { z } from 'zod'
 class Item {
   _id: string
   orderId: string
-  orderNum: string
+  orderNum?: string | null
   orderDate: string
   driverName: string
   total: {
@@ -30,7 +30,7 @@ class Item {
   static validationSchema = z.object({
     _id: objectIdSchema,
     orderId: objectIdSchema,
-    orderNum: z.string(),
+    orderNum: z.string().optional().nullable(),
     orderDate: z.string(),
     driverName: z.string(),
     total: z.object({
