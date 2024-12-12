@@ -5,6 +5,7 @@ import { ORDER_DOC_STATUSES_ENUM } from '@/constants/orderDocsStatus'
 export class PickOrdersPropsDTO {
   company: string
   agreement: string
+  carrier: string
   period: DateRange
   docStatuses?: ORDER_DOC_STATUSES_ENUM[]
   number?: string
@@ -14,6 +15,7 @@ export class PickOrdersPropsDTO {
   constructor(p: any) {
     const validatedProps = PickOrdersPropsDTO.validationSchema.parse(p)
     this.agreement = validatedProps.agreement
+    this.carrier = validatedProps.carrier
     this.company = validatedProps.company
     this.number = validatedProps.number
     this.period = new DateRange(
@@ -34,6 +36,7 @@ export class PickOrdersPropsDTO {
         .optional()
         .default([]),
       agreement: z.string(),
+      carrier: z.string(),
       number: z.string().optional(),
       period: z.array(z.string().date()).length(2),
       limit: z.string(),

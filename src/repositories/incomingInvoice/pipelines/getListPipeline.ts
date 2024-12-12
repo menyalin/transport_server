@@ -1,6 +1,7 @@
 import { PipelineStage, Types } from 'mongoose'
 import { GetListPropsDTO } from '../dto/getListProps.dto'
 import { INCOMING_INVOICE_STATUSES_ENUM } from '@/constants/incomingInvoice'
+import { outsourceCarriersManager } from '@/services/permission/permissionList'
 
 export const getListPipeline = (props: GetListPropsDTO): PipelineStage[] => {
   //#region: firstMatcher
@@ -15,6 +16,10 @@ export const getListPipeline = (props: GetListPropsDTO): PipelineStage[] => {
       },
     },
   }
+  if (props.carriers?.length)
+    firstMatcher.$match.$expr?.$and.push({
+      $in: ['$carrier', props.carriers.map((i) => new Types.ObjectId(i))],
+    })
 
   if (props.statuses?.length)
     firstMatcher.$match.$expr?.$and.push({ $in: ['$status', props.statuses] })
@@ -32,6 +37,14 @@ export const getListPipeline = (props: GetListPropsDTO): PipelineStage[] => {
       },
     })
   //#endregion
+  const carrierLookup: PipelineStage.Lookup = {
+    $lookup: {
+      from: 'tknames',
+      localField: 'carrier',
+      foreignField: '_id',
+      as: 'carrier',
+    },
+  }
 
   const aggrementLookup: PipelineStage.Lookup = {
     $lookup: {
@@ -46,6 +59,9 @@ export const getListPipeline = (props: GetListPropsDTO): PipelineStage[] => {
     $addFields: {
       agreementName: {
         $getField: { field: 'name', input: { $first: '$agreement' } },
+      },
+      carrierName: {
+        $getField: { field: 'name', input: { $first: '$carrier' } },
       },
       status: {
         $switch: {
@@ -77,5 +93,5 @@ export const getListPipeline = (props: GetListPropsDTO): PipelineStage[] => {
       items: [{ $skip: props.skip }, { $limit: props.limit }],
     },
   }
-  return [firstMatcher, aggrementLookup, addFields, finalGroup]
+  return [firstMatcher, aggrementLookup, carrierLookup, addFields, finalGroup]
 }
