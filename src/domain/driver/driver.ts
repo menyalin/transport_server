@@ -69,7 +69,7 @@ export class Driver {
   }
 
   get fullName(): string {
-    return `${this.surname} ${this.name} ${this.patronymic}`.trim()
+    return `${this.surname ?? ''} ${this.name ?? ''} ${this.patronymic ?? ''}`.trim()
   }
 
   get passportInfo(): string {

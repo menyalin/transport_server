@@ -119,7 +119,7 @@ export const commonOrderContractBuilder = async (
     styles: {
       default: {
         ...styles.defaultDocStyles,
-        document: { run: { size: '9pt', font: 'Times New Roman' } },
+        document: { run: { size: '8pt', font: 'Times New Roman' } },
       },
     },
     sections: [
