@@ -10,6 +10,7 @@ export class GetListPropsDTO {
   sortDesc: boolean[]
   agreements?: string[]
   statuses?: string[]
+  carriers?: string[]
   number?: string
 
   constructor(p: any) {
@@ -28,6 +29,7 @@ export class GetListPropsDTO {
     this.agreements = validatedProps?.agreements
     this.statuses = validatedProps.statuses
     this.number = validatedProps.number
+    this.carriers = validatedProps.carriers
   }
 
   static validationSchema = z.object({
@@ -40,5 +42,6 @@ export class GetListPropsDTO {
     sortDesc: z.array(z.string()).optional().default([]),
     agreements: z.array(z.string()).optional().default([]),
     statuses: z.array(z.string()).optional().default([]),
+    carriers: z.array(z.string()).optional().default([]),
   })
 }

@@ -9,6 +9,7 @@ export class CreateIncomingInvoiceDTO {
   date: Date
   plannedPayDate: Date | null
   agreement: string
+  carrier: string
   status: string
   isActive: boolean
   note?: string
@@ -22,6 +23,7 @@ export class CreateIncomingInvoiceDTO {
       this.date = p.date
       this.plannedPayDate = p.plannedPayDate
       this.agreement = p.agreement
+      this.carrier = p.carrier
       this.status = p.status
       this.isActive = p.isActive
       this.note = p.note
@@ -39,6 +41,7 @@ export class CreateIncomingInvoiceDTO {
       date: z.date(),
       plannedPayDate: z.date().optional(),
       agreement: z.string(),
+      carrier: z.string(),
       status: z.string(),
       isActive: z.boolean(),
       note: z.string().optional(),

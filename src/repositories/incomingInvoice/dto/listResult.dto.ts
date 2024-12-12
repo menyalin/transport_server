@@ -8,6 +8,7 @@ class IncomingInvoiceListItemDTO {
   date: Date
   plannedPayDate: Date | null
   agreementName: string
+  carrierName?: string
   status: string
   ordersCount: number = 0
   priceWithVat: number = 0
@@ -23,6 +24,7 @@ class IncomingInvoiceListItemDTO {
     this.date = parsedProps.date
     this.plannedPayDate = parsedProps.plannedPayDate
     this.agreementName = parsedProps.agreementName
+    this.carrierName = parsedProps.carrierName
     this.status = parsedProps.status
     this.note = parsedProps.note ?? null
     this.ordersCount = parsedProps.ordersCount
@@ -37,6 +39,7 @@ class IncomingInvoiceListItemDTO {
     date: z.date(),
     plannedPayDate: z.date().nullable(),
     agreementName: z.string(),
+    carrierName: z.string().optional(),
     status: z.string(),
     ordersCount: z.number().default(0),
     priceWithVat: z.number().default(0),

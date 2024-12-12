@@ -16,6 +16,7 @@ interface IIncomingInvoiceProps {
   date: Date | string | null
   plannedPayDate: string | Date | null
   agreement: string
+  carrier: string
   status: string
   isActive: boolean
   note?: string
@@ -32,6 +33,7 @@ export class IncomingInvoice {
   date: Date
   plannedPayDate: Date | null
   agreement: string
+  carrier: string
   status: string
   isActive: boolean
   note?: string
@@ -47,6 +49,7 @@ export class IncomingInvoice {
     this.date = DateUtils.parseDate(invoice.date) ?? new Date()
     this.plannedPayDate = DateUtils.parseDate(invoice.plannedPayDate)
     this.agreement = invoice.agreement.toString()
+    this.carrier = invoice.carrier
     this.status = invoice.status
     this.isActive = invoice.isActive
     this.note = invoice.note
@@ -97,9 +100,11 @@ export class IncomingInvoice {
     )
   }
   update(body: Omit<CreateIncomingInvoiceDTO, '_id' | 'company'>): BusEvent[] {
-    if (this.ordersCount === 0) {
-      this.agreement = body.agreement
-    }
+    const isEmptyInvoice = this.ordersCount === 0
+
+    if (isEmptyInvoice) this.agreement = body.agreement
+    if (!this.carrier || isEmptyInvoice) this.carrier = body.carrier
+
     this.date = body.date
     this.number = body.number
     this.plannedPayDate = body.plannedPayDate
@@ -121,6 +126,7 @@ export class IncomingInvoice {
       date: { type: Date, required: true },
       plannedPayDate: Date,
       agreement: { type: Types.ObjectId, ref: 'Agreement', required: true },
+      carrier: { type: Types.ObjectId, ref: 'Carrier', required: true },
       status: String,
       isActive: Boolean,
       note: String,
