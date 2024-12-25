@@ -38,7 +38,7 @@ export class PickOrdersPropsDTO {
       agreement: z.string(),
       carrier: z.string(),
       number: z.string().optional(),
-      period: z.array(z.string().date()).length(2),
+      period: z.array(z.string()).length(2),
       limit: z.string(),
       skip: z.string(),
     })

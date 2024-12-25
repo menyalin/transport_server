@@ -1,5 +1,7 @@
 import { Carrier } from '@/domain/carrier/carrier'
 import { TkName as CarrierModel } from '@/models'
+import { createGetListPipeline } from './pipelines/listPipeline'
+
 interface IProps {
   model: typeof CarrierModel
 }
@@ -13,6 +15,15 @@ class CarrierRepository {
     const doc = await this.model.findById(id).lean()
     if (!doc) return null
     return new Carrier(doc)
+  }
+
+  async getList(params: unknown): Promise<{ items: any; count: number }> {
+    const pipeline = createGetListPipeline(params)
+    const res = await this.model.aggregate(pipeline)
+    return {
+      items: res[0]?.items ?? [],
+      count: res[0]?.count[0]?.count ?? 0,
+    }
   }
 }
 

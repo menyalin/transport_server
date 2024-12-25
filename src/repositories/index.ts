@@ -1,5 +1,6 @@
 import AddressRepository from './address/address.repository'
 import AgreementRepository from './agreement/agreement.repository'
+import CarrierAgreementRepository from './carrierAgreement/carrierAgreement.repository'
 import CarrierRepository from './carrier/carrier.repository'
 import OrderRepository from './order/order.repository'
 import PrintFormRepository from './printForm/printForm.repository'
@@ -13,6 +14,7 @@ import CompanyRepository from './company/company.repository'
 export {
   AddressRepository,
   AgreementRepository,
+  CarrierAgreementRepository,
   CarrierRepository,
   PrintFormRepository,
   PaymentInvoiceRepository,

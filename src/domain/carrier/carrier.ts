@@ -9,6 +9,7 @@ import { ICarreierPFData } from './interfaces'
 export class Carrier {
   name: string
   company: string
+  agreement: string | null
   bankAccountInfo?: BankAccountInfo
   companyInfo?: CompanyInfo
   contacts?: ContactInfo[]
@@ -28,6 +29,7 @@ export class Carrier {
     this.contacts = p.contacts?.map((i) => new ContactInfo(i)) ?? undefined
     this.outsource = p.outsource
     this.isActive = p.isActive
+    this.agreement = p.agreement?.toString() ?? null
   }
 
   get getPFdata(): ICarreierPFData {
@@ -61,6 +63,7 @@ export class Carrier {
       contacts: z.array(ContactInfo.validationSchema).optional().nullable(),
       outsource: z.boolean().default(false),
       isActive: z.boolean().default(true),
+      agreement: objectIdSchema.optional().nullable().default(null),
     })
   }
 
@@ -71,6 +74,7 @@ export class Carrier {
         type: Types.ObjectId,
         ref: 'Company',
       },
+      agreement: { type: Types.ObjectId, ref: 'carrierAgreement' },
       companyInfo: CompanyInfo.dbSchema,
       bankAccountInfo: BankAccountInfo.dbSchema,
       contacts: [ContactInfo.dbSchema],
