@@ -58,12 +58,16 @@ export const outsourceCarriersManager = {
   'report:orderDocs': true,
   'agreement:readList': true,
   'agreement:readItem': true,
-  'agreement:write': true,
-  'agreement:delete': true,
-  'tkName:readList': true,
-  'tkName:readItem': true,
-  'tkName:write': true,
-  'tkName:delete': true,
+
+  'carrierAgreement:readList': true,
+  'carrierAgreement:readItem': true,
+  'carrierAgreement:write': true,
+  'carrierAgreement:delete': true,
+
+  'carrier:readList': true,
+  'carrier:readItem': true,
+  'carrier:write': true,
+  'carrier:delete': true,
   'order:create': true,
   'order:daysForReadOutsourceCosts': -1,
   'order:daysForWriteOutsourceCosts': -1,
@@ -112,8 +116,12 @@ export const director = {
   'order:printForms': true,
   'agreement:readList': true,
   'agreement:readItem': true,
-  'tkName:readList': true,
-  'tkName:readItem': true,
+
+  'carrierAgreement:readList': true,
+  'carrierAgreement:readItem': true,
+
+  'carrier:readList': true,
+  'carrier:readItem': true,
   'address:readList': true,
   'address:readItem': true,
   'zone:readList': true,
@@ -158,8 +166,8 @@ export const director = {
 }
 
 export const dispatcher = {
-  'tkName:readList': true,
-  'tkName:readItem': true,
+  'carrier:readList': true,
+  'carrier:readItem': true,
   'address:readList': true,
   'address:readItem': true,
   'zone:readList': true,
@@ -168,6 +176,10 @@ export const dispatcher = {
   'region:readItem': true,
   'city:readList': true,
   'city:readItem': true,
+
+  'carrierAgreement:readList': true,
+  'carrierAgreement:readItem': true,
+
   'downtime:readList': true,
   'downtime:readItem': true,
   'downtime:write': true,
@@ -202,8 +214,8 @@ export const dispatcher = {
 
 export const seniorDispatcher = {
   ...dispatcher,
-  'tkName:write': true,
-  'tkName:delete': true,
+  'carrier:write': true,
+  'carrier:delete': true,
   'address:write': true,
   'address:delete': true,
   'partner:write': true,
@@ -223,6 +235,10 @@ export const seniorDispatcher = {
   'order:showReturnCheckbox': true,
   'docsRegistry:readList': true,
   'docsRegistry:readItem': true,
+  'carrierAgreement:readList': true,
+  'carrierAgreement:readItem': true,
+  'carrierAgreement:write': true,
+  'carrierAgreement:delete': true,
 }
 
 export const checkman = {
@@ -233,8 +249,8 @@ export const checkman = {
   'order:daysForRead': -1,
   'order:daysForWrite': 14,
   'order:daysForReadPrice': 14,
-  'tkName:readList': true,
-  'tkName:readItem': true,
+  'carrier:readList': true,
+  'carrier:readItem': true,
   'address:readList': true,
   'address:readItem': true,
   'zone:readList': true,
@@ -286,6 +302,11 @@ export const accountant = {
   'agreement:readList': true,
   'agreement:readItem': true,
   'agreement:write': true,
+
+  'carrierAgreement:readList': true,
+  'carrierAgreement:readItem': true,
+  'carrierAgreement:write': true,
+
   'partner:write': true,
   'tariff:readList': true,
   'tariff:readItem': true,

@@ -142,9 +142,13 @@ class CrewService {
   }
 
   async getList(params) {
-    const pipeline = getCrewListPipeline(params)
-    const data = await Crew.aggregate(pipeline)
-    return data[0]
+    try {
+      const pipeline = getCrewListPipeline(params)
+      const data = await Crew.aggregate(pipeline)
+      return data[0]
+    } catch (e) {
+      throw new Error(e.message)
+    }
   }
 
   async getById({ id, forEdit }) {

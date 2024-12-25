@@ -5,7 +5,7 @@ import AddressService from './address'
 import DriverService from './driver'
 import TruckService from './truck'
 import CrewService from './crew'
-import TkNameService from './tkName'
+import CarrierService from './carrier'
 import OrderService from './order'
 import PartnerService from './partner'
 import DowntimeService from './downtime'
@@ -14,6 +14,7 @@ import ReportService from './report'
 import OrderTemplateService from './orderTemplate'
 import ScheduleNoteService from './scheduleNote'
 import AgreementService from './agreement'
+import CarrierAgreementService from './carrierAgreement/carrierAgreement.service'
 import PermissionService from './permission'
 import SalaryTariffService from './salaryTariff'
 import ZoneService from './zone'
@@ -43,7 +44,7 @@ export {
   DriverService,
   TruckService,
   CrewService,
-  TkNameService,
+  CarrierService,
   OrderService,
   PartnerService,
   DowntimeService,
@@ -71,4 +72,5 @@ export {
   TariffContractService,
   MassUpdateService,
   IncomingInvoiceService,
+  CarrierAgreementService,
 }
