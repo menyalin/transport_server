@@ -1,7 +1,6 @@
 import { PipelineStage, Types } from 'mongoose'
 import { GetListPropsDTO } from '../dto/getListProps.dto'
 import { INCOMING_INVOICE_STATUSES_ENUM } from '@/constants/incomingInvoice'
-import { outsourceCarriersManager } from '@/services/permission/permissionList'
 
 export const getListPipeline = (props: GetListPropsDTO): PipelineStage[] => {
   //#region: firstMatcher
@@ -16,6 +15,7 @@ export const getListPipeline = (props: GetListPropsDTO): PipelineStage[] => {
       },
     },
   }
+
   if (props.carriers?.length)
     firstMatcher.$match.$expr?.$and.push({
       $in: ['$carrier', props.carriers.map((i) => new Types.ObjectId(i))],
@@ -28,15 +28,16 @@ export const getListPipeline = (props: GetListPropsDTO): PipelineStage[] => {
       $in: ['$agreement', props.agreements.map((i) => new Types.ObjectId(i))],
     })
 
-  if (props.number)
+  if (props.search)
     firstMatcher.$match.$expr?.$and.push({
       $regexMatch: {
         input: '$number',
-        regex: new RegExp(props.number, 'i'),
+        regex: props.search,
         options: 'i',
       },
     })
   //#endregion
+
   const carrierLookup: PipelineStage.Lookup = {
     $lookup: {
       from: 'tknames',
@@ -93,5 +94,6 @@ export const getListPipeline = (props: GetListPropsDTO): PipelineStage[] => {
       items: [{ $skip: props.skip }, { $limit: props.limit }],
     },
   }
+
   return [firstMatcher, aggrementLookup, carrierLookup, addFields, finalGroup]
 }
