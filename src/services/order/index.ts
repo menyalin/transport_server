@@ -20,6 +20,7 @@ import {
   AddressRepository,
   TariffContractRepository,
   PrintFormRepository,
+  IncomingInvoiceRepository,
 } from '@/repositories'
 import { Order as OrderDomain } from '@/domain/order/order.domain'
 import { bus } from '@/eventBus'
@@ -213,6 +214,9 @@ class OrderService {
         order._id?.toString(),
         ...(order?.paymentParts?.map((i: any) => i._id.toString()) || []),
       ])
+      order.incomingInvoice = await IncomingInvoiceRepository.getForOrderById(
+        order._id
+      )
     }
 
     return order

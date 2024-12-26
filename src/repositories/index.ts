@@ -10,6 +10,7 @@ import TariffContractRepository from './tariffContract/tariffContract.repository
 import DriverRepository from './driver/driver.repository'
 import VehicleRepository from './vehicle/vehicle.repository'
 import CompanyRepository from './company/company.repository'
+import { IncomingInvoiceRepository } from './incomingInvoice'
 
 export {
   AddressRepository,
@@ -24,4 +25,5 @@ export {
   DriverRepository,
   VehicleRepository,
   CompanyRepository,
+  IncomingInvoiceRepository,
 }
