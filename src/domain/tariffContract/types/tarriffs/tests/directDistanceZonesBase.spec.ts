@@ -30,6 +30,7 @@ describe('DirectDistanceZonesBaseTariff', () => {
       const order: Order = createTestOrder({
         analytics: createOrderAnalytics({
           distanceDirect: 55,
+          distanceRoad: 55,
           loadingZones: [loadingZoneId],
           unloadingZones: [loadingZoneId, loadingZoneId],
         }),
@@ -80,6 +81,7 @@ describe('DirectDistanceZonesBaseTariff', () => {
       const order: Order = createTestOrder({
         analytics: createOrderAnalytics({
           distanceDirect: 110,
+          distanceRoad: 110,
           loadingZones: [secondLoadingZoneId],
           unloadingZones: [loadingZoneId, loadingZoneId],
         }),
@@ -123,6 +125,7 @@ describe('DirectDistanceZonesBaseTariff', () => {
         ],
         analytics: createOrderAnalytics({
           distanceDirect: 55,
+          distanceRoad: 55,
           loadingZones: [loadingZoneId],
           unloadingZones: [loadingZoneId, loadingZoneId],
         }),
@@ -184,6 +187,7 @@ describe('DirectDistanceZonesBaseTariff', () => {
         ],
         analytics: createOrderAnalytics({
           distanceDirect: 149,
+          distanceRoad: 149,
           loadingZones: [loadingZoneId],
           unloadingZones: [loadingZoneId, loadingZoneId],
         }),
