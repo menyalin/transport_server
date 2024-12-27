@@ -7,7 +7,6 @@ import { emitTo } from '../../socket'
 import { getSchedulePipeline } from './pipelines/getSchedulePipeline'
 import { AgreementService, ChangeLogService, PermissionService } from '..'
 import checkCrossItems from './checkCrossItems'
-import checkRefusedOrder from './checkRefusedOrder'
 import getRouteFromTemplate from './getRouteFromTemplate'
 import getClientAgreementId from './getClientAgreement'
 import { getOutsourceAgreementId } from './getOutsourceAgreementId'
@@ -48,8 +47,7 @@ class OrderService {
       operation: 'order:daysForWrite',
       startDate: body.route[0].plannedDate,
     })
-
-    checkRefusedOrder(body)
+    OrderDomain.isValidBody(body)
     await checkCrossItems({ body })
 
     if (!body.client.agreement && body.route[0].plannedDate)
@@ -272,7 +270,7 @@ class OrderService {
   }
 
   async updateOne({ id, body, user }: { id: string; body: any; user: string }) {
-    checkRefusedOrder(body)
+    OrderDomain.isValidBody(body)
 
     if (!body.client.agreement && body.route[0].plannedDate)
       body.client.agreement = await getClientAgreementId(body)

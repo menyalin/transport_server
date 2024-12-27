@@ -178,6 +178,10 @@ export class RoutePoint {
     return this.firstDate
   }
 
+  get hasPlannedDate() {
+    return !!this._plannedDate
+  }
+
   autofillDates({ minDate, unloadingDurationInMinutes }: any) {
     if (
       !minDate ||
