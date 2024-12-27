@@ -18,22 +18,22 @@ interface Props {
 
 export class OrderAnalytics {
   type: OrderType
-  distanceRoad: number
-  distanceDirect: number
+  distanceRoad: number | null
+  distanceDirect: number | null
   loadingZones?: string[]
   unloadingZones?: string[]
   routeStats?: RouteStats
 
-  constructor(p: Props) {
-    OrderAnalytics.validationSchema.parse(p)
+  constructor(props: Props) {
+    const p = OrderAnalytics.validationSchema.parse(props)
     this.type = p.type
     this.distanceDirect = p.distanceDirect
     this.distanceRoad = p.distanceRoad
     this.loadingZones = p.loadingZones ? p.loadingZones : undefined
     this.unloadingZones = p.unloadingZones ? p.unloadingZones : undefined
 
-    if (p.route) this.routeStats = new RouteStats(p.route)
-    else if (p.routeStats) this.routeStats = p.routeStats
+    if (props.route) this.routeStats = new RouteStats(props.route)
+    else if (props.routeStats) this.routeStats = props.routeStats
   }
 
   static get dbSchema() {
@@ -52,8 +52,8 @@ export class OrderAnalytics {
         .string()
         .nullable()
         .transform((val) => (val as OrderType) ?? 'region'),
-      distanceRoad: z.number().nonnegative(),
-      distanceDirect: z.number().nonnegative(),
+      distanceRoad: z.number().nullable().optional().default(0),
+      distanceDirect: z.number().nullable().optional().default(0),
       loadingZones: z
         .array(objectIdSchema)
         .transform((val) => val.map((i) => i.toString()))

@@ -373,4 +373,18 @@ export class Order {
       )
     return
   }
+
+  static isValidBody(body: IOrderDTO): void {
+    Route.validateRoute(
+      body?.route?.map((p) => new RoutePoint(p)),
+      'isValidBody'
+    )
+
+    // Проверка наличия комментария в зависимости от статуса рейса
+    const STATUSES = ['weRefused', 'clientRefused', 'notСonfirmedByClient']
+    if (STATUSES.includes(body?.state?.status as string) && !body.note)
+      throw new BadRequestError(
+        'Сохранение не возможно. Необходимо заполнить примечание'
+      )
+  }
 }
