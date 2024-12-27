@@ -7,6 +7,7 @@ describe('route methods', () => {
       new RoutePoint({
         type: 'loading',
         address: 'addr1',
+        plannedDate: new Date('2023-01-01'),
       }),
       new RoutePoint({
         type: 'unloading',
@@ -41,10 +42,12 @@ describe('route methods', () => {
       new RoutePoint({
         type: 'loading',
         address: 'addr1',
+        plannedDate: new Date('2023-01-01'),
       }),
       new RoutePoint({
         type: 'loading',
         address: 'addr2',
+        plannedDate: new Date('2023-01-01'),
       }),
       new RoutePoint({
         type: 'unloading',
@@ -59,6 +62,7 @@ describe('route methods', () => {
       new RoutePoint({
         type: 'loading',
         address: 'addr1',
+        plannedDate: new Date('2023-01-01'),
       }),
       new RoutePoint({
         type: 'unloading',
@@ -67,6 +71,7 @@ describe('route methods', () => {
     ])
     expect(route.allUnloadingPoints.map((i) => i.address)).toEqual(['addr2'])
   })
+
   test('route with 2 unloading points', () => {
     const route = new Route([
       new RoutePoint({
@@ -75,6 +80,7 @@ describe('route methods', () => {
       }),
       new RoutePoint({
         type: 'loading',
+        plannedDate: new Date('2023-01-01'),
         address: 'addr2',
         isMainLoadingPoint: true,
       }),
@@ -89,6 +95,7 @@ describe('route methods', () => {
   test('route with 2 loading points without main loading point ', () => {
     const route = new Route([
       new RoutePoint({
+        plannedDate: new Date('2023-01-01'),
         type: 'loading',
         address: 'addr1',
       }),
@@ -110,6 +117,7 @@ describe('route methods', () => {
   test('route with 2 loading points with return point ', () => {
     const route = new Route([
       new RoutePoint({
+        plannedDate: new Date('2023-01-01'),
         type: 'loading',
         address: 'addr1',
         isMainLoadingPoint: true,
