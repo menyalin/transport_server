@@ -19,7 +19,7 @@ export default (props: unknown): PipelineStage[] => {
   const firstMatcher: PipelineStage.Match = {
     $match: {
       isActive: true,
-      closed: { $ne: true },
+      // closed: { $ne: true }, //TODO: fix it
       company: new Types.ObjectId(p.company),
       date: { $lte: p.date },
       $expr: {
@@ -39,7 +39,7 @@ export default (props: unknown): PipelineStage[] => {
   return [
     firstMatcher,
     { $sort: { date: -1 } },
-    { $group: { _id: '$executorName', items: { $push: '$$ROOT' } } },
+    { $group: { _id: '$_id', items: { $push: '$$ROOT' } } },
     { $replaceRoot: { newRoot: { $first: '$items' } } },
   ]
 }
