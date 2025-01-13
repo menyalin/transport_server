@@ -1,23 +1,18 @@
-//@ts-nocheck
-import { Order } from '@/domain/order/order.domain'
-import { AgreementService, TruckService } from '..'
+import { CarrierRepository, VehicleRepository } from '@/repositories'
 
 export const getOutsourceAgreementId = async (
-  order: Order
+  truckId: string
 ): Promise<string | null> => {
   try {
-    if (!order.confirmedCrew.truck) return null
+    if (!truckId) return null
 
-    const truck = await TruckService.getById(order.confirmedCrew.truck)
-    if (!truck || !truck.tkName?.outsource) return null
+    const truck = await VehicleRepository.getById(truckId)
 
-    const agreement = await AgreementService.getForOrder({
-      company: order.company,
-      tkNameId: (truck?.tkName?._id as any).toString(),
-      date: order.orderDate,
-    })
+    if (!truck) return null
 
-    return agreement ? (agreement._id.toString() as string) : null
+    const carrier = await CarrierRepository.getById(truck.carrierId)
+
+    return carrier?.agreement ?? null
   } catch (e) {
     console.log('getOutsourceAgreementId error:', e)
     return null

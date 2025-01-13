@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import { Types } from 'mongoose'
 import {
   Order as OrderModel,
   OrderTemplate as OrderTemplateModel,
@@ -53,9 +53,10 @@ class OrderService {
     if (!body.client.agreement && body.route[0].plannedDate)
       body.client.agreement = await getClientAgreementId(body)
 
-    if (!body.confirmedCrew.outsourceAgreement && body.route[0].plannedDate)
-      body.confirmedCrew.outsourceAgreement =
-        await getOutsourceAgreementId(body)
+    if (!body.confirmedCrew.outsourceAgreement && body.confirmedCrew?.truck)
+      body.confirmedCrew.outsourceAgreement = await getOutsourceAgreementId(
+        body.confirmedCrew?.truck
+      )
 
     const order = await OrderRepository.create(body)
     order.analytics = await this.updateOrderAnalytics(order)
@@ -133,9 +134,9 @@ class OrderService {
       order.confirmedCrew.truck = null
       order.confirmedCrew.outsourceAgreement = null
     } else {
-      order.confirmedCrew.truck = new mongoose.Types.ObjectId(truck)
+      order.confirmedCrew.truck = truck
       order.confirmedCrew.outsourceAgreement =
-        await getOutsourceAgreementId(order)
+        await getOutsourceAgreementId(truck)
     }
     order.confirmedCrew.driver = null
     order.confirmedCrew.trailer = null
@@ -334,7 +335,7 @@ class OrderService {
     emitTo(updatedOrder.company, 'order:updated', updatedOrder)
 
     await ChangeLogService.add({
-      docId: new mongoose.Types.ObjectId(updatedOrder.id),
+      docId: new Types.ObjectId(updatedOrder.id),
       company: updatedOrder.company,
       coll: 'order',
       user,
@@ -348,7 +349,9 @@ class OrderService {
   async refresh(order: OrderDomain): Promise<void> {
     order.analytics = await this.updateOrderAnalytics(order)
     order.prePrices = await this.updatePrePrices(order)
-
+    order.confirmedCrew.outsourceAgreement = order.truckId
+      ? await getOutsourceAgreementId(order.truckId)
+      : null
     bus.publish(OrdersUpdatedEvent([order]))
   }
 

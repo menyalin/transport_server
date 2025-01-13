@@ -15,6 +15,7 @@ import { z } from 'zod'
 import { objectIdSchema } from '@/shared/validationSchemes'
 
 export class Vehicle {
+  tkName: string
   additionalNotifications: AdditionalNotification[]
   additionalDetails?: AdditionalVehicleInfo
   insurance?: InsuranceInfo
@@ -32,7 +33,6 @@ export class Vehicle {
   kind: TRUCK_KINDS_ENUM | null
   liftCapacityType: number
   order: number
-  tkName: string
   regNum: string
   win?: string | null
   sts?: string | null
@@ -88,6 +88,10 @@ export class Vehicle {
     this.allowedDrivers = p.allowedDrivers
       ? p.allowedDrivers.map((i) => new AllowedDriver(i))
       : []
+  }
+
+  get carrierId(): string {
+    return this.tkName
   }
 
   static get validationSchema() {
