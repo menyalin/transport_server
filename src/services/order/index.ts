@@ -38,6 +38,7 @@ import { PrintForm } from '@/domain/printForm/printForm.domain'
 import { orderPFBuilder } from './printForms/pfBuilder'
 import { Route } from '@/domain/order/route/route'
 import { RouteStats } from '@/domain/order/route/routeStats'
+import { isValidObjectId } from 'mongoose'
 
 class OrderService {
   async create({ body, user }: { body: any; user: string }) {
@@ -200,6 +201,9 @@ class OrderService {
   }
 
   async getById(id: string) {
+    if (!isValidObjectId(id))
+      throw new BadRequestError(`Invalid order id: ${id}`)
+
     const allowedStatusesForGetDocsRegistry = ['completed']
     const order: any = await OrderModel.findById(id).lean()
     if (
@@ -216,7 +220,6 @@ class OrderService {
         order._id
       )
     }
-
     return order
   }
 
