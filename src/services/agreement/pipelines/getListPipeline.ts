@@ -8,6 +8,7 @@ export default (props: unknown) => {
     clientsOnly: z.string().optional(),
     limit: z.string(),
     skip: z.string(),
+    search: z.string().optional(),
   })
   const p = schemaProps.parse(props)
   const { company, client, clientsOnly, limit, skip } = p
@@ -29,6 +30,15 @@ export default (props: unknown) => {
   if (clientsOnly === 'true')
     firstMatcher.$match.$expr?.$and.push({
       $eq: ['$isOutsourceAgreement', false],
+    })
+
+  if (p.search)
+    firstMatcher.$match.$expr?.$and.push({
+      $regexMatch: {
+        input: '$name',
+        regex: p.search,
+        options: 'i',
+      },
     })
 
   const group: PipelineStage[] = [
