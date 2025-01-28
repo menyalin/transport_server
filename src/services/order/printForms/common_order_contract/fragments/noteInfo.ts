@@ -1,5 +1,4 @@
-import { Paragraph, TextRun } from 'docx'
-import { FileChild } from 'docx/build/file/file-child'
+import { Paragraph, TextRun, FileChild } from 'docx'
 import { BLOCK_SPACE } from '../config'
 
 export const noteInfo = (notes: string[] | null): FileChild[] => {

@@ -1,7 +1,6 @@
-import { AlignmentType } from 'docx'
-import { IDefaultStylesOptions } from 'docx/build/file/styles/factory'
+import { AlignmentType, IStylesOptions } from 'docx'
 
-export const defaultDocStyles: IDefaultStylesOptions = {
+export const defaultDocStyles: IStylesOptions['default'] = {
   heading1: {
     run: {
       size: '12pt',
