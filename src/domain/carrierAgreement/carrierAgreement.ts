@@ -54,7 +54,11 @@ export class CarrierAgreement {
         .nullable()
         .transform((v) => String(v)),
       vatRate: z.number().default(0),
-      paymentOfDays: z.number().default(0),
+      paymentOfDays: z
+        .number()
+        .nullable()
+        .default(0)
+        .transform((v) => Number(v)),
       note: z
         .string()
         .optional()
