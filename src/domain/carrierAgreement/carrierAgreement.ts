@@ -7,6 +7,7 @@ export class CarrierAgreement {
   name: string
   company: string
   isActive: boolean
+  usePriceWithVAT: boolean
   paymentDescription: string
   paymentOfDays: number = 0
   orderContractNote: string
@@ -23,6 +24,7 @@ export class CarrierAgreement {
     this.orderContractNote = p.orderContractNote
     this.paymentOfDays = p.paymentOfDays
     this.vatRate = p.vatRate
+    this.usePriceWithVAT = p.vatRate > 0 ? p.usePriceWithVAT : false
     this.note = p.note
   }
 
@@ -33,7 +35,7 @@ export class CarrierAgreement {
     this.paymentOfDays = p.paymentOfDays
     this.paymentDescription = p.paymentDescription
     this.orderContractNote = p.orderContractNote
-    this.vatRate = p.vatRate
+    this.usePriceWithVAT = p.usePriceWithVAT
     this.note = p.note
   }
 
@@ -54,7 +56,17 @@ export class CarrierAgreement {
         .nullable()
         .transform((v) => String(v)),
       vatRate: z.number().default(0),
-      paymentOfDays: z.number().default(0),
+      usePriceWithVAT: z
+        .boolean()
+        .nullable()
+        .optional()
+        .default(false)
+        .transform((v) => Boolean(v)),
+      paymentOfDays: z
+        .number()
+        .nullable()
+        .default(0)
+        .transform((v) => Number(v)),
       note: z
         .string()
         .optional()
@@ -71,6 +83,7 @@ export class CarrierAgreement {
       paymentDescription: String,
       orderContractNote: String,
       vatRate: Number,
+      usePriceWithVAT: { type: Boolean, default: false },
       paymentOfDays: Number,
       note: String,
     }

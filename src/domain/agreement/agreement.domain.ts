@@ -8,13 +8,13 @@ export class Agreement {
   date?: Date
   company: string
   clients: string[]
-  isOutsourceAgreement: boolean
+  // isOutsourceAgreement: boolean
   calcWaitingByArrivalDateLoading: boolean = false
   calcWaitingByArrivalDateUnloading: boolean = false
   noWaitingPaymentForAreLateLoading: boolean = false
   noWaitingPaymentForAreLateUnloading: boolean = false
-  outsourceCarriers: string[]
-  cashPayment: boolean = false
+  // outsourceCarriers: string[]
+  // cashPayment: boolean = false
   vatRate: number = 0
   closed: boolean = false
   useCustomPrices: boolean
@@ -23,8 +23,8 @@ export class Agreement {
   clientNumRequired?: boolean = false
   auctionNumRequired?: boolean = false
   note?: string | null
-  paymentDescription?: string | null
-  commission: number = 0
+  // paymentDescription?: string | null
+  // commission: number = 0
   executor?: string | null
   executorName: string | null
   isActive?: boolean = true
@@ -42,7 +42,7 @@ export class Agreement {
       parsedData.clients && Array.isArray(parsedData.clients)
         ? parsedData.clients
         : []
-    this.isOutsourceAgreement = parsedData.isOutsourceAgreement
+    // this.isOutsourceAgreement = parsedData.isOutsourceAgreement
     this.calcWaitingByArrivalDateLoading =
       parsedData.calcWaitingByArrivalDateLoading
     this.calcWaitingByArrivalDateUnloading =
@@ -51,12 +51,12 @@ export class Agreement {
       parsedData.noWaitingPaymentForAreLateLoading
     this.noWaitingPaymentForAreLateUnloading =
       parsedData.noWaitingPaymentForAreLateUnloading
-    this.outsourceCarriers =
-      parsedData.outsourceCarriers &&
-      Array.isArray(parsedData.outsourceCarriers)
-        ? parsedData.outsourceCarriers
-        : []
-    this.cashPayment = parsedData.cashPayment || false
+    // this.outsourceCarriers =
+    //   parsedData.outsourceCarriers &&
+    //   Array.isArray(parsedData.outsourceCarriers)
+    //     ? parsedData.outsourceCarriers
+    //     : []
+    // this.cashPayment = parsedData.cashPayment || false
     this.vatRate = parsedData.vatRate || 0
     this.closed = parsedData.closed || false
     this.useCustomPrices = parsedData.useCustomPrices || false
@@ -68,12 +68,12 @@ export class Agreement {
     this.clientNumRequired = parsedData.clientNumRequired
     this.auctionNumRequired = parsedData.auctionNumRequired
     this.note = parsedData.note
-    this.commission = parsedData.commission || 0
+    // this.commission = parsedData.commission || 0
     this.executor = parsedData.executor?.toString() ?? null
     this.executorName = parsedData.executorName || null
     this.allowedCarriers = parsedData.allowedCarriers
 
-    this.paymentDescription = parsedData.paymentDescription
+    // this.paymentDescription = parsedData.paymentDescription
   }
 
   private static validationSchema = z.object({
@@ -91,7 +91,7 @@ export class Agreement {
         if (!val) return undefined
         return val.map((i) => i.toString())
       }),
-    isOutsourceAgreement: z.boolean(),
+    // isOutsourceAgreement: z.boolean(),
     calcWaitingByArrivalDateLoading: z
       .boolean()
       .optional()
@@ -108,14 +108,14 @@ export class Agreement {
       .boolean()
       .optional()
       .transform((val) => Boolean(val)),
-    outsourceCarriers: z
-      .array(objectIdSchema)
-      .optional()
-      .transform((val) => {
-        if (!val) return undefined
-        return val.map((i) => i.toString())
-      }),
-    cashPayment: z.boolean().optional(),
+    // outsourceCarriers: z
+    //   .array(objectIdSchema)
+    //   .optional()
+    //   .transform((val) => {
+    //     if (!val) return undefined
+    //     return val.map((i) => i.toString())
+    //   }),
+    // cashPayment: z.boolean().optional(),
     vatRate: z.number(),
     closed: z
       .boolean()
@@ -142,11 +142,11 @@ export class Agreement {
       .optional()
       .transform((val) => Boolean(val)),
     note: z.string().nullable().optional(),
-    commission: z
-      .number()
-      .nullable()
-      .optional()
-      .transform((val) => (val ? val : 0)),
+    // commission: z
+    //   .number()
+    //   .nullable()
+    //   .optional()
+    //   .transform((val) => (val ? val : 0)),
     executor: objectIdSchema.nullable().optional(),
     executorName: z.string().nullable().optional(),
     allowedCarriers: z
@@ -156,7 +156,7 @@ export class Agreement {
         if (!val) return undefined
         return val.map((i) => i.toString())
       }),
-    paymentDescription: z.string().nullable().optional(),
+    // paymentDescription: z.string().nullable().optional(),
   })
 
   static dbSchema = {
@@ -165,12 +165,12 @@ export class Agreement {
     date: { type: Date, required: true },
     company: { type: Types.ObjectId, ref: 'Company', required: true },
     clients: [{ type: Types.ObjectId, ref: 'Partner' }],
-    isOutsourceAgreement: { type: Boolean, default: false },
+    // isOutsourceAgreement: { type: Boolean, default: false },
     calcWaitingByArrivalDateLoading: { type: Boolean, default: false },
     calcWaitingByArrivalDateUnloading: { type: Boolean, default: false },
     noWaitingPaymentForAreLateLoading: { type: Boolean, default: false },
     noWaitingPaymentForAreLateUnloading: { type: Boolean, default: false },
-    outsourceCarriers: [{ type: Types.ObjectId, ref: 'TkName' }],
+    // outsourceCarriers: [{ type: Types.ObjectId, ref: 'TkName' }],
     cashPayment: { type: Boolean, default: false },
     vatRate: { type: Number, required: true },
     closed: { type: Boolean, default: false },
@@ -180,10 +180,10 @@ export class Agreement {
     clientNumRequired: { type: Boolean, default: false },
     auctionNumRequired: { type: Boolean, default: false },
     note: String,
-    commission: { type: Number, default: 0 },
+    // commission: { type: Number, default: 0 },
     executor: { type: Types.ObjectId, ref: 'TkName' },
     executorName: { type: String },
     allowedCarriers: [{ type: Types.ObjectId, ref: 'Company' }],
-    paymentDescription: { type: String },
+    // paymentDescription: { type: String },
   }
 }

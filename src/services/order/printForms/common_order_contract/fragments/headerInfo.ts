@@ -11,7 +11,7 @@ import {
   VerticalAlign,
 } from 'docx'
 import { IHeaderInfoProps } from '../interfaces'
-import { FileChild } from 'docx/build/file/file-child'
+import { FileChild } from 'docx'
 
 export const headerInfo = (p: IHeaderInfoProps): FileChild[] => [
   new Paragraph({

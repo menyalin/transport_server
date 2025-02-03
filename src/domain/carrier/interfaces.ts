@@ -1,3 +1,4 @@
+import { Types } from 'mongoose'
 import { BankAccountInfo } from '../bankAccountInfo'
 
 export interface ICarreierPFData {
@@ -10,4 +11,11 @@ export interface ICarreierPFData {
   signatoryPosition: string
   signatoryName: string
   bankInfo?: BankAccountInfo
+}
+
+export interface IAllowedCarrierAgreement {
+  agreement: string | Types.ObjectId
+  startDate: Date
+  endDate?: Date | null
+  note?: string | null
 }

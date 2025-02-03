@@ -15,6 +15,7 @@ import { z } from 'zod'
 import { objectIdSchema } from '@/shared/validationSchemes'
 
 export class Vehicle {
+  tkName: string
   additionalNotifications: AdditionalNotification[]
   additionalDetails?: AdditionalVehicleInfo
   insurance?: InsuranceInfo
@@ -32,7 +33,7 @@ export class Vehicle {
   kind: TRUCK_KINDS_ENUM | null
   liftCapacityType: number
   order: number
-  tkName: string
+  alwaysInSchedule: boolean
   regNum: string
   win?: string | null
   sts?: string | null
@@ -79,6 +80,8 @@ export class Vehicle {
     this.pts = p.pts
     this.owner = p.owner
     this.order = p.order ?? 0
+    this.alwaysInSchedule =
+      p.type === TRUCK_TYPES_ENUM.truck ? Boolean(p.alwaysInSchedule) : false
     this.volumeFuel = p.volumeFuel
     this.volumeRef = p.volumeRef
     this.liftCapacity = p.liftCapacity
@@ -88,6 +91,10 @@ export class Vehicle {
     this.allowedDrivers = p.allowedDrivers
       ? p.allowedDrivers.map((i) => new AllowedDriver(i))
       : []
+  }
+
+  get carrierId(): string {
+    return this.tkName
   }
 
   static get validationSchema() {
@@ -120,6 +127,7 @@ export class Vehicle {
         pts: z.string().optional().nullable(),
         owner: z.string().optional().nullable(),
         order: z.number().optional().nullable(),
+        alwaysInSchedule: z.boolean().optional().nullable(),
         volumeFuel: z.number().optional().nullable(),
         volumeRef: z.number().optional().nullable(),
         liftCapacity: z.number().optional().nullable(),
@@ -170,6 +178,7 @@ export class Vehicle {
       pts: String,
       owner: String,
       order: { type: Number, default: 50 },
+      alwaysInSchedule: { type: Boolean, default: false },
       volumeFuel: { type: Number, default: 0 },
       volumeRef: { type: Number, default: 0 },
       liftCapacity: { type: Number, default: 0 },

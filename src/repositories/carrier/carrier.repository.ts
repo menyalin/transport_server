@@ -25,6 +25,10 @@ class CarrierRepository {
       count: res[0]?.count[0]?.count ?? 0,
     }
   }
+
+  async update(carrier: Carrier): Promise<void> {
+    await this.model.updateOne({ _id: carrier._id }, carrier)
+  }
 }
 
 export default new CarrierRepository({

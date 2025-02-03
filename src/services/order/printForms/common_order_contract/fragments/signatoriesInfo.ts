@@ -7,8 +7,9 @@ import {
   TableRow,
   TextRun,
   WidthType,
+  FileChild,
 } from 'docx'
-import { FileChild } from 'docx/build/file/file-child'
+
 import { companyInfo } from './companyInfo'
 import { signatoryCell } from './signatoryCell'
 import { BLOCK_SPACE } from '../config'

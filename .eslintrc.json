@@ -17,6 +17,7 @@
     "semi": ["error", "never"],
     "quotes": ["error", "single"],
     "comma-dangle": ["error", "only-multiline", { "functions": "never" }],
-    "arrow-spacing": "error"
+    "arrow-spacing": "error",
+    "@typescript-eslint/strict-types": "off"
   }
 }

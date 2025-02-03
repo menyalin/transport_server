@@ -17,6 +17,7 @@ import {
   DriverRepository,
   VehicleRepository,
   CompanyRepository,
+  CarrierAgreementRepository,
 } from '@/repositories'
 import { BadRequestError } from '@/helpers/errors'
 
@@ -68,12 +69,11 @@ export const commonOrderContractBuilder = async (
     ? await VehicleRepository.getById(order.confirmedCrew.trailer.toString())
     : null
 
-  const carrierAgreement = await AgreementRepository.getById(
+  const carrierAgreement = await CarrierAgreementRepository.getById(
     carrierAgreementId.toString()
   )
-  const companySettings = await CompanyRepository.getCompanySettings(
-    order.company
-  )
+  if (!carrierAgreement)
+    throw new BadRequestError('Соглашение с перевозчиком не найдено')
 
   const data: ICommonOrderContractProps = {
     headerInfo: {
@@ -104,11 +104,10 @@ export const commonOrderContractBuilder = async (
     },
     paymentInfo: {
       paymentSum: order.totalOutsourceCosts.price,
-      paymentDescription: carrierAgreement?.paymentDescription || '',
+      paymentDescription: carrierAgreement?.paymentDescription ?? '',
     },
     notes:
-      companySettings?.commonOrderContractNote.split('\n').filter(Boolean) ||
-      null,
+      carrierAgreement.orderContractNote?.split('\n').filter(Boolean) ?? '',
     route: routePFData,
     customer: customer?.getPFdata,
     carrier: carrier?.getPFdata,

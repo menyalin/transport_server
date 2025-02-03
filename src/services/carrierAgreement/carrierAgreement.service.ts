@@ -1,8 +1,11 @@
 import { CarrierAgreement } from '@/domain/carrierAgreement'
 import { ICarrierAgreementListData } from '@/domain/carrierAgreement/interfaces'
 import { BadRequestError } from '@/helpers/errors'
-import { CarrierAgreementRepository } from '@/repositories'
+import { CarrierAgreementRepository, CarrierRepository } from '@/repositories'
+import { objectIdSchema } from '@/shared/validationSchemes'
 import { isValidObjectId } from 'mongoose'
+import { z } from 'zod'
+import agreement from '../agreement'
 
 class CarrierAgreementService {
   async create(data: unknown): Promise<CarrierAgreement> {
@@ -15,6 +18,22 @@ class CarrierAgreementService {
 
   async getList(params: unknown): Promise<ICarrierAgreementListData> {
     return await CarrierAgreementRepository.getList(params)
+  }
+  async getByCarrierAndDate(params: unknown): Promise<CarrierAgreement | null> {
+    const paramsSchema = z.object({
+      company: objectIdSchema.transform((v) => v.toString()),
+      carrierId: objectIdSchema.transform((v) => v.toString()),
+      date: z.string().transform((v) => new Date(v)),
+    })
+    const parsedParams = paramsSchema.parse(params)
+
+    const carrier = await CarrierRepository.getById(parsedParams.carrierId)
+    if (!carrier) throw new Error('Carrier not found')
+
+    const agreementId = carrier.getAgreementIdtByDate(parsedParams.date)
+    if (!agreementId) return null
+
+    return await CarrierAgreementRepository.getById(agreementId)
   }
 
   async update(id: string, body: unknown): Promise<CarrierAgreement> {

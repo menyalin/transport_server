@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import { Types } from 'mongoose'
 import {
   Order as OrderModel,
   OrderTemplate as OrderTemplateModel,
@@ -54,9 +54,11 @@ class OrderService {
     if (!body.client.agreement && body.route[0].plannedDate)
       body.client.agreement = await getClientAgreementId(body)
 
-    if (!body.confirmedCrew.outsourceAgreement && body.route[0].plannedDate)
-      body.confirmedCrew.outsourceAgreement =
-        await getOutsourceAgreementId(body)
+    if (body.confirmedCrew?.truck)
+      body.confirmedCrew.outsourceAgreement = await getOutsourceAgreementId(
+        body.confirmedCrew?.truck,
+        body.route[0].plannedDate
+      )
 
     const order = await OrderRepository.create(body)
     order.analytics = await this.updateOrderAnalytics(order)
@@ -134,9 +136,11 @@ class OrderService {
       order.confirmedCrew.truck = null
       order.confirmedCrew.outsourceAgreement = null
     } else {
-      order.confirmedCrew.truck = new mongoose.Types.ObjectId(truck)
-      order.confirmedCrew.outsourceAgreement =
-        await getOutsourceAgreementId(order)
+      order.confirmedCrew.truck = truck
+      order.confirmedCrew.outsourceAgreement = await getOutsourceAgreementId(
+        truck,
+        order.orderDate
+      )
     }
     order.confirmedCrew.driver = null
     order.confirmedCrew.trailer = null
@@ -147,8 +151,8 @@ class OrderService {
     bus.publish(OrdersUpdatedEvent([order]))
 
     await ChangeLogService.add({
-      docId: order._id.toString(),
-      company: order.company.toString(),
+      docId: order._id,
+      company: order.company,
       coll: 'order',
       user,
       opType: 'move order',
@@ -184,7 +188,7 @@ class OrderService {
 
   async deleteById({ id, user }: { id: string; user: string }) {
     const order: OrderDomain = await OrderRepository.getById(id)
-    order.remove(user)
+    order.remove()
     order.events.forEach((event) => {
       bus.publish(event)
     })
@@ -274,33 +278,37 @@ class OrderService {
 
   async updateOne({ id, body, user }: { id: string; body: any; user: string }) {
     OrderDomain.isValidBody(body)
+    const newVersionOrder = new OrderDomain({ _id: id, ...body })
 
-    if (!body.client.agreement && body.route[0].plannedDate)
-      body.client.agreement = await getClientAgreementId(body)
+    newVersionOrder.setClientAgreement(await getClientAgreementId(body))
 
-    if (!body.confirmedCrew.outsourceAgreement && body.confirmedCrew.truck)
-      body.confirmedCrew.outsourceAgreement =
-        await getOutsourceAgreementId(body)
-    let order = await OrderRepository.getById(id)
+    if (newVersionOrder.truckId)
+      body.confirmedCrew.outsourceAgreement = await getOutsourceAgreementId(
+        newVersionOrder.truckId,
+        newVersionOrder.orderDate
+      )
 
-    if (!order) return null
+    let existedOrder = await OrderRepository.getById(id)
+
+    if (!existedOrder) return null
 
     // если в маршруте изменились даты проверяется пересечение с другими записями
-    if (!order.isCompleted && body.route) {
+
+    if (!existedOrder.isCompleted) {
       const datesNotChanged = helpers.isEqualDatesOfRoute(
-        order.route,
-        new Route(body.route)
+        existedOrder.route,
+        newVersionOrder.route
       )
       if (!datesNotChanged) await checkCrossItems({ body, id })
     }
 
     // контроль разрешения на редактирвоание выполненного рейса
-    if (order.isCompleted)
+    if (existedOrder.isCompleted)
       await PermissionService.checkPeriod({
         userId: user,
-        companyId: body.company,
+        companyId: existedOrder.company,
         operation: 'order:daysForWrite',
-        startDate: order.route.lastRouteDate,
+        startDate: existedOrder.route.lastRouteDate,
       })
 
     // если в рейсе есть массив с документами, то заполняю признак получения документов
@@ -311,22 +319,22 @@ class OrderService {
       }
     }
 
-    if (body.confirmedCrew?.truck?.toString() !== order.truckId)
-      bus.publish(OrderTruckChanged({ orderId: order._id.toString() }))
+    if (newVersionOrder.truckId !== existedOrder.truckId)
+      bus.publish(OrderTruckChanged({ orderId: existedOrder.id }))
 
     if (
-      order.isInProgress &&
-      ['getted', 'needGet'].includes(body.state?.status || '')
+      existedOrder.isInProgress &&
+      ['getted', 'needGet'].includes(newVersionOrder.state?.status || '')
     ) {
       bus.publish(
-        OrderReturnedFromInProgressStatus({ orderId: order._id.toString() })
+        OrderReturnedFromInProgressStatus({ orderId: existedOrder._id })
       )
     }
 
     const updatedOrder = new OrderDomain({
-      ...order.toObject(),
-      ...body,
-      _id: order._id,
+      ...existedOrder.toObject(),
+      ...newVersionOrder.toObject(),
+      _id: existedOrder._id,
     })
     updatedOrder.setDisableStatus(false)
     updatedOrder.analytics = await this.updateOrderAnalytics(updatedOrder)
@@ -337,7 +345,7 @@ class OrderService {
     emitTo(updatedOrder.company, 'order:updated', updatedOrder)
 
     await ChangeLogService.add({
-      docId: new mongoose.Types.ObjectId(updatedOrder.id),
+      docId: new Types.ObjectId(updatedOrder.id),
       company: updatedOrder.company,
       coll: 'order',
       user,
@@ -351,7 +359,9 @@ class OrderService {
   async refresh(order: OrderDomain): Promise<void> {
     order.analytics = await this.updateOrderAnalytics(order)
     order.prePrices = await this.updatePrePrices(order)
-
+    order.confirmedCrew.outsourceAgreement = order.truckId
+      ? await getOutsourceAgreementId(order.truckId, order.orderDate)
+      : null
     bus.publish(OrdersUpdatedEvent([order]))
   }
 
@@ -376,10 +386,8 @@ class OrderService {
   async updatePrePrices(order: OrderDomain): Promise<OrderPrice[]> {
     const priceCalculator = new OrderPriceCalculator()
     const prePrices: OrderPrice[] = []
-    if (order.client.agreement !== undefined) {
-      const agreement = await AgreementService.getById(
-        order.client.agreement.toString()
-      )
+    if (order.clientAgreementId) {
+      const agreement = await AgreementService.getById(order.clientAgreementId)
       if (!agreement) return []
       const tariffContracts: TariffContract[] =
         await TariffContractRepository.getByAgreementAndDate(
