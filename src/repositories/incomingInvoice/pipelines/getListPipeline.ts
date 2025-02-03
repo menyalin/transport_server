@@ -49,7 +49,7 @@ export const getListPipeline = (props: GetListPropsDTO): PipelineStage[] => {
 
   const aggrementLookup: PipelineStage.Lookup = {
     $lookup: {
-      from: 'agreements',
+      from: 'carrierAgreements',
       localField: 'agreement',
       foreignField: '_id',
       as: 'agreement',

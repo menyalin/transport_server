@@ -20,7 +20,7 @@ const companySchema = new Schema(
       defaultLiftCapacity: Number,
       loadDirections: [String],
       defaultLoadDirection: String,
-      commonOrderContractNote: String,
+      commonOrderContractNote: String, // TODO: Удалить
     },
     inn: {
       type: String,

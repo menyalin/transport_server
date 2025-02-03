@@ -167,7 +167,19 @@ export class Order {
     return this.client.client
   }
 
-  remove(userId: string) {
+  get carrierId(): string | null {
+    return this.confirmedCrew?.tkName?.toString() || null
+  }
+
+  get clientAgreementId(): string | null {
+    return this.client.agreement?.toString() ?? null
+  }
+
+  setClientAgreement(agreementId: string): void {
+    this.client.agreement = agreementId
+  }
+
+  remove() {
     if (this?.state?.status === 'needGet') {
       this.events.push(OrderRemoveEvent({ orderId: this.id }))
       this.events.push(

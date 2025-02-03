@@ -63,6 +63,14 @@ export class Carrier {
   incVersion() {
     this.version += 1
   }
+
+  getAgreementIdtByDate(date: Date): string | null {
+    const agreementRow = this.agreements.find(
+      (aa) => +aa.startDate <= +date && (!aa.endDate || +aa.endDate >= +date)
+    )
+    return agreementRow ? agreementRow.agreement.toString() : null
+  }
+
   static get validationSchema() {
     return z.object({
       _id: objectIdSchema.optional(),

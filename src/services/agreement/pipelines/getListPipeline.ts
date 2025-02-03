@@ -5,19 +5,18 @@ export default (props: unknown) => {
   const schemaProps = z.object({
     company: z.string(),
     client: z.string().optional(),
-    clientsOnly: z.string().optional(),
     limit: z.string(),
     skip: z.string(),
     search: z.string().optional(),
   })
   const p = schemaProps.parse(props)
-  const { company, client, clientsOnly, limit, skip } = p
+  const { company, client, limit, skip } = p
   const firstMatcher: PipelineStage.Match = {
     $match: {
       isActive: true,
       company: new Types.ObjectId(company),
       $expr: {
-        $and: [],
+        $and: [{ $eq: ['$isOutsourceAgreement', false] }],
       },
     },
   }
@@ -25,11 +24,6 @@ export default (props: unknown) => {
   if (client)
     firstMatcher.$match.$expr?.$and.push({
       $in: [new Types.ObjectId(client), '$clients'],
-    })
-
-  if (clientsOnly === 'true')
-    firstMatcher.$match.$expr?.$and.push({
-      $eq: ['$isOutsourceAgreement', false],
     })
 
   if (p.search)

@@ -10,6 +10,13 @@ router.get('/', [jwtAuth], (req: Request, res: Response) =>
   ctrl.getList(req as AuthorizedRequest, res)
 )
 
+router.get(
+  '/get_by_carrier_and_date',
+  [jwtAuth],
+  (req: Request, res: Response) =>
+    ctrl.getByCarrierAndDate(req as AuthorizedRequest, res)
+)
+
 router.get('/:id', [jwtAuth], (req: Request, res: Response) =>
   ctrl.getById(req as AuthorizedRequest, res)
 )
