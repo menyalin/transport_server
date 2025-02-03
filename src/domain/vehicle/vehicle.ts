@@ -62,7 +62,7 @@ export class Vehicle {
     this.permits = p.permits
     this.brand = p.brand
     this.model = p.model
-    this.brigadier = p.brigadier
+    this.brigadier = p.brigadier?.toString() ?? null
     this.mechanic = p.mechanic
     this.sanitaryPassportExpDate = p.sanitaryPassportExpDate
     this.sanitaryPassportNote = p.sanitaryPassportNote
@@ -70,7 +70,7 @@ export class Vehicle {
     this.startServiceDate = p.startServiceDate
     this.endServiceDate = p.endServiceDate
     this.type = p.type
-    this.kind = p.kind
+    this.kind = p.kind ?? null
     this.liftCapacityType = p.liftCapacityType
     this.tkName = p.tkName.toString()
     this.regNum = p.regNum
@@ -109,7 +109,7 @@ export class Vehicle {
         permits: PermitsInfo.validationSchema.optional(),
         brand: z.string().optional().nullable(),
         model: z.string().optional().nullable(),
-        brigadier: z.string().optional().nullable(),
+        brigadier: objectIdSchema.optional().nullable(),
         mechanic: z.string().optional().nullable(),
         sanitaryPassportExpDate: z.date().optional().nullable(),
         sanitaryPassportNote: z.string().optional().nullable(),
@@ -117,7 +117,7 @@ export class Vehicle {
         startServiceDate: z.date().optional().nullable(),
         endServiceDate: z.date().optional().nullable(),
         type: z.nativeEnum(TRUCK_TYPES_ENUM),
-        kind: z.nativeEnum(TRUCK_KINDS_ENUM).nullable(),
+        kind: z.nativeEnum(TRUCK_KINDS_ENUM).nullable().optional(),
         liftCapacityType: z.number(),
         tkName: objectIdSchema,
         regNum: z.string(),
