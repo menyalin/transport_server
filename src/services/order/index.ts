@@ -36,7 +36,6 @@ import * as helpers from '@/shared/helpers'
 import { AddressZone } from '@/domain/address'
 import { PrintForm } from '@/domain/printForm/printForm.domain'
 import { orderPFBuilder } from './printForms/pfBuilder'
-import { Route } from '@/domain/order/route/route'
 import { RouteStats } from '@/domain/order/route/routeStats'
 import { isValidObjectId } from 'mongoose'
 
@@ -280,7 +279,8 @@ class OrderService {
     OrderDomain.isValidBody(body)
     const newVersionOrder = new OrderDomain({ _id: id, ...body })
 
-    newVersionOrder.setClientAgreement(await getClientAgreementId(body))
+    if (!newVersionOrder.clientAgreementId)
+      newVersionOrder.setClientAgreement(await getClientAgreementId(body))
 
     if (newVersionOrder.truckId)
       body.confirmedCrew.outsourceAgreement = await getOutsourceAgreementId(
