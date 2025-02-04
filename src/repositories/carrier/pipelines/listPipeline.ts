@@ -42,30 +42,6 @@ export const createGetListPipeline = (params: unknown): PipelineStage[] => {
       $ne: ['$outsource', true],
     })
 
-  const agreementLookup: PipelineStage[] = [
-    {
-      $lookup: {
-        from: 'carrierAgreements',
-        localField: 'agreement',
-        foreignField: '_id',
-        as: '_agreement',
-      },
-    },
-    {
-      $addFields: {
-        agreementName: {
-          $getField: {
-            field: 'name',
-            input: {
-              $first: '$_agreement',
-            },
-          },
-        },
-      },
-    },
-    { $unset: ['_agreement'] },
-  ]
-
   const agreementData = [
     {
       $lookup: {
@@ -77,6 +53,7 @@ export const createGetListPipeline = (params: unknown): PipelineStage[] => {
     },
     {
       $unset: [
+        'agreement',
         'agreementsData.paymentDescription',
         'agreementsData.orderContractNote',
         'agreementsData.company',
@@ -99,5 +76,5 @@ export const createGetListPipeline = (params: unknown): PipelineStage[] => {
     },
   }
 
-  return [firstMatcher, unsetFields, ...agreementLookup, finalFacet]
+  return [firstMatcher, unsetFields, finalFacet]
 }

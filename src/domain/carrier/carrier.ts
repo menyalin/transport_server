@@ -11,7 +11,6 @@ export class Carrier {
   _id?: string
   name: string
   company: string
-  agreement: string | null
   agreements: AllowedCarrierAgreement[]
   bankAccountInfo?: BankAccountInfo
   companyInfo?: CompanyInfo
@@ -35,7 +34,7 @@ export class Carrier {
     this.contacts = p.contacts?.map((i) => new ContactInfo(i)) ?? undefined
     this.outsource = p.outsource
     this.isActive = p.isActive
-    this.agreement = p.agreement?.toString() ?? null
+
     this.version = p.version ?? 0
   }
 
@@ -82,7 +81,6 @@ export class Carrier {
       outsource: z.boolean().default(false),
       isActive: z.boolean().default(true),
       version: z.number().optional().nullable().default(0),
-      agreement: objectIdSchema.optional().nullable().default(null),
       agreements: z
         .array(AllowedCarrierAgreement.validationSchema)
         .default([])
@@ -99,7 +97,6 @@ export class Carrier {
         type: Types.ObjectId,
         ref: 'Company',
       },
-      agreement: { type: Types.ObjectId },
       agreements: [AllowedCarrierAgreement.dbSchema],
       companyInfo: CompanyInfo.dbSchema,
       bankAccountInfo: BankAccountInfo.dbSchema,
