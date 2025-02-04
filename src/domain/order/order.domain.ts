@@ -143,7 +143,17 @@ export class Order {
       : undefined
     this.paymentParts = order.paymentParts || []
     this.analytics = new OrderAnalytics(order.analytics)
-    this.docsState = order.docsState
+
+    const docsGetted = order.docs.length > 0 || order.docsState?.getted
+    this.docsState = {
+      getted: docsGetted,
+      date: docsGetted
+        ? order.docsState?.date
+          ? new Date(order.docsState.date)
+          : new Date()
+        : undefined,
+    }
+
     this.paymentToDriver = order.paymentToDriver
     this.note = order.note
     this.noteAccountant = order.noteAccountant
