@@ -311,14 +311,6 @@ class OrderService {
         startDate: existedOrder.route.lastRouteDate,
       })
 
-    // если в рейсе есть массив с документами, то заполняю признак получения документов
-    if (body.docs && body.docs.length && !body.docsState?.getted) {
-      body.docsState = {
-        getted: true,
-        date: new Date(),
-      }
-    }
-
     if (newVersionOrder.truckId !== existedOrder.truckId)
       bus.publish(OrderTruckChanged({ orderId: existedOrder.id }))
 
