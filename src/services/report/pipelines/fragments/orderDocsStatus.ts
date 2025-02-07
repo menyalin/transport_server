@@ -1,9 +1,8 @@
-// @ts-nocheck
-import { BadRequestError } from '../../../../helpers/errors'
+import { BadRequestError } from '@/helpers/errors'
 
 const docsNotGettedCond = () => {
   return {
-    $eq: ['$docsState.getted', false],
+    $ne: ['$docsState.getted', true],
   }
 }
 
@@ -39,7 +38,7 @@ const docsCorrectionCond = () => ({
   ],
 })
 
-export const switchCondition = (state) => {
+export const switchCondition = (state: string | null) => {
   if (!state)
     return {
       $or: [docsNotGettedCond(), docsReviewCond(), docsCorrectionCond()],

@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import mongoose, { PipelineStage } from 'mongoose'
-import { ORDER_ANALYTIC_TYPES } from '../../../../constants/order'
+import { ORDER_ANALYTIC_TYPES } from '@/constants/order'
 
 import {
   getOrderDocsStatus,
@@ -93,7 +93,7 @@ export default (p: IProps): PipelineStage[] => {
 
   if (p.state?.length)
     firstMatcher.$match.$expr?.$and.push({
-      $or: p.state.map((i) => switchConditionByDocsState(i)),
+      $or: p.state.map((i) => switchConditionByDocsState(i as string)),
     })
   else firstMatcher.$match.$expr?.$and.push(switchConditionByDocsState(null))
   const addFields = [
