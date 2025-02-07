@@ -144,7 +144,7 @@ export class Order {
     this.paymentParts = order.paymentParts || []
     this.analytics = new OrderAnalytics(order.analytics)
 
-    const docsGetted = order.docs.length > 0 || order.docsState?.getted
+    const docsGetted = order.docs?.length > 0 || order.docsState?.getted
     this.docsState = {
       getted: docsGetted,
       date: docsGetted
