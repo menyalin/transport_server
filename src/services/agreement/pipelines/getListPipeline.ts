@@ -16,7 +16,7 @@ export default (props: unknown) => {
       isActive: true,
       company: new Types.ObjectId(company),
       $expr: {
-        $and: [{ $eq: ['$isOutsourceAgreement', false] }],
+        $and: [{ $ne: ['$isOutsourceAgreement', true] }],
       },
     },
   }
