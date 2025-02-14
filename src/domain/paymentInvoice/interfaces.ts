@@ -90,15 +90,11 @@ export const orderPickedForInvoiceDTOSchema = z
     paymentPartsSumWOVat: z.number(),
     reqTransport: z.unknown(),
     confirmedCrew: z.object({
-      truck: z.union([z.string(), z.instanceof(Types.ObjectId)]),
-      trailer: z.union([z.string(), z.instanceof(Types.ObjectId), z.null()]),
-      driver: z.union([z.string(), z.instanceof(Types.ObjectId), z.null()]),
-      outsourceAgreement: z.union([
-        z.string(),
-        z.instanceof(Types.ObjectId),
-        z.null(),
-      ]),
-      tkName: z.union([z.string(), z.instanceof(Types.ObjectId)]),
+      truck: objectIdSchema.optional().nullable(),
+      trailer: objectIdSchema.optional().nullable(),
+      driver: objectIdSchema.optional().nullable(),
+      outsourceAgreement: objectIdSchema.optional().nullable(),
+      tkName: objectIdSchema.optional().nullable(),
     }),
     route: z.array(z.unknown()),
     analytics: z

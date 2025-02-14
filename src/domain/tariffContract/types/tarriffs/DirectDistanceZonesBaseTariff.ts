@@ -72,7 +72,11 @@ export class DirectDistanceZonesBaseTariff implements ICommonTariffFields {
     if (order.analytics?.distanceDirect === 0) return false
     if (!order.analytics?.loadingZones?.includes(this.loadingZone)) return false
     if (this.zones.length === 0) return false
-    if (order.analytics.distanceDirect > this.maxDistance) return false
+    if (
+      order.analytics?.distanceDirect &&
+      order.analytics.distanceDirect > this.maxDistance
+    )
+      return false
     return true
   }
 
@@ -113,7 +117,7 @@ export class DirectDistanceZonesBaseTariff implements ICommonTariffFields {
     const vatRate = agreement.vatRate
     const type = ORDER_PRICE_TYPES_ENUM.base
     const priceByZone = this.getZonePriceByDistance(
-      order.analytics?.distanceDirect
+      order.analytics?.distanceDirect ?? 0
     )
     const routePointsCount =
       order.analytics?.routeStats?.countPoints || order.route.countOfPoints

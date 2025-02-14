@@ -17,6 +17,7 @@ import { OrderModel } from '@/models/order'
 import { pickOrdersForIncomingInvoice } from './pipelines/pickOrdersPipeline'
 import { InvoiceOrdersResultDTO } from './dto/invoiceOrdersResult.dto'
 import { getInvoiceOrdersPipeline } from './pipelines/getInvoiceOrdersPipeline'
+import { IncomingInvoiceForOrderDTO } from './dto/IncomingInvoiceForOrder.dto'
 
 interface IProps {
   invoiceModel: typeof IncomingInvoiceModel
@@ -124,6 +125,20 @@ class IncomingInvoiceRepository {
       order: orderIds,
     })
     console.log(res)
+  }
+
+  async getForOrderById(
+    orderId: string
+  ): Promise<IncomingInvoiceForOrderDTO | null> {
+    const orderRowInInvoice = await this.invoiceOrderModel
+      .findOne({ order: orderId })
+      .lean()
+
+    if (!orderRowInInvoice) return null
+    const invoice = await this.invoiceModel.findOne({
+      _id: orderRowInInvoice.incomingInvoice,
+    })
+    return invoice ? new IncomingInvoiceForOrderDTO(invoice) : null
   }
 
   async updateOrderInInvoice() {}

@@ -38,6 +38,7 @@ describe('Order.Domain', () => {
         new RoutePoint({
           type: 'loading',
           address: 'address',
+          plannedDate: orderPlannedDate.toISOString(),
           arrivalDate: orderPlannedDate.add(1, 'minute').toISOString(),
           departureDate: orderPlannedDate.add(2, 'minute').toISOString(),
         }),
@@ -70,6 +71,7 @@ describe('Order.Domain', () => {
         {
           type: 'loading',
           address: 'address',
+          plannedDate: orderPlannedDate.toISOString(),
           arrivalDate: orderPlannedDate.add(1, 'minute').toISOString(),
         },
         {
@@ -97,6 +99,7 @@ describe('Order.Domain', () => {
       ],
       route: [
         {
+          plannedDate: orderPlannedDate.toISOString(),
           type: 'loading',
           address: 'address',
         },
@@ -125,6 +128,7 @@ describe('Order.Domain', () => {
       ],
       route: [
         {
+          plannedDate: orderPlannedDate.toISOString(),
           type: 'loading',
           address: 'address',
           arrivalDate: orderPlannedDate.add(1, 'minute').toISOString(),

@@ -1,18 +1,20 @@
+import { Types } from 'mongoose'
 import { OrderPickedForInvoiceDTOProps } from '../../interfaces'
+const fakeObjectd = new Types.ObjectId()
 
 const emptyOrderData: OrderPickedForInvoiceDTOProps = {
   _id: '1',
   agreementVatRate: 20,
   paymentPartsSumWOVat: 0,
-  company: '1',
+  company: fakeObjectd,
   confirmedCrew: {
-    driver: '1',
+    driver: fakeObjectd,
     outsourceAgreement: null,
-    tkName: '1',
+    tkName: fakeObjectd,
     trailer: null,
-    truck: '1',
+    truck: fakeObjectd,
   },
-  orderId: '1',
+  orderId: fakeObjectd,
   itemType: 'order',
   plannedDate: new Date('2024-01-01'),
   route: [],

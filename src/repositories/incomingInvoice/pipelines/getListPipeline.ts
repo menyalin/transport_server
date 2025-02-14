@@ -16,6 +16,11 @@ export const getListPipeline = (props: GetListPropsDTO): PipelineStage[] => {
     },
   }
 
+  if (props.carriers?.length)
+    firstMatcher.$match.$expr?.$and.push({
+      $in: ['$carrier', props.carriers.map((i) => new Types.ObjectId(i))],
+    })
+
   if (props.statuses?.length)
     firstMatcher.$match.$expr?.$and.push({ $in: ['$status', props.statuses] })
   if (props.agreements?.length)
@@ -23,19 +28,28 @@ export const getListPipeline = (props: GetListPropsDTO): PipelineStage[] => {
       $in: ['$agreement', props.agreements.map((i) => new Types.ObjectId(i))],
     })
 
-  if (props.number)
+  if (props.search)
     firstMatcher.$match.$expr?.$and.push({
       $regexMatch: {
         input: '$number',
-        regex: new RegExp(props.number, 'i'),
+        regex: props.search,
         options: 'i',
       },
     })
   //#endregion
 
+  const carrierLookup: PipelineStage.Lookup = {
+    $lookup: {
+      from: 'tknames',
+      localField: 'carrier',
+      foreignField: '_id',
+      as: 'carrier',
+    },
+  }
+
   const aggrementLookup: PipelineStage.Lookup = {
     $lookup: {
-      from: 'agreements',
+      from: 'carrierAgreements',
       localField: 'agreement',
       foreignField: '_id',
       as: 'agreement',
@@ -46,6 +60,9 @@ export const getListPipeline = (props: GetListPropsDTO): PipelineStage[] => {
     $addFields: {
       agreementName: {
         $getField: { field: 'name', input: { $first: '$agreement' } },
+      },
+      carrierName: {
+        $getField: { field: 'name', input: { $first: '$carrier' } },
       },
       status: {
         $switch: {
@@ -77,5 +94,6 @@ export const getListPipeline = (props: GetListPropsDTO): PipelineStage[] => {
       items: [{ $skip: props.skip }, { $limit: props.limit }],
     },
   }
-  return [firstMatcher, aggrementLookup, addFields, finalGroup]
+
+  return [firstMatcher, aggrementLookup, carrierLookup, addFields, finalGroup]
 }

@@ -18,8 +18,11 @@ export const paymentInfo = (p: IPaymentInfoProps): Paragraph => {
         bold: true,
         underline: { type: UnderlineType.SINGLE },
       }),
+
       new TextRun({
-        text: `${fomattedSum} (${writtenSum}). ${p.paymentDescription}`,
+        text: p.paymentSum
+          ? `${fomattedSum} (${writtenSum}). ${p.paymentDescription}`
+          : p.paymentDescription,
         break: 2,
       }),
     ],

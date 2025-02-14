@@ -1,18 +1,16 @@
 import dayjs, { UnitType } from 'dayjs'
 import { RoutePoint } from './routePoint'
 import { isDate } from '@/utils/typeGuards'
+import { BadRequestError } from '@/helpers/errors'
 
 export class Route {
   route: RoutePoint[]
-  static validateRoute(route: RoutePoint[], method = '') {
-    if (!route || !Array.isArray(route))
-      throw new Error(`Route : ${method} : unexpected route type`)
-    if (route.length < 2)
-      throw new Error(`Route : ${method} : invalid length of array`)
-  }
 
   constructor(route: any[]) {
-    Route.validateRoute(route, 'constructor')
+    Route.validateRoute(
+      route.map((i) => new RoutePoint(i)),
+      'constructor'
+    )
     this.route = route.map((p) =>
       p instanceof RoutePoint ? p : new RoutePoint(p)
     )
@@ -152,5 +150,20 @@ export class Route {
   }
   toObject() {
     return Object.assign(this.route)
+  }
+
+  static validateRoute(route: RoutePoint[], method = '') {
+    if (!route || !Array.isArray(route))
+      throw new BadRequestError(`Route : ${method} : unexpected route type`)
+    if (route.length < 2)
+      throw new BadRequestError(`Route : ${method} : invalid length of array`)
+
+    const loadingPointsWithPlannedDate = route.filter(
+      (point) => point.isLoadingPointType && point.hasPlannedDate
+    )
+    if (loadingPointsWithPlannedDate.length === 0)
+      throw new BadRequestError(
+        `Route : ${method} : no loading points with planned date`
+      )
   }
 }

@@ -39,6 +39,7 @@ describe('Order.Domain static functions', () => {
         {
           type: 'loading',
           address: 'address',
+          plannedDate: new Date('2023-01-01'),
           arrivalDate: orderPlannedDate1.toISOString(),
           departureDate: orderPlannedDate1.add(15, 'minute').toISOString(),
         },
@@ -71,6 +72,7 @@ describe('Order.Domain static functions', () => {
         {
           type: 'loading',
           address: 'address',
+          plannedDate: new Date('2023-01-01'),
           arrivalDate: orderPlannedDate1.add(15, 'minute').toISOString(),
         },
         {
@@ -100,6 +102,7 @@ describe('Order.Domain static functions', () => {
         {
           type: 'loading',
           address: 'address',
+          plannedDate: new Date('2023-01-01'),
           arrivalDate: orderPlannedDate2.toISOString(),
         },
         {
@@ -128,6 +131,7 @@ describe('Order.Domain static functions', () => {
       route: [
         {
           type: 'loading',
+          plannedDate: new Date('2023-01-01'),
           address: 'address',
         },
         {

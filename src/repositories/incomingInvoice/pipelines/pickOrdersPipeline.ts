@@ -14,6 +14,7 @@ export const pickOrdersForIncomingInvoice = (
     $match: {
       company: new Types.ObjectId(p.company),
       'state.status': 'completed',
+      'confirmedCrew.tkName': new Types.ObjectId(p.carrier),
       'confirmedCrew.outsourceAgreement': new Types.ObjectId(p.agreement),
       $expr: {
         $and: [

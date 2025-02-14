@@ -6,7 +6,11 @@ import { Route } from './route'
 describe('RouteStats value-oblect', () => {
   it('constructor: unfilled dates in route', () => {
     const route = new Route([
-      { type: 'loading', address: '1' },
+      {
+        type: 'loading',
+        address: '1',
+        plannedDate: new Date('2023-06-06T08:00:00.000Z'),
+      },
       { type: 'unloading', address: '1' },
     ])
     const routeStats = new RouteStats(route)
@@ -22,6 +26,7 @@ describe('RouteStats value-oblect', () => {
       {
         type: 'loading',
         address: '1',
+        plannedDate: new Date('2023-06-06T08:00:00.000Z'),
         arrivalDateDoc: new Date('2023-06-06T08:00:00.000Z'),
         departureDateDoc: new Date('2023-06-06T09:00:00.000Z'),
       },
@@ -40,6 +45,7 @@ describe('RouteStats value-oblect', () => {
       {
         type: 'loading',
         address: '1',
+        plannedDate: new Date('2023-06-06T08:00:00.000Z'),
         arrivalDateDoc: new Date('2023-06-06T08:00:00.000Z'),
         departureDateDoc: new Date('2023-06-06T09:00:00.000Z'),
       },
@@ -62,6 +68,7 @@ describe('RouteStats value-oblect', () => {
       {
         type: 'loading',
         address: '1',
+        plannedDate: new Date('2023-06-06T08:00:00.000Z'),
         arrivalDateDoc: new Date('2023-06-06T08:00:00.000Z'),
         departureDateDoc: new Date('2023-06-06T09:00:00.000Z'),
       },
@@ -91,6 +98,7 @@ describe('RouteStats value-oblect', () => {
       {
         type: 'loading',
         address: '1',
+        plannedDate: new Date('2023-06-06T08:00:00.000Z'),
         arrivalDateDoc: new Date('2023-06-06T08:00:00.000Z'),
         departureDateDoc: new Date('2023-06-06T09:00:00.000Z'),
       },

@@ -143,7 +143,17 @@ export class Order {
       : undefined
     this.paymentParts = order.paymentParts || []
     this.analytics = new OrderAnalytics(order.analytics)
-    this.docsState = order.docsState
+
+    const docsGetted = order.docs?.length > 0 || order.docsState?.getted
+    this.docsState = {
+      getted: docsGetted,
+      date: docsGetted
+        ? order.docsState?.date
+          ? new Date(order.docsState.date)
+          : new Date()
+        : undefined,
+    }
+
     this.paymentToDriver = order.paymentToDriver
     this.note = order.note
     this.noteAccountant = order.noteAccountant
@@ -167,7 +177,19 @@ export class Order {
     return this.client.client
   }
 
-  remove(userId: string) {
+  get carrierId(): string | null {
+    return this.confirmedCrew?.tkName?.toString() || null
+  }
+
+  get clientAgreementId(): string | null {
+    return this.client.agreement?.toString() ?? null
+  }
+
+  setClientAgreement(agreementId: string): void {
+    this.client.agreement = agreementId
+  }
+
+  remove() {
     if (this?.state?.status === 'needGet') {
       this.events.push(OrderRemoveEvent({ orderId: this.id }))
       this.events.push(
@@ -372,5 +394,19 @@ export class Order {
         'Сохранение не возможно. Необходимо заполнить примечание или изменить статус рейса'
       )
     return
+  }
+
+  static isValidBody(body: IOrderDTO): void {
+    Route.validateRoute(
+      body?.route?.map((p) => new RoutePoint(p)),
+      'isValidBody'
+    )
+
+    // Проверка наличия комментария в зависимости от статуса рейса
+    const STATUSES = ['weRefused', 'clientRefused', 'notСonfirmedByClient']
+    if (STATUSES.includes(body?.state?.status as string) && !body.note)
+      throw new BadRequestError(
+        'Сохранение не возможно. Необходимо заполнить примечание'
+      )
   }
 }

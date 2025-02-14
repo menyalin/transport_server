@@ -15,6 +15,7 @@ import { z } from 'zod'
 import { objectIdSchema } from '@/shared/validationSchemes'
 
 export class Vehicle {
+  tkName: string
   additionalNotifications: AdditionalNotification[]
   additionalDetails?: AdditionalVehicleInfo
   insurance?: InsuranceInfo
@@ -22,17 +23,17 @@ export class Vehicle {
   brand?: string | null
   model?: string | null
   brigadier?: string | null
-  mechanic?: string | null
+  mechanic?: string | null | unknown
   sanitaryPassportExpDate?: Date | null
   sanitaryPassportNote?: string | null
   issueYear?: number | null
   startServiceDate?: Date | null
   endServiceDate?: Date | null
   type: TRUCK_TYPES_ENUM
-  kind: TRUCK_KINDS_ENUM
+  kind: TRUCK_KINDS_ENUM | null
   liftCapacityType: number
   order: number
-  tkName: string
+  alwaysInSchedule: boolean
   regNum: string
   win?: string | null
   sts?: string | null
@@ -61,7 +62,7 @@ export class Vehicle {
     this.permits = p.permits
     this.brand = p.brand
     this.model = p.model
-    this.brigadier = p.brigadier
+    this.brigadier = p.brigadier?.toString() ?? null
     this.mechanic = p.mechanic
     this.sanitaryPassportExpDate = p.sanitaryPassportExpDate
     this.sanitaryPassportNote = p.sanitaryPassportNote
@@ -69,7 +70,7 @@ export class Vehicle {
     this.startServiceDate = p.startServiceDate
     this.endServiceDate = p.endServiceDate
     this.type = p.type
-    this.kind = p.kind
+    this.kind = p.kind ?? null
     this.liftCapacityType = p.liftCapacityType
     this.tkName = p.tkName.toString()
     this.regNum = p.regNum
@@ -79,6 +80,8 @@ export class Vehicle {
     this.pts = p.pts
     this.owner = p.owner
     this.order = p.order ?? 0
+    this.alwaysInSchedule =
+      p.type === TRUCK_TYPES_ENUM.truck ? Boolean(p.alwaysInSchedule) : false
     this.volumeFuel = p.volumeFuel
     this.volumeRef = p.volumeRef
     this.liftCapacity = p.liftCapacity
@@ -90,6 +93,10 @@ export class Vehicle {
       : []
   }
 
+  get carrierId(): string {
+    return this.tkName
+  }
+
   static get validationSchema() {
     return z.object(
       {
@@ -97,20 +104,20 @@ export class Vehicle {
           .array(AdditionalNotification.validationSchema)
           .optional()
           .nullable(),
-        additionalDetails: AdditionalVehicleInfo.validationSchema,
-        insurance: InsuranceInfo.validationSchema,
-        permits: PermitsInfo.validationSchema,
+        additionalDetails: AdditionalVehicleInfo.validationSchema.optional(),
+        insurance: InsuranceInfo.validationSchema.optional(),
+        permits: PermitsInfo.validationSchema.optional(),
         brand: z.string().optional().nullable(),
         model: z.string().optional().nullable(),
-        brigadier: z.string().optional().nullable(),
-        mechanic: z.string().optional().nullable(),
+        brigadier: objectIdSchema.optional().nullable(),
+        mechanic: z.unknown().optional().nullable(),
         sanitaryPassportExpDate: z.date().optional().nullable(),
         sanitaryPassportNote: z.string().optional().nullable(),
         issueYear: z.number().optional().nullable(),
         startServiceDate: z.date().optional().nullable(),
         endServiceDate: z.date().optional().nullable(),
         type: z.nativeEnum(TRUCK_TYPES_ENUM),
-        kind: z.nativeEnum(TRUCK_KINDS_ENUM),
+        kind: z.nativeEnum(TRUCK_KINDS_ENUM).nullable().optional(),
         liftCapacityType: z.number(),
         tkName: objectIdSchema,
         regNum: z.string(),
@@ -120,6 +127,7 @@ export class Vehicle {
         pts: z.string().optional().nullable(),
         owner: z.string().optional().nullable(),
         order: z.number().optional().nullable(),
+        alwaysInSchedule: z.boolean().optional().nullable(),
         volumeFuel: z.number().optional().nullable(),
         volumeRef: z.number().optional().nullable(),
         liftCapacity: z.number().optional().nullable(),
@@ -170,6 +178,7 @@ export class Vehicle {
       pts: String,
       owner: String,
       order: { type: Number, default: 50 },
+      alwaysInSchedule: { type: Boolean, default: false },
       volumeFuel: { type: Number, default: 0 },
       volumeRef: { type: Number, default: 0 },
       liftCapacity: { type: Number, default: 0 },

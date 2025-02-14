@@ -10,7 +10,8 @@ export class GetListPropsDTO {
   sortDesc: boolean[]
   agreements?: string[]
   statuses?: string[]
-  number?: string
+  carriers?: string[]
+  search?: string
 
   constructor(p: any) {
     const validatedProps = GetListPropsDTO.validationSchema.parse(p)
@@ -27,7 +28,8 @@ export class GetListPropsDTO {
     this.sortDesc = validatedProps?.sortDesc?.map((i) => i === 'true') || []
     this.agreements = validatedProps?.agreements
     this.statuses = validatedProps.statuses
-    this.number = validatedProps.number
+    this.search = validatedProps.search
+    this.carriers = validatedProps.carriers
   }
 
   static validationSchema = z.object({
@@ -35,10 +37,11 @@ export class GetListPropsDTO {
     company: z.string(),
     limit: z.string(),
     skip: z.string(),
-    number: z.string().optional(),
+    search: z.string().optional(),
     sortBy: z.array(z.string()).optional().default([]),
     sortDesc: z.array(z.string()).optional().default([]),
     agreements: z.array(z.string()).optional().default([]),
     statuses: z.array(z.string()).optional().default([]),
+    carriers: z.array(z.string()).optional().default([]),
   })
 }

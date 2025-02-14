@@ -6,15 +6,16 @@ export class Agreement {
   _id?: string
   name: string
   date?: Date
+  endDate: Date | null
   company: string
   clients: string[]
-  isOutsourceAgreement: boolean
+  // isOutsourceAgreement: boolean
   calcWaitingByArrivalDateLoading: boolean = false
   calcWaitingByArrivalDateUnloading: boolean = false
   noWaitingPaymentForAreLateLoading: boolean = false
   noWaitingPaymentForAreLateUnloading: boolean = false
-  outsourceCarriers: string[]
-  cashPayment: boolean = false
+  // outsourceCarriers: string[]
+  // cashPayment: boolean = false
   vatRate: number = 0
   closed: boolean = false
   useCustomPrices: boolean
@@ -23,7 +24,8 @@ export class Agreement {
   clientNumRequired?: boolean = false
   auctionNumRequired?: boolean = false
   note?: string | null
-  commission: number = 0
+  // paymentDescription?: string | null
+  // commission: number = 0
   executor?: string | null
   executorName: string | null
   isActive?: boolean = true
@@ -36,12 +38,13 @@ export class Agreement {
     this.isActive =
       parsedData.isActive === undefined ? true : parsedData.isActive
     this.date = parsedData.date
+    this.endDate = parsedData.endDate
     this.company = parsedData.company
     this.clients =
       parsedData.clients && Array.isArray(parsedData.clients)
         ? parsedData.clients
         : []
-    this.isOutsourceAgreement = parsedData.isOutsourceAgreement
+    // this.isOutsourceAgreement = parsedData.isOutsourceAgreement
     this.calcWaitingByArrivalDateLoading =
       parsedData.calcWaitingByArrivalDateLoading
     this.calcWaitingByArrivalDateUnloading =
@@ -50,12 +53,12 @@ export class Agreement {
       parsedData.noWaitingPaymentForAreLateLoading
     this.noWaitingPaymentForAreLateUnloading =
       parsedData.noWaitingPaymentForAreLateUnloading
-    this.outsourceCarriers =
-      parsedData.outsourceCarriers &&
-      Array.isArray(parsedData.outsourceCarriers)
-        ? parsedData.outsourceCarriers
-        : []
-    this.cashPayment = parsedData.cashPayment || false
+    // this.outsourceCarriers =
+    //   parsedData.outsourceCarriers &&
+    //   Array.isArray(parsedData.outsourceCarriers)
+    //     ? parsedData.outsourceCarriers
+    //     : []
+    // this.cashPayment = parsedData.cashPayment || false
     this.vatRate = parsedData.vatRate || 0
     this.closed = parsedData.closed || false
     this.useCustomPrices = parsedData.useCustomPrices || false
@@ -67,10 +70,12 @@ export class Agreement {
     this.clientNumRequired = parsedData.clientNumRequired
     this.auctionNumRequired = parsedData.auctionNumRequired
     this.note = parsedData.note
-    this.commission = parsedData.commission || 0
+    // this.commission = parsedData.commission || 0
     this.executor = parsedData.executor?.toString() ?? null
     this.executorName = parsedData.executorName || null
     this.allowedCarriers = parsedData.allowedCarriers
+
+    // this.paymentDescription = parsedData.paymentDescription
   }
 
   private static validationSchema = z.object({
@@ -79,7 +84,12 @@ export class Agreement {
       .transform((val) => (val ? val.toString() : undefined)),
     name: z.string(),
     isActive: z.boolean().optional(),
-    date: z.date(),
+    date: z.union([z.date(), z.string()]).transform((v) => new Date(v)),
+    endDate: z
+      .union([z.date(), z.string()])
+      .optional()
+      .nullable()
+      .transform((v) => (v ? new Date(v) : null)),
     company: objectIdSchema.transform((val) => val.toString()),
     clients: z
       .array(objectIdSchema)
@@ -88,7 +98,7 @@ export class Agreement {
         if (!val) return undefined
         return val.map((i) => i.toString())
       }),
-    isOutsourceAgreement: z.boolean(),
+    // isOutsourceAgreement: z.boolean(),
     calcWaitingByArrivalDateLoading: z
       .boolean()
       .optional()
@@ -105,14 +115,7 @@ export class Agreement {
       .boolean()
       .optional()
       .transform((val) => Boolean(val)),
-    outsourceCarriers: z
-      .array(objectIdSchema)
-      .optional()
-      .transform((val) => {
-        if (!val) return undefined
-        return val.map((i) => i.toString())
-      }),
-    cashPayment: z.boolean().optional(),
+
     vatRate: z.number(),
     closed: z
       .boolean()
@@ -139,11 +142,7 @@ export class Agreement {
       .optional()
       .transform((val) => Boolean(val)),
     note: z.string().nullable().optional(),
-    commission: z
-      .number()
-      .nullable()
-      .optional()
-      .transform((val) => (val ? val : 0)),
+
     executor: objectIdSchema.nullable().optional(),
     executorName: z.string().nullable().optional(),
     allowedCarriers: z
@@ -159,14 +158,13 @@ export class Agreement {
     name: { type: String, required: true },
     isActive: { type: Boolean, default: true },
     date: { type: Date, required: true },
+    endDate: Date,
     company: { type: Types.ObjectId, ref: 'Company', required: true },
     clients: [{ type: Types.ObjectId, ref: 'Partner' }],
-    isOutsourceAgreement: { type: Boolean, default: false },
     calcWaitingByArrivalDateLoading: { type: Boolean, default: false },
     calcWaitingByArrivalDateUnloading: { type: Boolean, default: false },
     noWaitingPaymentForAreLateLoading: { type: Boolean, default: false },
     noWaitingPaymentForAreLateUnloading: { type: Boolean, default: false },
-    outsourceCarriers: [{ type: Types.ObjectId, ref: 'TkName' }],
     cashPayment: { type: Boolean, default: false },
     vatRate: { type: Number, required: true },
     closed: { type: Boolean, default: false },
@@ -176,7 +174,6 @@ export class Agreement {
     clientNumRequired: { type: Boolean, default: false },
     auctionNumRequired: { type: Boolean, default: false },
     note: String,
-    commission: { type: Number, default: 0 },
     executor: { type: Types.ObjectId, ref: 'TkName' },
     executorName: { type: String },
     allowedCarriers: [{ type: Types.ObjectId, ref: 'Company' }],

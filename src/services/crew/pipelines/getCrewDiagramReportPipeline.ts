@@ -1,14 +1,13 @@
-// @ts-nocheck
-import mongoose from 'mongoose'
+import { Types } from 'mongoose'
 
-export default ({ period, profile }) => {
+export default ({ period, profile }: { period: string; profile: string }) => {
   const periodArr = period.split(',')
   if (!periodArr || periodArr.length !== 2) throw new Error('bad query params')
   const startPeriod = new Date(periodArr[0])
   const endPeriod = new Date(periodArr[1])
   if (startPeriod > endPeriod) throw new Error('bad query params')
 
-  const company = new mongoose.Types.ObjectId(profile)
+  const company = new Types.ObjectId(profile)
 
   const firstMatcher = {
     $match: {
@@ -17,28 +16,28 @@ export default ({ period, profile }) => {
         $elemMatch: {
           $or: [
             {
-              $and: [{ startDate: { $lte: endPeriod } }, { endDate: null }]
+              $and: [{ startDate: { $lte: endPeriod } }, { endDate: null }],
             },
             {
               $and: [
                 { startDate: { $lte: startPeriod } },
-                { endDate: { $gte: startPeriod } }
-              ]
+                { endDate: { $gte: startPeriod } },
+              ],
             },
             {
               $and: [
                 { startDate: { $gte: startPeriod } },
-                { startDate: { $lt: endPeriod } }
-              ]
-            }
-          ]
-        }
-      }
-    }
+                { startDate: { $lt: endPeriod } },
+              ],
+            },
+          ],
+        },
+      },
+    },
   }
 
   const unwindTransport = {
-    $unwind: '$transport'
+    $unwind: '$transport',
   }
 
   const secondMatcher = {
@@ -47,23 +46,23 @@ export default ({ period, profile }) => {
         {
           $and: [
             { 'transport.startDate': { $lte: endPeriod } },
-            { 'transport.endDate': null }
-          ]
+            { 'transport.endDate': null },
+          ],
         },
         {
           $and: [
             { 'transport.startDate': { $lte: startPeriod } },
-            { 'transport.endDate': { $gte: startPeriod } }
-          ]
+            { 'transport.endDate': { $gte: startPeriod } },
+          ],
         },
         {
           $and: [
             { 'transport.startDate': { $gte: startPeriod } },
-            { 'transport.startDate': { $lt: endPeriod } }
-          ]
-        }
-      ]
-    }
+            { 'transport.startDate': { $lt: endPeriod } },
+          ],
+        },
+      ],
+    },
   }
 
   const truckLookup = {
@@ -71,8 +70,8 @@ export default ({ period, profile }) => {
       from: 'trucks',
       localField: 'transport.truck',
       foreignField: '_id',
-      as: 'truck'
-    }
+      as: 'truck',
+    },
   }
 
   const driverLookup = {
@@ -80,8 +79,8 @@ export default ({ period, profile }) => {
       from: 'drivers',
       localField: 'driver',
       foreignField: '_id',
-      as: 'driver'
-    }
+      as: 'driver',
+    },
   }
 
   const trailerLookup = {
@@ -89,8 +88,8 @@ export default ({ period, profile }) => {
       from: 'trucks',
       localField: 'transport.trailer',
       foreignField: '_id',
-      as: 'trailer'
-    }
+      as: 'trailer',
+    },
   }
   const finalProject = {
     $project: {
@@ -101,8 +100,8 @@ export default ({ period, profile }) => {
       driver: { $first: '$driver' },
       trailer: { $first: '$trailer' },
       startDate: '$transport.startDate',
-      endDate: '$transport.endDate'
-    }
+      endDate: '$transport.endDate',
+    },
   }
 
   return [
@@ -112,6 +111,6 @@ export default ({ period, profile }) => {
     truckLookup,
     driverLookup,
     trailerLookup,
-    finalProject
+    finalProject,
   ]
 }

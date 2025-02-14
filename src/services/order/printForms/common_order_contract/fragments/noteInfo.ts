@@ -1,8 +1,8 @@
-import { Paragraph, TextRun } from 'docx'
-import { FileChild } from 'docx/build/file/file-child'
+import { Paragraph, TextRun, FileChild } from 'docx'
 import { BLOCK_SPACE } from '../config'
 
-export const noteInfo = (notes: string[]): FileChild[] => {
+export const noteInfo = (notes: string[] | null): FileChild[] => {
+  const data = notes?.length ? notes : ['Нет примечаний']
   return [
     new Paragraph({
       spacing: {
@@ -16,11 +16,11 @@ export const noteInfo = (notes: string[]): FileChild[] => {
         }),
       ],
     }),
-    ...notes.map(
+    ...data.map(
       (note) =>
         new Paragraph({
           numbering: { reference: 'main-numbering', level: 0 },
-          
+
           children: [new TextRun({ text: note, italics: true })],
         })
     ),
