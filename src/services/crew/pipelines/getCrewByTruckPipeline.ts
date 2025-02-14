@@ -1,7 +1,6 @@
-// @ts-nocheck
-import mongoose from 'mongoose'
+import { Types } from 'mongoose'
 
-export default (truck) => {
+export default (truck: string) => {
   if (!truck) throw new Error('bad pipeline arguments')
 
   return [
@@ -9,25 +8,25 @@ export default (truck) => {
       $match: {
         isActive: true,
         $or: [
-          { 'transport.truck': new mongoose.Types.ObjectId(truck) },
-          { 'transport.trailer': new mongoose.Types.ObjectId(truck) }
-        ]
-      }
+          { 'transport.truck': new Types.ObjectId(truck) },
+          { 'transport.trailer': new Types.ObjectId(truck) },
+        ],
+      },
     },
     {
-      $unwind: { path: '$transport' }
+      $unwind: { path: '$transport' },
     },
     {
       $match: {
         $expr: {
           $or: [
-            { $eq: ['$transport.truck', new mongoose.Types.ObjectId(truck)] },
-            { $eq: ['$transport.trailer', new mongoose.Types.ObjectId(truck)] }
-          ]
-        }
-      }
+            { $eq: ['$transport.truck', new Types.ObjectId(truck)] },
+            { $eq: ['$transport.trailer', new Types.ObjectId(truck)] },
+          ],
+        },
+      },
     },
     { $sort: { 'transport.startDate': -1 } },
-    { $limit: 1 }
+    { $limit: 1 },
   ]
 }

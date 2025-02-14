@@ -1,4 +1,3 @@
-// @ts-nocheck
 export const getListSchema = {
   type: 'object',
   properties: {
@@ -27,7 +26,7 @@ export const getByDriverScheme = {
     },
   },
   required: ['driver'],
-  additionalProperties: false,
+  additionalProperties: true,
 }
 
 export const getByTruckScheme = {
@@ -41,7 +40,7 @@ export const getByTruckScheme = {
     },
   },
   required: ['truck'],
-  additionalProperties: false,
+  additionalProperties: true,
 }
 
 export const getActualCrewsSchema = {
@@ -82,7 +81,7 @@ export const createDocSchema = {
       type: 'string',
     },
   },
-  additionalProperties: false,
+  additionalProperties: true,
 }
 
 export const closeCrewSchema = {
@@ -97,5 +96,5 @@ export const closeCrewSchema = {
     },
   },
   required: ['type', 'endDate'],
-  additionalProperties: false,
+  additionalProperties: true,
 }
