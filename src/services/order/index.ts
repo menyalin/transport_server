@@ -117,7 +117,7 @@ class OrderService {
 
   async disableOrder({ orderId, state }: { orderId: string; state: boolean }) {
     const order = await OrderRepository.getById(orderId)
-    order.isDisabled = state
+    order.setDisableStatus(state)
     emitTo(order.company, 'order:updated', order)
     bus.publish(OrdersUpdatedEvent([order]))
   }
@@ -145,7 +145,7 @@ class OrderService {
     order.confirmedCrew.trailer = null
     order.confirmedCrew.tkName = null
     order.startPositionDate = startPositionDate
-    order.isDisabled = false
+    order.setDisableStatus(false)
     emitTo(order.company, 'order:updated', order.toObject())
     bus.publish(OrdersUpdatedEvent([order]))
 
