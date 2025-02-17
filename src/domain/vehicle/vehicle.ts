@@ -23,7 +23,7 @@ export class Vehicle {
   brand?: string | null
   model?: string | null
   brigadier?: string | null
-  mechanic?: string | null
+  mechanic?: string | null | unknown
   sanitaryPassportExpDate?: Date | null
   sanitaryPassportNote?: string | null
   issueYear?: number | null
@@ -110,7 +110,7 @@ export class Vehicle {
         brand: z.string().optional().nullable(),
         model: z.string().optional().nullable(),
         brigadier: objectIdSchema.optional().nullable(),
-        mechanic: z.string().optional().nullable(),
+        mechanic: z.unknown().optional().nullable(),
         sanitaryPassportExpDate: z.date().optional().nullable(),
         sanitaryPassportNote: z.string().optional().nullable(),
         issueYear: z.number().optional().nullable(),

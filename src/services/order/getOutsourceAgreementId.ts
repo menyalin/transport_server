@@ -1,4 +1,5 @@
 import { CarrierRepository, VehicleRepository } from '@/repositories'
+import { CrewService } from '..'
 
 export const getOutsourceAgreementId = async (
   truckId: string,
@@ -6,10 +7,12 @@ export const getOutsourceAgreementId = async (
 ): Promise<string | null> => {
   try {
     if (!truckId) return null
-    const truck = await VehicleRepository.getById(truckId)
-    if (!truck) return null
-
-    const carrier = await CarrierRepository.getById(truck.carrierId)
+    const crew = await CrewService.getOneByTruckAndDate({
+      truck: truckId,
+      date,
+    })
+    if (!crew) return null
+    const carrier = await CarrierRepository.getById(crew.tkName.toString())
     return carrier?.getAgreementIdtByDate(date) ?? null
   } catch (e) {
     console.log('getOutsourceAgreementId error:', e)

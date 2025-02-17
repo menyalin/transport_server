@@ -1,23 +1,22 @@
-// @ts-nocheck
-import mongoose from 'mongoose'
+import { Types } from 'mongoose'
 
-export default (profile) => {
+export default (profile: string) => {
   const today = new Date()
   if (!profile) throw new Error('profile id not exist')
   return [
     {
       $match: {
         isActive: true,
-        company: new mongoose.Types.ObjectId(profile),
+        company: new Types.ObjectId(profile),
         transport: {
           $elemMatch: {
             startDate: {
-              $lte: today
+              $lte: today,
             },
-            $or: [{ endDate: null }, { endDate: { $gt: today } }]
-          }
-        }
-      }
+            $or: [{ endDate: null }, { endDate: { $gt: today } }],
+          },
+        },
+      },
     },
     { $unwind: { path: '$transport' } },
     {
@@ -25,9 +24,9 @@ export default (profile) => {
         'transport.startDate': { $lte: today },
         $or: [
           { 'transport.endDate': null },
-          { 'transport.endDate': { $gt: today } }
-        ]
-      }
-    }
+          { 'transport.endDate': { $gt: today } },
+        ],
+      },
+    },
   ]
 }

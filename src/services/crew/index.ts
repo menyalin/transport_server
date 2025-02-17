@@ -23,7 +23,7 @@ class CrewService {
       company: newCrew.company.toString(),
       user: userId,
       coll: 'crews',
-      body: JSON.stringify(newCrew.toJSON()),
+      body: newCrew,
       opType: 'create',
     })
     await newCrew.populate(['tkName', 'driver', 'manager'])
@@ -49,7 +49,7 @@ class CrewService {
       company: crew.company.toString(),
       user: userId,
       coll: 'crews',
-      body: JSON.stringify(crew.toJSON()),
+      body: crew,
       opType: 'update',
     })
 
@@ -81,7 +81,7 @@ class CrewService {
       company: crew.company.toString(),
       user: userId,
       coll: 'crews',
-      body: JSON.stringify(crew.toJSON()),
+      body: crew,
       opType: 'update',
     })
     await crew.populate(['tkName', 'driver', 'manager'])
@@ -106,7 +106,7 @@ class CrewService {
       company: crew.company.toString(),
       user: userId,
       coll: 'crews',
-      body: JSON.stringify(crew.toJSON()),
+      body: crew,
       opType: 'update',
     })
     await crew.populate(['tkName', 'driver', 'manager'])
@@ -171,7 +171,7 @@ class CrewService {
       company: data.company.toString(),
       user: userId,
       coll: 'crews',
-      body: JSON.stringify(data.toJSON()),
+      body: data,
       opType: 'delete',
     })
 
