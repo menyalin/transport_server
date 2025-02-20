@@ -24,6 +24,7 @@ const schema = new Schema(
   {
     startDate: { type: Date, required: true },
     tkName: { type: Types.ObjectId, ref: 'TkName' },
+    onlyCarrierItems: { type: Boolean, default: true },
     transport: [transportSchema],
     driver: { type: Types.ObjectId, ref: 'Driver' },
     endDate: { type: Date },

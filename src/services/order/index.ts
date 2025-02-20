@@ -9,7 +9,7 @@ import { AgreementService, ChangeLogService, PermissionService } from '..'
 import checkCrossItems from './checkCrossItems'
 import getRouteFromTemplate from './getRouteFromTemplate'
 import getClientAgreementId from './getClientAgreement'
-import { getOutsourceAgreementId } from './getOutsourceAgreementId'
+import { getCarrierData } from './getCarrierData'
 import { orsDirections } from '../../helpers/orsClient'
 import { BadRequestError } from '../../helpers/errors'
 import { getDocsRegistryByOrderId } from './getDocsRegistryByOrderId'
@@ -41,27 +41,31 @@ import { isValidObjectId } from 'mongoose'
 
 class OrderService {
   async create({ body, user }: { body: any; user: string }) {
+    const newOrder = new OrderDomain({ ...body, _id: new Types.ObjectId() })
+
     await PermissionService.checkPeriod({
       userId: user,
       companyId: body.company,
       operation: 'order:daysForWrite',
-      startDate: body.route[0].plannedDate,
+      startDate: newOrder.orderDate,
     })
-    OrderDomain.isValidBody(body)
     await checkCrossItems({ body })
+    if (!newOrder.clientAgreementId)
+      newOrder.setClientAgreement(await getClientAgreementId(newOrder))
 
-    if (!body.client.agreement && body.route[0].plannedDate)
-      body.client.agreement = await getClientAgreementId(body)
-
-    if (body.confirmedCrew?.truck)
-      body.confirmedCrew.outsourceAgreement = await getOutsourceAgreementId(
-        body.confirmedCrew?.truck,
-        body.route[0].plannedDate
+    if (newOrder.truckId) {
+      const carrierData = await getCarrierData(
+        newOrder.truckId,
+        newOrder.orderDate
       )
+      newOrder.confirmedCrew.tkName = carrierData.carrierId
+      newOrder.confirmedCrew.outsourceAgreement =
+        carrierData.outsourceAgreementId
+    }
+    newOrder.analytics = await this.updateOrderAnalytics(newOrder)
+    newOrder.prePrices = await this.updatePrePrices(newOrder)
 
-    const order = await OrderRepository.create(body)
-    order.analytics = await this.updateOrderAnalytics(order)
-    order.prePrices = await this.updatePrePrices(order)
+    const order = await OrderRepository.create(newOrder)
     bus.publish(OrdersUpdatedEvent([order]))
     emitTo(order.company.toString(), 'order:created', order.toObject())
     await ChangeLogService.add({
@@ -117,7 +121,7 @@ class OrderService {
 
   async disableOrder({ orderId, state }: { orderId: string; state: boolean }) {
     const order = await OrderRepository.getById(orderId)
-    order.isDisabled = state
+    order.setDisableStatus(state)
     emitTo(order.company, 'order:updated', order)
     bus.publish(OrdersUpdatedEvent([order]))
   }
@@ -134,18 +138,17 @@ class OrderService {
     if (!truck) {
       order.confirmedCrew.truck = null
       order.confirmedCrew.outsourceAgreement = null
+      order.confirmedCrew.tkName = null
     } else {
+      const carrierData = await getCarrierData(truck, order.orderDate)
       order.confirmedCrew.truck = truck
-      order.confirmedCrew.outsourceAgreement = await getOutsourceAgreementId(
-        truck,
-        order.orderDate
-      )
+      order.confirmedCrew.outsourceAgreement = carrierData.outsourceAgreementId
+      order.confirmedCrew.tkName = carrierData.carrierId
     }
     order.confirmedCrew.driver = null
     order.confirmedCrew.trailer = null
-    order.confirmedCrew.tkName = null
     order.startPositionDate = startPositionDate
-    order.isDisabled = false
+    order.setDisableStatus(false)
     emitTo(order.company, 'order:updated', order.toObject())
     bus.publish(OrdersUpdatedEvent([order]))
 
@@ -276,24 +279,36 @@ class OrderService {
   }
 
   async updateOne({ id, body, user }: { id: string; body: any; user: string }) {
+    let orderIncludedInInvoice: boolean = false
     OrderDomain.isValidBody(body)
     const newVersionOrder = new OrderDomain({ _id: id, ...body })
+    let existedOrder = await OrderRepository.getById(id)
+    if (!existedOrder) return null
+    if (existedOrder.isCompleted) {
+      await PermissionService.checkPeriod({
+        userId: user,
+        companyId: existedOrder.company,
+        operation: 'order:daysForWrite',
+        startDate: existedOrder.route.lastRouteDate,
+      })
+      orderIncludedInInvoice =
+        await IncomingInvoiceRepository.orderIncludedInInvoice(existedOrder._id)
+    }
 
     if (!newVersionOrder.clientAgreementId)
       newVersionOrder.setClientAgreement(await getClientAgreementId(body))
 
-    if (newVersionOrder.truckId)
-      body.confirmedCrew.outsourceAgreement = await getOutsourceAgreementId(
+    if (!orderIncludedInInvoice && newVersionOrder.truckId) {
+      const carrierData = await getCarrierData(
         newVersionOrder.truckId,
         newVersionOrder.orderDate
       )
-
-    let existedOrder = await OrderRepository.getById(id)
-
-    if (!existedOrder) return null
+      newVersionOrder.confirmedCrew.tkName = carrierData.carrierId
+      newVersionOrder.confirmedCrew.outsourceAgreement =
+        carrierData.outsourceAgreementId
+    }
 
     // если в маршруте изменились даты проверяется пересечение с другими записями
-
     if (!existedOrder.isCompleted) {
       const datesNotChanged = helpers.isEqualDatesOfRoute(
         existedOrder.route,
@@ -301,15 +316,6 @@ class OrderService {
       )
       if (!datesNotChanged) await checkCrossItems({ body, id })
     }
-
-    // контроль разрешения на редактирвоание выполненного рейса
-    if (existedOrder.isCompleted)
-      await PermissionService.checkPeriod({
-        userId: user,
-        companyId: existedOrder.company,
-        operation: 'order:daysForWrite',
-        startDate: existedOrder.route.lastRouteDate,
-      })
 
     if (newVersionOrder.truckId !== existedOrder.truckId)
       bus.publish(OrderTruckChanged({ orderId: existedOrder.id }))
@@ -351,9 +357,6 @@ class OrderService {
   async refresh(order: OrderDomain): Promise<void> {
     order.analytics = await this.updateOrderAnalytics(order)
     order.prePrices = await this.updatePrePrices(order)
-    order.confirmedCrew.outsourceAgreement = order.truckId
-      ? await getOutsourceAgreementId(order.truckId, order.orderDate)
-      : null
     bus.publish(OrdersUpdatedEvent([order]))
   }
 

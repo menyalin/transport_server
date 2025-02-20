@@ -3,7 +3,6 @@ import { bus } from '../../eventBus'
 import { Cursor } from 'mongoose'
 import {
   IOrderDTO,
-  Order,
   Order as OrderDomain,
 } from '@/domain/order/order.domain'
 import { Order as OrderModel } from '@/models'
@@ -36,8 +35,10 @@ class OrderRepository {
     })
   }
 
-  async create(orderBody: IOrderDTO): Promise<OrderDomain> {
-    const orderDoc = await OrderModel.create(orderBody)
+  async create(orderBody: IOrderDTO | OrderDomain): Promise<OrderDomain> {
+    const body =
+      orderBody instanceof OrderDomain ? orderBody.toObject() : orderBody
+    const orderDoc = await OrderModel.create(body)
     return new OrderDomain(orderDoc)
   }
 

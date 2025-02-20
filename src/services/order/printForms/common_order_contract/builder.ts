@@ -16,7 +16,6 @@ import {
   PartnerRepository,
   DriverRepository,
   VehicleRepository,
-  CompanyRepository,
   CarrierAgreementRepository,
 } from '@/repositories'
 import { BadRequestError } from '@/helpers/errors'
