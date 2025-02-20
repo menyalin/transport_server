@@ -127,6 +127,13 @@ class IncomingInvoiceRepository {
     console.log(res)
   }
 
+  async orderIncludedInInvoice(orderId: string): Promise<boolean> {
+    const orderRowInInvoice = await this.invoiceOrderModel
+      .findOne({ order: orderId })
+      .lean()
+    return !!orderRowInInvoice
+  }
+
   async getForOrderById(
     orderId: string
   ): Promise<IncomingInvoiceForOrderDTO | null> {
