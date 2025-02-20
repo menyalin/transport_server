@@ -105,7 +105,17 @@ export const getListPipeline = (props: GetListPropsDTO): PipelineStage[] => {
 
   const finalGroup: PipelineStage.Facet = {
     $facet: {
-      totalCount: [{ $count: 'count' }],
+      analytics: [
+        {
+          $group: {
+            _id: -1,
+            totalCount: { $sum: 1 },
+            routesCount: { $sum: '$ordersCount' },
+            priceWOVat: { $sum: '$priceWOVat' },
+            priceWithVat: { $sum: '$priceWithVat' },
+          },
+        },
+      ],
       items: [
         getSortingStage(props.sortBy, props.sortDesc),
         { $skip: props.skip },

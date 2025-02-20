@@ -1,8 +1,7 @@
-import { PipelineStage, Types } from 'mongoose'
-import { PAIMENT_INVOICE_STATUSES } from '../../../constants/paymentInvoice'
-
 import { z } from 'zod'
-import { DateRange } from '../../../classes/dateRange'
+import { PipelineStage, Types } from 'mongoose'
+import { PAIMENT_INVOICE_STATUSES } from '@/constants/paymentInvoice'
+import { DateRange } from '@/classes/dateRange'
 
 interface IProps {
   period: string[]
