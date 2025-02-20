@@ -279,13 +279,26 @@ class OrderService {
   }
 
   async updateOne({ id, body, user }: { id: string; body: any; user: string }) {
+    let orderIncludedInInvoice: boolean = false
     OrderDomain.isValidBody(body)
     const newVersionOrder = new OrderDomain({ _id: id, ...body })
+    let existedOrder = await OrderRepository.getById(id)
+    if (!existedOrder) return null
+    if (existedOrder.isCompleted) {
+      await PermissionService.checkPeriod({
+        userId: user,
+        companyId: existedOrder.company,
+        operation: 'order:daysForWrite',
+        startDate: existedOrder.route.lastRouteDate,
+      })
+      orderIncludedInInvoice =
+        await IncomingInvoiceRepository.orderIncludedInInvoice(existedOrder._id)
+    }
 
     if (!newVersionOrder.clientAgreementId)
       newVersionOrder.setClientAgreement(await getClientAgreementId(body))
 
-    if (newVersionOrder.truckId) {
+    if (!orderIncludedInInvoice && newVersionOrder.truckId) {
       const carrierData = await getCarrierData(
         newVersionOrder.truckId,
         newVersionOrder.orderDate
@@ -295,12 +308,7 @@ class OrderService {
         carrierData.outsourceAgreementId
     }
 
-    let existedOrder = await OrderRepository.getById(id)
-
-    if (!existedOrder) return null
-
     // если в маршруте изменились даты проверяется пересечение с другими записями
-
     if (!existedOrder.isCompleted) {
       const datesNotChanged = helpers.isEqualDatesOfRoute(
         existedOrder.route,
@@ -308,15 +316,6 @@ class OrderService {
       )
       if (!datesNotChanged) await checkCrossItems({ body, id })
     }
-
-    // контроль разрешения на редактирвоание выполненного рейса
-    if (existedOrder.isCompleted)
-      await PermissionService.checkPeriod({
-        userId: user,
-        companyId: existedOrder.company,
-        operation: 'order:daysForWrite',
-        startDate: existedOrder.route.lastRouteDate,
-      })
 
     if (newVersionOrder.truckId !== existedOrder.truckId)
       bus.publish(OrderTruckChanged({ orderId: existedOrder.id }))
@@ -358,13 +357,6 @@ class OrderService {
   async refresh(order: OrderDomain): Promise<void> {
     order.analytics = await this.updateOrderAnalytics(order)
     order.prePrices = await this.updatePrePrices(order)
-
-    if (order.truckId) {
-      const carrierData = await getCarrierData(order.truckId, order.orderDate)
-      order.confirmedCrew.tkName = carrierData.carrierId
-      order.confirmedCrew.outsourceAgreement = carrierData.outsourceAgreementId
-    }
-
     bus.publish(OrdersUpdatedEvent([order]))
   }
 
