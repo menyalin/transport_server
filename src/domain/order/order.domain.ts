@@ -15,6 +15,12 @@ import { Route } from './route/route'
 import { RoutePoint } from './route/routePoint'
 import { CargoInfo } from '../cargoInfo'
 
+export interface IChainedOrderData {
+  docsRegistry: object | null
+  paymentInvoices: object[]
+  incomingInvoice: object | null
+}
+
 export interface IOrderDTO {
   _id?: string | Types.ObjectId
   orderDate?: string | Date
@@ -176,6 +182,10 @@ export class Order {
 
   get clientAgreementId(): string | null {
     return this.client.agreement?.toString() ?? null
+  }
+
+  get paymentPartIds(): string[] {
+    return this.paymentParts.map((i: any) => i._id?.toString())
   }
 
   setClientAgreement(agreementId: string): void {
