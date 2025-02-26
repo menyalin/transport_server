@@ -1,4 +1,3 @@
-// @ts-nocheck
 const _docTypes = [
   { value: 'routeCard', text: 'Маршрутная карта' },
   { value: 'trn', text: 'ТрН' },
@@ -7,6 +6,7 @@ const _docTypes = [
   { value: 'upd', text: 'УПД' },
   { value: 'goodsTrn', text: 'Товарный раздел ТРН' },
   { value: 'invoice', text: 'Счет Фактура' },
+  { value: 'powerOfAttorney', text: 'Доверенность' },
   { value: 'shippingReceipt', text: 'Экспедиторская расписка' },
   { value: 'goodsAcceptAct', text: 'Акт приемки товаров' },
   { value: 'discrepancyAct', text: 'Акт расхождений' },

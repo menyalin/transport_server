@@ -1,10 +1,11 @@
-// @ts-nocheck
 import {
   DocsRegistry as DocsRegistryModel,
   OrderInDocsRegistry as OrderInDocsRegistryModel,
-} from '../../models'
+} from '@/models'
 
-export const getDocsRegistryByOrderId = async (orderId) => {
+export const getDocsRegistryByOrderId = async (
+  orderId: string
+): Promise<object | null> => {
   if (!orderId) throw new Error('getDocsRegistryByOrderId: orderId is required')
 
   const tmpItem = await OrderInDocsRegistryModel.findOne({
