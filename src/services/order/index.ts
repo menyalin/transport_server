@@ -225,7 +225,7 @@ class OrderService {
     return {
       docsRegistry,
       paymentInvoices,
-      incomingInvoice: incomingInvoice ? incomingInvoice : {},
+      incomingInvoice,
     }
   }
 
