@@ -4,6 +4,7 @@ import ordersHandler from './ordersHandler'
 import dountimesHandler from './dountimesHandler'
 import scheduleNotesHandler from './scheduleNotesHandler'
 import { massUpdateHandler } from './massUpdateHandler'
+import { s3StorageHandler } from './s3storage.handler'
 import { Server, Socket } from 'socket.io'
 export const io = new Server({})
 
@@ -22,6 +23,7 @@ const onConnection = (socket: Socket) => {
   dountimesHandler(io, socket)
   scheduleNotesHandler(io, socket)
   massUpdateHandler(io, socket)
+  s3StorageHandler(io, socket)
 }
 
 io.on('connection', onConnection)
