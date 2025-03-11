@@ -15,7 +15,9 @@ export class FileRecord {
   docId: string
   key: string // Ключ (имя) файла в S3
   originalName: string // Исходное имя файла
-  contentType: string
+  company: string
+  docType: string
+  contentType?: string
   size?: number
   note?: string | null
   uploadDate: Date
@@ -25,9 +27,11 @@ export class FileRecord {
     const p = FileRecord.validationSchema.parse(props)
     this._id = p._id
     this.docId = p.docId
+    this.company = p.company
+    this.docType = p.docType
     this.key = p.key
     this.originalName = p.originalName
-    this.contentType = p.contentType
+    this.contentType = p.contentType ?? undefined
     this.size = p.size
     this.note = p.note
     this.uploadDate = p.uploadDate ?? new Date()
@@ -37,11 +41,13 @@ export class FileRecord {
   static get validationSchema() {
     return z.object({
       _id: objectIdSchema.transform((v) => v?.toString()),
+      company: objectIdSchema.transform((v) => v.toString()),
+      docType: z.string(),
       docId: objectIdSchema.transform((v) => v.toString()),
       key: z.string(),
       note: z.string().optional().nullable(),
       originalName: z.string(),
-      contentType: z.string(),
+      contentType: z.string().optional().nullable(),
       size: z.number().optional(),
       uploadDate: z
         .union([z.date(), z.string()])
@@ -54,13 +60,15 @@ export class FileRecord {
 
   static get dbSchema() {
     return {
-      key: { type: String, required: true, unique: true },
       docId: { type: Types.ObjectId, required: true },
+      key: { type: String, required: true, unique: true },
       originalName: { type: String, required: true },
       note: String,
-      contentType: { type: String, required: true },
+      contentType: { type: String },
       size: Number,
       status: String,
+      company: { type: Types.ObjectId, required: true },
+      docType: { type: String, required: true },
       uploadDate: { type: Date },
     }
   }

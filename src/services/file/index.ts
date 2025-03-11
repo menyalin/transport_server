@@ -6,6 +6,7 @@ import {
   GetObjectCommand,
   PutBucketCorsCommand,
   GetBucketCorsCommand,
+  DeleteObjectCommand,
 } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { IGenerateObjectPrefix, IGenerateUploadUrlProps } from './interfaces'
@@ -40,6 +41,8 @@ class FileService {
         secretAccessKey: s3SecretAccessKey,
       },
     })
+    const allowedOrigins = process.env.S3_ALLOWED_ORIGINS?.split(',')
+    console.log('origins: ', allowedOrigins)
   }
   private async getBucketCORSParams(): Promise<void> {
     try {
@@ -55,12 +58,14 @@ class FileService {
   }
   private async setBucketCORSParams() {
     try {
+      await this.getBucketCORSParams()
+      const allowedOrigins = process.env.S3_ALLOWED_ORIGINS?.split(',')
       const putCorsCommand = new PutBucketCorsCommand({
         Bucket: this.bucketName,
         CORSConfiguration: {
           CORSRules: [
             {
-              AllowedHeaders: ['*'],
+              AllowedHeaders: allowedOrigins,
               AllowedMethods: ['GET', 'PUT', 'POST', 'DELETE'],
               AllowedOrigins: ['*'],
             },
@@ -68,7 +73,7 @@ class FileService {
         },
       })
       await this.s3client.send(putCorsCommand)
-      console.log('Параметры CORS установлены')
+      console.log('Параметры CORS для S3 установлены')
     } catch (e) {
       console.log('Ошибка установки параметров CORS: ', e)
     }
@@ -95,17 +100,21 @@ class FileService {
     return await FileRepository.getByDocId(docId)
   }
 
-  async generateUploadUrl(props: IGenerateUploadUrlProps): Promise<string> {
+  async generateUploadUrl(
+    props: IGenerateUploadUrlProps
+  ): Promise<{ url: string; key: string }> {
     // Добавить создание файла в БД
     const fileId = new Types.ObjectId().toString()
     const key = await this.generateObjectPrefix({
       ...props,
       fileId,
     })
+    if (!this.hasBucketCORSParams) await this.setBucketCORSParams()
 
     const fileRecord = new FileRecord({
       _id: fileId,
       docId: props.docId,
+      company: props.companyId,
       key,
       docType: props.docType,
       originalName: props.originalName,
@@ -122,19 +131,34 @@ class FileService {
       Key: key,
       ContentType: props.contentType,
     })
+    const url = await getSignedUrl(this.s3client, command, {
+      expiresIn: this.URL_EXPIRATION_SECONDS,
+    })
+
+    return { url, key }
+  }
+
+  async generateDownloadUrl(key: string): Promise<string> {
+    const fileRecord = await FileRepository.getByKey(key)
+    if (!fileRecord) throw new Error('File not found')
+
+    const command = new GetObjectCommand({
+      Bucket: this.bucketName,
+      Key: fileRecord.key,
+      ResponseContentDisposition: `attachment; filename="${encodeURIComponent(fileRecord.originalName)}"`,
+    })
     return await getSignedUrl(this.s3client, command, {
       expiresIn: this.URL_EXPIRATION_SECONDS,
     })
   }
 
-  async generateDownloadUrl(key: string): Promise<string> {
-    const command = new GetObjectCommand({
+  async deleteObjectByKey(key: string): Promise<void> {
+    const command = new DeleteObjectCommand({
       Bucket: this.bucketName,
       Key: key,
     })
-    return await getSignedUrl(this.s3client, command, {
-      expiresIn: this.URL_EXPIRATION_SECONDS,
-    })
+    const res = await this.s3client.send(command)
+    await FileRepository.deleteByKey(key)
   }
 }
 
