@@ -90,6 +90,7 @@ export const getListPipeline = ({
       $addFields: {
         count: { $size: '$items' },
         analyticData: {
+          count: { $size: '$items' },
           totalSum: {
             $reduce: {
               initialValue: 0,

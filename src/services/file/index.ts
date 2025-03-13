@@ -11,8 +11,9 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { IGenerateObjectPrefix, IGenerateUploadUrlProps } from './interfaces'
 import { CompanyRepository, FileRepository } from '@/repositories'
-import { Types } from 'mongoose'
+import { isValidObjectId, Types } from 'mongoose'
 import { FileRecord, FileRecordStatus } from '@/domain/fileRecord'
+import { BadRequestError } from '@/helpers/errors'
 
 class FileService {
   private bucketName: string
@@ -159,6 +160,14 @@ class FileService {
     })
     const res = await this.s3client.send(command)
     await FileRepository.deleteByKey(key)
+  }
+
+  async update(id: string, body: unknown): Promise<FileRecord> {
+    if (!id || !isValidObjectId(id)) throw new BadRequestError('Invalid id')
+
+    const res = await FileRepository.updateById(id, body)
+    if (res) return res
+    throw new Error('File not found')
   }
 }
 

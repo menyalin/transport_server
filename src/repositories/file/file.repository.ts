@@ -20,6 +20,13 @@ class FileRepository {
     await FileRecordModel.create(fileRecord)
   }
 
+  async updateById(id: string, body: object): Promise<FileRecord | null> {
+    const data = await FileRecordModel.findOneAndUpdate({ _id: id }, body, {
+      new: true,
+    })
+    return data ? new FileRecord(data) : null
+  }
+
   async updateStatusByKey(
     key: string,
     status: FileRecordStatus
