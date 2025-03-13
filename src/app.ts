@@ -28,6 +28,7 @@ import cityRouter from './api/city'
 import workerRouter from './api/worker'
 import docsRegistryRouter from './api/docsRegistry'
 import fineRouter from './api/fine'
+import fileRouter from './api/file'
 import paymentInvoiceRouter from './api/paymentInvoice'
 import docTemplateRouter from './api/docTemplate'
 import adminRouter from './api/admin'
@@ -80,6 +81,7 @@ app.use('/api/regions', regionRouter)
 app.use('/api/cities', cityRouter)
 app.use('/api/workers', workerRouter)
 app.use('/api/fines', fineRouter)
+app.use('/api/storage', fileRouter)
 app.use('/api/docs_registry', docsRegistryRouter)
 app.use('/api/payment_invoice', paymentInvoiceRouter)
 app.use('/api/incoming_invoice', incomingInvoiceRouter)
