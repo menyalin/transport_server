@@ -74,10 +74,6 @@ export const outsourceCarriersManager = {
   'order:daysForWrite': -1,
   'order:readFinalPrices': true,
   'order:readDocs': true,
-  'tariff:readList': true,
-  'tariff:readItem': true,
-  'tariff:write': true,
-  'tariff:delete': true,
 
   'paymentInvoice:readList': true,
   'paymentInvoice:readItem': true,
@@ -239,6 +235,8 @@ export const seniorDispatcher = {
   'carrierAgreement:readItem': true,
   'carrierAgreement:write': true,
   'carrierAgreement:delete': true,
+  'tariffContract:readList': true,
+  'tariffContract:readItem': true,
 }
 
 export const checkman = {

@@ -18,6 +18,9 @@ router.get('/:docId', [jwtAuth], (req: Request, res: Response) =>
 router.put('/generate_upload_url', [jwtAuth], (req: Request, res: Response) =>
   ctrl.generateUploadUrl(req as AuthorizedRequest, res)
 )
+router.put('/:fileId', [jwtAuth], (req: Request, res: Response) =>
+  ctrl.update(req as AuthorizedRequest, res)
+)
 
 router.delete('/delete_object', [jwtAuth], (req: Request, res: Response) =>
   ctrl.deleteObject(req as AuthorizedRequest, res)

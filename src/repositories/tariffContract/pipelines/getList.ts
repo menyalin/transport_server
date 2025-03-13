@@ -45,7 +45,29 @@ export const ListPipelineBuilder = (p: ListQueryPropsDto): PipelineStage[] => {
     },
   ]
 
-  const pipeline: PipelineStage[] = [firstMatcher, ...aggreemntLookup]
+  const nestedFilesLookup: PipelineStage[] = [
+    {
+      $lookup: {
+        from: 'files',
+        localField: '_id',
+        foreignField: 'docId',
+        as: 'nestedFiles',
+      },
+    },
+    {
+      $addFields: {
+        nestedFiles: {
+          $size: '$nestedFiles',
+        },
+      },
+    },
+  ]
+
+  const pipeline: PipelineStage[] = [
+    firstMatcher,
+    ...aggreemntLookup,
+    ...nestedFilesLookup,
+  ]
   if (p.sortBy.length > 0) pipeline.push(sortingBuilder(p.sortBy, p.sortDesc))
   const finalFacet: PipelineStage.Facet = {
     $facet: {

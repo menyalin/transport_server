@@ -47,6 +47,16 @@ class FileController {
       else res.status(500).json(e)
     }
   }
+  async update(req: AuthorizedRequest, res: Response) {
+    try {
+      if (!req.params.fileId) throw new BadRequestError('fileId is missing')
+      const data = await FileService.update(req.params.fileId, req.body)
+      res.status(200).json(data)
+    } catch (e) {
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
+    }
+  }
 
   async getDownloadUrl(req: AuthorizedRequest, res: Response) {
     try {
