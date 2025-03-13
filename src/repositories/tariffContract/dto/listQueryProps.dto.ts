@@ -6,9 +6,13 @@ export class ListQueryPropsDto {
   skip: number
   sortBy: string[]
   sortDesc: boolean[]
+  agreements: string[]
+  searchStr: string
 
   constructor(p: any) {
     const validatedProps = ListQueryPropsDto.validationSchema.parse(p)
+    this.agreements = validatedProps.agreements
+    this.searchStr = validatedProps.searchStr
     this.company = validatedProps.company
     this.limit = +validatedProps.limit
     this.skip = +validatedProps.skip
@@ -22,5 +26,15 @@ export class ListQueryPropsDto {
     skip: z.string(),
     sortBy: z.array(z.string()).optional(),
     sortDesc: z.array(z.string()).optional(),
+    searchStr: z
+      .string()
+      .optional()
+      .nullable()
+      .transform((v) => v ?? ''),
+    agreements: z
+      .array(z.string())
+      .optional()
+      .nullable()
+      .transform((v) => v ?? []),
   })
 }
