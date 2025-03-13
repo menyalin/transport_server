@@ -19,6 +19,9 @@ export const ListPipelineBuilder = (p: ListQueryPropsDto): PipelineStage[] => {
     $match: {
       company: new Types.ObjectId(p.company),
       isActive: true,
+      $expr: {
+        $and: [],
+      },
     },
   }
 
@@ -44,6 +47,30 @@ export const ListPipelineBuilder = (p: ListQueryPropsDto): PipelineStage[] => {
       },
     },
   ]
+  if (p.agreements.length) {
+    firstMatcher.$match.$expr?.$and.push({
+      $in: ['$agreement', p.agreements.map((i) => new Types.ObjectId(i))],
+    })
+  }
+  if (p.searchStr)
+    firstMatcher.$match.$expr?.$and.push({
+      $or: [
+        {
+          $regexMatch: {
+            input: '$name',
+            regex: p.searchStr,
+            options: 'i',
+          },
+        },
+        {
+          $regexMatch: {
+            input: '$note',
+            regex: p.searchStr,
+            options: 'i',
+          },
+        },
+      ],
+    })
 
   const nestedFilesLookup: PipelineStage[] = [
     {

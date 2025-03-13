@@ -165,7 +165,7 @@ class FileService {
   async update(id: string, body: unknown): Promise<FileRecord> {
     if (!id || !isValidObjectId(id)) throw new BadRequestError('Invalid id')
 
-    const res = await FileRepository.updateById(id, body)
+    const res = await FileRepository.updateById(id, body as object)
     if (res) return res
     throw new Error('File not found')
   }
