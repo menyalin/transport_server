@@ -7,6 +7,7 @@ const sortingBuilder = (
 ): PipelineStage.Sort => {
   const fieldMapper = new Map<string, string>()
   fieldMapper.set('plannedDateStr', 'plannedDate')
+  fieldMapper.set('nestedFiles', 'nestedFiles')
   return {
     $sort: {
       [sortBy[0]]: sortDesc[0] ? -1 : 1,
