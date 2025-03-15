@@ -9,6 +9,8 @@ import getCrewDiagramReportPipeline from './pipelines/getCrewDiagramReportPipeli
 import getCrewByTruckAndDatePipeline from './pipelines/getCrewByTruckAndDatePipeline'
 import getLastCrewByDriverPipeline from './pipelines/getLastCrewByDriverPipeline'
 import getCrewListPipeline from './pipelines/getCrewListPipeline'
+import { getCrewUnwindedDataPipeline } from './pipelines/getCrewUnwindedDataPipeline'
+import pipeline from '../worker/pipelines/getCompaniesByUserIdPipeline'
 
 class CrewService {
   async create(body, userId) {
@@ -175,6 +177,11 @@ class CrewService {
       opType: 'delete',
     })
 
+    return data
+  }
+  async getCrewUnwindedData(props): Promise<any[]> {
+    const pipeline = getCrewUnwindedDataPipeline(props)
+    const data = await Crew.aggregate(pipeline)
     return data
   }
 
