@@ -11,6 +11,7 @@ import getDriversGradesAppayPipeline from './pipelines/driversGradesArray'
 import getGrossProfitPivotPipeline from './pipelines/grossProfitPivotPipeline'
 import getGrossProfitDetailsPipeline from './pipelines/getGrossProfitDetailsPipeline'
 import getOrderDocsPipeline from './pipelines/getOrderDocs'
+import carrier from '@/services/carrier'
 
 export interface IDriversGradesXlsxReportProps {
   company: string
@@ -29,7 +30,11 @@ export interface IReportService {
     props: IDriversGradesXlsxReportProps
   ) => Promise<Readable>
 
-  daysControl: (days: number, profile: string) => Promise<unknown[]>
+  daysControl: (
+    days: number,
+    profile: string,
+    carriers?: string[]
+  ) => Promise<unknown[]>
   truckStateOnDate: (props: ITruckStateOnDateProps) => Promise<unknown[]>
 
   inProgressOrders: ({
@@ -54,8 +59,12 @@ class ReportService implements IReportService {
     return data
   }
 
-  async daysControl(days: number, profile: string): Promise<unknown[]> {
-    const pipeline = getReportDaysControlPipeline(days, profile)
+  async daysControl(
+    days: number,
+    profile: string,
+    carriers?: string[]
+  ): Promise<unknown[]> {
+    const pipeline = getReportDaysControlPipeline(days, profile, carriers)
     const data = await Driver.aggregate(pipeline as PipelineStage[])
     return data
   }

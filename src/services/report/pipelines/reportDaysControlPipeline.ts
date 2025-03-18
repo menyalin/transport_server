@@ -1,8 +1,7 @@
-// @ts-nocheck
-import pkg from 'mongoose'
+import pkg, { PipelineStage } from 'mongoose'
 const { Types } = pkg
 
-export default (dayLimit = 30, profile) => {
+export default (dayLimit = 30, profile: string, carriers?: string[]) => {
   const additionalNotifications = {
     $ifNull: [
       {
@@ -35,20 +34,45 @@ export default (dayLimit = 30, profile) => {
       [],
     ],
   }
-  const concatArrays = {
+  const concatArrays: PipelineStage.AddFields = {
     $addFields: {
       controlDates: {
         $concatArrays: ['$controlDates', '$additionalNotifications'],
       },
     },
   }
-  const drivers = [
-    {
-      $match: {
-        company: new Types.ObjectId(profile),
-        dismissalDate: null,
+  const truckMatcher: PipelineStage.Match = {
+    $match: {
+      company: new Types.ObjectId(profile),
+      endServiceDate: null,
+      $expr: {
+        $and: [],
       },
     },
+  }
+
+  const driverMatcher: PipelineStage.Match = {
+    $match: {
+      company: new Types.ObjectId(profile),
+      dismissalDate: null,
+      $expr: {
+        $and: [],
+      },
+    },
+  }
+
+  if (carriers && carriers.length > 0) {
+    truckMatcher.$match.$expr?.$and.push({
+      $in: ['$tkName', carriers.map((i) => new Types.ObjectId(i))],
+    })
+
+    driverMatcher.$match.$expr?.$and.push({
+      $in: ['$tkName', carriers.map((i) => new Types.ObjectId(i))],
+    })
+  }
+
+  const drivers = [
+    driverMatcher,
     {
       $project: {
         collection: 'drivers',
@@ -130,17 +154,17 @@ export default (dayLimit = 30, profile) => {
     },
   ]
 
+  if (carriers && carriers.length > 0)
+    truckMatcher.$match.$expr?.$and.push({
+      $in: ['$tkName', carriers.map((i) => new Types.ObjectId(i))],
+    })
+
   const trucks = [
     {
       $unionWith: {
         coll: 'trucks',
         pipeline: [
-          {
-            $match: {
-              company: new Types.ObjectId(profile),
-              endServiceDate: null,
-            },
-          },
+          truckMatcher,
           {
             $project: {
               collection: 'trucks',

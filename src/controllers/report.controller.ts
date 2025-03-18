@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { IReportService } from '@/services/report'
-import { BadRequestError } from '../helpers/errors'
-import { DateRange } from '../classes/dateRange'
+import { BadRequestError } from '@/helpers/errors'
+import { DateRange } from '@/classes/dateRange'
 import { ReportService, PaymentInvoiceService } from '@/services'
 import { AuthorizedRequest } from './interfaces'
 
@@ -41,7 +41,11 @@ class ReportController {
       if (!!req.query.days && !isNaN(parseInt(req.query.days as string)))
         days = parseInt(req.query.days as string)
 
-      const data = await this.service.daysControl(days, req.companyId)
+      const data = await this.service.daysControl(
+        days,
+        req.companyId,
+        req.query.carriers as string[]
+      )
       res.status(200).json(data)
     } catch (e) {
       if (e instanceof BadRequestError) {
