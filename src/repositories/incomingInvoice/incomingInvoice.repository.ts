@@ -86,9 +86,8 @@ class IncomingInvoiceRepository {
 
   async pickOrders(props: unknown): Promise<OrderForIncomingInvoice[]> {
     try {
-      const validatedProps = PickOrdersPropsDTO.validationSchema.parse(props)
       const pipeline = pickOrdersForIncomingInvoice(
-        new PickOrdersPropsDTO(validatedProps)
+        new PickOrdersPropsDTO(props)
       )
       const res = await this.orderModel.aggregate(pipeline)
       return res

@@ -7,6 +7,7 @@ export class PickOrdersPropsDTO {
   agreement: string
   carrier: string
   period: DateRange
+  includedIntoPaymentInvoice: boolean
   docStatuses?: ORDER_DOC_STATUSES_ENUM[]
   number?: string
   limit: number = 200
@@ -18,6 +19,7 @@ export class PickOrdersPropsDTO {
     this.carrier = validatedProps.carrier
     this.company = validatedProps.company
     this.number = validatedProps.number
+    this.includedIntoPaymentInvoice = validatedProps.includedIntoPaymentInvoice
     this.period = new DateRange(
       validatedProps.period[0],
       validatedProps.period[1]
@@ -41,6 +43,11 @@ export class PickOrdersPropsDTO {
       period: z.array(z.string()).length(2),
       limit: z.string(),
       skip: z.string(),
+      includedIntoPaymentInvoice: z
+        .string()
+        .optional()
+        .nullable()
+        .transform((v) => v === 'true'),
     })
   }
 }
