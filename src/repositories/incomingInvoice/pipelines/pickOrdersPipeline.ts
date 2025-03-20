@@ -45,7 +45,35 @@ export const pickOrdersForIncomingInvoice = (
         $expr: { $eq: [{ $size: '$tmp_ordersInIncomingInvoices' }, 0] },
       },
     },
+    // {
+    //   $unset: ['tmp_ordersInIncomingInvoices'],
+    // },
   ]
+
+  const includeIntoPaymentInvoiceFilter = (
+    needFilter: boolean = false
+  ): PipelineStage[] => {
+    if (!needFilter) return []
+    else
+      return [
+        {
+          $lookup: {
+            from: 'ordersInPaymentInvoices',
+            localField: '_id',
+            foreignField: 'order',
+            as: '_ordersInPaymentInvoices',
+          },
+        },
+        {
+          $match: {
+            $expr: { $eq: [{ $size: '$_ordersInPaymentInvoices' }, 1] },
+          },
+        },
+        // {
+        //   $unset: ['_ordersInPaymentInvoices'],
+        // },
+      ]
+  }
 
   const clearUnusedFields: PipelineStage.Unset = {
     $unset: [
@@ -160,6 +188,7 @@ export const pickOrdersForIncomingInvoice = (
     firstMatcher,
     clearUnusedFields,
     ...includeIntoInvoicesFilter,
+    ...includeIntoPaymentInvoiceFilter(p.includedIntoPaymentInvoice),
     ...clientLookup,
     ...truckLookup,
     ...driverLookup,
