@@ -110,7 +110,9 @@ class IncomingInvoiceRepository {
   }
 
   async addOrderToInvoice(items: IncomingInvoiceOrder[]) {
-    await this.invoiceOrderModel.create(items)
+    for (let i = 0; i < items.length; i++) {
+      await this.invoiceOrderModel.create(items[i])
+    }
   }
 
   async deleteOrderFromInvoice({
