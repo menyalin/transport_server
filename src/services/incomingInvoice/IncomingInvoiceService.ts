@@ -110,9 +110,11 @@ class IncomingInvoiceService {
     if (res.items.length !== orderIds.length)
       throw new BadRequestError('Рейсы не найдены')
 
-    const invoiceRows: IncomingInvoiceOrder[] = res.items.map(
-      (order: unknown) =>
-        IncomingInvoiceOrder.create(new Order(order), invoice._id)
+    const invoiceRows: IncomingInvoiceOrder[] = orderIds.map(
+      (orderId: unknown) => {
+        const order = res.items.find((o: any) => o?._id?.toString() === orderId)
+        return IncomingInvoiceOrder.create(new Order(order), invoice._id)
+      }
     )
     await this.incomingInvoiceRepository.addOrderToInvoice(invoiceRows)
     const events = invoice.pushOrders(invoiceRows)
