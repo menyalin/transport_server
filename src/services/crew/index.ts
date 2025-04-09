@@ -116,8 +116,8 @@ class CrewService {
     return crew
   }
 
-  async getOneByDriver(driver) {
-    const pipeline = getLastCrewByDriverPipeline(driver)
+  async getOneByDriverAndDate(params: unknown) {
+    const pipeline = getLastCrewByDriverPipeline(params)
     const data = await Crew.aggregate(pipeline)
     if (data.length) return data[0]
     else return null

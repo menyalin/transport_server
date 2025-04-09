@@ -1,14 +1,6 @@
 import { Types } from 'mongoose'
 
-export default ({
-  truck,
-  date,
-  state,
-}: {
-  truck: string
-  date: string
-  state?: string
-}) => {
+export default ({ truck, date }: { truck: string; date: string }) => {
   if (!truck || !date) throw new Error('bad pipeline arguments')
   const inputDate = new Date(date)
   const firstMatcher = {

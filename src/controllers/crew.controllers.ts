@@ -86,7 +86,7 @@ export const getActualCrews = async (req: AuthorizedRequest, res: Response) => {
 }
 export const getByDriver = async (req: AuthorizedRequest, res: Response) => {
   try {
-    const data = await service.getOneByDriver(req.query.driver)
+    const data = await service.getOneByDriverAndDate(req.query)
     res.status(200).json(data)
   } catch (e) {
     if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
