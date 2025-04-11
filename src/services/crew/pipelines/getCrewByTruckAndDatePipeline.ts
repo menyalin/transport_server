@@ -1,14 +1,6 @@
 import { Types } from 'mongoose'
 
-export default ({
-  truck,
-  date,
-  state,
-}: {
-  truck: string
-  date: string
-  state?: string
-}) => {
+export default ({ truck, date }: { truck: string; date: string }) => {
   if (!truck || !date) throw new Error('bad pipeline arguments')
   const inputDate = new Date(date)
   const firstMatcher = {
@@ -32,12 +24,13 @@ export default ({
 
   const secondMatcher = {
     $match: {
-      $or: [
-        { 'transport.truck': new Types.ObjectId(truck) },
-        { 'transport.trailer': new Types.ObjectId(truck) },
-      ],
-
       'transport.startDate': { $lte: inputDate },
+      $expr: {
+        $or: [
+          { $eq: ['$transport.truck', new Types.ObjectId(truck)] },
+          { $eq: ['$transport.trailer', new Types.ObjectId(truck)] },
+        ],
+      },
     },
   }
   return [

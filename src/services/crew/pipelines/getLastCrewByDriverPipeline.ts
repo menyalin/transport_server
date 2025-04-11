@@ -1,13 +1,20 @@
-// @ts-nocheck
-import mongoose from 'mongoose'
+import { objectIdSchema } from '@/shared/validationSchemes'
+import { Types } from 'mongoose'
+import { z } from 'zod'
 
-export default (driver) => {
-  if (!driver) throw new Error('bad pipeline arguments')
+export default (p: unknown) => {
+  const schema = z.object({
+    driver: objectIdSchema,
+  })
+
+  const params = schema.parse(p)
 
   const firstMatcher = {
     $match: {
       isActive: true,
-      driver: new mongoose.Types.ObjectId(driver),
+      $expr: {
+        $and: [{ $eq: ['$driver', new Types.ObjectId(params.driver)] }],
+      },
     },
   }
 
