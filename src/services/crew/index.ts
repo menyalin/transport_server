@@ -36,11 +36,11 @@ class CrewService {
   async updateOne(id, body, userId) {
     let crew = await Crew.findById(id)
     if (!crew) return null
-    if (body.endDate) {
-      const idx = body.transport.length - 1
-      if (body.transport[idx].endDate)
-        body.endDate = body.transport[idx].endDate
-      else body.transport[idx].endDate = body.endDate
+    const lastRow = crew.transport.reverse()[0]
+    if (body.endDate && !lastRow.endDate) {
+      lastRow.endDate = body.endDate
+    } else if (!body.endDate && lastRow.endDate) {
+      body.endDate = lastRow.endDate
     }
 
     crew = Object.assign(crew, { ...body, manager: userId })
@@ -61,7 +61,6 @@ class CrewService {
 
   async closeCrew(id, { endDate, userId }) {
     const crew = await Crew.findById(id)
-
     if (!crew) return null
     const idx = crew.transport.length - 1
 
@@ -91,30 +90,30 @@ class CrewService {
     return crew
   }
 
-  async closeTransportItem(id, { endDate, userId }) {
-    const crew = await Crew.findOne({ 'transport._id': id })
+  // async closeTransportItem(id, { endDate, userId }) {
+  //   const crew = await Crew.findOne({ 'transport._id': id })
 
-    if (!crew) return null
-    const transportItem = crew.transport.find(
-      (item) => item._id.toString() === id
-    )
-    if (new Date(transportItem.startDate) > new Date(endDate))
-      throw new Error('bad query params')
-    transportItem.endDate = endDate
-    crew.manager = userId
-    await crew.save()
-    await ChangeLogService.add({
-      docId: crew._id.toString(),
-      company: crew.company.toString(),
-      user: userId,
-      coll: 'crews',
-      body: crew,
-      opType: 'update',
-    })
-    await crew.populate(['tkName', 'driver', 'manager'])
-    emitTo(crew.company.toString(), 'crew:updated', crew)
-    return crew
-  }
+  //   if (!crew) return null
+  //   const transportItem = crew.transport.find(
+  //     (item) => item._id.toString() === id
+  //   )
+  //   if (new Date(transportItem.startDate) > new Date(endDate))
+  //     throw new Error('bad query params')
+  //   transportItem.endDate = endDate
+  //   crew.manager = userId
+  //   await crew.save()
+  //   await ChangeLogService.add({
+  //     docId: crew._id.toString(),
+  //     company: crew.company.toString(),
+  //     user: userId,
+  //     coll: 'crews',
+  //     body: crew,
+  //     opType: 'update',
+  //   })
+  //   await crew.populate(['tkName', 'driver', 'manager'])
+  //   emitTo(crew.company.toString(), 'crew:updated', crew)
+  //   return crew
+  // }
 
   async getOneByDriverAndDate(params: unknown) {
     const pipeline = getLastCrewByDriverPipeline(params)

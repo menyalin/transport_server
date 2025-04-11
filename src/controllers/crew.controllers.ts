@@ -38,24 +38,17 @@ export const updateOne = async (req: AuthorizedRequest, res: Response) => {
 }
 
 export const closeCrew = async (req: AuthorizedRequest, res: Response) => {
-  await PermissionService.check({
-    userId: req.userId,
-    companyId: req.companyId,
-    operation: 'crew:write',
-  })
-  let data
   try {
-    if (req.body.type === 'crew') {
-      data = await service.closeCrew(req.params.id, {
-        endDate: req.body.endDate,
-        userId: req.userId,
-      })
-    } else if (req.body.type === 'transport') {
-      data = await service.closeTransportItem(req.params.id, {
-        endDate: req.body.endDate,
-        userId: req.userId,
-      })
-    }
+    await PermissionService.check({
+      userId: req.userId,
+      companyId: req.companyId,
+      operation: 'crew:write',
+    })
+
+    const data = await service.closeCrew(req.params.id, {
+      endDate: req.body.endDate,
+      userId: req.userId,
+    })
 
     if (!data) res.status(400).json({ message: 'Bad params' })
     res.status(200).json(data)

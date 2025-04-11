@@ -1,10 +1,10 @@
+import { objectIdSchema } from '@/shared/validationSchemes'
 import { Types } from 'mongoose'
 import { z } from 'zod'
 
 export default (p: unknown) => {
   const schema = z.object({
-    driver: z.string(),
-    date: z.string().transform((v) => new Date(v)),
+    driver: objectIdSchema,
   })
 
   const params = schema.parse(p)
@@ -13,10 +13,7 @@ export default (p: unknown) => {
     $match: {
       isActive: true,
       $expr: {
-        $and: [
-          { $eq: ['$driver', new Types.ObjectId(params.driver)] },
-          { $gte: [params.date, '$startDate'] },
-        ],
+        $and: [{ $eq: ['$driver', new Types.ObjectId(params.driver)] }],
       },
     },
   }

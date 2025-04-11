@@ -24,12 +24,13 @@ export default ({ truck, date }: { truck: string; date: string }) => {
 
   const secondMatcher = {
     $match: {
-      $or: [
-        { 'transport.truck': new Types.ObjectId(truck) },
-        { 'transport.trailer': new Types.ObjectId(truck) },
-      ],
-
       'transport.startDate': { $lte: inputDate },
+      $expr: {
+        $or: [
+          { $eq: ['$transport.truck', new Types.ObjectId(truck)] },
+          { $eq: ['$transport.trailer', new Types.ObjectId(truck)] },
+        ],
+      },
     },
   }
   return [
