@@ -1,5 +1,4 @@
 import {
-  IBorderOptions,
   Paragraph,
   Table,
   TableCell,

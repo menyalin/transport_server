@@ -107,7 +107,7 @@ export const resultTableBuilder = (
               new Paragraph({
                 children: [
                   new TextRun({
-                    text: `Всего оказано услуг 1, на сумму 19 000,00 руб`,
+                    text: `Всего оказано услуг ${props.ordersCount}, на сумму ${moneyFormatter(props.priceWithVat)}руб.`,
                     size: 16,
                   }),
                 ],

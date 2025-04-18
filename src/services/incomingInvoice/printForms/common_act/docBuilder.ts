@@ -8,6 +8,7 @@ import {
   resultTableBuilder,
   rowTitleBuilder,
   descriptionBuilder,
+  signatoriesTableBuilder,
 } from './fragments'
 
 const spacingParagraph = (lineHeight: number = 150): Paragraph =>
@@ -49,6 +50,8 @@ export const commonActBuilder = async (invoiceId: string): Promise<Buffer> => {
           resultTableBuilder(data.resultTable),
           spacingParagraph(300),
           descriptionBuilder(data.description),
+          spacingParagraph(300),
+          signatoriesTableBuilder(data.signatories),
         ],
       },
     ],

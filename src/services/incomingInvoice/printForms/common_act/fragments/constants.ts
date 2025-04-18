@@ -29,7 +29,7 @@ export const paragraphCellIntent: IIndentAttributesProperties = {
 
 export const sectionDividerBottom: IBorderOptions = {
   color: 'auto',
-  space: 4,
+  space: 6,
   style: 'single',
   size: 15,
 }

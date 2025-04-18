@@ -15,6 +15,7 @@ interface IIncomingInvoiceProps {
   number: string
   date: Date | string | null
   plannedPayDate: string | Date | null
+  customer?: string
   agreement: string
   carrier: string
   status: string
@@ -31,6 +32,7 @@ export class IncomingInvoice {
   company: string
   number: string
   date: Date
+  customer?: string
   plannedPayDate: Date | null
   agreement: string
   carrier: string
@@ -46,6 +48,7 @@ export class IncomingInvoice {
     this._id = invoice?._id.toString()
     this.company = invoice.company.toString()
     this.number = invoice.number
+    this.customer = invoice.customer
     this.date = DateUtils.parseDate(invoice.date) ?? new Date()
     this.plannedPayDate = DateUtils.parseDate(invoice.plannedPayDate)
     this.agreement = invoice.agreement.toString()
@@ -125,6 +128,7 @@ export class IncomingInvoice {
       number: String,
       date: { type: Date, required: true },
       plannedPayDate: Date,
+      customer: Types.ObjectId,
       agreement: { type: Types.ObjectId, ref: 'Agreement', required: true },
       carrier: { type: Types.ObjectId, ref: 'Carrier', required: true },
       status: String,

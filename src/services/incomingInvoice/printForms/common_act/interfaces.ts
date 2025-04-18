@@ -28,7 +28,12 @@ export interface IMainTableFragmentProps {
   rows: IMainTableRowFragmentProps[]
 }
 
-export interface ISignatoriesFragmentProps {}
+export interface ISignatoriesFragmentProps {
+  executorSignatoryPosition: string
+  executorSignatoryName: string
+  executorCompanyName: string
+  customerCompanyName: string
+}
 
 export interface ICommonActIncomingInvoiceData {
   titleData: ITitleRowFragmentProps

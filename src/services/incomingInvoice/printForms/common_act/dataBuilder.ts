@@ -1,7 +1,18 @@
 import { BadRequestError } from '@/helpers/errors'
-import { ICommonActIncomingInvoiceData } from './interfaces'
-import { IncomingInvoiceRepository } from '@/repositories'
-import { moneyFormatter } from '@/utils/moneyFormatter'
+import {
+  ICommonActIncomingInvoiceData,
+  IMainTableFragmentProps,
+  IMainTableRowFragmentProps,
+} from './interfaces'
+import {
+  IncomingInvoiceRepository,
+  CarrierRepository,
+  CarrierAgreementRepository,
+  OrderRepository,
+} from '@/repositories'
+
+import { IncomingInvoiceOrder } from '@/domain/incomingInvoice'
+import { mainTableRowBuilder } from './mainTableRowsBuilder'
 
 export const incomingInvoiceDataBuilder = async (
   invoiceId: string
@@ -9,54 +20,55 @@ export const incomingInvoiceDataBuilder = async (
   const invoice = await IncomingInvoiceRepository.getById(invoiceId)
   if (!invoice) throw new BadRequestError('Invoice not found')
 
+  const executorCarrier = await CarrierRepository.getById(invoice.carrier)
+  if (!executorCarrier) throw new BadRequestError('Исполнитель не определен')
+
+  const carrierAgreement = await CarrierAgreementRepository.getById(
+    invoice.agreement
+  )
+  if (!carrierAgreement)
+    throw new BadRequestError('Соглашение с перевозчиком не найдено')
+  if (!carrierAgreement.customer)
+    throw new BadRequestError('В соглашении с ТК заказчик не определен')
+
+  const customerCarrier = await CarrierRepository.getById(
+    carrierAgreement.customer
+  )
+  if (!customerCarrier) throw new BadRequestError('Заказчик не найден')
+  let ordersData: IMainTableRowFragmentProps[] = []
+
+  for (const orderInInvoice of invoice.orders) {
+    const data = await OrderRepository.getFullOrderDataDTO(orderInInvoice.order)
+    ordersData.push(mainTableRowBuilder(data, orderInInvoice.total))
+  }
+
   return {
-    signatories: {},
+    signatories: {
+      customerCompanyName: customerCarrier.getPFdata.fullName,
+      executorCompanyName: executorCarrier.getPFdata.fullName,
+      executorSignatoryPosition: executorCarrier.getPFdata.signatoryPosition,
+      executorSignatoryName: executorCarrier.getPFdata.signatoryName,
+    },
     titleData: {
       number: invoice.number,
       date: invoice.date,
     },
     headerTable: {
-      executor:
-        'ООО "ТЭК "СТГ", ИНН 9717069235, 129164, Город Москва, ул Маломосковская, д. 21, к. 4, кв. 162, тел.: +7 (915) 4117121, р/с 40702810200000188998, в банке БАНК ГПБ (АО), БИК 044525823, к/с 30101810200000000823',
-      customer:
-        'ООО "АЛЬТ-ПАК", ИНН 5029096223, 141007, Московская область, г. Мытищи, ул. Хлебозаводская, владение 4А, строение 1, офис 301-327',
-      basis: 'Основной договор',
+      executor: executorCarrier.getPFdata.fullDataString,
+      customer: customerCarrier.companyInfo?.getFullDataString(),
+      basis: carrierAgreement.actBasis ?? 'Основной договор',
     },
     mainTable: {
-      rows: [
-        {
-          title:
-            'Транспортные услуги по маршруту  МО г.Мытищи,ул.Хлебозаводская,влд.4А,стр.1  - г.Москва,км МКАД 43-й,терминал Е,ворота 70; водитель Калинин Д.И.   а/м маз  у927ум190   07.03.2025г.',
-          count: '1',
-          measurementUnit: 'шт',
-          price: moneyFormatter(19000),
-          sum: moneyFormatter(19000),
-        },
-        {
-          title:
-            'Транспортные услуги по маршруту  МО г.Мытищи,ул.Хлебозаводская,влд.4А,стр.1  - г.Москва,км МКАД 43-й,терминал Е,ворота 70; водитель Калинин Д.И.   а/м маз  у927ум190   07.03.2025г.',
-          count: '1',
-          measurementUnit: 'шт',
-          price: moneyFormatter(19000),
-          sum: moneyFormatter(19000),
-        },
-        {
-          title:
-            'Транспортные услуги по маршруту  МО г.Мытищи,ул.Хлебозаводская,влд.4А,стр.1  - г.Москва,км МКАД 43-й,терминал Е,ворота 70; водитель Калинин Д.И.   а/м маз  у927ум190   07.03.2025г.',
-          count: '1',
-          measurementUnit: 'шт',
-          price: moneyFormatter(19000),
-          sum: moneyFormatter(19000),
-        },
-      ],
+      rows: ordersData,
     },
     resultTable: {
-      priceWithVat: 19000,
-      priceWOVat: 17000,
-      ordersCount: 1,
-      vatRate: 20,
+      priceWithVat: invoice?.priceWithVat ?? 0,
+      priceWOVat: invoice?.priceWOVat ?? 0,
+      ordersCount: invoice?.ordersCount ?? 0,
+      vatRate: carrierAgreement?.vatRate ?? 0,
     },
     description:
+      carrierAgreement.actDescription ??
       'Вышеперечисленные услуги выполнены полностью и в срок. Заказчик претензий по объему, качеству и срокам оказания услуг не имеет.',
   }
 }

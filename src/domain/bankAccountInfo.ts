@@ -22,6 +22,10 @@ export class BankAccountInfo {
       throw e
     }
   }
+  getFullDataString(): string {
+    return `р/с ${this.accountNumber ?? ''}, ${this.bankName ?? ''}, БИК ${this.bankCode ?? ''}, к/с ${this.correspondentAccount ?? ''}`
+  }
+
   static get dbSchema() {
     return {
       accountNumber: String,
