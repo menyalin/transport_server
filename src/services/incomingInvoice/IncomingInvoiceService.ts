@@ -1,10 +1,11 @@
 import { IncomingInvoice, IncomingInvoiceOrder } from '@/domain/incomingInvoice'
 import { CreateIncomingInvoiceDTO } from '@/domain/incomingInvoice/dto/createIncomingInvoice.dto'
 import { Order } from '@/domain/order/order.domain'
+import { PrintForm } from '@/domain/printForm/printForm.domain'
 
 import { bus } from '@/eventBus'
 import { BadRequestError } from '@/helpers/errors'
-import { OrderRepository } from '@/repositories'
+import { OrderRepository, PrintFormRepository } from '@/repositories'
 import {
   GetListPropsDTO,
   IncomingInvoiceRepository,
@@ -12,6 +13,7 @@ import {
 } from '@/repositories/incomingInvoice'
 import { EventBus } from 'ts-bus'
 import { z } from 'zod'
+import { incomingInvoicePFBuilder } from './printForms'
 
 interface IProps {
   incomingInvoiceRepository: typeof IncomingInvoiceRepository
@@ -152,6 +154,26 @@ class IncomingInvoiceService {
 
     await IncomingInvoiceRepository.deleteById(id)
     return true
+  }
+
+  async getAllowedPrintForms(): Promise<PrintForm[]> {
+    return await PrintFormRepository.getTemplatesByType({
+      docType: 'incomingInvoice',
+    })
+  }
+
+  async downloadDoc({
+    invoiceId,
+    templateName,
+  }: {
+    invoiceId: string
+    templateName: string
+  }): Promise<Buffer> {
+    const docBuffer: Buffer = await incomingInvoicePFBuilder({
+      invoiceId,
+      templateName,
+    })
+    return docBuffer
   }
 }
 

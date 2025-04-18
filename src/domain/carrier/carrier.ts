@@ -47,7 +47,9 @@ export class Carrier {
       ? this.companyInfo.director.name
       : this.companyInfo?.signatory?.fullName
 
+    const fullDataString = `${this.companyInfo?.getFullDataString()} ${this.bankAccountInfo?.getFullDataString()}`
     return {
+      fullDataString,
       fullName: this.companyInfo?.fullName || this.name,
       legalAddress: this.companyInfo?.legalAddress || '',
       inn: this.companyInfo?.inn || '',

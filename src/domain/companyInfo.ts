@@ -2,6 +2,7 @@ import {
   LEGAL_ENTITY_TYPE_ENUM,
   LEGAL_ENTITY_TYPE_VALUES,
 } from '@/constants/legalEntityType'
+
 import { z } from 'zod'
 
 class Director {
@@ -91,6 +92,10 @@ export class CompanyInfo {
     this.kpp = p.kpp
     this.director = p.director ? new Director(p.director) : undefined
     this.signatory = p.signatory ? new Signatory(p.signatory) : undefined
+  }
+
+  getFullDataString() {
+    return `${this.fullName ?? ''}, ИНН ${this.inn ?? ''}, ${this.legalAddress ?? ''}`
   }
 
   static get dbSchema() {
