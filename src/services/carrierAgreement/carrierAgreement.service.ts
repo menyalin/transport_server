@@ -5,7 +5,6 @@ import { CarrierAgreementRepository, CarrierRepository } from '@/repositories'
 import { objectIdSchema } from '@/shared/validationSchemes'
 import { isValidObjectId } from 'mongoose'
 import { z } from 'zod'
-import agreement from '../agreement'
 
 class CarrierAgreementService {
   async create(data: unknown): Promise<CarrierAgreement> {
@@ -19,21 +18,28 @@ class CarrierAgreementService {
   async getList(params: unknown): Promise<ICarrierAgreementListData> {
     return await CarrierAgreementRepository.getList(params)
   }
-  async getByCarrierAndDate(params: unknown): Promise<CarrierAgreement | null> {
+
+  async getAllowedAgreements(p: unknown): Promise<CarrierAgreement[]> {
     const paramsSchema = z.object({
-      company: objectIdSchema.transform((v) => v.toString()),
       carrierId: objectIdSchema.transform((v) => v.toString()),
       date: z.string().transform((v) => new Date(v)),
+      agreementId: z
+        .string()
+        .optional()
+        .nullable()
+        .transform((v) => {
+          return v?.toString() || undefined
+        }),
     })
-    const parsedParams = paramsSchema.parse(params)
+    const params = paramsSchema.parse(p)
 
-    const carrier = await CarrierRepository.getById(parsedParams.carrierId)
+    const carrier = await CarrierRepository.getById(params.carrierId)
     if (!carrier) throw new Error('Carrier not found')
 
-    const agreementId = carrier.getAgreementIdtByDate(parsedParams.date)
-    if (!agreementId) return null
+    const ids: string[] = carrier.getAgreementIdsByDate(params.date)
+    if (params.agreementId) ids.push(params.agreementId)
 
-    return await CarrierAgreementRepository.getById(agreementId)
+    return await CarrierAgreementRepository.getByIds(ids)
   }
 
   async update(id: string, body: unknown): Promise<CarrierAgreement> {

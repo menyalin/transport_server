@@ -16,6 +16,7 @@ export class Carrier {
   companyInfo?: CompanyInfo
   contacts?: ContactInfo[]
   outsource: boolean
+  allowUseCustomerRole: boolean
   isActive: boolean
   version: number = 0
 
@@ -33,6 +34,7 @@ export class Carrier {
       : undefined
     this.contacts = p.contacts?.map((i) => new ContactInfo(i)) ?? undefined
     this.outsource = p.outsource
+    this.allowUseCustomerRole = p.allowUseCustomerRole ?? false
     this.isActive = p.isActive
 
     this.version = p.version ?? 0
@@ -65,11 +67,12 @@ export class Carrier {
     this.version += 1
   }
 
-  getAgreementIdtByDate(date: Date): string | null {
-    const agreementRow = this.agreements.find(
-      (aa) => +aa.startDate <= +date && (!aa.endDate || +aa.endDate >= +date)
-    )
-    return agreementRow ? agreementRow.agreement.toString() : null
+  getAgreementIdsByDate(date: Date): string[] {
+    return this.agreements
+      .filter(
+        (aa) => +aa.startDate <= +date && (!aa.endDate || +aa.endDate >= +date)
+      )
+      .map((aa) => aa.agreement.toString())
   }
 
   static get validationSchema() {
@@ -81,6 +84,7 @@ export class Carrier {
       bankAccountInfo: BankAccountInfo.validationSchema.optional().nullable(),
       contacts: z.array(ContactInfo.validationSchema).optional().nullable(),
       outsource: z.boolean().default(false),
+      allowUseCustomerRole: z.boolean().optional().default(false),
       isActive: z.boolean().default(true),
       version: z.number().optional().nullable().default(0),
       agreements: z
@@ -104,6 +108,10 @@ export class Carrier {
       bankAccountInfo: BankAccountInfo.dbSchema,
       contacts: [ContactInfo.dbSchema],
       outsource: {
+        type: Boolean,
+        default: false,
+      },
+      allowUseCustomerRole: {
         type: Boolean,
         default: false,
       },

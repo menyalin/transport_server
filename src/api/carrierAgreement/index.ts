@@ -11,10 +11,10 @@ router.get('/', [jwtAuth], (req: Request, res: Response) =>
 )
 
 router.get(
-  '/get_by_carrier_and_date',
+  '/get_allowed_agreements',
   [jwtAuth],
   (req: Request, res: Response) =>
-    ctrl.getByCarrierAndDate(req as AuthorizedRequest, res)
+    ctrl.getAllowedAgreements(req as AuthorizedRequest, res)
 )
 
 router.get('/:id', [jwtAuth], (req: Request, res: Response) =>
