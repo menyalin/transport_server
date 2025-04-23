@@ -101,6 +101,7 @@ const confirmedCrew = {
   trailer: { type: Types.ObjectId, ref: 'Truck' },
   driver: { type: Types.ObjectId, ref: 'Driver' },
   outsourceAgreement: { type: Types.ObjectId, ref: 'Agreement' },
+  directiveAgreement: { type: Boolean, default: false },
   tkName: { type: Types.ObjectId, ref: 'TkName' },
 }
 
