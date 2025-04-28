@@ -1,4 +1,4 @@
-import { commonActBuilder } from './common_act/docBuilder'
+import { commonActBuilder } from './commonAct/docBuilder'
 
 interface IIncomingInvoicePFBuilderProps {
   invoiceId: string
