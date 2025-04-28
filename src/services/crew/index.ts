@@ -36,13 +36,13 @@ class CrewService {
   async updateOne(id, body, userId) {
     let crew = await Crew.findById(id)
     if (!crew) return null
-    const lastRow = crew.transport.reverse()[0]
+    const lastRow = body.transport.reverse()[0]
     if (body.endDate && !lastRow.endDate) {
       lastRow.endDate = body.endDate
     } else if (!body.endDate && lastRow.endDate) {
       body.endDate = lastRow.endDate
     }
-
+    body.transport.reverse()
     crew = Object.assign(crew, { ...body, manager: userId })
 
     await crew.save()
