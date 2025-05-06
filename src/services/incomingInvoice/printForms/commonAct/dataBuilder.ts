@@ -1,9 +1,5 @@
 import { BadRequestError } from '@/helpers/errors'
-import {
-  ICommonActIncomingInvoiceData,
-  IMainTableFragmentProps,
-  IMainTableRowFragmentProps,
-} from './interfaces'
+import { ICommonActIncomingInvoiceData } from './interfaces'
 import {
   IncomingInvoiceRepository,
   CarrierRepository,
@@ -11,8 +7,8 @@ import {
   OrderRepository,
 } from '@/repositories'
 
-import { IncomingInvoiceOrder } from '@/domain/incomingInvoice'
 import { mainTableRowBuilder } from './mainTableRowsBuilder'
+import { ICommonDocMainTableRowProps } from '@/shared/printForms/interfaces'
 
 export const incomingInvoiceDataBuilder = async (
   invoiceId: string
@@ -35,7 +31,7 @@ export const incomingInvoiceDataBuilder = async (
     carrierAgreement.customer
   )
   if (!customerCarrier) throw new BadRequestError('Заказчик не найден')
-  let ordersData: IMainTableRowFragmentProps[] = []
+  let ordersData: ICommonDocMainTableRowProps[] = []
 
   for (const orderInInvoice of invoice.orders) {
     const data = await OrderRepository.getFullOrderDataDTO(orderInInvoice.order)
@@ -50,25 +46,31 @@ export const incomingInvoiceDataBuilder = async (
       executorSignatoryName: executorCarrier.getPFdata.signatoryName,
     },
     titleData: {
+      docName: 'Акт',
       number: invoice.number,
       date: invoice.date,
     },
     headerTable: {
+      executorTitle: 'Исполнитель',
       executor: executorCarrier.getPFdata.fullDataString,
-      customer: customerCarrier.companyInfo?.getFullDataString(),
-      basis: carrierAgreement.actBasis ?? 'Основной договор',
+      customerTitle: 'Заказчик',
+      customer: customerCarrier.companyInfo?.getFullDataString() ?? '',
+      basis: carrierAgreement.actBasis || 'Основной договор',
     },
     mainTable: {
       rows: ordersData,
+      mainColumnTitle: 'Наименование работ, услуг',
     },
     resultTable: {
       priceWithVat: invoice?.priceWithVat ?? 0,
       priceWOVat: invoice?.priceWOVat ?? 0,
-      ordersCount: invoice?.ordersCount ?? 0,
+      count: invoice?.ordersCount ?? 0,
       vatRate: carrierAgreement?.vatRate ?? 0,
+      showTotalToPay: false,
+      serviceTitle: 'Всего оказано услуг',
     },
     description:
-      carrierAgreement.actDescription ??
+      carrierAgreement.actDescription ||
       'Вышеперечисленные услуги выполнены полностью и в срок. Заказчик претензий по объему, качеству и срокам оказания услуг не имеет.',
   }
 }

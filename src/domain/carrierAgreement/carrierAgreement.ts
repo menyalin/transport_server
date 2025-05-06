@@ -13,6 +13,7 @@ export class CarrierAgreement {
   customer?: string
   actBasis: string
   actDescription: string
+  paymentBillDescription: string
   orderContractNote: string
   vatRate: number
   note: string
@@ -29,6 +30,7 @@ export class CarrierAgreement {
     this.customer = p.customer ? p.customer.toString() : undefined
     this.actBasis = p.actBasis ?? ''
     this.actDescription = p.actDescription ?? ''
+    this.paymentBillDescription = p.paymentBillDescription ?? ''
     this.vatRate = p.vatRate
     this.usePriceWithVAT = p.vatRate > 0 ? p.usePriceWithVAT : false
     this.note = p.note
@@ -41,6 +43,7 @@ export class CarrierAgreement {
     this.customer = p.customer?.toString() ?? undefined
     this.actBasis = p.actBasis ?? ''
     this.actDescription = p.actDescription ?? ''
+    this.paymentBillDescription = p.paymentBillDescription ?? ''
     this.paymentOfDays = p.paymentOfDays
     this.paymentDescription = p.paymentDescription
     this.orderContractNote = p.orderContractNote
@@ -78,6 +81,7 @@ export class CarrierAgreement {
         .transform((v) => Number(v)),
       actBasis: z.string().optional().nullable(),
       actDescription: z.string().optional().nullable(),
+      paymentBillDescription: z.string().optional().nullable(),
       customer: objectIdSchema.optional().nullable(),
       note: z
         .string()
@@ -97,6 +101,7 @@ export class CarrierAgreement {
       customer: { type: Types.ObjectId, ref: 'TkName' },
       actBasis: String,
       actDescription: String,
+      paymentBillDescription: String,
       vatRate: Number,
       usePriceWithVAT: { type: Boolean, default: false },
       paymentOfDays: Number,

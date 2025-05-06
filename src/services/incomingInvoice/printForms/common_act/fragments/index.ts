@@ -1,6 +1,0 @@
-export * from './title'
-export * from './headerTable'
-export * from './mainTable'
-export * from './resultTable'
-export * from './description'
-export * from './signatoriesTable'

@@ -11,10 +11,34 @@ import {
   VerticalAlign,
   WidthType,
 } from 'docx'
-import { IMainTableFragmentProps } from '../interfaces'
+
+import { ICommonDocMainTableProps } from '../interfaces'
+
+import { TotalPrice } from '@/domain/commonInterfaces'
+import { FullOrderDataDTO } from '@/domain/order/dto/fullOrderData.dto'
+import { ICommonDocMainTableRowProps } from '@/shared/printForms/interfaces'
+import { moneyFormatter } from '@/utils/moneyFormatter'
 import { minCellWidth, paragraphCellIntent, priceCellWidth } from './constants'
 
-export const mainTableBuilder = (props: IMainTableFragmentProps): Table => {
+export const commonDocMainTableRowBuilder = (
+  orderData: FullOrderDataDTO,
+  totalPrice: TotalPrice
+): ICommonDocMainTableRowProps => {
+  const rowPrefix = 'Транспортные услуги по маршруту'
+  const routeAdresses: string = orderData.fullAddressesRouteString
+
+  return {
+    title: `${rowPrefix} ${routeAdresses}; водитель ${orderData.shortDriverName} а/м ${orderData.truckBrand} ${orderData.truckNum} ${orderData.plannedDate.slice(0, 10)}`,
+    measurementUnit: 'шт.',
+    count: '1',
+    price: moneyFormatter(totalPrice.price),
+    sum: moneyFormatter(totalPrice.price),
+  }
+}
+
+export const commonDocMainTableBuilder = (
+  props: ICommonDocMainTableProps
+): Table => {
   const rowBuilder = (
     idx: string,
     title: string,
@@ -120,7 +144,7 @@ export const mainTableBuilder = (props: IMainTableFragmentProps): Table => {
     rows: [
       rowBuilder(
         '№',
-        'Наименование работ, услуг',
+        props.mainColumnTitle ?? 'Наименование',
         'Кол-во',
         'Ед.',
         'Цена',

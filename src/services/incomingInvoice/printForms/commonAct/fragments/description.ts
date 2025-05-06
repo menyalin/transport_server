@@ -1,5 +1,5 @@
+import { sectionDividerBottom } from '@/shared/printForms/fragments'
 import { AlignmentType, Paragraph, TextRun } from 'docx'
-import { sectionDividerBottom } from './constants'
 
 export const descriptionBuilder = (description: string): Paragraph => {
   return new Paragraph({

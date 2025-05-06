@@ -8,14 +8,52 @@ import {
   VerticalAlign,
   WidthType,
 } from 'docx'
-import { IMainTableResultFragmentProps } from '../interfaces'
-import { noBorder, priceCellWidth } from './constants'
-import { moneyFormatter } from '../../../../../utils/moneyFormatter'
-import { convert } from 'number-to-words-ru'
 
-export const resultTableBuilder = (
-  props: IMainTableResultFragmentProps
+import { moneyFormatter } from '@/utils/moneyFormatter'
+import { convert } from 'number-to-words-ru'
+import { ICommonDocPaymentResultProps } from '../interfaces'
+import { noBorder, priceCellWidth } from './constants'
+
+export const commonDocResultTableBuilder = (
+  props: ICommonDocPaymentResultProps
 ): Table => {
+  const totalToPayRow = new TableRow({
+    children: [
+      new TableCell({
+        verticalAlign: VerticalAlign.CENTER,
+        width: { size: 0, type: WidthType.AUTO },
+        children: [
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: 'Всего к оплате:',
+                bold: true,
+                size: 22,
+              }),
+            ],
+            alignment: AlignmentType.RIGHT,
+          }),
+        ],
+      }),
+      new TableCell({
+        verticalAlign: VerticalAlign.CENTER,
+        width: priceCellWidth,
+        children: [
+          new Paragraph({
+            alignment: AlignmentType.RIGHT,
+            children: [
+              new TextRun({
+                text: moneyFormatter(props.priceWithVat),
+                bold: true,
+                size: 18,
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  })
+
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
     borders: {
@@ -97,6 +135,9 @@ export const resultTableBuilder = (
           }),
         ],
       }),
+
+      props.showTotalToPay ? totalToPayRow : null,
+
       // Третья строка
       new TableRow({
         children: [
@@ -107,7 +148,7 @@ export const resultTableBuilder = (
               new Paragraph({
                 children: [
                   new TextRun({
-                    text: `Всего оказано услуг ${props.ordersCount}, на сумму ${moneyFormatter(props.priceWithVat)}руб.`,
+                    text: `${props.serviceTitle} ${props.count}, на сумму ${moneyFormatter(props.priceWithVat)}руб.`,
                     size: 16,
                   }),
                 ],
@@ -140,6 +181,6 @@ export const resultTableBuilder = (
           }),
         ],
       }),
-    ],
+    ].filter((i) => i !== null),
   })
 }
