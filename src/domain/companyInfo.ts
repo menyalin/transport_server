@@ -78,6 +78,7 @@ export class CompanyInfo {
   ogrnip?: string | null
   kpp?: string | null
   director?: Director
+  accountant?: Director
   signatory?: Signatory
 
   constructor(props: unknown) {
@@ -92,9 +93,10 @@ export class CompanyInfo {
     this.kpp = p.kpp
     this.director = p.director ? new Director(p.director) : undefined
     this.signatory = p.signatory ? new Signatory(p.signatory) : undefined
+    this.accountant = p.accountant ? new Director(p.accountant) : undefined
   }
 
-  getFullDataString() {
+  getFullDataString(): string {
     return `${this.fullName ?? ''}, ИНН ${this.inn ?? ''}, ${this.legalAddress ?? ''}`
   }
 
@@ -112,6 +114,7 @@ export class CompanyInfo {
       ogrnip: String,
       kpp: String,
       director: Director.dbSchema,
+      accountant: Director.dbSchema,
       signatory: Signatory.dbSchema,
     }
   }
@@ -128,6 +131,7 @@ export class CompanyInfo {
       kpp: z.string().nullable().optional(),
       director: Director.validationSchema.optional(),
       signatory: Signatory.validationSchema.optional(),
+      accountant: Director.validationSchema.optional(),
     })
   }
 }

@@ -1,23 +1,15 @@
 import { numbering, styles } from '@/shared/printForms'
-import { Packer, Document, Paragraph, TextRun } from 'docx'
-
+import { Packer, Document } from 'docx'
 import { incomingInvoiceDataBuilder } from './dataBuilder'
+import { signatoriesTableBuilder } from './fragments'
 import {
-  headerTableBuilder,
-  mainTableBuilder,
-  resultTableBuilder,
-  rowTitleBuilder,
-  descriptionBuilder,
-  signatoriesTableBuilder,
-} from './fragments'
-
-const spacingParagraph = (lineHeight: number = 150): Paragraph =>
-  new Paragraph({
-    children: [new TextRun('')],
-    spacing: {
-      line: lineHeight,
-    },
-  })
+  commonDocHeaderTableBuilder,
+  commonDocMainTableBuilder,
+  spacingParagraph,
+  commonDocTitleRowBuilder,
+  commonDocResultTableBuilder,
+  commonDocDescriptionBuilder,
+} from '@/shared/printForms/fragments'
 
 export const commonActBuilder = async (invoiceId: string): Promise<Buffer> => {
   const data = await incomingInvoiceDataBuilder(invoiceId)
@@ -42,14 +34,14 @@ export const commonActBuilder = async (invoiceId: string): Promise<Buffer> => {
           },
         },
         children: [
-          rowTitleBuilder(data.titleData),
-          headerTableBuilder(data.headerTable),
+          commonDocTitleRowBuilder(data.titleData),
+          commonDocHeaderTableBuilder(data.headerTable),
           spacingParagraph(150),
-          mainTableBuilder(data.mainTable),
+          commonDocMainTableBuilder(data.mainTable),
           spacingParagraph(90),
-          resultTableBuilder(data.resultTable),
+          commonDocResultTableBuilder(data.resultTable),
           spacingParagraph(300),
-          descriptionBuilder(data.description),
+          commonDocDescriptionBuilder(data.description),
           spacingParagraph(300),
           signatoriesTableBuilder(data.signatories),
         ],

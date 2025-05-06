@@ -1,15 +1,24 @@
 import {
+  IBorderOptions,
+  IIndentAttributesProperties,
   ITableWidthProperties,
   WidthType,
-  IIndentAttributesProperties,
-  IBorderOptions,
 } from 'docx'
 
 export const noBorder: IBorderOptions = {
   style: 'none',
   size: 0,
   color: 'FFFFFF',
-  space: 3,
+  space: 0,
+}
+
+export const hiddenAllBorders = {
+  bottom: noBorder,
+  top: noBorder,
+  left: noBorder,
+  right: noBorder,
+  insideHorizontal: noBorder,
+  insideVertical: noBorder,
 }
 
 export const minCellWidth: ITableWidthProperties = {
@@ -25,11 +34,4 @@ export const priceCellWidth: ITableWidthProperties = {
 export const paragraphCellIntent: IIndentAttributesProperties = {
   left: 30,
   right: 30,
-}
-
-export const sectionDividerBottom: IBorderOptions = {
-  color: 'auto',
-  space: 6,
-  style: 'single',
-  size: 15,
 }

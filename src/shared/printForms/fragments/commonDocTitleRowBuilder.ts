@@ -1,8 +1,12 @@
 import { AlignmentType, Paragraph, TextRun } from 'docx'
-import { ITitleRowFragmentProps } from '../interfaces'
-import { sectionDividerBottom } from './constants'
+import { ICommonTitleRowProps } from '../interfaces'
+import { sectionDividerBottom } from './dividers'
 
-export const rowTitleBuilder = ({ number, date }: ITitleRowFragmentProps) => {
+export const commonDocTitleRowBuilder = ({
+  number,
+  date,
+  docName,
+}: ICommonTitleRowProps): Paragraph => {
   const formattedDate = date.toLocaleDateString('ru-RU', {
     year: 'numeric',
     month: 'long',
@@ -12,7 +16,7 @@ export const rowTitleBuilder = ({ number, date }: ITitleRowFragmentProps) => {
   return new Paragraph({
     children: [
       new TextRun({
-        text: `Акт № ${number} от ${formattedDate}`,
+        text: `${docName} № ${number} от ${formattedDate}`,
         bold: true,
         size: 28,
       }),

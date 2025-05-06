@@ -1,32 +1,11 @@
-export interface ITitleRowFragmentProps {
-  number: string
-  date: Date
-}
-
-export interface IHeaderTableFragmentProps {
-  executor: any
-  customer: any
-  basis: string
-}
-
-export interface IMainTableRowFragmentProps {
-  title: string
-  count: string
-  measurementUnit: string
-  price: string
-  sum: string
-}
-
-export interface IMainTableResultFragmentProps {
-  priceWOVat: number
-  vatRate: number
-  priceWithVat: number
-  ordersCount: number
-}
-
-export interface IMainTableFragmentProps {
-  rows: IMainTableRowFragmentProps[]
-}
+import {
+  ICommonDocMainTableProps,
+  ICommonDocPaymentResultProps,
+} from '@/shared/printForms/interfaces'
+import {
+  ICommonDocHeaderTableProps,
+  ICommonTitleRowProps,
+} from '@/shared/printForms/interfaces'
 
 export interface ISignatoriesFragmentProps {
   executorSignatoryPosition: string
@@ -36,10 +15,10 @@ export interface ISignatoriesFragmentProps {
 }
 
 export interface ICommonActIncomingInvoiceData {
-  titleData: ITitleRowFragmentProps
-  headerTable: IHeaderTableFragmentProps
-  mainTable: IMainTableFragmentProps
-  resultTable: IMainTableResultFragmentProps
+  titleData: ICommonTitleRowProps
+  headerTable: ICommonDocHeaderTableProps
+  mainTable: ICommonDocMainTableProps
+  resultTable: ICommonDocPaymentResultProps
   signatories: ISignatoriesFragmentProps
   description: string
 }

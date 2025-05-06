@@ -1,12 +1,12 @@
 import { TotalPrice } from '@/domain/commonInterfaces'
 import { FullOrderDataDTO } from '@/domain/order/dto/fullOrderData.dto'
-import { IMainTableRowFragmentProps } from './interfaces'
+import { ICommonDocMainTableRowProps } from '@/shared/printForms/interfaces'
 import { moneyFormatter } from '@/utils/moneyFormatter'
 
 export const mainTableRowBuilder = (
   orderData: FullOrderDataDTO,
   totalPrice: TotalPrice
-): IMainTableRowFragmentProps => {
+): ICommonDocMainTableRowProps => {
   const rowPrefix = 'Транспортные услуги по маршруту'
   const routeAdresses: string = orderData.fullAddressesRouteString
 

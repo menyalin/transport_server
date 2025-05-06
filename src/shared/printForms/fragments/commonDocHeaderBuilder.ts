@@ -1,4 +1,5 @@
 import {
+  IBorderOptions,
   Paragraph,
   Table,
   TableCell,
@@ -7,8 +8,14 @@ import {
   VerticalAlign,
   WidthType,
 } from 'docx'
-import { IHeaderTableFragmentProps } from '../interfaces'
-import { noBorder } from './constants'
+import { ICommonDocHeaderTableProps } from '../interfaces'
+
+export const noBorder: IBorderOptions = {
+  style: 'none',
+  size: 0,
+  color: 'FFFFFF',
+  space: 3,
+}
 
 const rowBulder = (title: string, value: string): TableRow =>
   new TableRow({
@@ -34,7 +41,9 @@ const rowBulder = (title: string, value: string): TableRow =>
     ],
   })
 
-export const headerTableBuilder = (props: IHeaderTableFragmentProps): Table => {
+export const commonDocHeaderTableBuilder = (
+  props: ICommonDocHeaderTableProps
+): Table => {
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
     margins: {
@@ -49,8 +58,8 @@ export const headerTableBuilder = (props: IHeaderTableFragmentProps): Table => {
       insideVertical: noBorder,
     },
     rows: [
-      rowBulder('Исполнитель:', props.executor),
-      rowBulder('Заказчик:', props.customer),
+      rowBulder(`${props.executorTitle}:`, props.executor),
+      rowBulder(`${props.customerTitle}:`, props.customer),
       rowBulder('Основание:', props.basis),
     ],
   })
