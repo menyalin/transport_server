@@ -35,17 +35,3 @@ export const getForOrderSchema = {
   required: ['company', 'date'],
   additionalProperties: true,
 }
-
-export const getForClientSchema = {
-  type: 'object',
-  properties: {
-    date: {
-      type: 'string',
-    },
-    client: {
-      type: 'string',
-    },
-  },
-  required: ['date'],
-  additionalProperties: true,
-}

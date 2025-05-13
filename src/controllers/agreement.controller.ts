@@ -29,15 +29,15 @@ class AgreementController {
     }
   }
 
-  async getForOrder(req: AuthorizedRequest, res: Response) {
-    try {
-      const data = await this.service.getForOrder(req.query)
-      res.status(200).json(data)
-    } catch (e) {
-      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
-      else res.status(500).json(e)
-    }
-  }
+  // async getForOrder(req: AuthorizedRequest, res: Response) {
+  //   try {
+  //     const data = await this.service.getForOrder(req.query)
+  //     res.status(200).json(data)
+  //   } catch (e) {
+  //     if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+  //     else res.status(500).json(e)
+  //   }
+  // }
 
   async getForClient(req: AuthorizedRequest, res: Response) {
     try {
@@ -139,6 +139,6 @@ class AgreementController {
 
 export default new AgreementController({
   service: AgreementService,
-  permissionService: PermissionService,
   permissionName: 'agreement',
+  permissionService: PermissionService,
 })
