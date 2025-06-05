@@ -1,9 +1,9 @@
 import { BadRequestError } from '@/helpers/errors'
 import {
-  IncomingInvoiceRepository,
+  AgreementRepository,
   CarrierRepository,
-  CarrierAgreementRepository,
   OrderRepository,
+  PaymentInvoiceRepository,
 } from '@/repositories'
 
 import { mainTableRowBuilder } from './mainTableRowsBuilder'
@@ -13,30 +13,36 @@ import { ICommonActData } from '@/shared/printForms'
 export const incomingInvoiceDataBuilder = async (
   invoiceId: string
 ): Promise<ICommonActData> => {
-  const invoice = await IncomingInvoiceRepository.getById(invoiceId)
+  const invoice = await PaymentInvoiceRepository.getInvoiceById(invoiceId)
   if (!invoice) throw new BadRequestError('Invoice not found')
-
-  const executorCarrier = await CarrierRepository.getById(invoice.carrier)
-  if (!executorCarrier) throw new BadRequestError('Исполнитель не определен')
-
-  const carrierAgreement = await CarrierAgreementRepository.getById(
-    invoice.agreement
-  )
-  if (!carrierAgreement)
-    throw new BadRequestError('Соглашение с перевозчиком не найдено')
-  if (!carrierAgreement.customer)
-    throw new BadRequestError('В соглашении с ТК заказчик не определен')
-
-  const customerCarrier = await CarrierRepository.getById(
-    carrierAgreement.customer
-  )
-  if (!customerCarrier) throw new BadRequestError('Заказчик не найден')
+  if (!invoice?.orders) throw new BadRequestError('Orders not found')
   let ordersData: ICommonDocMainTableRowProps[] = []
 
-  for (const orderInInvoice of invoice.orders) {
-    const data = await OrderRepository.getFullOrderDataDTO(orderInInvoice.order)
-    ordersData.push(mainTableRowBuilder(data, orderInInvoice.total))
-  }
+  const clientAgreement = await AgreementRepository.getById(invoice.agreementId)
+  if (!clientAgreement)
+    throw new BadRequestError('Cоглашение с клиентом не найдено')
+  if (!clientAgreement?.executor)
+    throw new BadRequestError(
+      'В соглашении с клиентом не указан основной исполнитель'
+    )
+
+  const executorCarrier = await CarrierRepository.getById(
+    clientAgreement.executor
+  )
+  if (!executorCarrier) throw new BadRequestError('Исполнитель не определен')
+
+  // const carrierAgreement = await CarrierAgreementRepository.getById(
+  //   invoice.agreement
+  // )
+  // if (!carrierAgreement)
+  //   throw new BadRequestError('Соглашение с перевозчиком не найдено')
+  // if (!carrierAgreement.customer)
+  //   throw new BadRequestError('В соглашении с ТК заказчик не определен')
+
+  // const customerCarrier = await CarrierRepository.getById(
+  //   carrierAgreement.customer
+  // )
+  // if (!customerCarrier) throw new BadRequestError('Заказчик не найден')
 
   return {
     signatories: {
@@ -48,7 +54,7 @@ export const incomingInvoiceDataBuilder = async (
     titleData: {
       docName: 'Акт',
       number: invoice.number,
-      date: invoice.date,
+      date: invoice.sendDate,
     },
     headerTable: {
       executorTitle: 'Исполнитель',

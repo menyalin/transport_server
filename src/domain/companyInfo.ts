@@ -19,7 +19,8 @@ class Director {
   static get validationSchema() {
     return z.object({
       isMainSignatory: z
-        .union([z.boolean(), z.string()])
+        .union([z.boolean(), z.string(), z.null()])
+        .optional()
         .transform((v) => Boolean(v)),
       name: z.string().nullable().optional(),
       position: z.string().nullable().optional(),
@@ -54,7 +55,10 @@ class Signatory {
       position: z.string().nullable().optional(),
       fullName: z.string().nullable().optional(),
       number: z.string().nullable().optional(),
-      date: z.string().date().nullable().optional(),
+      date: z
+        .union([z.date(), z.string(), z.null()])
+        .transform((v) => (v ? new Date(v) : null))
+        .optional(),
     })
   }
 
@@ -77,9 +81,9 @@ export class CompanyInfo {
   ogrn?: string | null
   ogrnip?: string | null
   kpp?: string | null
-  director?: Director
-  accountant?: Director
-  signatory?: Signatory
+  director?: Director | null
+  accountant?: Director | null
+  signatory?: Signatory | null
 
   constructor(props: unknown) {
     const p = CompanyInfo.validationSchema.parse(props)
@@ -129,9 +133,9 @@ export class CompanyInfo {
       ogrn: z.string().nullable().optional(),
       ogrnip: z.string().nullable().optional(),
       kpp: z.string().nullable().optional(),
-      director: Director.validationSchema.optional(),
-      signatory: Signatory.validationSchema.optional(),
-      accountant: Director.validationSchema.optional(),
+      director: Director.validationSchema.optional().nullable(),
+      signatory: Signatory.validationSchema.optional().nullable(),
+      accountant: Director.validationSchema.optional().nullable(),
     })
   }
 }

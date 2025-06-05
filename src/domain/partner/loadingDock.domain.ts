@@ -8,6 +8,7 @@ export class LoadingDock {
   allowedLoadingPoints?: string[]
   contacts?: string
   note?: string
+  resctrictAddresses: boolean = true
 
   constructor(p: ILoadingDockProps) {
     if (!p.address || !p.title)
@@ -18,6 +19,7 @@ export class LoadingDock {
     this.allowedLoadingPoints = p.allowedLoadingPoints
     this.contacts = p.contacts
     this.note = p.note
+    this.resctrictAddresses = p.resctrictAddresses ?? true
   }
 
   static dbSchema() {
@@ -27,6 +29,7 @@ export class LoadingDock {
       allowedLoadingPoints: [{ type: Types.ObjectId, ref: 'Address' }],
       contacts: String,
       note: String,
+      resctrictAddresses: Boolean,
     }
   }
 }

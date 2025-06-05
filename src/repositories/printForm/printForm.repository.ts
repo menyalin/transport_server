@@ -20,9 +20,15 @@ class PrintFormRepository {
     clientId: string | null = null
   ): Promise<PrintForm[]> {
     const printForms = await PrintFormModel.find({
-      agreement: agreementId,
+      $and: [
+        {
+          $or: [{ client: { $exists: false } }, { client: clientId }],
+        },
+        {
+          $or: [{ agreement: { $exists: false } }, { agreement: agreementId }],
+        },
+      ],
       docType,
-      $or: [{ client: { $exists: false } }, { client: clientId }],
     }).lean()
     return printForms
   }

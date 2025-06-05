@@ -25,6 +25,10 @@ export const paymentInvoiceDocumentBuilder = async (
     case 'ok_act_2':
       docBuilder = okAkt2Builder
       break
+    case 'common_act_payment_invoice':
+      return new Buffer('')
+      break
+
     default:
       throw new Error('paymentInvoiceDocumentBuilder : printForm not found')
   }
