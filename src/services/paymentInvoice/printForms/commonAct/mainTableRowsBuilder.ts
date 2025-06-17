@@ -9,9 +9,9 @@ export const mainTableRowBuilder = (
 ): ICommonDocMainTableRowProps => {
   const rowPrefix = 'Транспортные услуги по маршруту'
   const routeAdresses: string = orderData.fullAddressesRouteString
-
+  const note = orderData.note ? `(${orderData.note})` : ''
   return {
-    title: `${rowPrefix} ${routeAdresses}; водитель ${orderData.shortDriverName} а/м ${orderData.truckBrand} ${orderData.truckNum} ${orderData.plannedDate.slice(0, 10)}`,
+    title: `${rowPrefix} ${routeAdresses}; водитель ${orderData.shortDriverName} а/м ${orderData.truckBrand} ${orderData.truckNum} ${orderData.plannedDate.slice(0, 10)} ${note}`,
     measurementUnit: 'шт.',
     count: '1',
     price: moneyFormatter(totalPrice.price),

@@ -3,14 +3,14 @@ import {
   GetOrdersPickedForInvoiceProps,
   IPickOrdersForPaymentInvoiceProps,
   IStaticticData,
-} from '../../domain/paymentInvoice/interfaces'
+} from '@/domain/paymentInvoice/interfaces'
 import { PaymentInvoiceDomain } from '../../domain/paymentInvoice/paymentInvoice'
 import {
   PaymentInvoice as PaymentInvoiceModel,
   OrderInPaymentInvoice as OrderInPaymentInvoiceModel,
-} from '../../models'
+} from '@/models'
 import { pickOrdersForPaymentInvoice } from './pickOrdersForPaymentInvoice'
-import { OrderInPaymentInvoice } from '../../domain/paymentInvoice/orderInPaymentInvoice'
+import { OrderInPaymentInvoice } from '@/domain/paymentInvoice/orderInPaymentInvoice'
 import { getOrdersPickedForInvoice } from './getOrdersPickedForInvoice'
 import { getOrdersPickedForInvoiceDTOByOrders } from './getOrdersPickedForInvoiceDTOByOrders'
 class PaymentInvoiceRepository {

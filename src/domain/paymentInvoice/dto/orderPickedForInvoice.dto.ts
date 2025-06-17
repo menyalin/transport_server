@@ -59,7 +59,6 @@ export class OrderPickedForInvoiceDTO {
 
   constructor(props: OrderPickedForInvoiceDTOProps) {
     const preparedProps = orderPickedForInvoiceDTOSchema.parse(props)
-
     this._id = preparedProps._id.toString()
     this.docs = preparedProps.docs
     this.client = preparedProps.client

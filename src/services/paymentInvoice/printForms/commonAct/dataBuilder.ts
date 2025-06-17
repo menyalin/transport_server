@@ -3,20 +3,25 @@ import {
   AgreementRepository,
   CarrierRepository,
   OrderRepository,
+  PartnerRepository,
   PaymentInvoiceRepository,
 } from '@/repositories'
 
 import { mainTableRowBuilder } from './mainTableRowsBuilder'
 import { ICommonDocMainTableRowProps } from '@/shared/printForms/interfaces'
 import { ICommonActData } from '@/shared/printForms'
+import { Order } from '@/models'
 
-export const incomingInvoiceDataBuilder = async (
+export const paymentInvoiceDataBuilder = async (
   invoiceId: string
 ): Promise<ICommonActData> => {
   const invoice = await PaymentInvoiceRepository.getInvoiceById(invoiceId)
   if (!invoice) throw new BadRequestError('Invoice not found')
   if (!invoice?.orders) throw new BadRequestError('Orders not found')
-  let ordersData: ICommonDocMainTableRowProps[] = []
+  let orderRows: ICommonDocMainTableRowProps[] = []
+
+  const customer = await PartnerRepository.getById(invoice.clientId)
+  if (!customer) throw new BadRequestError('Заказчик не найден')
 
   const clientAgreement = await AgreementRepository.getById(invoice.agreementId)
   if (!clientAgreement)
@@ -26,27 +31,29 @@ export const incomingInvoiceDataBuilder = async (
       'В соглашении с клиентом не указан основной исполнитель'
     )
 
+  for (const orderInInvoice of invoice.orders) {
+    const orderData = await OrderRepository.getFullOrderDataDTO(
+      orderInInvoice.orderId.toString()
+    )
+
+    orderData.note =
+      orderInInvoice.itemType === 'paymentPart' ? orderInInvoice.note : ''
+    const row = mainTableRowBuilder(
+      orderData,
+      orderInInvoice.savedTotal || { price: 0, priceWOVat: 0 }
+    )
+    orderRows = [...orderRows, row]
+  }
   const executorCarrier = await CarrierRepository.getById(
     clientAgreement.executor
   )
   if (!executorCarrier) throw new BadRequestError('Исполнитель не определен')
 
-  // const carrierAgreement = await CarrierAgreementRepository.getById(
-  //   invoice.agreement
-  // )
-  // if (!carrierAgreement)
-  //   throw new BadRequestError('Соглашение с перевозчиком не найдено')
-  // if (!carrierAgreement.customer)
-  //   throw new BadRequestError('В соглашении с ТК заказчик не определен')
-
-  // const customerCarrier = await CarrierRepository.getById(
-  //   carrierAgreement.customer
-  // )
-  // if (!customerCarrier) throw new BadRequestError('Заказчик не найден')
-
   return {
     signatories: {
-      customerCompanyName: customerCarrier.getPFdata.fullName,
+      customerCompanyName:
+        customer.companyInfo?.fullName ||
+        'Укажите полное наименование партнера в блоке общей информации',
       executorCompanyName: executorCarrier.getPFdata.fullName,
       executorSignatoryPosition: executorCarrier.getPFdata.signatoryPosition,
       executorSignatoryName: executorCarrier.getPFdata.signatoryName,
@@ -60,23 +67,26 @@ export const incomingInvoiceDataBuilder = async (
       executorTitle: 'Исполнитель',
       executor: executorCarrier.getPFdata.fullDataString,
       customerTitle: 'Заказчик',
-      customer: customerCarrier.companyInfo?.getFullDataString() ?? '',
-      basis: carrierAgreement.actBasis || 'Основной договор',
+      customer: customer.companyInfo?.getFullDataString() ?? '',
+      basis: clientAgreement.actBasis || 'Основной договор',
     },
     mainTable: {
-      rows: ordersData,
+      rows: orderRows,
       mainColumnTitle: 'Наименование работ, услуг',
     },
     resultTable: {
-      priceWithVat: invoice?.priceWithVat ?? 0,
-      priceWOVat: invoice?.priceWOVat ?? 0,
-      count: invoice?.ordersCount ?? 0,
-      vatRate: carrierAgreement?.vatRate ?? 0,
+      priceWithVat: invoice?.invoiceTotalSumWithVat ?? 0,
+      priceWOVat:
+        (invoice?.invoiceTotalSumWithVat ?? 0) - (invoice?.invoiceVatSum ?? 0),
+
+      count: invoice?.orders.length ?? 0,
+      // invoice?.ordersCount ?? 0,
+      vatRate: clientAgreement?.vatRate ?? 0,
       showTotalToPay: false,
       serviceTitle: 'Всего оказано услуг',
     },
     description:
-      carrierAgreement.actDescription ||
+      clientAgreement.actDescription ||
       'Вышеперечисленные услуги выполнены полностью и в срок. Заказчик претензий по объему, качеству и срокам оказания услуг не имеет.',
   }
 }

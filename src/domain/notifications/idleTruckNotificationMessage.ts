@@ -113,7 +113,7 @@ export class IdleTruckNotificationMessage {
       fullDriverName: order.fullDriverName,
       driverPhones: order.driverPhones,
       routeAddressesString: order.routeAddressesString,
-      truckBrand: order.truckBrand,
+      truckBrand: order.truckBrand || '',
       truckNum: order.truckNum,
       trailerNum: order.trailerNum,
       currentAddressString: utils.getCurrentAddress(point, order),

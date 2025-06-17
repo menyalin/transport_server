@@ -159,6 +159,7 @@ export class Partner {
       idleTruckNotifications: [IdleTruckNotification.dbSchema()],
       invoiceLoader: { type: String },
       companyInfo: CompanyInfo.dbSchema,
+      bankAccountInfo: BankAccountInfo.dbSchema,
     }
   }
 }

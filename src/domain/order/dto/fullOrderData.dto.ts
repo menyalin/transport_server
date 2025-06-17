@@ -1,4 +1,3 @@
-import { throws } from 'node:assert'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -10,12 +9,13 @@ const schema = z.object({
   fullDriverName: z.string(),
   shortDriverName: z.string(),
   driverPhones: z.string(),
-  truckBrand: z.string(),
+  truckBrand: z.string().nullable().optional().default(''),
   truckNum: z.string(),
   trailerNum: z.string().optional(),
   addresses: z.array(z.unknown()),
   loadingAddresses: z.array(z.unknown()),
   unloadingAddresses: z.array(z.unknown()),
+  note: z.string().optional().nullable(),
 })
 
 const getDriverFullName = (driver: any): string =>
@@ -47,15 +47,15 @@ export class FullOrderDataDTO {
   shortDriverName: string
   driverPhones: string
   truckNum: string
-  truckBrand: string
+  truckBrand: string | null = ''
   trailerNum?: string
   addresses: any[]
   loadingAddresses: any[]
   unloadingAddresses: any[]
+  note?: string | null
 
   private constructor(
     props: Omit<FullOrderDataDTO, 'fullAddressesRouteString'>
-    // props: unknown
   ) {
     this._id = props._id
     this.orderNum = props.orderNum
@@ -65,12 +65,13 @@ export class FullOrderDataDTO {
     this.fullDriverName = props.fullDriverName
     this.shortDriverName = props.shortDriverName
     this.driverPhones = props.driverPhones
-    this.truckBrand = props.truckBrand
+    this.truckBrand = props.truckBrand || ''
     this.truckNum = props.truckNum || ''
     this.trailerNum = props.trailerNum
     this.addresses = props.addresses
     this.loadingAddresses = props.loadingAddresses
     this.unloadingAddresses = props.unloadingAddresses
+    this.note = props.note
   }
 
   get fullAddressesRouteString(): string {
@@ -94,12 +95,13 @@ export class FullOrderDataDTO {
       fullDriverName: getDriverFullName(p.driver),
       shortDriverName: getShortDriverName(p.driver),
       driverPhones: getDriverPhones(p.driver),
-      truckBrand: p.truck?.brand,
+      truckBrand: p.truck?.brand || '',
       truckNum: p.truck?.regNum,
       trailerNum: p.trailer?.regNum,
       addresses: p.addresses,
       loadingAddresses: p.loadingAddresses,
       unloadingAddresses: p.unloadingAddresses,
+      note: p.note,
     }
 
     return new FullOrderDataDTO(schema.parse(inputdata))
