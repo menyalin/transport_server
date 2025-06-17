@@ -7,8 +7,9 @@ import {
   TextRun,
   WidthType,
 } from 'docx'
-import { ISignatoriesFragmentProps } from '../interfaces'
+
 import { hiddenAllBorders } from '@/shared/printForms/fragments'
+import { ISignatoriesFragmentProps } from '..'
 
 export const signatoriesTableBuilder = (
   props: ISignatoriesFragmentProps

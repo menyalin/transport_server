@@ -21,10 +21,11 @@ import {
 
 import * as utils from './helpers/index'
 import { Order } from '../order/order.domain'
+import { BankAccountInfo } from '../bankAccountInfo'
+import { CompanyInfo } from '../companyInfo'
 
 export class Partner {
   events: BusEvent<any>[] = []
-
   _id?: string
   name: string
   fullName?: string
@@ -39,10 +40,12 @@ export class Partner {
   placesForTransferDocs: LoadingDock[] = []
   idleTruckNotifications: IdleTruckNotification[] = []
   invoiceLoader: string | null = null
+  bankAccountInfo: BankAccountInfo | null = null
+  companyInfo: CompanyInfo | null = null
 
   constructor(p: IPartnerWithIdProps | IParterProps) {
     if ('_id' in p) this._id = p._id.toString()
-    this.company = p.company.toString()
+    this.company = p.company?.toString()
     this.name = p.name
     this.fullName = p.fullName
     this.inn = p.inn
@@ -51,6 +54,10 @@ export class Partner {
     this.cargoDescription = p.cargoDescription ?? undefined
     this.isClient = p.isClient
     this.isService = p.isService
+    this.companyInfo = p.companyInfo ? new CompanyInfo(p.companyInfo) : null
+    this.bankAccountInfo = p.bankAccountInfo
+      ? new BankAccountInfo(p.bankAccountInfo)
+      : null
     this.isActive = p.isActive === undefined ? true : p.isActive
     this.placesForTransferDocs = utils.setLoadingDocs(p.placesForTransferDocs)
     this.idleTruckNotifications = utils.setIdleTruckNotifications(
@@ -151,6 +158,8 @@ export class Partner {
       placesForTransferDocs: [LoadingDock.dbSchema()],
       idleTruckNotifications: [IdleTruckNotification.dbSchema()],
       invoiceLoader: { type: String },
+      companyInfo: CompanyInfo.dbSchema,
+      bankAccountInfo: BankAccountInfo.dbSchema,
     }
   }
 }

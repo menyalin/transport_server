@@ -30,6 +30,8 @@ export class Agreement {
   executorName: string | null
   isActive?: boolean = true
   allowedCarriers?: string[] = []
+  actBasis?: string
+  actDescription?: string
 
   constructor(data: unknown) {
     const parsedData = Agreement.validationSchema.parse(data)
@@ -74,6 +76,8 @@ export class Agreement {
     this.executor = parsedData.executor?.toString() ?? null
     this.executorName = parsedData.executorName || null
     this.allowedCarriers = parsedData.allowedCarriers
+    this.actBasis = parsedData.actBasis || ''
+    this.actDescription = parsedData.actDescription || ''
 
     // this.paymentDescription = parsedData.paymentDescription
   }
@@ -142,7 +146,8 @@ export class Agreement {
       .optional()
       .transform((val) => Boolean(val)),
     note: z.string().nullable().optional(),
-
+    actBasis: z.string().nullable().optional(),
+    actDescription: z.string().nullable().optional(),
     executor: objectIdSchema.nullable().optional(),
     executorName: z.string().nullable().optional(),
     allowedCarriers: z
@@ -177,5 +182,7 @@ export class Agreement {
     executor: { type: Types.ObjectId, ref: 'TkName' },
     executorName: { type: String },
     allowedCarriers: [{ type: Types.ObjectId, ref: 'Company' }],
+    actBasis: String,
+    actDescription: String,
   }
 }

@@ -1,5 +1,4 @@
 import { BadRequestError } from '@/helpers/errors'
-import { ICommonActIncomingInvoiceData } from './interfaces'
 import {
   IncomingInvoiceRepository,
   CarrierRepository,
@@ -9,10 +8,11 @@ import {
 
 import { mainTableRowBuilder } from './mainTableRowsBuilder'
 import { ICommonDocMainTableRowProps } from '@/shared/printForms/interfaces'
+import { ICommonActData } from '@/shared/printForms'
 
 export const incomingInvoiceDataBuilder = async (
   invoiceId: string
-): Promise<ICommonActIncomingInvoiceData> => {
+): Promise<ICommonActData> => {
   const invoice = await IncomingInvoiceRepository.getById(invoiceId)
   if (!invoice) throw new BadRequestError('Invoice not found')
 
