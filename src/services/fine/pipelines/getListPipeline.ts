@@ -10,7 +10,8 @@ export const getListPipeline = ({
   status,
   truck,
   driver,
-  category,
+  periodSetting,
+  categories,
   sortBy,
   sortDesc,
   searchStr,
@@ -19,13 +20,15 @@ export const getListPipeline = ({
 }) => {
   const sP = new Date(startDate)
   const eP = new Date(endDate)
+  const dateFieldName = (name) => `$${name}`
+
   const firstMatcher = {
     $match: {
       company: new mongoose.Types.ObjectId(company),
       $expr: {
         $and: [
-          { $gte: ['$date', sP] },
-          { $lt: ['$date', eP] },
+          { $gte: [dateFieldName(periodSetting), sP] },
+          { $lt: [dateFieldName(periodSetting), eP] },
           { $ne: ['$isActive', false] },
         ],
       },
@@ -60,8 +63,8 @@ export const getListPipeline = ({
   if (payingByWorker && payingByWorker === '__driver__')
     firstMatcher.$match.isPaydByDriver = true
 
-  if (category)
-    firstMatcher.$match.$expr.$and.push({ $eq: ['$category', category] })
+  if (categories?.length)
+    firstMatcher.$match.$expr.$and.push({ $in: ['$category', categories] })
 
   if (needToWithheld === 'true')
     firstMatcher.$match.$expr.$and.push({ $gt: ['$withheldSum', 0] })
