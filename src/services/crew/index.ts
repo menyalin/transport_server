@@ -11,6 +11,7 @@ import getLastCrewByDriverPipeline from './pipelines/getLastCrewByDriverPipeline
 import getCrewListPipeline from './pipelines/getCrewListPipeline'
 import { getCrewUnwindedDataPipeline } from './pipelines/getCrewUnwindedDataPipeline'
 import pipeline from '../worker/pipelines/getCompaniesByUserIdPipeline'
+import { BadRequestError } from '@/helpers/errors'
 
 class CrewService {
   async create(body, userId) {
@@ -34,29 +35,41 @@ class CrewService {
   }
 
   async updateOne(id, body, userId) {
-    let crew = await Crew.findById(id)
-    if (!crew) return null
-    const lastRow = crew.transport.reverse()[0]
-    if (body.endDate && !lastRow.endDate) {
-      lastRow.endDate = body.endDate
-    } else if (!body.endDate && lastRow.endDate) {
-      body.endDate = lastRow.endDate
+    try {
+      let crew = await Crew.findById(id)
+      if (!crew) return null
+
+      // Синхронизация дат завершения
+      if (body.transport?.length > 0) {
+        const lastIdx = body.transport.length - 1
+        const lastTransportItem = body.transport[lastIdx]
+        const rootEndDate = body.endDate
+        const transportEndDate = lastTransportItem.endDate
+
+        if (!rootEndDate && transportEndDate) {
+          body.endDate = transportEndDate
+        } else if (rootEndDate && !transportEndDate) {
+          lastTransportItem.endDate = rootEndDate
+        }
+      }
+      body.transport = body.transport.filter(Boolean)
+      crew = Object.assign(crew, { ...body, manager: userId })
+
+      await crew.save()
+      await ChangeLogService.add({
+        docId: crew._id.toString(),
+        company: crew.company.toString(),
+        user: userId,
+        coll: 'crews',
+        body: crew,
+        opType: 'update',
+      })
+
+      emitTo(crew.company.toString(), 'crew:updated', crew)
+      return crew
+    } catch (e) {
+      throw new BadRequestError(e.message)
     }
-
-    crew = Object.assign(crew, { ...body, manager: userId })
-
-    await crew.save()
-    await ChangeLogService.add({
-      docId: crew._id.toString(),
-      company: crew.company.toString(),
-      user: userId,
-      coll: 'crews',
-      body: crew,
-      opType: 'update',
-    })
-
-    emitTo(crew.company.toString(), 'crew:updated', crew)
-    return crew
   }
 
   async closeCrew(id, { endDate, userId }) {
