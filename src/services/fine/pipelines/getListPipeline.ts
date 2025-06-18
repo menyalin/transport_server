@@ -21,10 +21,13 @@ export const getListPipeline = ({
   const eP = new Date(endDate)
   const firstMatcher = {
     $match: {
-      isActive: true,
       company: new mongoose.Types.ObjectId(company),
       $expr: {
-        $and: [{ $gte: ['$date', sP] }, { $lt: ['$date', eP] }],
+        $and: [
+          { $gte: ['$date', sP] },
+          { $lt: ['$date', eP] },
+          { $ne: ['$isActive', false] },
+        ],
       },
     },
   }
@@ -33,7 +36,7 @@ export const getListPipeline = ({
     firstMatcher.$match.$expr.$and.push({
       $and: [
         { $eq: [{ $ifNull: ['$isPaydByDriver', false] }, false] },
-        { $not: '$paymentDate' },
+        { $eq: [{ $ifNull: ['$paymentDate', null] }, null] },
       ],
     })
 
@@ -41,7 +44,7 @@ export const getListPipeline = ({
     firstMatcher.$match.$expr.$and.push({
       $or: [
         { $eq: ['$isPaydByDriver', true] },
-        { $ne: ['$paymentDate', null] },
+        { $ne: [{ $ifNull: ['$paymentDate', null] }, null] },
       ],
     })
 
