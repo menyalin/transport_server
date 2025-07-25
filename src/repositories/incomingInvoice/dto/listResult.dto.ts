@@ -7,6 +7,8 @@ class IncomingInvoiceListItemDTO {
   number: string
   date: Date
   plannedPayDate: Date | null
+  receiptDate: Date | null
+  payDate: Date | null
   agreementName: string
   carrierName?: string
   status: string
@@ -22,6 +24,8 @@ class IncomingInvoiceListItemDTO {
     this.company = parsedProps.company.toString()
     this.number = parsedProps.number
     this.date = parsedProps.date
+    this.receiptDate = parsedProps.receiptDate ?? null
+    this.payDate = parsedProps.payDate ?? null
     this.plannedPayDate = parsedProps.plannedPayDate
     this.agreementName = parsedProps.agreementName
     this.carrierName = parsedProps.carrierName
@@ -38,6 +42,8 @@ class IncomingInvoiceListItemDTO {
     number: z.string(),
     date: z.date(),
     plannedPayDate: z.date().nullable(),
+    receiptDate: z.date().nullable().optional(),
+    payDate: z.date().nullable().optional(),
     agreementName: z.string(),
     carrierName: z.string().optional(),
     status: z.string(),

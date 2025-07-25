@@ -32,6 +32,10 @@ router.post(
     IncomingInvoiceController.downloadDoc(req as AuthorizedRequest, res)
 )
 
+router.put('/:invoiceId/set_paid', [jwtAuth], (req: Request, res: Response) =>
+  IncomingInvoiceController.setPaidStatus(req as AuthorizedRequest, res)
+)
+
 router.put('/:id', [jwtAuth], (req: Request, res: Response) =>
   IncomingInvoiceController.updateOne(req as AuthorizedRequest, res)
 )
