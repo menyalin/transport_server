@@ -294,7 +294,7 @@ class OrderService {
       coll: 'order',
       user,
       opType: 'updateFinalPrices',
-      body: JSON.stringify(order.toObject()),
+      body: order.toObject(),
     })
     return order
   }

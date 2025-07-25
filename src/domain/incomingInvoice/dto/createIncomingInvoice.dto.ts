@@ -7,6 +7,8 @@ export class CreateIncomingInvoiceDTO {
   company: string
   number: string
   date: Date
+  receiptDate?: Date
+  payDate?: Date
   plannedPayDate: Date | null
   agreement: string
   carrier: string
@@ -39,7 +41,9 @@ export class CreateIncomingInvoiceDTO {
       company: z.string(),
       number: z.string(),
       date: z.date(),
-      plannedPayDate: z.date().optional(),
+      plannedPayDate: z.date().optional().nullable(),
+      receiptDate: z.date().optional().nullable(),
+      payDate: z.date().optional().nullable(),
       agreement: z.string(),
       carrier: z.string(),
       status: z.string(),

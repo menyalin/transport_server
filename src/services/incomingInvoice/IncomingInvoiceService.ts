@@ -76,6 +76,14 @@ class IncomingInvoiceService {
     return invoice
   }
 
+  async setPaidStatus(invoiceId: string, payDate: Date) {
+    const invoice = await this.incomingInvoiceRepository.getById(invoiceId)
+    if (!invoice) throw new BadRequestError('Invoice not found')
+    const events = invoice.setPaidStatus(payDate)
+    events.forEach((event) => this.bus.publish(event))
+    return invoice
+  }
+
   async pickOrders(props: unknown) {
     const orders = await this.incomingInvoiceRepository.pickOrders(props)
     return orders

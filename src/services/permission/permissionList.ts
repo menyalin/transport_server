@@ -339,6 +339,12 @@ export const accountant = {
   'tariffContract:write': true,
 }
 
+export const seniorAccountant = {
+  ...accountant,
+  'modules:accounting': true,
+  changeIncomingInvoiceStatus: true,
+}
+
 export const mechanic = {
   'modules:accounting': true,
   'order:daysForRead': 30,

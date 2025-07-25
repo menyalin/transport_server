@@ -29,6 +29,10 @@ export default [
     text: 'Бухгалтер',
   },
   {
+    value: 'seniorAccountant',
+    text: 'Старший бухгалтер',
+  },
+  {
     value: 'outsourceCarriersManager',
     text: 'Менеджер по работе с привлеченными ТК',
   },

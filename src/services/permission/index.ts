@@ -13,6 +13,7 @@ import {
   admin,
   outsourceCarriersManager,
   userAdmin,
+  seniorAccountant,
   autoFillRouteDates,
   withheldFineSum,
 } from './permissionList'
@@ -31,6 +32,7 @@ class PermissionService {
       userAdmin,
       autoFillRouteDates,
       withheldFineSum,
+      seniorAccountant,
     }
   }
 
