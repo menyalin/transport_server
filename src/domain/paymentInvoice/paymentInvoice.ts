@@ -1,7 +1,12 @@
 import { Types } from 'mongoose'
-import { PAIMENT_INVOICE_STATUSES_ENUM_VALUES } from '../../constants/paymentInvoice'
+import {
+  PAIMENT_INVOICE_STATUSES_ENUM,
+  PAIMENT_INVOICE_STATUSES_ENUM_VALUES,
+} from '@/constants/paymentInvoice'
 import { OrderPickedForInvoiceDTO } from './dto/orderPickedForInvoice.dto'
-import { DateRange } from '../../classes/dateRange'
+import { DateRange } from '@/classes/dateRange'
+import { BusEvent } from 'ts-bus/types'
+import { PaymentInvoicePaidEvent, PaymentInvoiceSendedEvent } from './events'
 
 export class PaymentInvoiceDomain {
   _id?: string
@@ -9,7 +14,10 @@ export class PaymentInvoiceDomain {
   number: string
   numberByClient?: string
   dateByClient: Date | null
-  sendDate: Date
+  date: Date
+  payDate: Date | null
+  plannedPayDate: Date | null
+  sendDate: Date | null
   clientId: string
   client: any
   agreementId: string
@@ -27,7 +35,15 @@ export class PaymentInvoiceDomain {
     this.dateByClient = invoice.dateByClient
       ? new Date(invoice.dateByClient)
       : null
-    this.sendDate = new Date(invoice.sendDate)
+
+    this.date = new Date(invoice.date)
+    this.sendDate = invoice.sendDate ? new Date(invoice.sendDate) : null
+    this.payDate = invoice.payDate ? new Date(invoice.payDate) : null
+
+    this.plannedPayDate = invoice.plannedPayDate
+      ? new Date(invoice.plannedPayDate)
+      : null
+
     this.clientId = !!invoice.client?._id
       ? invoice.client?._id.toString()
       : invoice.client
@@ -38,6 +54,7 @@ export class PaymentInvoiceDomain {
     this.note = invoice.note
     if (invoice.client?._id) this.client = invoice.client
   }
+
   setAgreement(agreement: any) {
     this.agreement = agreement
   }
@@ -67,6 +84,20 @@ export class PaymentInvoiceDomain {
     }, 0)
   }
 
+  setStatusSended(sendDate: Date): BusEvent[] {
+    if (!this._id || !sendDate) return []
+    this.sendDate = sendDate
+    this.status = PAIMENT_INVOICE_STATUSES_ENUM.sended
+    return [PaymentInvoiceSendedEvent({ id: this._id })]
+  }
+
+  setStatusPaid(payDate: Date): BusEvent[] {
+    if (!this._id || !payDate) return []
+    this.payDate = payDate
+    this.status = PAIMENT_INVOICE_STATUSES_ENUM.sended
+    return [PaymentInvoicePaidEvent({ id: this._id })]
+  }
+
   static create(invoice: any, orders: OrderPickedForInvoiceDTO[] = []) {
     const newInvoice = new PaymentInvoiceDomain(invoice)
     newInvoice.setOrders(orders)
@@ -78,7 +109,10 @@ export class PaymentInvoiceDomain {
       company: { type: Types.ObjectId, ref: 'Company', required: true },
       number: { type: String },
       numberByClient: { type: String },
+      date: Date,
       sendDate: Date,
+      plannedPayDate: Date,
+      payDate: Date,
       dateByClient: Date,
       client: { type: Types.ObjectId, ref: 'Partner', required: true },
       agreement: { type: Types.ObjectId, ref: 'Agreement', required: true },
