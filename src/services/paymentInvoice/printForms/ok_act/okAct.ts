@@ -11,7 +11,7 @@ export async function okAktBuilder({
   const locale = 'ru-RU'
   let p: IOkAktBuilderProps = {
     docNumber: invoice.number,
-    date: invoice.sendDate.toLocaleDateString(locale),
+    date: invoice.date.toLocaleDateString(locale),
     contractNumber: pf.data.contractNumber,
     contractDate: pf.data.contractDate,
     actHeader: pf.data.actHeader,

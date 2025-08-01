@@ -153,7 +153,7 @@ class PaymentInvoiceController {
           _id: i._id.toString(),
           ['Номер']: i.number,
           ['Номер клиента']: i.numberByClient,
-          ['Дата выставления']: i.sendDate,
+          ['Дата документа']: i.date,
           ['Дата реестра']: i.dateByClient,
           ['Статус']: i.statusStr,
           ['Клиент']: i.clientName,
