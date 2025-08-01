@@ -32,6 +32,7 @@ const listSortingFragment = (
 ): Record<string, 1 | -1> => {
   const fieldsMapper = new Map()
   fieldsMapper.set('number', 'number')
+  fieldsMapper.set('date', 'date')
   fieldsMapper.set('sendDate', 'sendDate')
   fieldsMapper.set('total.price', 'total.price')
   fieldsMapper.set('total.priceWOVat', 'total.priceWOVat')
@@ -52,8 +53,8 @@ export const getListPipeline = (p: IProps): PipelineStage[] => {
       company: new Types.ObjectId(p.company),
       $expr: {
         $and: [
-          { $gte: ['$sendDate', period.start] },
-          { $lte: ['$sendDate', period.end] },
+          { $gte: ['$date', period.start] },
+          { $lte: ['$date', period.end] },
         ],
       },
     },

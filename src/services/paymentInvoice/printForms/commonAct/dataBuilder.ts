@@ -61,7 +61,7 @@ export const paymentInvoiceDataBuilder = async (
     titleData: {
       docName: 'Акт',
       number: invoice.number,
-      date: invoice.sendDate,
+      date: invoice.date,
     },
     headerTable: {
       executorTitle: 'Исполнитель',
