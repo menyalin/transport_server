@@ -4,7 +4,7 @@ import {
   IPickOrdersForPaymentInvoiceProps,
   IStaticticData,
 } from '@/domain/paymentInvoice/interfaces'
-import { PaymentInvoiceDomain } from '../../domain/paymentInvoice/paymentInvoice'
+import { PaymentInvoiceDomain } from '@/domain/paymentInvoice/paymentInvoice'
 import {
   PaymentInvoice as PaymentInvoiceModel,
   OrderInPaymentInvoice as OrderInPaymentInvoiceModel,
@@ -13,7 +13,38 @@ import { pickOrdersForPaymentInvoice } from './pickOrdersForPaymentInvoice'
 import { OrderInPaymentInvoice } from '@/domain/paymentInvoice/orderInPaymentInvoice'
 import { getOrdersPickedForInvoice } from './getOrdersPickedForInvoice'
 import { getOrdersPickedForInvoiceDTOByOrders } from './getOrdersPickedForInvoiceDTOByOrders'
+import { EventBus } from 'ts-bus'
+import { bus } from '@/eventBus'
+import {
+  PaymentInvoicePaidEvent,
+  PaymentInvoiceSendedEvent,
+} from '@/domain/paymentInvoice/events'
+
+interface IProps {
+  invoiceModel: typeof PaymentInvoiceModel
+  invoiceOrderModel: typeof OrderInPaymentInvoiceModel
+  bus: EventBus
+}
+
 class PaymentInvoiceRepository {
+  invoiceModel: typeof PaymentInvoiceModel
+  invoiceOrderModel: typeof OrderInPaymentInvoiceModel
+  bus: EventBus
+
+  constructor(p: IProps) {
+    this.bus = p.bus
+    this.invoiceModel = p.invoiceModel
+    this.invoiceOrderModel = p.invoiceOrderModel
+
+    this.bus.subscribe(PaymentInvoiceSendedEvent, async ({ payload }) => {
+      console.log('invoice sended: ', payload.id, '  need implement logic')
+    })
+
+    this.bus.subscribe(PaymentInvoicePaidEvent, async ({ payload }) => {
+      console.log('invoice paid: ', payload.id, '  need implement logic')
+    })
+  }
+
   async getInvoiceById(id: string): Promise<PaymentInvoiceDomain | null> {
     const invoice: PaymentInvoiceDomain | null =
       await PaymentInvoiceModel.findById(id).lean()
@@ -84,12 +115,17 @@ class PaymentInvoiceRepository {
         'PaymentInvoiceRepository : getOrderInPaymentInvoiceItemsByOrders : args error - orders is missing!'
       )
 
-    const items: OrderInPaymentInvoice[] =
-      await OrderInPaymentInvoiceModel.find<OrderInPaymentInvoice>({
+    const items: OrderInPaymentInvoice[] = await this.invoiceOrderModel
+      .find<OrderInPaymentInvoice>({
         order: orders,
-      }).lean()
+      })
+      .lean()
     return items.map((i) => new OrderInPaymentInvoice(i))
   }
 }
 
-export default new PaymentInvoiceRepository()
+export default new PaymentInvoiceRepository({
+  bus,
+  invoiceModel: PaymentInvoiceModel,
+  invoiceOrderModel: OrderInPaymentInvoiceModel,
+})
