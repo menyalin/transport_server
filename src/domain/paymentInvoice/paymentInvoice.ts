@@ -88,14 +88,14 @@ export class PaymentInvoiceDomain {
     if (!this._id || !sendDate) return []
     this.sendDate = sendDate
     this.status = PAIMENT_INVOICE_STATUSES_ENUM.sended
-    return [PaymentInvoiceSendedEvent({ id: this._id })]
+    return [PaymentInvoiceSendedEvent(this)]
   }
 
   setStatusPaid(payDate: Date): BusEvent[] {
     if (!this._id || !payDate) return []
     this.payDate = payDate
     this.status = PAIMENT_INVOICE_STATUSES_ENUM.sended
-    return [PaymentInvoicePaidEvent({ id: this._id })]
+    return [PaymentInvoicePaidEvent(this)]
   }
 
   static create(invoice: any, orders: OrderPickedForInvoiceDTO[] = []) {

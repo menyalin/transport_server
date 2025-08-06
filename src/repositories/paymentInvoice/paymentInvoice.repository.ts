@@ -36,12 +36,16 @@ class PaymentInvoiceRepository {
     this.invoiceModel = p.invoiceModel
     this.invoiceOrderModel = p.invoiceOrderModel
 
-    this.bus.subscribe(PaymentInvoiceSendedEvent, async ({ payload }) => {
-      console.log('invoice sended: ', payload.id, '  need implement logic')
-    })
+    this.bus.subscribe(
+      PaymentInvoiceSendedEvent,
+      async ({ payload: updatedInvoice }) => {
+        if (!updatedInvoice?._id) return
+        await this.updateInvoice(updatedInvoice._id.toString(), updatedInvoice)
+      }
+    )
 
     this.bus.subscribe(PaymentInvoicePaidEvent, async ({ payload }) => {
-      console.log('invoice paid: ', payload.id, '  need implement logic')
+      console.log('invoice paid: ', payload, '  need implement logic')
     })
   }
 
