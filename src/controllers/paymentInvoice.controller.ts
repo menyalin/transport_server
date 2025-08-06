@@ -194,6 +194,26 @@ class PaymentInvoiceController {
     }
   }
 
+  async setStatus(req: AuthorizedRequest, res: Response) {
+    try {
+      const invoiceId = req.params.id
+      const { dateFieldName, value } = req.body
+      if (!dateFieldName || !value)
+        throw new BadRequestError('Missing dateFieldName or value')
+
+      const data = await this.service.setStatus({
+        invoiceId,
+        dateFieldName,
+        value: new Date(value),
+      })
+
+      res.status(200).json(data)
+    } catch (e) {
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
+    }
+  }
+
   async pickOrders(
     req: AuthorizedRequest<
       unknown,

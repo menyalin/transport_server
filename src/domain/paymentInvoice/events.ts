@@ -1,5 +1,6 @@
 import { createEventDefinition } from 'ts-bus'
 import { OrderInPaymentInvoice } from './orderInPaymentInvoice'
+import { PaymentInvoiceDomain } from './paymentInvoice'
 
 export enum PAYMENT_INVOICE_EVENTS {
   ordersAdded = 'payment_invoice:orders_added',
@@ -16,10 +17,8 @@ export const OrdersDeletedFromPaymentInvoiceEvent = createEventDefinition<
   string[]
 >()(PAYMENT_INVOICE_EVENTS.ordersDeleted)
 
-export const PaymentInvoiceSendedEvent = createEventDefinition<{
-  id: string
-}>()(PAYMENT_INVOICE_EVENTS.sended)
+export const PaymentInvoiceSendedEvent =
+  createEventDefinition<PaymentInvoiceDomain>()(PAYMENT_INVOICE_EVENTS.sended)
 
-export const PaymentInvoicePaidEvent = createEventDefinition<{ id: string }>()(
-  PAYMENT_INVOICE_EVENTS.paid
-)
+export const PaymentInvoicePaidEvent =
+  createEventDefinition<PaymentInvoiceDomain>()(PAYMENT_INVOICE_EVENTS.paid)
