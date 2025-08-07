@@ -87,6 +87,7 @@ export class PaymentInvoiceDomain {
   setStatusSended(sendDate: Date): BusEvent[] {
     if (!this._id || !sendDate) return []
     this.sendDate = sendDate
+    this.payDate = null
     this.status = PAIMENT_INVOICE_STATUSES_ENUM.sended
     return [PaymentInvoiceSendedEvent(this)]
   }
@@ -94,7 +95,7 @@ export class PaymentInvoiceDomain {
   setStatusPaid(payDate: Date): BusEvent[] {
     if (!this._id || !payDate) return []
     this.payDate = payDate
-    this.status = PAIMENT_INVOICE_STATUSES_ENUM.sended
+    this.status = PAIMENT_INVOICE_STATUSES_ENUM.paid
     return [PaymentInvoicePaidEvent(this)]
   }
 

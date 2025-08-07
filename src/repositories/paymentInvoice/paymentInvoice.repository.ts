@@ -44,9 +44,13 @@ class PaymentInvoiceRepository {
       }
     )
 
-    this.bus.subscribe(PaymentInvoicePaidEvent, async ({ payload }) => {
-      console.log('invoice paid: ', payload, '  need implement logic')
-    })
+    this.bus.subscribe(
+      PaymentInvoicePaidEvent,
+      async ({ payload: updatedInvoice }) => {
+        if (!updatedInvoice?._id) return
+        await this.updateInvoice(updatedInvoice._id.toString(), updatedInvoice)
+      }
+    )
   }
 
   async getInvoiceById(id: string): Promise<PaymentInvoiceDomain | null> {
