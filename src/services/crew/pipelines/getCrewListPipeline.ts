@@ -25,19 +25,13 @@ export default (props: unknown) => {
   const p = propsSchema.parse(props)
 
   let sortingField = 'startDate'
-  let sortingDirection = -1
+  let sortingDirection = p.sortDesc ? -1 : 1
   switch (p.sortBy) {
     case 'tkName':
       sortingField = 'tkName'
-      sortingDirection = p.sortDesc ? -1 : 1
       break
     case 'driver':
       sortingField = 'driver'
-      sortingDirection = p.sortDesc ? -1 : 1
-      break
-    case 'startDate':
-      sortingField = 'startDate'
-      sortingDirection = p.sortDesc ? -1 : 1
       break
   }
 
