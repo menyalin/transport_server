@@ -15,6 +15,12 @@ interface IProps {
   sortDesc?: string[]
 }
 const IPropsSchema = z.object({
+  periodBy: z
+    .string()
+    .optional()
+    .nullable()
+    .default('date')
+    .transform((v) => (!!v ? v : 'date')),
   period: z.array(z.string().datetime()).length(2),
   company: z.string(),
   limit: z.string().optional(),
@@ -34,6 +40,7 @@ const listSortingFragment = (
   fieldsMapper.set('number', 'number')
   fieldsMapper.set('date', 'date')
   fieldsMapper.set('sendDate', 'sendDate')
+  fieldsMapper.set('plannedPayDate', 'plannedPayDate')
   fieldsMapper.set('total.price', 'total.price')
   fieldsMapper.set('total.priceWOVat', 'total.priceWOVat')
   fieldsMapper.set('createdAt', 'createdAt')
@@ -45,7 +52,7 @@ const listSortingFragment = (
 }
 
 export const getListPipeline = (p: IProps): PipelineStage[] => {
-  IPropsSchema.parse(p)
+  const parsedProps = IPropsSchema.parse(p)
   const period = new DateRange(p.period[0], p.period[1])
   const firstMatcher: PipelineStage.Match = {
     $match: {
@@ -53,8 +60,8 @@ export const getListPipeline = (p: IProps): PipelineStage[] => {
       company: new Types.ObjectId(p.company),
       $expr: {
         $and: [
-          { $gte: ['$date', period.start] },
-          { $lte: ['$date', period.end] },
+          { $gte: [`$${parsedProps.periodBy}`, period.start] },
+          { $lte: [`$${parsedProps.periodBy}`, period.end] },
         ],
       },
     },
