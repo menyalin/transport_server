@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { DateRange } from '@/classes/dateRange'
 
 export class GetListPropsDTO {
+  periodBy: string
   period: DateRange
   company: string
   limit: number = 100
@@ -15,6 +16,7 @@ export class GetListPropsDTO {
 
   constructor(p: any) {
     const validatedProps = GetListPropsDTO.validationSchema.parse(p)
+    this.periodBy = validatedProps.periodBy
     this.company = validatedProps.company
     this.period = new DateRange(
       validatedProps.period[0],
@@ -33,6 +35,12 @@ export class GetListPropsDTO {
   }
 
   static validationSchema = z.object({
+    periodBy: z
+      .string()
+      .optional()
+      .nullable()
+      .default('date')
+      .transform((v) => v ?? 'date'),
     period: z.array(z.string().datetime()).length(2),
     company: z.string(),
     limit: z.string(),

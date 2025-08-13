@@ -18,14 +18,13 @@ const getSortingStage = (
 }
 
 export const getListPipeline = (props: GetListPropsDTO): PipelineStage[] => {
-  //#region: firstMatcher
   const firstMatcher: PipelineStage.Match = {
     $match: {
       company: new Types.ObjectId(props.company),
       $expr: {
         $and: [
-          { $gte: ['$date', props.period.start] },
-          { $lt: ['$date', props.period.end] },
+          { $gte: [`$${props.periodBy}`, props.period.start] },
+          { $lt: [`$${props.periodBy}`, props.period.end] },
         ],
       },
     },
