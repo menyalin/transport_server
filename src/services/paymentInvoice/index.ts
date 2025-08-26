@@ -21,24 +21,42 @@ import { OrderPickedForInvoiceDTO } from '../../domain/paymentInvoice/dto/orderP
 import * as pf from './printForms'
 import { PrintForm } from '../../domain/printForm/printForm.domain'
 import { PrintFormRepository } from '../../repositories'
+import { BusEvent } from 'ts-bus/types'
+import { EventBus } from 'ts-bus'
+import { bus } from '@/eventBus'
+
+interface ISetInvoiceStatusProps {
+  invoiceId: string
+  dateFieldName: string
+  value: Date
+}
 
 interface IConstructorProps {
   model: typeof PaymentInvoiceModel
   modelName: string
   logService: typeof ChangeLogService
   emitter: typeof emitTo
+  bus: EventBus
 }
 class PaymentInvoiceService {
   model: typeof PaymentInvoiceModel
   modelName: string
   logService: typeof ChangeLogService
   emitter: typeof emitTo
+  bus: EventBus
 
-  constructor({ model, emitter, modelName, logService }: IConstructorProps) {
+  constructor({
+    model,
+    emitter,
+    modelName,
+    logService,
+    bus,
+  }: IConstructorProps) {
     this.model = model
     this.logService = logService
     this.emitter = emitter
     this.modelName = modelName
+    this.bus = bus
   }
 
   async deleteById({
@@ -248,6 +266,22 @@ class PaymentInvoiceService {
     }
   }
 
+  async setStatus(
+    props: ISetInvoiceStatusProps
+  ): Promise<PaymentInvoiceDomain> {
+    let events: BusEvent[] = []
+    const invoice = await PaymentInvoiceRepository.getInvoiceById(
+      props.invoiceId
+    )
+    if (!invoice) throw new BadRequestError('Invoice not found')
+    if (props.dateFieldName === 'sendDate')
+      events = invoice.setStatusSended(props.value)
+    else if (props.dateFieldName === 'payDate')
+      events = invoice.setStatusPaid(props.value)
+    events.forEach((event) => this.bus.publish(event))
+    return invoice
+  }
+
   async updateOrderPrices({
     orderId,
     company,
@@ -284,4 +318,5 @@ export default new PaymentInvoiceService({
   emitter: emitTo,
   modelName: 'paymentInvoice',
   logService: ChangeLogService,
+  bus: bus,
 })

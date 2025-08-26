@@ -27,6 +27,7 @@ export const notes = [
 ]
 
 export const mockExecutor: ICarreierPFData = {
+  fullDataString: '',
   fullName: 'ООО "Перевозчик"',
   legalAddress: 'г. Москва, ул. Пушкина, д. 15',
   inn: '1234567890',
@@ -35,6 +36,7 @@ export const mockExecutor: ICarreierPFData = {
   signatoryPosition: 'Генеральный директор',
   signatoryName: 'Иванов Иван Иванович',
   bankInfo: {
+    getFullDataString: () => '',
     bankName: 'Сбербанк',
     accountNumber: '1234567890',
     correspondentAccount: '1234567890',

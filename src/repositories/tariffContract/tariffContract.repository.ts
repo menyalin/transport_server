@@ -52,6 +52,7 @@ class TariffContractRepository {
     const data = await TariffContractModel.find({
       agreement: agreement._id,
       startDate: { $lte: date },
+      isActive: true,
       $or: [{ endDate: { $gt: date } }, { endDate: { $eq: null } }],
     }).lean()
 

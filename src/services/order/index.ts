@@ -21,7 +21,10 @@ import {
   PrintFormRepository,
   IncomingInvoiceRepository,
 } from '@/repositories'
-import { Order as OrderDomain } from '@/domain/order/order.domain'
+import {
+  IChainedOrderData,
+  Order as OrderDomain,
+} from '@/domain/order/order.domain'
 import { bus } from '@/eventBus'
 import {
   OrdersUpdatedEvent,
@@ -205,28 +208,46 @@ class OrderService {
     })
     return order
   }
+  async getChainedOrderDataById(
+    orderId: string,
+    paymentPartIds: string[] = []
+  ): Promise<IChainedOrderData> {
+    let docsRegistry
+    let paymentInvoices
+    let incomingInvoice
+    docsRegistry = await getDocsRegistryByOrderId(orderId)
+
+    paymentInvoices = await getPaymentInvoicesByOrderIds([
+      orderId,
+      ...paymentPartIds,
+    ])
+    incomingInvoice = await IncomingInvoiceRepository.getForOrderById(orderId)
+    return {
+      docsRegistry,
+      paymentInvoices,
+      incomingInvoice,
+    }
+  }
 
   async getById(id: string) {
+    let chainedData = {}
     if (!isValidObjectId(id))
       throw new BadRequestError(`Invalid order id: ${id}`)
 
-    const allowedStatusesForGetDocsRegistry = ['completed']
-    const order: any = await OrderModel.findById(id).lean()
-    if (
-      order &&
-      allowedStatusesForGetDocsRegistry.includes(order.state.status)
-    ) {
-      order.docsRegistry = await getDocsRegistryByOrderId(order._id.toString())
+    const order: OrderDomain = await OrderRepository.getById(id)
 
-      order.paymentInvoices = await getPaymentInvoicesByOrderIds([
-        order._id?.toString(),
-        ...(order?.paymentParts?.map((i: any) => i._id.toString()) || []),
-      ])
-      order.incomingInvoice = await IncomingInvoiceRepository.getForOrderById(
-        order._id
+    if (!order) throw new BadRequestError('order not found')
+
+    if (order.isCompleted) {
+      chainedData = await this.getChainedOrderDataById(
+        order.id,
+        order.paymentPartIds
       )
     }
-    return order
+    return {
+      ...order.toObject(),
+      ...chainedData,
+    }
   }
 
   async getAllowedPrintForms(): Promise<PrintForm[]> {
@@ -273,19 +294,48 @@ class OrderService {
       coll: 'order',
       user,
       opType: 'updateFinalPrices',
-      body: JSON.stringify(order.toObject()),
+      body: order.toObject(),
     })
     return order
   }
 
   async updateOne({ id, body, user }: { id: string; body: any; user: string }) {
-    OrderDomain.isValidBody(body)
+    let chainedOrderData: IChainedOrderData = {
+      docsRegistry: null,
+      paymentInvoices: [],
+      incomingInvoice: null,
+    }
+    let orderIncludedInInvoice: boolean = false
+
     const newVersionOrder = new OrderDomain({ _id: id, ...body })
+
+    let existedOrder = await OrderRepository.getById(id)
+    if (!existedOrder) return null
+
+    if (existedOrder.isCompleted) {
+      await PermissionService.checkPeriod({
+        userId: user,
+        companyId: existedOrder.company,
+        operation: 'order:daysForWrite',
+        startDate: existedOrder.route.lastRouteDate,
+      })
+
+      chainedOrderData = await this.getChainedOrderDataById(
+        existedOrder.id,
+        existedOrder.paymentPartIds
+      )
+
+      orderIncludedInInvoice =
+        chainedOrderData.paymentInvoices.length > 0 ||
+        chainedOrderData.incomingInvoice
+          ? true
+          : false
+    }
 
     if (!newVersionOrder.clientAgreementId)
       newVersionOrder.setClientAgreement(await getClientAgreementId(body))
 
-    if (newVersionOrder.truckId) {
+    if (!orderIncludedInInvoice && newVersionOrder.truckId) {
       const carrierData = await getCarrierData(
         newVersionOrder.truckId,
         newVersionOrder.orderDate
@@ -295,12 +345,7 @@ class OrderService {
         carrierData.outsourceAgreementId
     }
 
-    let existedOrder = await OrderRepository.getById(id)
-
-    if (!existedOrder) return null
-
     // если в маршруте изменились даты проверяется пересечение с другими записями
-
     if (!existedOrder.isCompleted) {
       const datesNotChanged = helpers.isEqualDatesOfRoute(
         existedOrder.route,
@@ -308,15 +353,6 @@ class OrderService {
       )
       if (!datesNotChanged) await checkCrossItems({ body, id })
     }
-
-    // контроль разрешения на редактирвоание выполненного рейса
-    if (existedOrder.isCompleted)
-      await PermissionService.checkPeriod({
-        userId: user,
-        companyId: existedOrder.company,
-        operation: 'order:daysForWrite',
-        startDate: existedOrder.route.lastRouteDate,
-      })
 
     if (newVersionOrder.truckId !== existedOrder.truckId)
       bus.publish(OrderTruckChanged({ orderId: existedOrder.id }))
@@ -341,7 +377,10 @@ class OrderService {
 
     bus.publish(OrdersUpdatedEvent([updatedOrder]))
 
-    emitTo(updatedOrder.company, 'order:updated', updatedOrder)
+    emitTo(updatedOrder.company, 'order:updated', {
+      ...updatedOrder.toObject(),
+      ...chainedOrderData,
+    })
 
     await ChangeLogService.add({
       docId: new Types.ObjectId(updatedOrder.id),
@@ -352,19 +391,12 @@ class OrderService {
       body: updatedOrder.toObject(),
     })
 
-    return updatedOrder
+    return { ...updatedOrder.toObject(), ...chainedOrderData }
   }
 
   async refresh(order: OrderDomain): Promise<void> {
     order.analytics = await this.updateOrderAnalytics(order)
     order.prePrices = await this.updatePrePrices(order)
-
-    if (order.truckId) {
-      const carrierData = await getCarrierData(order.truckId, order.orderDate)
-      order.confirmedCrew.tkName = carrierData.carrierId
-      order.confirmedCrew.outsourceAgreement = carrierData.outsourceAgreementId
-    }
-
     bus.publish(OrdersUpdatedEvent([order]))
   }
 

@@ -26,7 +26,7 @@ export const getCarrierData = async (
     if (!carrier) return emptyResult
 
     return {
-      outsourceAgreementId: carrier?.getAgreementIdtByDate(date) ?? null,
+      outsourceAgreementId: carrier?.getAgreementIdsByDate(date)[0] ?? null,
       carrierId: carrier?._id?.toString() ?? null,
     }
   } catch (e) {

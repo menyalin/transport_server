@@ -49,6 +49,7 @@ class AgreementService {
     return agreement
   }
 
+  // TODO: удалить, вроде бы не используется
   async getForOrder(params: unknown) {
     const pipeline: PipelineStage[] = getForOrderPipeline(params)
     const res = await this.model.aggregate(pipeline)

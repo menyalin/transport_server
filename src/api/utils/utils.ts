@@ -20,7 +20,6 @@ router.post(
     const jsonData = XLSX.utils.sheet_to_json(
       workbook.Sheets[sheet_name_list[0]]
     )
-
     res.json(jsonData)
   }
 )

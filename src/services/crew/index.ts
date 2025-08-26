@@ -9,6 +9,9 @@ import getCrewDiagramReportPipeline from './pipelines/getCrewDiagramReportPipeli
 import getCrewByTruckAndDatePipeline from './pipelines/getCrewByTruckAndDatePipeline'
 import getLastCrewByDriverPipeline from './pipelines/getLastCrewByDriverPipeline'
 import getCrewListPipeline from './pipelines/getCrewListPipeline'
+import { getCrewUnwindedDataPipeline } from './pipelines/getCrewUnwindedDataPipeline'
+import pipeline from '../worker/pipelines/getCompaniesByUserIdPipeline'
+import { BadRequestError } from '@/helpers/errors'
 
 class CrewService {
   async create(body, userId) {
@@ -32,34 +35,45 @@ class CrewService {
   }
 
   async updateOne(id, body, userId) {
-    let crew = await Crew.findById(id)
-    if (!crew) return null
-    if (body.endDate) {
-      const idx = body.transport.length - 1
-      if (body.transport[idx].endDate)
-        body.endDate = body.transport[idx].endDate
-      else body.transport[idx].endDate = body.endDate
+    try {
+      let crew = await Crew.findById(id)
+      if (!crew) return null
+
+      // Синхронизация дат завершения
+      if (body.transport?.length > 0) {
+        const lastIdx = body.transport.length - 1
+        const lastTransportItem = body.transport[lastIdx]
+        const rootEndDate = body.endDate
+        const transportEndDate = lastTransportItem.endDate
+
+        if (!rootEndDate && transportEndDate) {
+          body.endDate = transportEndDate
+        } else if (rootEndDate && !transportEndDate) {
+          lastTransportItem.endDate = rootEndDate
+        }
+      }
+      body.transport = body.transport.filter(Boolean)
+      crew = Object.assign(crew, { ...body, manager: userId })
+
+      await crew.save()
+      await ChangeLogService.add({
+        docId: crew._id.toString(),
+        company: crew.company.toString(),
+        user: userId,
+        coll: 'crews',
+        body: crew,
+        opType: 'update',
+      })
+
+      emitTo(crew.company.toString(), 'crew:updated', crew)
+      return crew
+    } catch (e) {
+      throw new BadRequestError(e.message)
     }
-
-    crew = Object.assign(crew, { ...body, manager: userId })
-
-    await crew.save()
-    await ChangeLogService.add({
-      docId: crew._id.toString(),
-      company: crew.company.toString(),
-      user: userId,
-      coll: 'crews',
-      body: crew,
-      opType: 'update',
-    })
-
-    emitTo(crew.company.toString(), 'crew:updated', crew)
-    return crew
   }
 
   async closeCrew(id, { endDate, userId }) {
     const crew = await Crew.findById(id)
-
     if (!crew) return null
     const idx = crew.transport.length - 1
 
@@ -89,33 +103,33 @@ class CrewService {
     return crew
   }
 
-  async closeTransportItem(id, { endDate, userId }) {
-    const crew = await Crew.findOne({ 'transport._id': id })
+  // async closeTransportItem(id, { endDate, userId }) {
+  //   const crew = await Crew.findOne({ 'transport._id': id })
 
-    if (!crew) return null
-    const transportItem = crew.transport.find(
-      (item) => item._id.toString() === id
-    )
-    if (new Date(transportItem.startDate) > new Date(endDate))
-      throw new Error('bad query params')
-    transportItem.endDate = endDate
-    crew.manager = userId
-    await crew.save()
-    await ChangeLogService.add({
-      docId: crew._id.toString(),
-      company: crew.company.toString(),
-      user: userId,
-      coll: 'crews',
-      body: crew,
-      opType: 'update',
-    })
-    await crew.populate(['tkName', 'driver', 'manager'])
-    emitTo(crew.company.toString(), 'crew:updated', crew)
-    return crew
-  }
+  //   if (!crew) return null
+  //   const transportItem = crew.transport.find(
+  //     (item) => item._id.toString() === id
+  //   )
+  //   if (new Date(transportItem.startDate) > new Date(endDate))
+  //     throw new Error('bad query params')
+  //   transportItem.endDate = endDate
+  //   crew.manager = userId
+  //   await crew.save()
+  //   await ChangeLogService.add({
+  //     docId: crew._id.toString(),
+  //     company: crew.company.toString(),
+  //     user: userId,
+  //     coll: 'crews',
+  //     body: crew,
+  //     opType: 'update',
+  //   })
+  //   await crew.populate(['tkName', 'driver', 'manager'])
+  //   emitTo(crew.company.toString(), 'crew:updated', crew)
+  //   return crew
+  // }
 
-  async getOneByDriver(driver) {
-    const pipeline = getLastCrewByDriverPipeline(driver)
+  async getOneByDriverAndDate(params: unknown) {
+    const pipeline = getLastCrewByDriverPipeline(params)
     const data = await Crew.aggregate(pipeline)
     if (data.length) return data[0]
     else return null
@@ -175,6 +189,11 @@ class CrewService {
       opType: 'delete',
     })
 
+    return data
+  }
+  async getCrewUnwindedData(props): Promise<any[]> {
+    const pipeline = getCrewUnwindedDataPipeline(props)
+    const data = await Crew.aggregate(pipeline)
     return data
   }
 

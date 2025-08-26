@@ -55,12 +55,6 @@ class CarrierAgreementController {
 
   async getById(req: AuthorizedRequest, res: Response) {
     try {
-      if (!req.companyId) throw new BadRequestError('Missing companyId')
-      await PermissionService.check({
-        userId: req.userId,
-        companyId: req.companyId,
-        operation: this.permissionName + ':readItem',
-      })
       const data = await this.service.getById(req.params?.id)
       res.status(200).json(data)
     } catch (e) {
@@ -69,10 +63,9 @@ class CarrierAgreementController {
     }
   }
 
-  async getByCarrierAndDate(req: AuthorizedRequest, res: Response) {
+  async getAllowedAgreements(req: AuthorizedRequest, res: Response) {
     try {
-      if (!req.companyId) throw new BadRequestError('Missing companyId')
-      const data = await this.service.getByCarrierAndDate(req.query)
+      const data = await this.service.getAllowedAgreements(req.query)
       res.status(200).json(data)
     } catch (e) {
       if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)

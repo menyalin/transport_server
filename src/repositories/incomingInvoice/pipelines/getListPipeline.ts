@@ -2,15 +2,29 @@ import { PipelineStage, Types } from 'mongoose'
 import { GetListPropsDTO } from '../dto/getListProps.dto'
 import { INCOMING_INVOICE_STATUSES_ENUM } from '@/constants/incomingInvoice'
 
+const getSortingStage = (
+  sortBy: string[] = [],
+  sortDesc: boolean[] = []
+): PipelineStage.Sort => {
+  if (!Array.isArray(sortBy) || !sortBy.length)
+    return { $sort: { createdAt: -1 } }
+
+  let result = {}
+
+  sortBy.forEach((fieldName, idx) => {
+    result = { ...result, [fieldName]: sortDesc[idx] ? -1 : 1 }
+  })
+  return { $sort: result }
+}
+
 export const getListPipeline = (props: GetListPropsDTO): PipelineStage[] => {
-  //#region: firstMatcher
   const firstMatcher: PipelineStage.Match = {
     $match: {
       company: new Types.ObjectId(props.company),
       $expr: {
         $and: [
-          { $gte: ['$date', props.period.start] },
-          { $lt: ['$date', props.period.end] },
+          { $gte: [`$${props.periodBy}`, props.period.start] },
+          { $lt: [`$${props.periodBy}`, props.period.end] },
         ],
       },
     },
@@ -90,8 +104,22 @@ export const getListPipeline = (props: GetListPropsDTO): PipelineStage[] => {
 
   const finalGroup: PipelineStage.Facet = {
     $facet: {
-      totalCount: [{ $count: 'count' }],
-      items: [{ $skip: props.skip }, { $limit: props.limit }],
+      analytics: [
+        {
+          $group: {
+            _id: -1,
+            totalCount: { $sum: 1 },
+            routesCount: { $sum: '$ordersCount' },
+            priceWOVat: { $sum: '$priceWOVat' },
+            priceWithVat: { $sum: '$priceWithVat' },
+          },
+        },
+      ],
+      items: [
+        getSortingStage(props.sortBy, props.sortDesc),
+        { $skip: props.skip },
+        { $limit: props.limit },
+      ],
     },
   }
 

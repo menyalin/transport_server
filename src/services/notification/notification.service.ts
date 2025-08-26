@@ -48,6 +48,10 @@ class NotificationService {
     const config = transporterConfig()
     this.transporter = nodemailer.createTransport(config)
 
+    this.transporter.on('error', (e) => {
+      console.log('transporter error: ', e)
+    })
+
     // Оповещение клиентов по WebSocket
     this.bus.subscribe(NotifyClientsEvent, (e) => {
       this.publishEvent(e.payload)

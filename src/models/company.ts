@@ -14,13 +14,13 @@ const companySchema = new Schema(
       type: String,
     },
     settings: {
+      s3Prefix: String,
       truckKinds: [String],
       defaultTruckKind: String,
       liftCapacityTypes: [Number],
       defaultLiftCapacity: Number,
       loadDirections: [String],
       defaultLoadDirection: String,
-      commonOrderContractNote: String, // TODO: Удалить
     },
     inn: {
       type: String,

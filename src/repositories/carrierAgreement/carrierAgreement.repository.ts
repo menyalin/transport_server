@@ -24,6 +24,11 @@ class CarrierAgreementRepository {
     return res ? new CarrierAgreement(res) : null
   }
 
+  async getByIds(ids: string[]): Promise<CarrierAgreement[]> {
+    const res = await this.model.find({ _id: { $in: ids } }).lean()
+    return res.map((item) => new CarrierAgreement(item))
+  }
+
   async getList(params: unknown): Promise<ICarrierAgreementListData> {
     const pipeline = createGetListPipeline(params)
     const res = await this.model.aggregate(pipeline)

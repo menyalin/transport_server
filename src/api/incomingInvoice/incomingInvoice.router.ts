@@ -10,6 +10,10 @@ router.get('/', [jwtAuth], (req: Request, res: Response) =>
   IncomingInvoiceController.getList(req as AuthorizedRequest, res)
 )
 
+router.get('/allowed_print_forms', [jwtAuth], (req: Request, res: Response) =>
+  IncomingInvoiceController.getAllowedPrintForms(req as AuthorizedRequest, res)
+)
+
 router.get('/pick_orders', [jwtAuth], (req: Request, res: Response) =>
   IncomingInvoiceController.pickOrders(req as AuthorizedRequest, res)
 )
@@ -19,6 +23,17 @@ router.get('/:id', [jwtAuth], (req: Request, res: Response) =>
 
 router.post('/', [jwtAuth], (req: Request, res: Response) =>
   IncomingInvoiceController.create(req as AuthorizedRequest, res)
+)
+
+router.post(
+  '/:invoiceId/download_docs',
+  [jwtAuth],
+  (req: Request, res: Response) =>
+    IncomingInvoiceController.downloadDoc(req as AuthorizedRequest, res)
+)
+
+router.put('/:invoiceId/set_paid', [jwtAuth], (req: Request, res: Response) =>
+  IncomingInvoiceController.setPaidStatus(req as AuthorizedRequest, res)
 )
 
 router.put('/:id', [jwtAuth], (req: Request, res: Response) =>

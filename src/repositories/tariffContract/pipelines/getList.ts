@@ -7,6 +7,7 @@ const sortingBuilder = (
 ): PipelineStage.Sort => {
   const fieldMapper = new Map<string, string>()
   fieldMapper.set('plannedDateStr', 'plannedDate')
+  fieldMapper.set('nestedFiles', 'nestedFiles')
   return {
     $sort: {
       [sortBy[0]]: sortDesc[0] ? -1 : 1,
@@ -19,6 +20,9 @@ export const ListPipelineBuilder = (p: ListQueryPropsDto): PipelineStage[] => {
     $match: {
       company: new Types.ObjectId(p.company),
       isActive: true,
+      $expr: {
+        $and: [],
+      },
     },
   }
 
@@ -44,8 +48,54 @@ export const ListPipelineBuilder = (p: ListQueryPropsDto): PipelineStage[] => {
       },
     },
   ]
+  if (p.agreements.length) {
+    firstMatcher.$match.$expr?.$and.push({
+      $in: ['$agreement', p.agreements.map((i) => new Types.ObjectId(i))],
+    })
+  }
+  if (p.searchStr)
+    firstMatcher.$match.$expr?.$and.push({
+      $or: [
+        {
+          $regexMatch: {
+            input: '$name',
+            regex: p.searchStr,
+            options: 'i',
+          },
+        },
+        {
+          $regexMatch: {
+            input: '$note',
+            regex: p.searchStr,
+            options: 'i',
+          },
+        },
+      ],
+    })
 
-  const pipeline: PipelineStage[] = [firstMatcher, ...aggreemntLookup]
+  const nestedFilesLookup: PipelineStage[] = [
+    {
+      $lookup: {
+        from: 'files',
+        localField: '_id',
+        foreignField: 'docId',
+        as: 'nestedFiles',
+      },
+    },
+    {
+      $addFields: {
+        nestedFiles: {
+          $size: '$nestedFiles',
+        },
+      },
+    },
+  ]
+
+  const pipeline: PipelineStage[] = [
+    firstMatcher,
+    ...aggreemntLookup,
+    ...nestedFilesLookup,
+  ]
   if (p.sortBy.length > 0) pipeline.push(sortingBuilder(p.sortBy, p.sortDesc))
   const finalFacet: PipelineStage.Facet = {
     $facet: {

@@ -153,7 +153,7 @@ class PaymentInvoiceController {
           _id: i._id.toString(),
           ['Номер']: i.number,
           ['Номер клиента']: i.numberByClient,
-          ['Дата выставления']: i.sendDate,
+          ['Дата документа']: i.date,
           ['Дата реестра']: i.dateByClient,
           ['Статус']: i.statusStr,
           ['Клиент']: i.clientName,
@@ -187,6 +187,26 @@ class PaymentInvoiceController {
         req.query?.agreement,
         req.query?.client
       )
+      res.status(200).json(data)
+    } catch (e) {
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
+    }
+  }
+
+  async setStatus(req: AuthorizedRequest, res: Response) {
+    try {
+      const invoiceId = req.params.id
+      const { dateFieldName, value } = req.body
+      if (!dateFieldName || !value)
+        throw new BadRequestError('Missing dateFieldName or value')
+
+      const data = await this.service.setStatus({
+        invoiceId,
+        dateFieldName,
+        value: new Date(value),
+      })
+
       res.status(200).json(data)
     } catch (e) {
       if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)

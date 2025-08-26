@@ -10,6 +10,10 @@ export class CarrierAgreement {
   usePriceWithVAT: boolean
   paymentDescription: string
   paymentOfDays: number = 0
+  customer?: string
+  actBasis: string
+  actDescription: string
+  paymentBillDescription: string
   orderContractNote: string
   vatRate: number
   note: string
@@ -23,6 +27,10 @@ export class CarrierAgreement {
     this.paymentDescription = p.paymentDescription
     this.orderContractNote = p.orderContractNote
     this.paymentOfDays = p.paymentOfDays
+    this.customer = p.customer ? p.customer.toString() : undefined
+    this.actBasis = p.actBasis ?? ''
+    this.actDescription = p.actDescription ?? ''
+    this.paymentBillDescription = p.paymentBillDescription ?? ''
     this.vatRate = p.vatRate
     this.usePriceWithVAT = p.vatRate > 0 ? p.usePriceWithVAT : false
     this.note = p.note
@@ -32,6 +40,10 @@ export class CarrierAgreement {
     const p = CarrierAgreement.validationSchema.parse(body)
     this.name = p.name
     this.isActive = p.isActive
+    this.customer = p.customer?.toString() ?? undefined
+    this.actBasis = p.actBasis ?? ''
+    this.actDescription = p.actDescription ?? ''
+    this.paymentBillDescription = p.paymentBillDescription ?? ''
     this.paymentOfDays = p.paymentOfDays
     this.paymentDescription = p.paymentDescription
     this.orderContractNote = p.orderContractNote
@@ -67,6 +79,10 @@ export class CarrierAgreement {
         .nullable()
         .default(0)
         .transform((v) => Number(v)),
+      actBasis: z.string().optional().nullable(),
+      actDescription: z.string().optional().nullable(),
+      paymentBillDescription: z.string().optional().nullable(),
+      customer: objectIdSchema.optional().nullable(),
       note: z
         .string()
         .optional()
@@ -82,6 +98,10 @@ export class CarrierAgreement {
       isActive: { type: Boolean, default: true },
       paymentDescription: String,
       orderContractNote: String,
+      customer: { type: Types.ObjectId, ref: 'TkName' },
+      actBasis: String,
+      actDescription: String,
+      paymentBillDescription: String,
       vatRate: Number,
       usePriceWithVAT: { type: Boolean, default: false },
       paymentOfDays: Number,

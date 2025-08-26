@@ -7,6 +7,8 @@ class IncomingInvoiceListItemDTO {
   number: string
   date: Date
   plannedPayDate: Date | null
+  receiptDate: Date | null
+  payDate: Date | null
   agreementName: string
   carrierName?: string
   status: string
@@ -22,6 +24,8 @@ class IncomingInvoiceListItemDTO {
     this.company = parsedProps.company.toString()
     this.number = parsedProps.number
     this.date = parsedProps.date
+    this.receiptDate = parsedProps.receiptDate ?? null
+    this.payDate = parsedProps.payDate ?? null
     this.plannedPayDate = parsedProps.plannedPayDate
     this.agreementName = parsedProps.agreementName
     this.carrierName = parsedProps.carrierName
@@ -38,6 +42,8 @@ class IncomingInvoiceListItemDTO {
     number: z.string(),
     date: z.date(),
     plannedPayDate: z.date().nullable(),
+    receiptDate: z.date().nullable().optional(),
+    payDate: z.date().nullable().optional(),
     agreementName: z.string(),
     carrierName: z.string().optional(),
     status: z.string(),
@@ -49,16 +55,25 @@ class IncomingInvoiceListItemDTO {
 }
 
 export class ListResultDTO {
-  totalCount: number
+  count: number
+  routesCount: number
+  totalSumWOVat: number
+  totalSum: number
   items: IncomingInvoiceListItemDTO[]
 
   constructor(p: { totalCount: number; items: IncomingInvoiceListItemDTO[] }) {
     if (!p) {
-      this.totalCount = 0
+      this.count = 0
+      this.routesCount = 0
+      this.totalSumWOVat = 0
+      this.totalSum = 0
       this.items = []
     } else {
       const parsedProps = ListResultDTO.validationSchema.parse(p)
-      this.totalCount = parsedProps.totalCount[0]?.count ?? 0
+      this.count = parsedProps.analytics[0]?.totalCount ?? 0
+      this.routesCount = parsedProps.analytics[0]?.routesCount ?? 0
+      this.totalSumWOVat = parsedProps.analytics[0]?.priceWOVat ?? 0
+      this.totalSum = parsedProps.analytics[0]?.priceWithVat ?? 0
       this.items = parsedProps.items.map(
         (i) => new IncomingInvoiceListItemDTO(i)
       )
@@ -66,7 +81,14 @@ export class ListResultDTO {
   }
 
   static validationSchema = z.object({
-    totalCount: z.array(z.object({ count: z.number() })),
+    analytics: z.array(
+      z.object({
+        totalCount: z.number(),
+        routesCount: z.number(),
+        priceWOVat: z.number(),
+        priceWithVat: z.number(),
+      })
+    ),
     items: z.array(IncomingInvoiceListItemDTO.validationSchema),
   })
 }

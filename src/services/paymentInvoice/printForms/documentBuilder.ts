@@ -1,6 +1,9 @@
 import { PrintFormRepository, PaymentInvoiceRepository } from '@/repositories'
 import { okAktBuilder } from './ok_act/okAct'
 import { okAktBuilder as okAkt2Builder } from './ok_act_2/okAct2'
+import { commonActBuilder } from './commonAct'
+import { IDocumentBuilder } from './interfaces'
+import { BadRequestError } from '@/helpers/errors'
 
 export const paymentInvoiceDocumentBuilder = async (
   invoiceId: string,
@@ -17,7 +20,11 @@ export const paymentInvoiceDocumentBuilder = async (
 
   const printForm = await PrintFormRepository.getByTemplateName(templateName)
 
-  let docBuilder
+  if (!printForm)
+    throw new Error('paymentInvoiceDocumentBuilder : printForm not found')
+
+  let docBuilder: IDocumentBuilder
+
   switch (printForm?.pfType) {
     case 'ok_act':
       docBuilder = okAktBuilder
@@ -25,8 +32,14 @@ export const paymentInvoiceDocumentBuilder = async (
     case 'ok_act_2':
       docBuilder = okAkt2Builder
       break
+    case 'common_act':
+      docBuilder = commonActBuilder
+      break
+
     default:
-      throw new Error('paymentInvoiceDocumentBuilder : printForm not found')
+      throw new BadRequestError(
+        'paymentInvoiceDocumentBuilder : printForm not found'
+      )
   }
   const buffer = await docBuilder({ invoice: paymentInvoice, pf: printForm })
   return buffer

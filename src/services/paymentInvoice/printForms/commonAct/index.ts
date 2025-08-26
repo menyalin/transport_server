@@ -1,0 +1,1 @@
+export { commonActBuilder } from './docBuilder'

@@ -4,7 +4,7 @@ import express, { Request, Response } from 'express'
 import { jwtAuth } from '@/utils/auth.middleware'
 import { queryValidator } from '@/utils/validator'
 
-import { getListSchema, getForOrderSchema, getForClientSchema } from './schemes'
+import { getListSchema } from './schemes'
 import ctrl from '@/controllers/agreement.controller'
 import { AuthorizedRequest } from '@/controllers/interfaces'
 
@@ -16,17 +16,16 @@ router.get(
   [jwtAuth, queryValidator(getListSchema)],
   (req: Request, res: Response) => ctrl.getList(req as AuthorizedRequest, res)
 )
-router.get(
-  '/get_for_order',
-  [jwtAuth, queryValidator(getForOrderSchema)],
-  (req: Request, res: Response) =>
-    ctrl.getForOrder(req as AuthorizedRequest, res)
-)
-router.get(
-  '/get_for_client',
-  [jwtAuth, queryValidator(getForClientSchema)],
-  (req: Request, res: Response) =>
-    ctrl.getForClient(req as AuthorizedRequest, res)
+
+// router.get(
+//   '/get_for_order',
+//   [jwtAuth, queryValidator(getForOrderSchema)],
+//   (req: Request, res: Response) =>
+//     ctrl.getForOrder(req as AuthorizedRequest, res)
+// )
+
+router.get('/get_for_client', [jwtAuth], (req: Request, res: Response) =>
+  ctrl.getForClient(req as AuthorizedRequest, res)
 )
 
 router.get('/:id', [jwtAuth], (req: Request, res: Response) =>

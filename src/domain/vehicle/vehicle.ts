@@ -49,6 +49,7 @@ export class Vehicle {
   company: string
   isActive: boolean
   allowedDrivers?: AllowedDriver[]
+  hasScans: boolean
 
   constructor(props: unknown) {
     const p = Vehicle.validationSchema.parse(props)
@@ -88,6 +89,7 @@ export class Vehicle {
     this.pltCount = p.pltCount
     this.company = p.company?.toString()
     this.isActive = p.isActive
+    this.hasScans = p.hasScans
     this.allowedDrivers = p.allowedDrivers
       ? p.allowedDrivers.map((i) => new AllowedDriver(i))
       : []
@@ -134,6 +136,11 @@ export class Vehicle {
         pltCount: z.number().optional().nullable(),
         company: objectIdSchema,
         hideInFines: z.boolean().optional().nullable(),
+        hasScans: z
+          .boolean()
+          .optional()
+          .nullable()
+          .transform((v) => Boolean(v)),
         isActive: z
           .boolean()
           .optional()
@@ -186,6 +193,7 @@ export class Vehicle {
       company: { type: Types.ObjectId, ref: 'Company' },
       hideInFines: { type: Boolean, default: false },
       isActive: { type: Boolean, default: true },
+      hasScans: Boolean,
       note: String,
       allowUseTrailer: { type: Boolean, default: false },
       allowedDrivers: [AllowedDriver.dbSchema],

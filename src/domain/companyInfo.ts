@@ -2,6 +2,7 @@ import {
   LEGAL_ENTITY_TYPE_ENUM,
   LEGAL_ENTITY_TYPE_VALUES,
 } from '@/constants/legalEntityType'
+
 import { z } from 'zod'
 
 class Director {
@@ -18,7 +19,8 @@ class Director {
   static get validationSchema() {
     return z.object({
       isMainSignatory: z
-        .union([z.boolean(), z.string()])
+        .union([z.boolean(), z.string(), z.null()])
+        .optional()
         .transform((v) => Boolean(v)),
       name: z.string().nullable().optional(),
       position: z.string().nullable().optional(),
@@ -53,7 +55,10 @@ class Signatory {
       position: z.string().nullable().optional(),
       fullName: z.string().nullable().optional(),
       number: z.string().nullable().optional(),
-      date: z.string().date().nullable().optional(),
+      date: z
+        .union([z.date(), z.string(), z.null()])
+        .transform((v) => (v ? new Date(v) : null))
+        .optional(),
     })
   }
 
@@ -76,8 +81,9 @@ export class CompanyInfo {
   ogrn?: string | null
   ogrnip?: string | null
   kpp?: string | null
-  director?: Director
-  signatory?: Signatory
+  director?: Director | null
+  accountant?: Director | null
+  signatory?: Signatory | null
 
   constructor(props: unknown) {
     const p = CompanyInfo.validationSchema.parse(props)
@@ -91,6 +97,11 @@ export class CompanyInfo {
     this.kpp = p.kpp
     this.director = p.director ? new Director(p.director) : undefined
     this.signatory = p.signatory ? new Signatory(p.signatory) : undefined
+    this.accountant = p.accountant ? new Director(p.accountant) : undefined
+  }
+
+  getFullDataString(): string {
+    return `${this.fullName ?? ''}, ИНН ${this.inn ?? ''}, ${this.legalAddress ?? ''}`
   }
 
   static get dbSchema() {
@@ -107,6 +118,7 @@ export class CompanyInfo {
       ogrnip: String,
       kpp: String,
       director: Director.dbSchema,
+      accountant: Director.dbSchema,
       signatory: Signatory.dbSchema,
     }
   }
@@ -121,8 +133,9 @@ export class CompanyInfo {
       ogrn: z.string().nullable().optional(),
       ogrnip: z.string().nullable().optional(),
       kpp: z.string().nullable().optional(),
-      director: Director.validationSchema.optional(),
-      signatory: Signatory.validationSchema.optional(),
+      director: Director.validationSchema.optional().nullable(),
+      signatory: Signatory.validationSchema.optional().nullable(),
+      accountant: Director.validationSchema.optional().nullable(),
     })
   }
 }

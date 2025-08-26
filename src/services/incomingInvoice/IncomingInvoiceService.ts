@@ -1,10 +1,11 @@
 import { IncomingInvoice, IncomingInvoiceOrder } from '@/domain/incomingInvoice'
 import { CreateIncomingInvoiceDTO } from '@/domain/incomingInvoice/dto/createIncomingInvoice.dto'
 import { Order } from '@/domain/order/order.domain'
+import { PrintForm } from '@/domain/printForm/printForm.domain'
 
 import { bus } from '@/eventBus'
 import { BadRequestError } from '@/helpers/errors'
-import { OrderRepository } from '@/repositories'
+import { OrderRepository, PrintFormRepository } from '@/repositories'
 import {
   GetListPropsDTO,
   IncomingInvoiceRepository,
@@ -12,6 +13,7 @@ import {
 } from '@/repositories/incomingInvoice'
 import { EventBus } from 'ts-bus'
 import { z } from 'zod'
+import { incomingInvoicePFBuilder } from './printForms'
 
 interface IProps {
   incomingInvoiceRepository: typeof IncomingInvoiceRepository
@@ -74,6 +76,14 @@ class IncomingInvoiceService {
     return invoice
   }
 
+  async setPaidStatus(invoiceId: string, payDate: Date) {
+    const invoice = await this.incomingInvoiceRepository.getById(invoiceId)
+    if (!invoice) throw new BadRequestError('Invoice not found')
+    const events = invoice.setPaidStatus(payDate)
+    events.forEach((event) => this.bus.publish(event))
+    return invoice
+  }
+
   async pickOrders(props: unknown) {
     const orders = await this.incomingInvoiceRepository.pickOrders(props)
     return orders
@@ -110,9 +120,11 @@ class IncomingInvoiceService {
     if (res.items.length !== orderIds.length)
       throw new BadRequestError('Рейсы не найдены')
 
-    const invoiceRows: IncomingInvoiceOrder[] = res.items.map(
-      (order: unknown) =>
-        IncomingInvoiceOrder.create(new Order(order), invoice._id)
+    const invoiceRows: IncomingInvoiceOrder[] = orderIds.map(
+      (orderId: unknown) => {
+        const order = res.items.find((o: any) => o?._id?.toString() === orderId)
+        return IncomingInvoiceOrder.create(new Order(order), invoice._id)
+      }
     )
     await this.incomingInvoiceRepository.addOrderToInvoice(invoiceRows)
     const events = invoice.pushOrders(invoiceRows)
@@ -150,6 +162,26 @@ class IncomingInvoiceService {
 
     await IncomingInvoiceRepository.deleteById(id)
     return true
+  }
+
+  async getAllowedPrintForms(): Promise<PrintForm[]> {
+    return await PrintFormRepository.getTemplatesByType({
+      docType: 'incomingInvoice',
+    })
+  }
+
+  async downloadDoc({
+    invoiceId,
+    templateName,
+  }: {
+    invoiceId: string
+    templateName: string
+  }): Promise<Buffer> {
+    const docBuffer: Buffer = await incomingInvoicePFBuilder({
+      invoiceId,
+      templateName,
+    })
+    return docBuffer
   }
 }
 

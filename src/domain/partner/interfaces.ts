@@ -1,8 +1,10 @@
-import { PARTNER_GROUPS_ENUM } from '../../constants/partner'
+import { PARTNER_GROUPS_ENUM } from '@/constants/partner'
 import { Types } from 'mongoose'
 import { LoadingDock } from './loadingDock.domain'
 import { IdleTruckNotification } from './idleTruckNotification'
 import { RoutePoint } from '../order/route/routePoint'
+import { CompanyInfo } from '../companyInfo'
+import { BankAccountInfo } from '../bankAccountInfo'
 
 // export enum USE_TRUCK_FILTER_ENUM {
 //   included = 'included',
@@ -24,6 +26,8 @@ export interface IParterProps {
   placesForTransferDocs?: LoadingDock[]
   idleTruckNotifications?: IdleTruckNotification[]
   invoiceLoader?: string
+  companyInfo?: CompanyInfo | null
+  bankAccountInfo?: BankAccountInfo | null
 }
 export interface IPartnerWithIdProps extends IParterProps {
   _id: string | Types.ObjectId
@@ -41,8 +45,6 @@ export interface IIdleTruckNotifyProps {
   templateName: string
   note?: string
   usePlannedDate?: boolean
-  // useTruckFilter?: USE_TRUCK_FILTER_ENUM
-  // trucks?: string[]
   isActive: boolean
 }
 
@@ -58,4 +60,5 @@ export interface ILoadingDockProps {
   allowedLoadingPoints?: string[]
   contacts?: string
   note?: string
+  resctrictAddresses?: boolean
 }

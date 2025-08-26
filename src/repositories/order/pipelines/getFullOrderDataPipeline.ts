@@ -78,13 +78,46 @@ export const getFullOrderDataPipeline = (
       },
     },
   ]
+  const getAddressIdsByTypeFragment = (type: string) => ({
+    $map: {
+      input: {
+        $filter: {
+          input: '$route',
+          as: 'point',
+          cond: { $eq: ['$$point.type', type] },
+        },
+      },
+      in: '$$this.address',
+    },
+  })
 
-  return [
+  const addressesByTypeLookup: PipelineStage[] = [
     {
-      $match: {
-        _id: new Types.ObjectId(orderId),
+      $addFields: {
+        loadingAddressIds: getAddressIdsByTypeFragment('loading'),
+        unloadingAddressIds: getAddressIdsByTypeFragment('unloading'),
       },
     },
+    {
+      $lookup: {
+        from: 'addresses',
+        localField: 'loadingAddressIds',
+        foreignField: '_id',
+        as: 'loadingAddresses',
+      },
+    },
+    {
+      $lookup: {
+        from: 'addresses',
+        localField: 'unloadingAddressIds',
+        foreignField: '_id',
+        as: 'unloadingAddresses',
+      },
+    },
+  ]
+
+  return [
+    { $match: { _id: new Types.ObjectId(orderId) } },
     {
       $addFields: {
         plannedDate: {
@@ -100,6 +133,7 @@ export const getFullOrderDataPipeline = (
     ...driverLookup,
     ...truckLookup,
     ...trailerLookup,
+    ...addressesByTypeLookup,
     ...addressLookup,
   ]
 }

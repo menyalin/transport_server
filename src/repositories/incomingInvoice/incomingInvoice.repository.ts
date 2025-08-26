@@ -86,9 +86,8 @@ class IncomingInvoiceRepository {
 
   async pickOrders(props: unknown): Promise<OrderForIncomingInvoice[]> {
     try {
-      const validatedProps = PickOrdersPropsDTO.validationSchema.parse(props)
       const pipeline = pickOrdersForIncomingInvoice(
-        new PickOrdersPropsDTO(validatedProps)
+        new PickOrdersPropsDTO(props)
       )
       const res = await this.orderModel.aggregate(pipeline)
       return res
@@ -110,7 +109,9 @@ class IncomingInvoiceRepository {
   }
 
   async addOrderToInvoice(items: IncomingInvoiceOrder[]) {
-    await this.invoiceOrderModel.create(items)
+    for (let i = 0; i < items.length; i++) {
+      await this.invoiceOrderModel.create(items[i])
+    }
   }
 
   async deleteOrderFromInvoice({
@@ -125,6 +126,13 @@ class IncomingInvoiceRepository {
       order: orderIds,
     })
     console.log(res)
+  }
+
+  async orderIncludedInInvoice(orderId: string): Promise<boolean> {
+    const orderRowInInvoice = await this.invoiceOrderModel
+      .findOne({ order: orderId })
+      .lean()
+    return !!orderRowInInvoice
   }
 
   async getForOrderById(
