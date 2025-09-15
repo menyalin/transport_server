@@ -59,7 +59,8 @@ class FileService {
   }
   private async setBucketCORSParams() {
     try {
-      await this.getBucketCORSParams()
+      const res = await this.getBucketCORSParams()
+      console.log('setBucketCORSParams:res: ', res)
       const allowedOrigins = process.env.S3_ALLOWED_ORIGINS?.split(',')
       const putCorsCommand = new PutBucketCorsCommand({
         Bucket: this.bucketName,
@@ -154,12 +155,19 @@ class FileService {
   }
 
   async deleteObjectByKey(key: string): Promise<void> {
-    const command = new DeleteObjectCommand({
-      Bucket: this.bucketName,
-      Key: key,
-    })
-    const res = await this.s3client.send(command)
-    await FileRepository.deleteByKey(key)
+    try {
+      const command = new DeleteObjectCommand({
+        Bucket: this.bucketName,
+        Key: key,
+      })
+      console.log('deleteObjectByKey command: ', command)
+      const res = await this.s3client.send(command)
+      console.log('deleteObjectByKey res: ', res)
+      await FileRepository.deleteByKey(key)
+    } catch (e) {
+      console.log('deleteObjectByKey error: ', e)
+      throw e
+    }
   }
 
   async update(id: string, body: unknown): Promise<FileRecord> {
