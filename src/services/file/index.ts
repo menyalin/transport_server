@@ -53,7 +53,8 @@ class FileService {
       if (err) console.log('ошибка DNS: ', err)
       else console.log('DNS адрес s4logprod.s3.cloud.ru: ', address)
     })
-    await this.setBucketCORSParams()
+    await this.getBucketCORSParams()
+    // await this.setBucketCORSParams()
   }
 
   private async getBucketCORSParams(): Promise<void> {
@@ -78,11 +79,10 @@ class FileService {
         CORSConfiguration: {
           CORSRules: [
             {
-              AllowedHeaders: ['*'], // Или конкретные: ['Authorization', 'Content-Type', 'Content-Length']
+              AllowedHeaders: ['*'],
               AllowedMethods: ['GET', 'PUT', 'POST', 'DELETE'],
-              AllowedOrigins: ['*'], //,|| allowedOrigins, // Используйте env
-              // ExposeHeaders: ['ETag'], // Опционально, для presigned uploads
-              MaxAgeSeconds: 3000, // Опционально, для preflight кэша
+              AllowedOrigins: ['*'],
+              MaxAgeSeconds: 3000,
             },
           ],
         },
