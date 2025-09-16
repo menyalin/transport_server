@@ -24,9 +24,11 @@ class FileService {
   constructor() {
     this.bucketName = process.env.S3_BUCKET_NAME as string
     const s3KeyId = process.env.S3_ACCESS_KEY_ID as string
-    const s3Endpoint = (process.env.S3_ENDPOINT as string) ?? 's3.cloud.ru'
+    // const s3Endpoint =
+    //   (process.env.S3_ENDPOINT as string) ?? 'https://s3.cloud.ru'
+    const s3Endpoint = 'https://s3.cloud.ru'
     const s3SecretAccessKey = process.env.S3_SECRET_ACCESS_KEY as string
-    const s3Region = process.env.S3_REGION as string
+    const s3Region = (process.env.S3_REGION as string) || 'ru-central-1'
 
     if (!this.bucketName) throw new Error('S3_BUCKET_NAME is not defined')
     if (!s3KeyId) throw new Error('S3_ACCESS_KEY_ID is not defined')
@@ -36,6 +38,7 @@ class FileService {
 
     this.s3client = new S3Client({
       endpoint: s3Endpoint,
+      forcePathStyle: true,
       region: s3Region,
       credentials: {
         accessKeyId: s3KeyId,
@@ -72,9 +75,11 @@ class FileService {
         CORSConfiguration: {
           CORSRules: [
             {
-              AllowedHeaders: allowedOrigins,
+              AllowedHeaders: ['*'], // Или конкретные: ['Authorization', 'Content-Type', 'Content-Length']
               AllowedMethods: ['GET', 'PUT', 'POST', 'DELETE'],
-              AllowedOrigins: ['*'],
+              AllowedOrigins: ['*'], //,|| allowedOrigins, // Используйте env
+              // ExposeHeaders: ['ETag'], // Опционально, для presigned uploads
+              MaxAgeSeconds: 3000, // Опционально, для preflight кэша
             },
           ],
         },
@@ -188,4 +193,4 @@ fileService
   .then(() => console.log('FileService is ready'))
   .catch((e) => console.log('FileService init error: ', e))
 
-export default new FileService()
+export default fileService
