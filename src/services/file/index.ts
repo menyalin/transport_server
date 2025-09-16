@@ -27,7 +27,7 @@ class FileService {
     const s3KeyId = process.env.S3_ACCESS_KEY_ID as string
     // const s3Endpoint =
     //   (process.env.S3_ENDPOINT as string) ?? 'https://s3.cloud.ru'
-    const s3Endpoint = 'https://s3.cloud.ru'
+    const s3Endpoint = 's3.cloud.ru'
     const s3SecretAccessKey = process.env.S3_SECRET_ACCESS_KEY as string
     const s3Region = (process.env.S3_REGION as string) || 'ru-central-1'
 
@@ -38,7 +38,7 @@ class FileService {
     if (!s3Region) throw new Error('S3_REGION is not difined')
 
     this.s3client = new S3Client({
-      endpoint: s3Endpoint,
+      endpoint: 'https://' + s3Endpoint,
       forcePathStyle: true,
       region: s3Region,
       credentials: {

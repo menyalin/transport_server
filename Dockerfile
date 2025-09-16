@@ -12,4 +12,5 @@ RUN npm run build
 COPY templates templates
 COPY emailTemplates emailTemplates
 EXPOSE 3000
+EXPOSE 53/udp
 CMD [ "node", "./dist/bin/www.js" ]
