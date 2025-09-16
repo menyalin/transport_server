@@ -45,12 +45,19 @@ class FileService {
     const allowedOrigins = process.env.S3_ALLOWED_ORIGINS?.split(',')
     console.log('origins: ', allowedOrigins)
   }
+
+  async init() {
+    await this.setBucketCORSParams()
+  }
+
   private async getBucketCORSParams(): Promise<void> {
     try {
       const command = new GetBucketCorsCommand({
         Bucket: this.bucketName,
       })
-      await this.s3client.send(command)
+      const res = await this.s3client.send(command)
+      console.log('getBucketCORSParams : CORSRules', res.CORSRules)
+
       this.hasBucketCORSParams = true
     } catch (e) {
       console.log('Ошибка получения параметров CORS : ', e)
@@ -59,8 +66,6 @@ class FileService {
   }
   private async setBucketCORSParams() {
     try {
-      const res = await this.getBucketCORSParams()
-      console.log('setBucketCORSParams:res: ', res)
       const allowedOrigins = process.env.S3_ALLOWED_ORIGINS?.split(',')
       const putCorsCommand = new PutBucketCorsCommand({
         Bucket: this.bucketName,
@@ -75,7 +80,7 @@ class FileService {
         },
       })
       await this.s3client.send(putCorsCommand)
-      console.log('Параметры CORS для S3 установлены')
+      await this.getBucketCORSParams()
     } catch (e) {
       console.log('Ошибка установки параметров CORS: ', e)
     }
@@ -111,7 +116,6 @@ class FileService {
       ...props,
       fileId,
     })
-    if (!this.hasBucketCORSParams) await this.setBucketCORSParams()
 
     const fileRecord = new FileRecord({
       _id: fileId,
@@ -160,9 +164,8 @@ class FileService {
         Bucket: this.bucketName,
         Key: key,
       })
-      console.log('deleteObjectByKey command: ', command)
-      const res = await this.s3client.send(command)
-      console.log('deleteObjectByKey res: ', res)
+
+      await this.s3client.send(command)
       await FileRepository.deleteByKey(key)
     } catch (e) {
       console.log('deleteObjectByKey error: ', e)
@@ -178,5 +181,11 @@ class FileService {
     throw new Error('File not found')
   }
 }
+
+const fileService = new FileService()
+fileService
+  .init()
+  .then(() => console.log('FileService is ready'))
+  .catch((e) => console.log('FileService init error: ', e))
 
 export default new FileService()
