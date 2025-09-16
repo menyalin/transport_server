@@ -14,6 +14,7 @@ import { CompanyRepository, FileRepository } from '@/repositories'
 import { isValidObjectId, Types } from 'mongoose'
 import { FileRecord, FileRecordStatus } from '@/domain/fileRecord'
 import { BadRequestError } from '@/helpers/errors'
+import dns from 'dns'
 
 class FileService {
   private bucketName: string
@@ -45,11 +46,13 @@ class FileService {
         secretAccessKey: s3SecretAccessKey,
       },
     })
-    const allowedOrigins = process.env.S3_ALLOWED_ORIGINS?.split(',')
-    console.log('origins: ', allowedOrigins)
   }
 
   async init() {
+    dns.lookup('s4logprod.s3.cloud.ru', { family: 4 }, (err, address) => {
+      if (err) console.log('ошибка DNS: ', err)
+      else console.log('DNS адрес s4logprod.s3.cloud.ru: ', address)
+    })
     await this.setBucketCORSParams()
   }
 
@@ -69,7 +72,7 @@ class FileService {
   }
   private async setBucketCORSParams() {
     try {
-      const allowedOrigins = process.env.S3_ALLOWED_ORIGINS?.split(',')
+      // const allowedOrigins = process.env.S3_ALLOWED_ORIGINS?.split(',')
       const putCorsCommand = new PutBucketCorsCommand({
         Bucket: this.bucketName,
         CORSConfiguration: {
@@ -169,7 +172,6 @@ class FileService {
         Bucket: this.bucketName,
         Key: key,
       })
-
       await this.s3client.send(command)
       await FileRepository.deleteByKey(key)
     } catch (e) {
