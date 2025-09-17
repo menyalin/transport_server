@@ -21,13 +21,14 @@ class FileService {
   private s3client: S3Client
   private readonly URL_EXPIRATION_SECONDS = 600 //  10 минут
   private hasBucketCORSParams: boolean = false
+  private currentCORSRules?: any[]
 
   constructor() {
     this.bucketName = process.env.S3_BUCKET_NAME as string
     const s3KeyId = process.env.S3_ACCESS_KEY_ID as string
-    // const s3Endpoint =
-    //   (process.env.S3_ENDPOINT as string) ?? 'https://s3.cloud.ru'
-    const s3Endpoint = 's3.cloud.ru'
+    const s3Endpoint =
+      (process.env.S3_ENDPOINT as string) ?? 'https://s3.cloud.ru'
+
     const s3SecretAccessKey = process.env.S3_SECRET_ACCESS_KEY as string
     const s3Region = (process.env.S3_REGION as string) || 'ru-central-1'
 
@@ -38,7 +39,7 @@ class FileService {
     if (!s3Region) throw new Error('S3_REGION is not difined')
 
     this.s3client = new S3Client({
-      endpoint: 'https://' + s3Endpoint,
+      endpoint: s3Endpoint,
       forcePathStyle: true,
       region: s3Region,
       credentials: {
@@ -54,7 +55,25 @@ class FileService {
       else console.log('DNS адрес s4logprod.s3.cloud.ru: ', address)
     })
     await this.getBucketCORSParams()
-    // await this.setBucketCORSParams()
+
+    const allowedOrigins = process.env.S3_ALLOWED_ORIGINS?.split(',') || ['*']
+    const desiredCORSRules = [
+      {
+        AllowedHeaders: ['*'],
+        AllowedMethods: ['GET', 'PUT', 'POST', 'DELETE'],
+        AllowedOrigins: allowedOrigins,
+        MaxAgeSeconds: 3000,
+      },
+    ]
+
+    const currentRulesStr = this.currentCORSRules
+      ? JSON.stringify(this.currentCORSRules)
+      : ''
+    const desiredRulesStr = JSON.stringify(desiredCORSRules)
+
+    if (!this.hasBucketCORSParams || currentRulesStr !== desiredRulesStr) {
+      await this.setBucketCORSParams(desiredCORSRules)
+    }
   }
 
   private async getBucketCORSParams(): Promise<void> {
@@ -63,32 +82,25 @@ class FileService {
         Bucket: this.bucketName,
       })
       const res = await this.s3client.send(command)
-      console.log('getBucketCORSParams : CORSRules', res.CORSRules)
 
+      this.currentCORSRules = res.CORSRules
       this.hasBucketCORSParams = true
     } catch (e) {
       console.log('Ошибка получения параметров CORS : ', e)
+      this.currentCORSRules = undefined
       this.hasBucketCORSParams = false
     }
   }
-  private async setBucketCORSParams() {
+  private async setBucketCORSParams(desiredCORSRules: any[]) {
     try {
-      // const allowedOrigins = process.env.S3_ALLOWED_ORIGINS?.split(',')
       const putCorsCommand = new PutBucketCorsCommand({
         Bucket: this.bucketName,
         CORSConfiguration: {
-          CORSRules: [
-            {
-              AllowedHeaders: ['*'],
-              AllowedMethods: ['GET', 'PUT', 'POST', 'DELETE'],
-              AllowedOrigins: ['*'],
-              MaxAgeSeconds: 3000,
-            },
-          ],
+          CORSRules: desiredCORSRules,
         },
       })
       await this.s3client.send(putCorsCommand)
-      await this.getBucketCORSParams()
+      console.log('setBucketCORSParams : CORSRules', desiredCORSRules)
     } catch (e) {
       console.log('Ошибка установки параметров CORS: ', e)
     }
