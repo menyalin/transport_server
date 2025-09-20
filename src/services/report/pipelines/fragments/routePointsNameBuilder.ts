@@ -1,7 +1,6 @@
-// @ts-nocheck
-import { POINT_TYPE_VALUES } from '../../../../constants/enums'
+import { POINT_TYPE_VALUES, POINT_TYPES_ENUM } from '@/constants/enums'
 
-export default (pointType) => {
+export default (pointType: POINT_TYPES_ENUM) => {
   if (!POINT_TYPE_VALUES.includes(pointType))
     throw new Error(`RoutePointsNameBuilder: bad params: ${pointType}`)
 

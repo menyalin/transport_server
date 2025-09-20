@@ -8,6 +8,7 @@ import { orderDocsStatusBuilder } from '@/shared/pipelineFragments/orderDocsStat
 import { ORDER_DOC_STATUSES_ENUM } from '@/constants/orderDocsStatus'
 import { INCOMING_INVOICE_STATUSES_ENUM } from '../../../constants/incomingInvoice'
 import { PAIMENT_INVOICE_STATUSES_ENUM } from '@/constants/paymentInvoice'
+import { POINT_TYPES_ENUM } from '@/constants/enums'
 
 export default ({
   dateRange,
@@ -52,6 +53,36 @@ export default ({
       $addFields: {
         'route.address': {
           $first: '$route.address',
+        },
+      },
+    },
+    {
+      $lookup: {
+        from: 'partners',
+        localField: 'route.address.partner',
+        foreignField: '_id',
+        as: 'route.address.partner',
+      },
+    },
+    {
+      $addFields: {
+        'route.address.partner': {
+          $first: '$route.address.partner',
+        },
+      },
+    },
+    {
+      $lookup: {
+        from: 'regions',
+        localField: 'route.address.region',
+        foreignField: '_id',
+        as: 'route.address.region',
+      },
+    },
+    {
+      $addFields: {
+        'route.address.region': {
+          $first: '$route.address.region',
         },
       },
     },
@@ -278,6 +309,31 @@ export default ({
           input: { $last: '$route' },
         },
       },
+      _firstLoadingPoint: {
+        $first: '$route',
+      },
+      _unloadingPoints: {
+        $filter: {
+          input: '$route',
+          cond: {
+            $and: [
+              { $eq: ['$$this.type', 'unloading'] },
+              { $ne: ['$$this.isReturn', true] },
+            ],
+          },
+        },
+      },
+      _returnPoints: {
+        $filter: {
+          input: '$route',
+          cond: {
+            $and: [
+              { $eq: ['$$this.type', 'unloading'] },
+              { $eq: ['$$this.isReturn', true] },
+            ],
+          },
+        },
+      },
     },
   }
   const addPriceTypeFieldsBuilder = (priceTypes: string[]) => {
@@ -316,11 +372,62 @@ export default ({
     }
   }
 
+  const trimmedAddressHandler = (fieldName: string, exprIn: Object) => ({
+    $trim: {
+      input: {
+        $reduce: {
+          input: fieldName,
+          initialValue: '',
+          in: exprIn,
+        },
+      },
+      chars: '; ',
+    },
+  })
+
   const finalProject = {
     $project: {
       'Плановая дата погрузки': formattedDate('$firstPlannedDate'),
-      Погрузка: routePointsNameBuilder('loading'),
-      Выгрузка: routePointsNameBuilder('unloading'),
+      Погрузка: routePointsNameBuilder(POINT_TYPES_ENUM.loading),
+      'Погрузка: Партнер - Адрес': {
+        $concat: [
+          '$_firstLoadingPoint.address.partner.name',
+          ' - ',
+          '$_firstLoadingPoint.address.name',
+        ],
+      },
+      'Погрузка: Регион': {
+        $ifNull: ['$_firstLoadingPoint.address.region.name', ''],
+      },
+
+      Выгрузка: routePointsNameBuilder(POINT_TYPES_ENUM.unloading),
+      'Выгрузка: Партнер - Адрес': trimmedAddressHandler('$_unloadingPoints', {
+        $concat: [
+          '$$value',
+          '$$this.address.partner.name',
+          ' - ',
+          '$$this.address.name',
+          '; ',
+        ],
+      }),
+      'Выгрузка: регионы': trimmedAddressHandler('$_unloadingPoints', {
+        $concat: ['$$value', '$$this.address.region.name', '; '],
+      }),
+
+      'Возврат: Партнер - Адрес': trimmedAddressHandler('$_returnPoints', {
+        $concat: [
+          '$$value',
+          '$$this.address.partner.name',
+          ' - ',
+          '$$this.address.name',
+          '; ',
+        ],
+      }),
+      'Возврат: регионы': trimmedAddressHandler('$_returnPoints', {
+        $concat: ['$$value', '$$this.address.region.name', '; '],
+      }),
+      'Расстояние по дорогам между дальними точками, км':
+        '$analytics.distanceRoad',
       ТК: {
         $getField: { field: 'name', input: { $first: '$tkName' } },
       },
@@ -563,6 +670,18 @@ export default ({
       'Факт дата оплаты исх акта': formattedDate('$paymentInvoice.payDate'),
       'Стоимость исх акт без НДС': '$paymentInvoicePrices.priceWOVat',
       'Стоимость исх акт с НДС': '$paymentInvoicePrices.price',
+      'Маржа, без НДС, руб': {
+        $subtract: [
+          { $ifNull: ['$paymentInvoicePrices.priceWOVat', 0] },
+          { $ifNull: ['$incomingInvoicePrices.priceWOVat', 0] },
+        ],
+      },
+      'Маржа, c НДС, руб': {
+        $subtract: [
+          { $ifNull: ['$paymentInvoicePrices.price', 0] },
+          { $ifNull: ['$incomingInvoicePrices.price', 0] },
+        ],
+      },
     },
   }
 
