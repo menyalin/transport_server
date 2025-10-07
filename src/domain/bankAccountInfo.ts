@@ -15,7 +15,7 @@ export class BankAccountInfo {
       this.correspondentAccount = p.correspondentAccount
     } catch (e) {
       if (e instanceof ZodError) {
-        console.error('BankAccountInfo Validation Error: ', e.errors)
+        console.error('BankAccountInfo Validation Error: ', e)
       } else {
         console.error('BankAccountInfo Unknown Error: ', e)
       }

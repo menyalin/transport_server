@@ -40,7 +40,7 @@ export class IncomingInvoiceOrder {
       incomingInvoice: z.string(),
       company: z.string(),
       total: TotalPriceSchema,
-      totalByTypes: z.record(PriceByTypeSchema),
+      totalByTypes: z.record(z.string(), PriceByTypeSchema),
     })
   }
   static get dbSchema() {

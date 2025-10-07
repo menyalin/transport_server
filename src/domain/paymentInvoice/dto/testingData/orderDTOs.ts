@@ -18,6 +18,10 @@ const emptyOrderData: OrderPickedForInvoiceDTOProps = {
   itemType: 'order',
   plannedDate: new Date('2024-01-01'),
   route: [],
+  client: '1',
+  state: { status: 'inProgress' },
+  reqTransport: {},
+  paymentToDriver: 0,
 }
 
 export const orderWithotPrices: OrderPickedForInvoiceDTOProps = {

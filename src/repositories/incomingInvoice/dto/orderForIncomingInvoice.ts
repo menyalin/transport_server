@@ -60,7 +60,7 @@ export class OrderForIncomingInvoice {
       unloadingAddress: z.string(),
       docsGetted: z.boolean(),
       total: TotalPriceSchema,
-      totalByTypes: z.record(PriceByTypeSchema),
+      totalByTypes: z.record(z.string(), PriceByTypeSchema),
     })
   }
 }
