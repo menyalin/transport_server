@@ -3,9 +3,8 @@ import cron from 'node-cron'
 
 class SchedulerService {
   constructor() {
-    const croneParams = process.env.CRONE_PARAMS || '*/1 * * * *'
+    const croneParams = process.env.CRONE_PARAMS || '*/10 * * * *'
     cron.schedule(croneParams, async () => {
-      console.log('sendIdleTruckNotificationMessages')
       await tasks.sendIdleTruckNotificationMessages(new Date())
     })
   }
