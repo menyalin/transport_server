@@ -347,7 +347,7 @@ export const seniorAccountant = {
 
 export const mechanic = {
   'modules:accounting': true,
-  'order:daysForRead': 30,
+  'order:daysForRead': 65,
   'address:readList': true,
   'address:readItem': true,
   'fine:readList': true,
@@ -371,7 +371,7 @@ export const mechanic = {
   'downtime:readList': true,
   'downtime:readItem': true,
   'downtime:write': true,
-  'downtime:daysForWrite': 30,
+  'downtime:daysForWrite': 65,
 
   'scheduleNote:readList': true,
   'scheduleNote:readItem': true,
