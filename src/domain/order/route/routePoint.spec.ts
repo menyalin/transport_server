@@ -81,7 +81,7 @@ describe('RoutePoint value-object', () => {
         minDate: null,
         unloadingDurationInMinutes,
       })
-    }).toThrowError()
+    }).toThrow()
   })
 
   it('autofillDates: should throw error: unloadingDurationInMinutes is string', () => {
@@ -90,7 +90,7 @@ describe('RoutePoint value-object', () => {
         minDate: fixedMinDate,
         unloadingDurationInMinutes: 'some string',
       })
-    }).toThrowError()
+    }).toThrow()
   })
 
   it('getDurationInMinutes: should return 0, if dates is missing', () => {

@@ -100,63 +100,60 @@ export class Vehicle {
   }
 
   static get validationSchema() {
-    return z.object(
-      {
-        additionalNotifications: z
-          .array(AdditionalNotification.validationSchema)
-          .optional()
-          .nullable(),
-        additionalDetails: AdditionalVehicleInfo.validationSchema.optional(),
-        insurance: InsuranceInfo.validationSchema.optional(),
-        permits: PermitsInfo.validationSchema.optional(),
-        brand: z.string().optional().nullable(),
-        model: z.string().optional().nullable(),
-        brigadier: objectIdSchema.optional().nullable(),
-        mechanic: z.unknown().optional().nullable(),
-        sanitaryPassportExpDate: z.date().optional().nullable(),
-        sanitaryPassportNote: z.string().optional().nullable(),
-        issueYear: z.number().optional().nullable(),
-        startServiceDate: z.date().optional().nullable(),
-        endServiceDate: z.date().optional().nullable(),
-        type: z.nativeEnum(TRUCK_TYPES_ENUM),
-        kind: z.nativeEnum(TRUCK_KINDS_ENUM).nullable().optional(),
-        liftCapacityType: z.number(),
-        tkName: objectIdSchema,
-        regNum: z.string(),
-        win: z.string().optional().nullable(),
-        sts: z.string().optional().nullable(),
-        stsDate: z.date().optional().nullable(),
-        pts: z.string().optional().nullable(),
-        owner: z.string().optional().nullable(),
-        order: z.number().optional().nullable(),
-        alwaysInSchedule: z.boolean().optional().nullable(),
-        volumeFuel: z.number().optional().nullable(),
-        volumeRef: z.number().optional().nullable(),
-        liftCapacity: z.number().optional().nullable(),
-        pltCount: z.number().optional().nullable(),
-        company: objectIdSchema,
-        hideInFines: z.boolean().optional().nullable(),
-        hasScans: z
-          .boolean()
-          .optional()
-          .nullable()
-          .transform((v) => Boolean(v)),
-        isActive: z
-          .boolean()
-          .optional()
-          .transform((v) => Boolean(v)),
-        note: z.string().optional().nullable(),
-        allowUseTrailer: z
-          .boolean()
-          .optional()
-          .transform((v) => Boolean(v)),
-        allowedDrivers: z
-          .array(AllowedDriver.validationSchema)
-          .optional()
-          .nullable(),
-      },
-      { description: 'Vehicle validaton schema' }
-    )
+    return z.object({
+      additionalNotifications: z
+        .array(AdditionalNotification.validationSchema)
+        .optional()
+        .nullable(),
+      additionalDetails: AdditionalVehicleInfo.validationSchema.optional(),
+      insurance: InsuranceInfo.validationSchema.optional(),
+      permits: PermitsInfo.validationSchema.optional(),
+      brand: z.string().optional().nullable(),
+      model: z.string().optional().nullable(),
+      brigadier: objectIdSchema.optional().nullable(),
+      mechanic: z.unknown().optional().nullable(),
+      sanitaryPassportExpDate: z.date().optional().nullable(),
+      sanitaryPassportNote: z.string().optional().nullable(),
+      issueYear: z.number().optional().nullable(),
+      startServiceDate: z.date().optional().nullable(),
+      endServiceDate: z.date().optional().nullable(),
+      type: z.nativeEnum(TRUCK_TYPES_ENUM),
+      kind: z.nativeEnum(TRUCK_KINDS_ENUM).nullable().optional(),
+      liftCapacityType: z.number(),
+      tkName: objectIdSchema,
+      regNum: z.string(),
+      win: z.string().optional().nullable(),
+      sts: z.string().optional().nullable(),
+      stsDate: z.date().optional().nullable(),
+      pts: z.string().optional().nullable(),
+      owner: z.string().optional().nullable(),
+      order: z.number().optional().nullable(),
+      alwaysInSchedule: z.boolean().optional().nullable(),
+      volumeFuel: z.number().optional().nullable(),
+      volumeRef: z.number().optional().nullable(),
+      liftCapacity: z.number().optional().nullable(),
+      pltCount: z.number().optional().nullable(),
+      company: objectIdSchema,
+      hideInFines: z.boolean().optional().nullable(),
+      hasScans: z
+        .boolean()
+        .optional()
+        .nullable()
+        .transform((v) => Boolean(v)),
+      isActive: z
+        .boolean()
+        .optional()
+        .transform((v) => Boolean(v)),
+      note: z.string().optional().nullable(),
+      allowUseTrailer: z
+        .boolean()
+        .optional()
+        .transform((v) => Boolean(v)),
+      allowedDrivers: z
+        .array(AllowedDriver.validationSchema)
+        .optional()
+        .nullable(),
+    })
   }
 
   static get dbSchema() {

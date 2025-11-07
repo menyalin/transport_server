@@ -15,7 +15,7 @@ export const PickOrdersForPaymentInvoicePropsSchema = z.object({
   agreements: z.string().array().optional(),
   tks: z.string().array().optional(),
   paymentInvoiceId: z.string().optional(),
-  docStatuses: z.array(z.nativeEnum(ORDER_DOC_STATUSES_ENUM)).optional(),
+  docStatuses: z.array(z.enum(ORDER_DOC_STATUSES_ENUM)).optional(),
   onlySelectable: z.boolean().optional(),
   truck: z.string().optional(),
   driver: z.string().optional(),
@@ -60,12 +60,11 @@ export type GetOrdersPickedForInvoiceProps = z.infer<
   typeof GetOrdersPickedForInvoicePropsSchema
 >
 
-export const LoaderDataSchema = z
-  .object({
-    _id: z.string(),
-    loaderName: z.string().optional(),
-  })
-  .and(z.record(z.unknown()))
+export const LoaderDataSchema = z.object({
+  _id: z.string(),
+  loaderName: z.string().optional(),
+})
+
 export type ILoaderData = z.infer<typeof LoaderDataSchema>
 
 export interface ICreateOrderInPaymentInvoiceProps {
@@ -130,7 +129,7 @@ export const orderPickedForInvoiceDTOSchema = z
     // total: TotalPriceSchema,
     // totalByTypes: z.record(PriceByTypeSchema).optional(),
     savedTotal: TotalPriceSchema.optional(),
-    savedTotalByTypes: z.record(PriceByTypeSchema).optional(),
+    savedTotalByTypes: z.record(z.string(), PriceByTypeSchema).optional(),
     driverName: z.string().optional(),
     // needUpdate: z.boolean().optional(),
     itemType: z.string(),

@@ -31,7 +31,13 @@ userSchema.methods.isCorrectPassword = async function (pass: any) {
 userSchema.pre('save', function (next) {
   const tmpUser = this
   if (this.isModified('password')) {
-    bcrypt.hash(tmpUser.password, 10, (_: any, hash: string) => {
+    bcrypt.hash(tmpUser.password, 10, (err, hash) => {
+      if (err) {
+        return next(err)
+      }
+      if (!hash) {
+        return next(new Error('Failed to generate hash'))
+      }
       tmpUser.password = hash
       next()
     })

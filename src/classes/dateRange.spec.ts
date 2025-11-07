@@ -15,10 +15,10 @@ describe('DateRange', () => {
   })
 
   test('should throw an error for invalid date formats', () => {
-    expect(() => new DateRange('invalid date', '2022-12-31')).toThrowError(
+    expect(() => new DateRange('invalid date', '2022-12-31')).toThrow(
       'Invalid date format'
     )
-    expect(() => new DateRange('2022-01-01', 'invalid date')).toThrowError(
+    expect(() => new DateRange('2022-01-01', 'invalid date')).toThrow(
       'Invalid date format'
     )
   })
