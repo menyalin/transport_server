@@ -36,7 +36,6 @@ export default (props: unknown): PipelineStage[] => {
         { $gt: ['$endDate', p.date] },
       ],
     },
-    ,
   ].filter(Boolean)
 
   const firstMatcher: PipelineStage.Match = {

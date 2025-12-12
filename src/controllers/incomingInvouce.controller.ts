@@ -204,7 +204,7 @@ class IncomingInvoiceController {
       else res.status(500).json(e)
     }
   }
-  async updateOrderInInvoice(req: AuthorizedRequest, res: Response) {}
+  // async updateOrderInInvoice(req: AuthorizedRequest, res: Response) {}
 }
 
 export default new IncomingInvoiceController({

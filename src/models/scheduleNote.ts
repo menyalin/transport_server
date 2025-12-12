@@ -32,7 +32,7 @@ const schema = new Schema(
       default: true,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 )
 
 export default model('ScheduleNote', schema, 'scheduleNotes ')

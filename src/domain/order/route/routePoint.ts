@@ -70,8 +70,8 @@ export class RoutePoint {
     this.note = point.note
     this.isMainLoadingPoint = Boolean(
       this.isLoadingPointType &&
-        point.isMainLoadingPoint &&
-        (point.plannedDate || point.plannedDateDoc)
+      point.isMainLoadingPoint &&
+      (point.plannedDate || point.plannedDateDoc)
     )
   }
 

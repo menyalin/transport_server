@@ -466,7 +466,7 @@ class OrderService {
         durationInSec: res.routes[0].summary.duration,
         durationStr: 'TODO',
       }
-    } catch (e) {
+    } catch {
       return { distanceRoad: 0, durationInSec: 0, durationStr: 'TODO' }
     }
   }
@@ -521,7 +521,7 @@ class OrderService {
       if (events.length) {
         emitTo(company.toString(), 'order:autoFillDatesError', {
           token: inputData.operationToken,
-          message: `overlapping orders`,
+          message: 'overlapping orders',
           truck,
         })
       } else if (updatedOrders.length > 0) needSaveOrdes.push(...updatedOrders)
@@ -541,7 +541,7 @@ class OrderService {
     }
     emitTo(company.toString(), 'order:autoFillDatesCompleted', {
       token: inputData.operationToken,
-      message: `operation completed`,
+      message: 'operation completed',
     })
     return
   }

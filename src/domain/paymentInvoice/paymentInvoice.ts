@@ -44,7 +44,7 @@ export class PaymentInvoiceDomain {
       ? new Date(invoice.plannedPayDate)
       : null
 
-    this.clientId = !!invoice.client?._id
+    this.clientId = invoice.client?._id
       ? invoice.client?._id.toString()
       : invoice.client
 

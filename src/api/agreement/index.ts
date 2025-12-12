@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import express, { Request, Response } from 'express'
 
 import { jwtAuth } from '@/utils/auth.middleware'

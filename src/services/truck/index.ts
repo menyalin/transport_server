@@ -1,5 +1,5 @@
 // @ts-nocheck
-/* eslint-disable no-unused-vars */
+
 import { Truck } from '../../models'
 import { emitTo } from '../../socket'
 import logService from '../changeLog'

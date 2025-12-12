@@ -4,7 +4,6 @@ import { Order } from './order.domain'
 import { Client } from './client'
 import { OrderPrice } from './orderPrice'
 import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
-import { OrderAnalytics } from './analytics'
 
 describe('Order.Domain static functions', () => {
   const orderPlannedDate1 = dayjs('2023-05-27T06:00:00.000Z')
@@ -15,7 +14,6 @@ describe('Order.Domain static functions', () => {
 
   let orderCompleted1: Order
   let orderInProgress1: Order
-  let orderInProgress2: Order
   let orderInProgress3: Order
   const mockAnalytics = { type: 'region', distanceDirect: 0, distanceRoad: 0 }
   beforeEach(() => {
@@ -112,34 +110,34 @@ describe('Order.Domain static functions', () => {
       ],
     })
 
-    orderInProgress2 = new Order({
-      _id: 'id4',
-      state: { status: 'inProgress' },
-      orderDate: orderPlannedDate1.toISOString(),
-      confirmedCrew: { truck: 'truck_id' },
-      client: new Client({ client: '1' }),
-      analytics: mockAnalytics,
-      company: '1',
-      prices: [
-        new OrderPrice({
-          type: ORDER_PRICE_TYPES_ENUM.base,
-          price: 12,
-          sumVat: 2,
-          priceWOVat: 10,
-        }),
-      ],
-      route: [
-        {
-          type: 'loading',
-          plannedDate: new Date('2023-01-01'),
-          address: 'address',
-        },
-        {
-          type: 'unloading',
-          address: 'address',
-        },
-      ],
-    })
+    // let orderInProgress2 = new Order({
+    //   _id: 'id4',
+    //   state: { status: 'inProgress' },
+    //   orderDate: orderPlannedDate1.toISOString(),
+    //   confirmedCrew: { truck: 'truck_id' },
+    //   client: new Client({ client: '1' }),
+    //   analytics: mockAnalytics,
+    //   company: '1',
+    //   prices: [
+    //     new OrderPrice({
+    //       type: ORDER_PRICE_TYPES_ENUM.base,
+    //       price: 12,
+    //       sumVat: 2,
+    //       priceWOVat: 10,
+    //     }),
+    //   ],
+    //   route: [
+    //     {
+    //       type: 'loading',
+    //       plannedDate: new Date('2023-01-01'),
+    //       address: 'address',
+    //     },
+    //     {
+    //       type: 'unloading',
+    //       address: 'address',
+    //     },
+    //   ],
+    // })
   })
 
   describe('autoCompleteOrders', () => {

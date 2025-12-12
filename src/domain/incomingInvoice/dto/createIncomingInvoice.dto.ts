@@ -18,21 +18,17 @@ export class CreateIncomingInvoiceDTO {
   orders?: IncomingInvoiceOrder[]
 
   constructor(p: CreateIncomingInvoiceDTO) {
-    try {
-      this._id = p._id.toString()
-      this.company = p.company
-      this.number = p.number
-      this.date = p.date
-      this.plannedPayDate = p.plannedPayDate
-      this.agreement = p.agreement
-      this.carrier = p.carrier
-      this.status = p.status
-      this.isActive = p.isActive
-      this.note = p.note
-      this.orders = p.orders?.map((i) => new IncomingInvoiceOrder(i)) || []
-    } catch (error) {
-      throw error
-    }
+    this._id = p._id.toString()
+    this.company = p.company
+    this.number = p.number
+    this.date = p.date
+    this.plannedPayDate = p.plannedPayDate
+    this.agreement = p.agreement
+    this.carrier = p.carrier
+    this.status = p.status
+    this.isActive = p.isActive
+    this.note = p.note
+    this.orders = p.orders?.map((i) => new IncomingInvoiceOrder(i)) || []
   }
 
   static get validationSchema() {

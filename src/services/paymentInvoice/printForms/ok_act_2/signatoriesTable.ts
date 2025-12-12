@@ -1,8 +1,5 @@
 import {
   AlignmentType,
-  BorderStyle,
-  HeadingLevel,
-  HeightRule,
   Paragraph,
   Table,
   TableBorders,

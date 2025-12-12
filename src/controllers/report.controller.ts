@@ -10,10 +10,10 @@ interface IServiceProps {
   paymentInvoiceService: typeof PaymentInvoiceService
 }
 
-interface IDaysControlProps {
-  days: string
-  profile: string
-}
+// interface IDaysControlProps {
+//   days: string
+//   profile: string
+// }
 
 export interface ITruckStateOnDateProps {
   date: string

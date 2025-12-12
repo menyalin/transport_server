@@ -29,7 +29,7 @@ class NotificationRepository {
 
   async getByKey(key: string): Promise<IdleTruckNotificationMessage | null> {
     const message = await IdleTruckNotificationModel.findOne({ key }).lean()
-    return !!message ? new IdleTruckNotificationMessage(message) : null
+    return message ? new IdleTruckNotificationMessage(message) : null
   }
 
   async getByOrderId(orderId: string): Promise<IdleTruckNotificationMessage[]> {

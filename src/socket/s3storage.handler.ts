@@ -3,7 +3,7 @@ import { FileRepository } from '@/repositories'
 import { Server, Socket } from 'socket.io'
 
 export const s3StorageHandler = (io: Server, socket: Socket) => {
-  const userId = socket.handshake.auth.userId
+  const _userId = socket.handshake.auth.userId
 
   socket.on('s3storage:uploadStarted', async (fileKey: string) =>
     FileRepository.updateStatusByKey(fileKey, FileRecordStatus.pending)

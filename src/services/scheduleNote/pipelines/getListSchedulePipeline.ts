@@ -11,10 +11,10 @@ export const getListSchedulePipeline = ({ company, startDate, endDate }) => {
       $expr: {
         $and: [
           { $gte: ['$startPositionDate', sP] },
-          { $lt: ['$startPositionDate', eP] }
-        ]
-      }
-    }
+          { $lt: ['$startPositionDate', eP] },
+        ],
+      },
+    },
   }
   return [firstMatcher]
 }

@@ -10,7 +10,6 @@ import {
 import { mainTableRowBuilder } from './mainTableRowsBuilder'
 import { ICommonDocMainTableRowProps } from '@/shared/printForms/interfaces'
 import { ICommonActData } from '@/shared/printForms'
-import { Order } from '@/models'
 
 export const paymentInvoiceDataBuilder = async (
   invoiceId: string

@@ -255,15 +255,11 @@ class PaymentInvoiceService {
   }
 
   async pickOrders(props: IPickOrdersForPaymentInvoiceProps) {
-    try {
-      PickOrdersForPaymentInvoicePropsSchema.parse(props)
-      const result =
-        await PaymentInvoiceRepository.pickOrdersForPaymentInvoice(props)
+    PickOrdersForPaymentInvoicePropsSchema.parse(props)
+    const result =
+      await PaymentInvoiceRepository.pickOrdersForPaymentInvoice(props)
 
-      return result || [[]]
-    } catch (e) {
-      throw e
-    }
+    return result || [[]]
   }
 
   async setStatus(
@@ -307,7 +303,7 @@ class PaymentInvoiceService {
       await PaymentInvoiceRepository.updateOrdersInPaymentInvoce([item])
 
       return order
-    } catch (e) {
+    } catch {
       return null
     }
   }

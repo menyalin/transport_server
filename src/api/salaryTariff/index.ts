@@ -4,11 +4,7 @@ import express from 'express'
 import { jwtAuth } from '@/utils/auth.middleware'
 import { bodyValidator, queryValidator } from '@/utils/validator'
 
-import {
-  getListSchema,
-  getDriverSalarySchema,
-  driversSalaryReportSchema,
-} from './schemes'
+import { getListSchema, getDriverSalarySchema } from './schemes'
 import ctrl from '../../controllers/salaryTariff.controller'
 
 const router = express.Router()

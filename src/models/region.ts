@@ -8,7 +8,7 @@ const schema = new Schema(
     company: { type: Types.ObjectId, ref: 'Company' },
     isActive: { type: Boolean, default: true },
   },
-  { timestamps: true },
+  { timestamps: true }
 )
 
 export default model('Region', schema, 'regions')

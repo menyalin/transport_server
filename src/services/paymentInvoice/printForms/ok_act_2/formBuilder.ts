@@ -1,11 +1,4 @@
-import {
-  AlignmentType,
-  Document,
-  HeadingLevel,
-  LevelFormat,
-  Paragraph,
-  TextRun,
-} from 'docx'
+import { AlignmentType, Document, HeadingLevel, Paragraph, TextRun } from 'docx'
 import { IOkAktBuilderProps } from '../shared/interfaces'
 import { okActMainTableBuilder } from './mainTable'
 import { okActSignatoriesTableBuilder } from './signatoriesTable'

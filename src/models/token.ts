@@ -10,7 +10,7 @@ const schema = new Schema(
     ip: String,
     expireAt: { type: Date, required: true },
   },
-  { timestamps: true },
+  { timestamps: true }
 )
 
 schema.index({ expireAt: 1 }, { expireAfterSeconds: 15 })

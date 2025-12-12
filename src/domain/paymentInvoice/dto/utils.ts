@@ -6,10 +6,6 @@ import {
   orderPickedForInvoiceDTOSchema,
 } from '../interfaces'
 
-function isNumber(value: any): value is number {
-  return typeof value === 'number'
-}
-
 const isNeedUpdatePrices = (
   orderTotal: TotalPrice,
   savedTotal?: TotalPrice

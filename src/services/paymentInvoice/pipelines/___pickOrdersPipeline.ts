@@ -20,8 +20,8 @@ export const getPickOrdersPipeline = ({
   loadingZone,
   period,
   search,
-  limit,
-  skip,
+  _limit,
+  _skip,
 }) => {
   if (!company || !client)
     throw new BadRequestError('getPickOrdersPipeline: bad request params')

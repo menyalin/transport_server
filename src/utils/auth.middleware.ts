@@ -34,7 +34,7 @@ export const jwtAuth = async (
       authReq.companyId = user.directoriesProfile?.toString()
 
       next()
-    } catch (e) {
+    } catch {
       next(new UnauthorizedError('Invalid token'))
     }
   } else {

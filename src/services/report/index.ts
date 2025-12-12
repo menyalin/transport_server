@@ -11,7 +11,6 @@ import getDriversGradesAppayPipeline from './pipelines/driversGradesArray'
 import getGrossProfitPivotPipeline from './pipelines/grossProfitPivotPipeline'
 import getGrossProfitDetailsPipeline from './pipelines/getGrossProfitDetailsPipeline'
 import getOrderDocsPipeline from './pipelines/getOrderDocs'
-import carrier from '@/services/carrier'
 
 export interface IDriversGradesXlsxReportProps {
   company: string

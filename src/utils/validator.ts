@@ -1,7 +1,6 @@
 // @ts-nocheck
 import Ajv from 'ajv'
-import addFormats from "ajv-formats"
-
+import addFormats from 'ajv-formats'
 
 export const bodyValidator = (schema) => (req, res, next) => {
   const ajv = new Ajv({ allErrors: true })

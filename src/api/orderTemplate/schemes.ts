@@ -3,9 +3,9 @@ export const getListSchema = {
   type: 'object',
   properties: {
     company: {
-      type: 'string'
-    }
+      type: 'string',
+    },
   },
   required: ['company'],
-  additionalProperties: true
+  additionalProperties: true,
 }
