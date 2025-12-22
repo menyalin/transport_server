@@ -5,6 +5,7 @@ export default (props: unknown) => {
   const schemaProps = z.object({
     company: z.string(),
     executor: z.string().optional(),
+    state: z.string().optional(),
     clients: z.array(z.string()).optional(),
     limit: z.string(),
     skip: z.string(),
@@ -15,7 +16,8 @@ export default (props: unknown) => {
     search: z.string().optional(),
   })
   const p = schemaProps.parse(props)
-  const { company, clients, limit, skip, executor, vatRate } = p
+  const { company, clients, limit, skip, executor, vatRate, state } = p
+
   const firstMatcher: PipelineStage.Match = {
     $match: {
       isActive: true,
@@ -29,6 +31,12 @@ export default (props: unknown) => {
     firstMatcher.$match.$expr?.$and.push({
       $eq: [vatRate, '$vatRate'],
     })
+
+  if (state && state !== 'all') {
+    firstMatcher.$match.$expr?.$and.push({
+      $eq: [state === 'closed', { $ifNull: ['$closed', false] }],
+    })
+  }
 
   if (clients && clients.length)
     firstMatcher.$match.$expr?.$and.push({
