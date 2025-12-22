@@ -8,10 +8,14 @@ export default (props: unknown) => {
     clients: z.array(z.string()).optional(),
     limit: z.string(),
     skip: z.string(),
+    vatRate: z
+      .string()
+      .optional()
+      .transform((i) => (i ? +i : undefined)),
     search: z.string().optional(),
   })
   const p = schemaProps.parse(props)
-  const { company, clients, limit, skip, executor } = p
+  const { company, clients, limit, skip, executor, vatRate } = p
   const firstMatcher: PipelineStage.Match = {
     $match: {
       isActive: true,
@@ -21,6 +25,10 @@ export default (props: unknown) => {
       },
     },
   }
+  if (vatRate !== undefined)
+    firstMatcher.$match.$expr?.$and.push({
+      $eq: [vatRate, '$vatRate'],
+    })
 
   if (clients && clients.length)
     firstMatcher.$match.$expr?.$and.push({
