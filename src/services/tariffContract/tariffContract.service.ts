@@ -1,7 +1,6 @@
 import { EventBus } from 'ts-bus'
-import { bus } from '../../eventBus'
-import { IEmitTo, NotifyClientsEvent } from '@/socket/notifyClientsEvent'
-import { emitTo } from '../../socket/index'
+import { bus } from '@/eventBus'
+import { emitTo } from '@/socket/index'
 import {
   TariffContract,
   TariffContractCreatedEvent,

@@ -1,7 +1,7 @@
 import z from 'zod'
 import { Types } from 'mongoose'
 import { ORDER_ANALYTIC_TYPES_ENUM } from '@/constants/order'
-import { OrderType, OrderTypeSchema } from './types'
+import { OrderType } from './types'
 import { objectIdSchema } from '@/shared/validationSchemes'
 import { Route } from './route/route'
 import { RouteStats } from './route/routeStats'

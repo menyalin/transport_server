@@ -10,7 +10,7 @@ export const orderAddressesLookupBuilder = (
       $addFields: {
         [tmp_ids_field_name]: {
           $map: {
-            input: `$route`,
+            input: '$route',
             as: 'point',
             in: {
               $cond: {

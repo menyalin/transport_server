@@ -20,7 +20,7 @@ const IPropsSchema = z.object({
     .optional()
     .nullable()
     .default('date')
-    .transform((v) => (!!v ? v : 'date')),
+    .transform((v) => (v ? v : 'date')),
   period: z.array(z.string().datetime()).length(2),
   company: z.string(),
   limit: z.string().optional(),

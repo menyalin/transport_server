@@ -1,6 +1,6 @@
 import pkg from 'mongoose'
 import { Driver } from '@/domain/driver/driver'
-const { Schema, model, Types } = pkg
+const { Schema, model } = pkg
 
 const driverSchema = new Schema(Driver.dbSchema, {
   timestamps: true,

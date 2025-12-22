@@ -50,10 +50,12 @@ class TariffContractRepository {
       return this.contractsByAgreementAndDateMap.get(key) || []
 
     const data = await TariffContractModel.find({
-      agreement: agreement._id,
       startDate: { $lte: date },
       isActive: true,
-      $or: [{ endDate: { $gt: date } }, { endDate: { $eq: null } }],
+      $and: [
+        { $or: [{ agreement: agreement._id }, { agreements: agreement._id }] },
+        { $or: [{ endDate: { $gt: date } }, { endDate: { $eq: null } }] },
+      ],
     }).lean()
 
     const contracts = data.map((i) => new TariffContract(i))

@@ -18,7 +18,7 @@ const schema = new Schema(
     accepted: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
   },
-  { timestamps: true },
+  { timestamps: true }
 )
 
 export default model('Worker', schema, 'workers')

@@ -1,5 +1,4 @@
 export * from './ZonesBaseTariff'
 export * from './DirectDistanceZonesBaseTariff'
 export * from './IdleTimeTariff'
-export * from './AdditionalPointsTariff'
 export * from './ReturnPercentTariff'

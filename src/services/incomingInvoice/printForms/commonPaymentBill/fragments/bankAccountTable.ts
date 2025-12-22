@@ -1,7 +1,6 @@
 import {
   BorderStyle,
   Paragraph,
-  Tab,
   Table,
   TableCell,
   TableRow,

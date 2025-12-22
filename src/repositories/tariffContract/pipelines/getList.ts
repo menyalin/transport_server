@@ -28,20 +28,29 @@ export const ListPipelineBuilder = (p: ListQueryPropsDto): PipelineStage[] => {
 
   const aggreemntLookup: PipelineStage[] = [
     {
+      $addFields: {
+        _agreementIds: { $ifNull: ['$agreements', '$agreement'] },
+      },
+    },
+    {
       $lookup: {
         from: 'agreements',
-        localField: 'agreement',
+        localField: '_agreementIds',
         foreignField: '_id',
-        as: 'agreementName',
+        as: 'agreementsName',
       },
     },
     {
       $addFields: {
-        agreementName: {
-          $getField: {
-            field: 'name',
-            input: {
-              $first: '$agreementName',
+        agreementsName: {
+          $map: {
+            input: '$agreementsName',
+            as: 'item',
+            in: {
+              $getField: {
+                input: '$$item',
+                field: 'name',
+              },
             },
           },
         },
@@ -94,6 +103,19 @@ export const ListPipelineBuilder = (p: ListQueryPropsDto): PipelineStage[] => {
   const pipeline: PipelineStage[] = [
     firstMatcher,
     ...aggreemntLookup,
+    {
+      $unset: [
+        'directDistanceZonesTariffs',
+        'additionalPointsTariffs',
+        'zonesTariffs',
+        '_agreementIds',
+        'returnPercentTariffs',
+        'idleTimeTariffs',
+        'agreement',
+        'agreements',
+        'isActive',
+      ],
+    },
     ...nestedFilesLookup,
   ]
   if (p.sortBy.length > 0) pipeline.push(sortingBuilder(p.sortBy, p.sortDesc))

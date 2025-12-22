@@ -1,8 +1,6 @@
 import {
   AlignmentType,
   IBorderOptions,
-  IIndentAttributesProperties,
-  ITableWidthProperties,
   Paragraph,
   Table,
   TableCell,

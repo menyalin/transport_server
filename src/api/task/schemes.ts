@@ -3,11 +3,11 @@ export const taskConfirmSchema = {
   type: 'object',
   properties: {
     result: {
-      enum: ['accepted', 'denied']
-    }
+      enum: ['accepted', 'denied'],
+    },
   },
   required: ['result'],
-  additionalProperties: false
+  additionalProperties: false,
 }
 
 //

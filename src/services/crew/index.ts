@@ -10,7 +10,6 @@ import getCrewByTruckAndDatePipeline from './pipelines/getCrewByTruckAndDatePipe
 import getLastCrewByDriverPipeline from './pipelines/getLastCrewByDriverPipeline'
 import getCrewListPipeline from './pipelines/getCrewListPipeline'
 import { getCrewUnwindedDataPipeline } from './pipelines/getCrewUnwindedDataPipeline'
-import pipeline from '../worker/pipelines/getCompaniesByUserIdPipeline'
 import { BadRequestError } from '@/helpers/errors'
 
 class CrewService {

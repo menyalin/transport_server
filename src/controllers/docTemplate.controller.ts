@@ -2,7 +2,7 @@
 import { DocTemplateService } from '../services'
 
 class DocTemplateController {
-  constructor({ service, permissionName }) {
+  constructor({ service }) {
     this.service = service
   }
 

@@ -25,7 +25,7 @@ const getShortDriverName = (driver: any): string =>
   `${driver.surname ?? ''} ${driver.name[0] ?? ''}.${driver?.patronymic[0] ?? ''}.`.trim()
 
 const getDriverPhones = (driver: any): string =>
-  `${driver.phone}${!!driver.phone2 ? ', ' + driver.phone2 : ''}`.trim()
+  `${driver.phone}${driver.phone2 ? ', ' + driver.phone2 : ''}`.trim()
 
 const getAddressesString = (route: any[], addresses: any[]): string =>
   route
