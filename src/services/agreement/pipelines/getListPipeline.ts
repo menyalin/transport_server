@@ -5,13 +5,13 @@ export default (props: unknown) => {
   const schemaProps = z.object({
     company: z.string(),
     executor: z.string().optional(),
-    client: z.string().optional(),
+    clients: z.array(z.string()).optional(),
     limit: z.string(),
     skip: z.string(),
     search: z.string().optional(),
   })
   const p = schemaProps.parse(props)
-  const { company, client, limit, skip, executor } = p
+  const { company, clients, limit, skip, executor } = p
   const firstMatcher: PipelineStage.Match = {
     $match: {
       isActive: true,
@@ -22,9 +22,11 @@ export default (props: unknown) => {
     },
   }
 
-  if (client)
+  if (clients && clients.length)
     firstMatcher.$match.$expr?.$and.push({
-      $in: [new Types.ObjectId(client), '$clients'],
+      $or: clients.map((clientId) => ({
+        $in: [new Types.ObjectId(clientId), '$clients'],
+      })),
     })
 
   if (executor)
@@ -40,6 +42,33 @@ export default (props: unknown) => {
         options: 'i',
       },
     })
+
+  const clientLookup: PipelineStage[] = [
+    {
+      $lookup: {
+        from: 'partners',
+        localField: 'clients',
+        foreignField: '_id',
+        as: 'clientsName',
+      },
+    },
+    {
+      $addFields: {
+        clientsName: {
+          $map: {
+            input: '$clientsName',
+            as: 'item',
+            in: {
+              $getField: {
+                input: '$$item',
+                field: 'name',
+              },
+            },
+          },
+        },
+      },
+    },
+  ]
   const carrierLookup: PipelineStage[] = [
     {
       $lookup: {
@@ -78,5 +107,11 @@ export default (props: unknown) => {
       },
     },
   ]
-  return [firstMatcher, ...carrierLookup, ...group]
+  return [
+    firstMatcher,
+    ...carrierLookup,
+    ...clientLookup,
+    { $unset: ['allowedCarriers', 'clients'] },
+    ...group,
+  ]
 }
