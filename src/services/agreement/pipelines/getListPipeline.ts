@@ -115,11 +115,5 @@ export default (props: unknown) => {
       },
     },
   ]
-  return [
-    firstMatcher,
-    ...carrierLookup,
-    ...clientLookup,
-    { $unset: ['allowedCarriers', 'clients'] },
-    ...group,
-  ]
+  return [firstMatcher, ...carrierLookup, ...clientLookup, ...group]
 }
