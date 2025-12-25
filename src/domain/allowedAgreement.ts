@@ -1,16 +1,22 @@
-import { objectIdSchema } from '@/shared/validationSchemes'
-import { IAllowedCarrierAgreement } from './interfaces'
-import { z } from 'zod'
+import z from 'zod'
 import { Types } from 'mongoose'
+import { objectIdSchema } from '@/shared/validationSchemes'
 
-export class AllowedCarrierAgreement implements IAllowedCarrierAgreement {
+export interface IAllowedAgreement {
+  agreement: string | Types.ObjectId
+  startDate: Date
+  endDate?: Date | null
+  note?: string | null
+}
+
+export class AllowedAgreement implements IAllowedAgreement {
   agreement: Types.ObjectId | string
   startDate: Date
   endDate?: Date | null
   note?: string | null
 
   constructor(props: unknown) {
-    const p = AllowedCarrierAgreement.validationSchema.parse(props)
+    const p = AllowedAgreement.validationSchema.parse(props)
     this.agreement = p.agreement
     this.startDate = p.startDate
     this.endDate = p.endDate

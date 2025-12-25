@@ -1,4 +1,3 @@
-import { IParterProps } from '../../domain/partner/interfaces'
 import { Partner } from '../../models/index'
 import { emitTo } from '../../socket'
 import { ChangeLogService } from '../index'
@@ -11,12 +10,12 @@ export interface IConstructorProps {
 }
 
 export interface ICreateProps {
-  body: IParterProps
+  body: unknown
   user: string
 }
 export interface IUpdateOneProps {
   id: string
-  body: IParterProps
+  body: unknown
   user: string
 }
 

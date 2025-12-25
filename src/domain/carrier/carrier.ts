@@ -5,14 +5,14 @@ import { BankAccountInfo } from '../bankAccountInfo'
 import { CompanyInfo } from '../companyInfo'
 import { ContactInfo } from '../сontactInfo'
 import { ICarreierPFData } from './interfaces'
-import { AllowedCarrierAgreement } from './allowedCarrierAgreement'
 import { VatRateInfo } from '../vatRateInfo'
+import { AllowedAgreement } from '../allowedAgreement'
 
 export class Carrier {
   _id?: string
   name: string
   company: string
-  agreements: AllowedCarrierAgreement[]
+  agreements: AllowedAgreement[]
   bankAccountInfo?: BankAccountInfo
   companyInfo?: CompanyInfo
   contacts?: ContactInfo[]
@@ -95,11 +95,9 @@ export class Carrier {
         .nullable()
         .transform((v) => (v ? v.map((i) => new VatRateInfo(i)) : [])),
       agreements: z
-        .array(AllowedCarrierAgreement.validationSchema)
+        .array(AllowedAgreement.validationSchema)
         .default([])
-        .transform((v) =>
-          v ? v.map((i) => new AllowedCarrierAgreement(i)) : []
-        ),
+        .transform((v) => (v ? v.map((i) => new AllowedAgreement(i)) : [])),
     })
   }
 
@@ -110,7 +108,7 @@ export class Carrier {
         type: Types.ObjectId,
         ref: 'Company',
       },
-      agreements: [AllowedCarrierAgreement.dbSchema],
+      agreements: [AllowedAgreement.dbSchema],
       companyInfo: CompanyInfo.dbSchema,
       bankAccountInfo: BankAccountInfo.dbSchema,
       contacts: [ContactInfo.dbSchema],
