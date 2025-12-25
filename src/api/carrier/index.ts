@@ -29,10 +29,8 @@ router.post(
   [jwtAuth, bodyValidator(createSchema)],
   (req: Request, res: Response) => ctrl.create(req as AuthorizedRequest, res)
 )
-router.put(
-  '/:id',
-  [jwtAuth, bodyValidator(createSchema)],
-  (req: Request, res: Response) => ctrl.updateOne(req as AuthorizedRequest, res)
+router.put('/:id', [jwtAuth], (req: Request, res: Response) =>
+  ctrl.updateOne(req as AuthorizedRequest, res)
 )
 router.delete('/:id', [jwtAuth], (req: Request, res: Response) =>
   ctrl.deleteById(req as AuthorizedRequest, res)

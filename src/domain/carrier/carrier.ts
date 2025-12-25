@@ -6,6 +6,7 @@ import { CompanyInfo } from '../companyInfo'
 import { ContactInfo } from '../сontactInfo'
 import { ICarreierPFData } from './interfaces'
 import { AllowedCarrierAgreement } from './allowedCarrierAgreement'
+import { VatRateInfo } from '../vatRateInfo'
 
 export class Carrier {
   _id?: string
@@ -18,6 +19,7 @@ export class Carrier {
   outsource: boolean
   allowUseCustomerRole: boolean
   isActive: boolean
+  vatRates?: VatRateInfo[] | null
   version: number = 0
 
   constructor(props: unknown) {
@@ -36,7 +38,7 @@ export class Carrier {
     this.outsource = p.outsource
     this.allowUseCustomerRole = p.allowUseCustomerRole ?? false
     this.isActive = p.isActive
-
+    this.vatRates = p.vatRates
     this.version = p.version ?? 0
   }
 
@@ -87,6 +89,11 @@ export class Carrier {
       allowUseCustomerRole: z.boolean().optional().default(false),
       isActive: z.boolean().default(true),
       version: z.number().optional().nullable().default(0),
+      vatRates: z
+        .array(VatRateInfo.validationSchema)
+        .optional()
+        .nullable()
+        .transform((v) => (v ? v.map((i) => new VatRateInfo(i)) : [])),
       agreements: z
         .array(AllowedCarrierAgreement.validationSchema)
         .default([])
@@ -120,6 +127,7 @@ export class Carrier {
         default: true,
       },
       version: { type: Number, default: 0 },
+      vatRates: [VatRateInfo.dbSchema],
     }
   }
 }
