@@ -4,7 +4,6 @@ import { UpdatePartnerEvent } from '../../domain/partner/domainEvents'
 import { bus } from '../../eventBus'
 import { BadRequestError } from '../../helpers/errors'
 import { Partner as PartnerModel } from '../../models'
-import { IPartnerWithIdProps } from '../../domain/partner/interfaces'
 
 class PartnerRepository {
   partnerModel: typeof PartnerModel
@@ -31,8 +30,7 @@ class PartnerRepository {
   }
 
   async create(partner: PartnerDomain): Promise<PartnerDomain> {
-    const partnerItem: IPartnerWithIdProps =
-      await this.partnerModel.create(partner)
+    const partnerItem = await this.partnerModel.create(partner)
     return new PartnerDomain(partnerItem)
   }
 
@@ -42,8 +40,7 @@ class PartnerRepository {
   }
 
   async getById(partnerId: string): Promise<PartnerDomain> {
-    const partnerItem: IPartnerWithIdProps | null =
-      await this.partnerModel.findById(partnerId)
+    const partnerItem = await this.partnerModel.findById(partnerId)
     if (!partnerItem)
       throw new BadRequestError(
         `PartnerRepository : getById : partner ${partnerId} is missing`
