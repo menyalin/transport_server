@@ -53,8 +53,6 @@ class OrderService {
       startDate: newOrder.orderDate,
     })
     await checkCrossItems({ body })
-    if (!newOrder.clientAgreementId)
-      newOrder.setClientAgreement(await getClientAgreementId(newOrder))
 
     if (newOrder.truckId) {
       const carrierData = await getCarrierData(
