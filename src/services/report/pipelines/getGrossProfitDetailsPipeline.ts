@@ -17,31 +17,21 @@ export default ({
   listOptions,
 }) => {
   const finalGroup = [
-    // {
-    //   $sort: {
-    //     [sortingField]: sortingDirection,
-    //   },
-    // },
     {
-      $group: {
-        _id: 'orders',
-        items: {
-          $push: '$$ROOT',
-        },
+      $facet: {
+        count: [
+          { $count: 'value' },
+        ],
+        items: [
+          { $skip: (listOptions.page - 1) * listOptions.itemsPerPage },
+          { $limit: listOptions.itemsPerPage },
+        ],
       },
     },
     {
-      $addFields: {
-        count: {
-          $size: '$items',
-        },
-        items: {
-          $slice: [
-            '$items',
-            (listOptions.page - 1) * listOptions.itemsPerPage,
-            listOptions.itemsPerPage,
-          ],
-        },
+      $project: {
+        count: { $arrayElemAt: ['$count.value', 0] },
+        items: 1,
       },
     },
   ]
