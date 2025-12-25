@@ -1,9 +1,7 @@
-import { PipelineStage } from 'mongoose'
 import ChangeLogService from '../changeLog'
 import { Agreement as AgreementModel } from '../../models'
 import { emitTo } from '../../socket'
 import getListPipeline from './pipelines/getListPipeline'
-import getForOrderPipeline from './pipelines/getForOrderPipeline'
 import getForClientPipeline from './pipelines/getForClientPipeline'
 import {
   Agreement,
@@ -47,13 +45,6 @@ class AgreementService {
     const agreement = new AgreementDomain(data)
     this.agreementsMap.set(id, agreement)
     return agreement
-  }
-
-  // TODO: удалить, вроде бы не используется
-  async getForOrder(params: unknown) {
-    const pipeline: PipelineStage[] = getForOrderPipeline(params)
-    const res = await this.model.aggregate(pipeline)
-    return res.length ? res[0] : null
   }
 
   async getForClient(props: unknown): Promise<unknown[]> {
