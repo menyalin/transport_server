@@ -13,31 +13,44 @@ export const jwtAuth = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  // Указали void вместо возвращаемого значения
-  if (req.headers.authorization) {
-    const token = req.headers.authorization.split(' ')[1]
-    try {
-      const payload = jwt.verify(
-        token,
-        process.env.ACCESS_JWT_SECRET as string
-      ) as JWTPayload
+  const authHeader = req.headers.authorization
 
-      const user = await UserService.findById(payload.userId)
-
-      if (!user) {
-        res.status(401).send('Unauthorized') // Убрали return, т.к. res.send завершит выполнение
-        return
-      }
-
-      const authReq = req as AuthorizedRequest
-      authReq.userId = user._id.toString()
-      authReq.companyId = user.directoriesProfile?.toString()
-
-      next()
-    } catch {
-      next(new UnauthorizedError('Invalid token'))
-    }
-  } else {
+  if (!authHeader) {
     next(new UnauthorizedError('Access token is missing'))
+    return
+  }
+
+  if (!authHeader.startsWith('Bearer ')) {
+    next(new UnauthorizedError('Invalid authorization header format'))
+    return
+  }
+
+  const token = authHeader.split(' ')[1]
+
+  if (!token) {
+    next(new UnauthorizedError('Token is missing'))
+    return
+  }
+
+  try {
+    const payload = jwt.verify(
+      token,
+      process.env.ACCESS_JWT_SECRET as string
+    ) as JWTPayload
+
+    const user = await UserService.findById(payload.userId)
+
+    if (!user) {
+      next(new UnauthorizedError('User not found'))
+      return
+    }
+
+    const authReq = req as AuthorizedRequest
+    authReq.userId = user._id.toString()
+    authReq.companyId = user.directoriesProfile?.toString()
+
+    next()
+  } catch {
+    next(new UnauthorizedError('Invalid token'))
   }
 }
