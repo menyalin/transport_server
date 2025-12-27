@@ -1,11 +1,16 @@
 import jwt from 'jsonwebtoken'
 import { UserService } from '../services'
-import { UnauthorizedError } from '../helpers/errors'
 import { NextFunction, Request, Response } from 'express'
 import { AuthorizedRequest } from '@/controllers/interfaces'
+import { TokenExpiredError } from 'jsonwebtoken'
 
 interface JWTPayload {
   userId: string
+}
+
+// Отправляем 401 ответ без создания объекта ошибки, чтобы не засорять логи
+const sendUnauthorized = (res: Response, message: string): void => {
+  res.status(401).json({ message })
 }
 
 export const jwtAuth = async (
@@ -16,19 +21,19 @@ export const jwtAuth = async (
   const authHeader = req.headers.authorization
 
   if (!authHeader) {
-    next(new UnauthorizedError('Access token is missing'))
+    sendUnauthorized(res, 'Access token is missing')
     return
   }
 
   if (!authHeader.startsWith('Bearer ')) {
-    next(new UnauthorizedError('Invalid authorization header format'))
+    sendUnauthorized(res, 'Invalid authorization header format')
     return
   }
 
   const token = authHeader.split(' ')[1]
 
   if (!token) {
-    next(new UnauthorizedError('Token is missing'))
+    sendUnauthorized(res, 'Token is missing')
     return
   }
 
@@ -41,7 +46,7 @@ export const jwtAuth = async (
     const user = await UserService.findById(payload.userId)
 
     if (!user) {
-      next(new UnauthorizedError('User not found'))
+      sendUnauthorized(res, 'User not found')
       return
     }
 
@@ -50,7 +55,12 @@ export const jwtAuth = async (
     authReq.companyId = user.directoriesProfile?.toString()
 
     next()
-  } catch {
-    next(new UnauthorizedError('Invalid token'))
+  } catch (err) {
+    // Не логируем истекшие токены - это нормальная ситуация
+    const message =
+      err instanceof TokenExpiredError
+        ? 'Token expired'
+        : 'Invalid token'
+    sendUnauthorized(res, message)
   }
 }

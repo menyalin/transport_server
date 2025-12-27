@@ -20,7 +20,7 @@ export class IdleTruckNotification {
   constructor(p: IIdleTruckNotifyProps) {
     if (p._id) this._id = p._id?.toString()
     this.title = p.title
-    this.addresses = p.addresses
+    this.addresses = p.addresses?.map((i) => i.toString()) || []
     this.agreement = p.agreement ? p.agreement.toString() : null
 
     this.emails = p.emails
