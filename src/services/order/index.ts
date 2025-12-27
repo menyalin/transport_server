@@ -8,7 +8,7 @@ import { getSchedulePipeline } from './pipelines/getSchedulePipeline'
 import { AgreementService, ChangeLogService, PermissionService } from '..'
 import checkCrossItems from './checkCrossItems'
 import getRouteFromTemplate from './getRouteFromTemplate'
-import getClientAgreementId from './getClientAgreement'
+// import getClientAgreementId from './getClientAgreement'
 import { getCarrierData } from './getCarrierData'
 import { orsDirections } from '../../helpers/orsClient'
 import { BadRequestError } from '../../helpers/errors'
@@ -53,8 +53,6 @@ class OrderService {
       startDate: newOrder.orderDate,
     })
     await checkCrossItems({ body })
-    if (!newOrder.clientAgreementId)
-      newOrder.setClientAgreement(await getClientAgreementId(newOrder))
 
     if (newOrder.truckId) {
       const carrierData = await getCarrierData(
@@ -331,9 +329,6 @@ class OrderService {
           ? true
           : false
     }
-
-    if (!newVersionOrder.clientAgreementId)
-      newVersionOrder.setClientAgreement(await getClientAgreementId(body))
 
     if (!orderIncludedInInvoice && newVersionOrder.truckId) {
       const carrierData = await getCarrierData(
