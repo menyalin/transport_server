@@ -72,6 +72,28 @@ export class Partner {
     return this._id?.toString() || null
   }
 
+  allowedAgreementsOnDate(date: Date): string[] {
+    if (!this.agreements || this.agreements.length === 0) return []
+
+    return this.agreements
+      .filter((i) => {
+        const dateMs = date.getTime()
+        const startDateMs = i.startDate.getTime()
+
+        // Дата должна быть не раньше startDate
+        if (dateMs < startDateMs) return false
+
+        // Если endDate указан, дата должна быть не позже endDate
+        if (i.endDate) {
+          const endDateMs = i.endDate.getTime()
+          if (dateMs > endDateMs) return false
+        }
+
+        return true
+      })
+      .map((agreement) => agreement.agreement.toString())
+  }
+
   clearEvents() {
     this.events = []
   }

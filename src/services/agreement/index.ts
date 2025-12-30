@@ -9,8 +9,8 @@ import {
 } from '@/domain/agreement/agreement.domain'
 import { TtlMap } from '@/utils/ttlMap'
 import { getAgreementsForClientPropsSchema } from './schemas'
-// import { Partner } from '@/domain/partner/partner.domain'
-// import { PartnerRepository } from '@/repositories'
+import { Partner } from '@/domain/partner/partner.domain'
+import { AgreementRepository, PartnerRepository } from '@/repositories'
 
 interface IConstructorProps {
   model: typeof AgreementModel
@@ -52,20 +52,24 @@ class AgreementService {
 
   async getForClient(props: unknown): Promise<unknown[]> {
     const p = getAgreementsForClientPropsSchema.parse(props)
-    // let client: Partner | null = null
-    // if (p.client) {
-    //   client = await PartnerRepository.getById(p.client)
-    // }
+    let client: Partner | null = null
+    if (p.client) {
+      client = await PartnerRepository.getById(p.client)
+    }
+    const agreemenentIds: string[] =
+      client?.allowedAgreementsOnDate(p.date) || []
 
-    // if (client && client.agreements?.length) {
-    //   console.log(client)
-    // }
-    // // TODO: Удалить после перехода на новую схему работы с соглашениями клиентов
-    // else {
-    const pipeline = getForClientPipeline(p)
-    const res = await this.model.aggregate(pipeline)
-    return res
-    // }
+    if (agreemenentIds.length > 0) {
+      const agreements = await AgreementRepository.getByIds(agreemenentIds)
+      return agreements
+    }
+
+    // TODO: Удалить после перехода на новую схему работы с соглашениями клиентов. Соглашения должны быть только в Клиенте
+    else {
+      const pipeline = getForClientPipeline(p)
+      const res = await this.model.aggregate(pipeline)
+      return res
+    }
   }
 
   async create({ body, user }: { body: any; user: string }) {
