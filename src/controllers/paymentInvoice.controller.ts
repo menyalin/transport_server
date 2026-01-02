@@ -232,6 +232,7 @@ class PaymentInvoiceController {
         loadingZone?: string
         search?: string
         numbers?: string[]
+        invoiceDate: string
       }
     >,
     res: Response
@@ -242,6 +243,7 @@ class PaymentInvoiceController {
         ...req.query,
         company: req.companyId,
         period: new DateRange(req.query.period[0], req.query.period[1]),
+        invoiceDate: new Date(req.query.invoiceDate),
       })
       res.status(200).json(data)
     } catch (e) {

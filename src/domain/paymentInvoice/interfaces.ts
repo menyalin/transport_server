@@ -127,8 +127,8 @@ export const orderPickedForInvoiceDTOSchema = z
         })
       )
       .optional(),
-    // total: TotalPriceSchema,
-    // totalByTypes: z.record(PriceByTypeSchema).optional(),
+
+    totalByTypes: z.record(z.string(), PriceByTypeSchema),
     savedTotal: TotalPriceSchema.optional(),
     savedTotalByTypes: z.record(z.string(), PriceByTypeSchema).optional(),
     driverName: z.string().optional(),
@@ -136,9 +136,7 @@ export const orderPickedForInvoiceDTOSchema = z
     itemType: z.string(),
     rowId: z.unknown().optional(),
     loaderData: LoaderDataSchema.optional(),
-    // need remove
-    _total: z.number().optional().nullable(),
-    _totalWOVat: z.number().optional().nullable().nullable(),
+    total: TotalPriceSchema,
   })
   .refine(() => true, {
     message: 'orderPickedForInvoiceDTOSchema error',

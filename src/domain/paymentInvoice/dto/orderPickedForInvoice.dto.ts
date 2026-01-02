@@ -49,7 +49,7 @@ export class OrderPickedForInvoiceDTO {
   paymentInvoices?: any[]
   agreement?: any
   _loadingZones?: object[]
-  // totalByTypes: Record<ORDER_PRICE_TYPES_ENUM, PriceByType>
+  totalByTypes: Record<string, PriceByType>
   total: TotalPrice
   savedTotalByTypes?: any
   savedTotal?: TotalPrice
@@ -90,27 +90,14 @@ export class OrderPickedForInvoiceDTO {
     this._loadingZones = preparedProps._loadingZones
     this.savedTotal = preparedProps.savedTotal
     this.savedTotalByTypes = preparedProps.savedTotalByTypes
-
-    this.total = {
-      price: preparedProps._total || 0,
-      priceWOVat: preparedProps._totalWOVat || 0,
-    }
+    this.totalByTypes = preparedProps.totalByTypes
+    this.total = preparedProps.total
 
     this.needUpdate = utils.isNeedUpdatePrices(this.total, this.savedTotal)
     this.note = preparedProps.paymentParts
       ? preparedProps.paymentParts.note
       : preparedProps.note
     if (preparedProps.loaderData) this.loaderData = preparedProps.loaderData
-
-    if (
-      preparedProps._total &&
-      preparedProps._totalWOVat &&
-      (preparedProps._total.toFixed(2) !== this.total.price.toFixed(2) ||
-        preparedProps._totalWOVat.toFixed(2) !==
-          this.total.priceWOVat.toFixed(2))
-    ) {
-      console.log('Ошибка запроса. не корректный расчет итогов по рейсу')
-    }
   }
 
   addLoaderData(registryInformation: ILoaderData[]) {

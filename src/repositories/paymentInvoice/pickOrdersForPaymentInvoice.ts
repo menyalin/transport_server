@@ -8,9 +8,8 @@ import {
 
 import {
   finalPricesFragmentBuilder,
-  totalSumFragmentBuilder,
+  recalcTotalByTypesFragmentBuilder,
 } from './pipelineFragments/orderFinalPricesFragmentBuilder'
-import { OrderPickedForInvoiceDTO } from '@/domain/paymentInvoice/dto/orderPickedForInvoice.dto'
 import {
   IStaticticData,
   IPickOrdersForPaymentInvoiceProps,
@@ -22,6 +21,7 @@ import { orderSearchByNumberFragmentBuilder } from '@/shared/pipelineFragments/o
 import { orderDocNumbersStringFragment } from '@/shared/pipelineFragments/orderDocNumbersStringBuilder'
 import { orderDocsStatusConditionBuilder } from '@/shared/pipelineFragments/orderDocsStatusConditionBuilder'
 import { orderDateFragmentBuilder } from '@/shared/pipelineFragments/orderDateFragmentBuilder'
+import { OrderPickedForInvoiceDTO } from '@/domain/paymentInvoice/dto/orderPickedForInvoice.dto'
 
 const setStatisticData = (res: any): IStaticticData => {
   if (!res.total?.length)
@@ -48,51 +48,34 @@ const setStatisticData = (res: any): IStaticticData => {
   }
 }
 
-// Унифицированные фрагменты для расчета с учётом НДС
-// Поля usePriceWithVat и agreementVatRate должны быть доступны через $lookup
-
-
 // Делитель для приведения цены с НДС к цене без НДС (1.20 для 20%)
 const vatRateDivisor = () => ({
   $add: [1, { $multiply: ['$agreementVatRate', 0.01] }],
 })
 
 // Рассчитать сумму с НДС из суммы без НДС: totalWOVat * (1 + vatRate/100)
-const calculateTotalWithVat = (totalWOVatField: string) => ({
-  $multiply: [`$${totalWOVatField}`, vatRateDivisor()],
+const _calcPriceWithVat = (priceWOVatField: string) => ({
+  $multiply: [`$${priceWOVatField}`, vatRateDivisor()],
 })
 
 // Рассчитать сумму без НДС из суммы с НДС: total / (1 + vatRate/100)
-const calculateTotalWOVat = (totalField: string) => ({
-  $divide: [`$${totalField}`, vatRateDivisor()],
+const _calcPriceWOVat = (priceWithVatField: string) => ({
+  $divide: [`$${priceWithVatField}`, vatRateDivisor()],
 })
 
-// Построить финальные поля _total и _totalWOVat на основе basePrice
-// usePriceWithVat определяет как хранятся цены: true - с НДС, false - без НДС
-const buildTotalFields = (basePriceField: string) => {
-  const isPriceWithVat = { $eq: ['$usePriceWithVat', true] }
-
-  return [
-    {
-      $addFields: {
-        _totalWOVat: {
-          $cond: {
-            if: isPriceWithVat,
-            then: calculateTotalWOVat(basePriceField), // цена с НДС → без НДС
-            else: `$${basePriceField}`, // уже без НДС
-          },
-        },
-        _total: {
-          $cond: {
-            if: isPriceWithVat,
-            then: `$${basePriceField}`, // уже с НДС
-            else: calculateTotalWithVat(basePriceField), // цена без НДС → с НДС
-          },
-        },
-      },
+const calcTotal = () => ({
+  $reduce: {
+    input: { $objectToArray: '$totalByTypes' },
+    initialValue: {
+      price: 0,
+      priceWOVat: 0,
     },
-  ]
-}
+    in: {
+      price: { $add: ['$$value.price', '$$this.v.price'] },
+      priceWOVat: { $add: ['$$value.priceWOVat', '$$this.v.priceWOVat'] },
+    },
+  },
+})
 
 export async function pickOrdersForPaymentInvoice(
   p: IPickOrdersForPaymentInvoiceProps,
@@ -202,6 +185,10 @@ export async function pickOrdersForPaymentInvoice(
           docsFieldName: '$docs',
           onlyForAddToRegistry: false,
         }),
+      },
+    },
+    {
+      $addFields: {
         paymentPartsSum: {
           $reduce: {
             initialValue: 0,
@@ -211,7 +198,7 @@ export async function pickOrdersForPaymentInvoice(
                 '$$value',
                 {
                   $cond: {
-                    if: { $literal: usePriceWithVat },
+                    if: '$$ROOT.usePriceWithVat',
                     then: '$$this.price',
                     else: '$$this.priceWOVat',
                   },
@@ -230,12 +217,28 @@ export async function pickOrdersForPaymentInvoice(
     },
     {
       $addFields: {
-        _totalWOPaymentParts: {
-          $subtract: [totalSumFragmentBuilder(), '$paymentPartsSum'],
+        totalByTypes: {
+          $mergeObjects: [
+            '$totalByTypes',
+            {
+              base: {
+                $subtract: ['$totalByTypes.base', '$paymentPartsSum'],
+              },
+            },
+          ],
         },
       },
     },
-    ...buildTotalFields('_totalWOPaymentParts'),
+    {
+      $addFields: {
+        totalByTypes: recalcTotalByTypesFragmentBuilder(),
+      },
+    },
+    {
+      $addFields: {
+        total: calcTotal(),
+      },
+    },
   ]
 
   const unionSecondMatcher = (
@@ -302,7 +305,23 @@ export async function pickOrdersForPaymentInvoice(
             },
           },
         },
-        ...buildTotalFields('_basePrice'),
+        {
+          $addFields: {
+            totalByTypes: {
+              base: '$_basePrice',
+            },
+          },
+        },
+        {
+          $addFields: {
+            totalByTypes: recalcTotalByTypesFragmentBuilder(['base']),
+          },
+        },
+        {
+          $addFields: {
+            total: calcTotal(),
+          },
+        },
 
         { $limit: 50 },
       ] as any[],
