@@ -12,7 +12,7 @@ export const PickOrdersForPaymentInvoicePropsSchema = z.object({
   period: DateRange.validationSchema,
   client: z.string().optional(),
   agreement: z.string(),
-  invoiceDate: z.string().transform((i) => new Date(i)),
+  invoiceDate: z.date(),
   agreements: z.string().array().optional(),
   paymentInvoiceId: z.string().optional(),
   docStatuses: z.array(z.enum(ORDER_DOC_STATUSES_ENUM)).optional(),
