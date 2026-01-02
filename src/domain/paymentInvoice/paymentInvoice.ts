@@ -26,6 +26,9 @@ export class PaymentInvoiceDomain {
   note?: string
   orders?: OrderPickedForInvoiceDTO[]
   agreement?: any
+  ordersCount: number | null
+  priceWOVat: number | null
+  priceWithVat: number | null
 
   private constructor(invoice: any) {
     this._id = invoice?._id.toString()
@@ -53,6 +56,9 @@ export class PaymentInvoiceDomain {
     this.isActive = invoice.isActive
     this.note = invoice.note
     if (invoice.client?._id) this.client = invoice.client
+    this.ordersCount = invoice.ordersCount || null
+    this.priceWithVat = invoice.priceWithVat || null
+    this.priceWOVat = invoice.priceWOVat || null
   }
 
   setAgreement(agreement: any) {
@@ -120,6 +126,9 @@ export class PaymentInvoiceDomain {
       status: { type: String, enum: PAIMENT_INVOICE_STATUSES_ENUM_VALUES },
       isActive: { type: Boolean, default: true },
       note: String,
+      ordersCount: Number,
+      priceWOVat: Number,
+      priceWithVat: Number,
     }
   }
 }
