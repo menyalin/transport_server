@@ -361,8 +361,8 @@ export async function pickOrdersForPaymentInvoice(
           {
             $group: {
               _id: null,
-              withVat: { $sum: '$_total' },
-              woVat: { $sum: '$_totalWOVat' },
+              withVat: { $sum: '$total.price' },
+              woVat: { $sum: '$total.priceWOVat' },
             },
           },
         ],
