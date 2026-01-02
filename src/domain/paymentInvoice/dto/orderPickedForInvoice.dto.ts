@@ -4,7 +4,7 @@ import {
   OrderPickedForInvoiceDTOProps,
   orderPickedForInvoiceDTOSchema,
 } from '../interfaces'
-import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
+
 import { utils } from './utils'
 import { PriceByType, TotalPrice } from '@/domain/commonInterfaces'
 
@@ -20,7 +20,8 @@ export class OrderPickedForInvoiceDTO {
   orderId: Types.ObjectId | string
   isSelectable?: boolean = false
   agreementVatRate: number
-  paymentPartsSumWOVat: number
+  usePriceWithVat: boolean
+  paymentPartsSum: number
   driverName?: string
   reqTransport: any
   confirmedCrew: {
@@ -48,7 +49,7 @@ export class OrderPickedForInvoiceDTO {
   paymentInvoices?: any[]
   agreement?: any
   _loadingZones?: object[]
-  totalByTypes: Record<ORDER_PRICE_TYPES_ENUM, PriceByType>
+  // totalByTypes: Record<ORDER_PRICE_TYPES_ENUM, PriceByType>
   total: TotalPrice
   savedTotalByTypes?: any
   savedTotal?: TotalPrice
@@ -70,7 +71,7 @@ export class OrderPickedForInvoiceDTO {
     this.plannedDate = preparedProps.plannedDate
     this.orderId = preparedProps.orderId
     this.isSelectable = preparedProps.isSelectable
-    this.paymentPartsSumWOVat = preparedProps.paymentPartsSumWOVat
+    this.paymentPartsSum = preparedProps.paymentPartsSum
     this.confirmedCrew = preparedProps.confirmedCrew
     this.reqTransport = preparedProps.reqTransport
     this.route = preparedProps.route
@@ -82,14 +83,19 @@ export class OrderPickedForInvoiceDTO {
     this.paymentInvoices = preparedProps.paymentInvoices
     this.agreement = preparedProps.agreement
     this.agreementVatRate = preparedProps.agreementVatRate
+    this.usePriceWithVat = preparedProps.usePriceWithVat
     this.driverName = preparedProps.driverName
     this.itemType = preparedProps.itemType
     this.rowId = preparedProps.rowId
     this._loadingZones = preparedProps._loadingZones
     this.savedTotal = preparedProps.savedTotal
     this.savedTotalByTypes = preparedProps.savedTotalByTypes
-    this.totalByTypes = utils.calcTotalByTypes(preparedProps)
-    this.total = utils.calcTotal(this.totalByTypes)
+
+    this.total = {
+      price: preparedProps._total || 0,
+      priceWOVat: preparedProps._totalWOVat || 0,
+    }
+
     this.needUpdate = utils.isNeedUpdatePrices(this.total, this.savedTotal)
     this.note = preparedProps.paymentParts
       ? preparedProps.paymentParts.note
@@ -116,7 +122,6 @@ export class OrderPickedForInvoiceDTO {
 
   saveTotal(): void {
     this.savedTotal = this.total
-    this.savedTotalByTypes = this.totalByTypes
     this.needUpdate = false
   }
 }

@@ -1,7 +1,7 @@
 import { ORDER_PRICE_TYPES_ENUM_VALUES } from '../../../constants/priceTypes'
 const priceGroups = ['$finalPrices', '$prices', '$prePrices']
 
-const getTotalPriceWOVatByType = (type: string) => ({
+const getTotalPriceByType = (type: string, usePriceWithVat: boolean) => ({
   $switch: {
     branches: priceGroups.map((group) => ({
       case: {
@@ -19,7 +19,7 @@ const getTotalPriceWOVatByType = (type: string) => ({
       },
       then: {
         $getField: {
-          field: 'priceWOVat',
+          field: usePriceWithVat ? 'price' : 'priceWOVat',
           input: {
             $first: {
               $filter: {
@@ -36,20 +36,20 @@ const getTotalPriceWOVatByType = (type: string) => ({
   },
 })
 
-export const finalPricesWOVatFragmentBuilder = () => {
+export const finalPricesFragmentBuilder = (usePriceWithVat: boolean) => {
   let res = {}
   ORDER_PRICE_TYPES_ENUM_VALUES.forEach((priceType) => {
     res = Object.assign(res, {
-      [priceType]: getTotalPriceWOVatByType(priceType),
+      [priceType]: getTotalPriceByType(priceType, usePriceWithVat),
     })
   })
   return res
 }
 
 // totalByTypes
-export const totalSumWOVatFragmentBuilder = () => ({
+export const totalSumFragmentBuilder = () => ({
   $reduce: {
-    input: { $objectToArray: '$totalWOVatByTypes' },
+    input: { $objectToArray: '$totalByTypes' },
     initialValue: 0,
     in: {
       $add: ['$$value', '$$this.v'],

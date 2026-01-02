@@ -20,7 +20,11 @@ import { OrderPickedForInvoiceDTO } from '../../domain/paymentInvoice/dto/orderP
 
 import * as pf from './printForms'
 import { PrintForm } from '../../domain/printForm/printForm.domain'
-import { PrintFormRepository } from '../../repositories'
+import {
+  AgreementRepository,
+  CarrierRepository,
+  PrintFormRepository,
+} from '../../repositories'
 import { BusEvent } from 'ts-bus/types'
 import { EventBus } from 'ts-bus'
 import { bus } from '@/eventBus'
@@ -255,9 +259,31 @@ class PaymentInvoiceService {
   }
 
   async pickOrders(props: IPickOrdersForPaymentInvoiceProps) {
-    PickOrdersForPaymentInvoicePropsSchema.parse(props)
-    const result =
-      await PaymentInvoiceRepository.pickOrdersForPaymentInvoice(props)
+    const parsedProps = PickOrdersForPaymentInvoicePropsSchema.parse(props)
+
+    const clientAgreement = await AgreementRepository.getById(
+      parsedProps.agreement
+    )
+    if (!clientAgreement)
+      throw new BadRequestError('Соглашение с клиентом не найдено')
+    if (!clientAgreement.executor)
+      throw new BadRequestError('В соглашении с клиентом не задан исполнитель')
+
+    const executor = await CarrierRepository.getById(clientAgreement.executor)
+    if (!executor)
+      throw new BadRequestError(
+        'Исполнитель по соглашению с клиентом не найден'
+      )
+    const usePriceWithVat = clientAgreement.usePriceWithVAT
+    const vatRate = executor.getVatRateByDate(parsedProps.invoiceDate)
+
+    if (!vatRate)
+      throw new BadRequestError('Для исполнителя не определена ставка НДС')
+    const result = await PaymentInvoiceRepository.pickOrdersForPaymentInvoice(
+      props,
+      vatRate,
+      usePriceWithVat
+    )
 
     return result || [[]]
   }

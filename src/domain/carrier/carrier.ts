@@ -69,6 +69,14 @@ export class Carrier {
     this.version += 1
   }
 
+  getVatRateByDate(date: Date): number | null {
+    if (!this.vatRates || this.vatRates.length === 0) return null
+    const vatRateInfo = this.vatRates.find(
+      (vr) => +vr.startPeriod <= +date && (!vr.endPeriod || +vr.endPeriod > +date)
+    )
+    return vatRateInfo?.vatRate ?? null
+  }
+
   getAgreementIdsByDate(date: Date): string[] {
     return this.agreements
       .filter(

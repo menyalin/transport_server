@@ -11,9 +11,9 @@ export const PickOrdersForPaymentInvoicePropsSchema = z.object({
   company: z.string(),
   period: DateRange.validationSchema,
   client: z.string().optional(),
-  agreement: z.string().optional(),
+  agreement: z.string(),
+  invoiceDate: z.string().transform((i) => new Date(i)),
   agreements: z.string().array().optional(),
-  tks: z.string().array().optional(),
   paymentInvoiceId: z.string().optional(),
   docStatuses: z.array(z.enum(ORDER_DOC_STATUSES_ENUM)).optional(),
   onlySelectable: z.boolean().optional(),
@@ -86,7 +86,8 @@ export const orderPickedForInvoiceDTOSchema = z
     orderId: z.union([z.string(), z.instanceof(Types.ObjectId)]),
     isSelectable: z.boolean().optional(),
     agreementVatRate: z.number(),
-    paymentPartsSumWOVat: z.number(),
+    usePriceWithVat: z.boolean(),
+    paymentPartsSum: z.number().optional().default(0),
     reqTransport: z.unknown(),
     confirmedCrew: z.object({
       truck: objectIdSchema.optional().nullable(),
@@ -136,8 +137,8 @@ export const orderPickedForInvoiceDTOSchema = z
     rowId: z.unknown().optional(),
     loaderData: LoaderDataSchema.optional(),
     // need remove
-    _total: z.number().optional(),
-    _totalWOVat: z.number().optional(),
+    _total: z.number().optional().nullable(),
+    _totalWOVat: z.number().optional().nullable().nullable(),
   })
   .refine(() => true, {
     message: 'orderPickedForInvoiceDTOSchema error',

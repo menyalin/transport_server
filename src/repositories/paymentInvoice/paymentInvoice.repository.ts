@@ -98,9 +98,15 @@ class PaymentInvoiceRepository {
   }
 
   async pickOrdersForPaymentInvoice(
-    params: IPickOrdersForPaymentInvoiceProps
-  ): Promise<[OrderPickedForInvoiceDTO[], IStaticticData]> {
-    return await pickOrdersForPaymentInvoice(params)
+    params: IPickOrdersForPaymentInvoiceProps,
+    vatRate: number,
+    usePriceWithVatRate: boolean
+  ): Promise<[unknown[], IStaticticData?]> {
+    return await pickOrdersForPaymentInvoice(
+      params,
+      vatRate,
+      usePriceWithVatRate
+    )
   }
 
   async getOrdersPickedForInvoiceDTOByOrders(
