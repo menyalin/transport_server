@@ -26,6 +26,8 @@ export class PaymentInvoiceDomain {
   note?: string
   orders?: OrderPickedForInvoiceDTO[]
   agreement?: any
+  vatRate: number
+  usePriceWithVat: boolean
   ordersCount: number | null
   priceWOVat: number | null
   priceWithVat: number | null
@@ -59,6 +61,8 @@ export class PaymentInvoiceDomain {
     this.ordersCount = invoice.ordersCount || null
     this.priceWithVat = invoice.priceWithVat || null
     this.priceWOVat = invoice.priceWOVat || null
+    this.vatRate = invoice.vatRate ?? null
+    this.usePriceWithVat = invoice.usePriceWithVat
   }
 
   setAgreement(agreement: any) {
@@ -75,6 +79,10 @@ export class PaymentInvoiceDomain {
       .map((order) => order.plannedDate)
       .sort((a, b) => +a - +b)
     return new DateRange(dates[0], dates[dates.length - 1])
+  }
+
+  get vatRateInfoIsMissing(): boolean {
+    return this.vatRate == null || this.usePriceWithVat == null
   }
 
   get invoiceTotalSumWithVat(): number {
@@ -129,6 +137,8 @@ export class PaymentInvoiceDomain {
       ordersCount: Number,
       priceWOVat: Number,
       priceWithVat: Number,
+      vatRate: Number,
+      usePriceWithVat: Boolean,
     }
   }
 }

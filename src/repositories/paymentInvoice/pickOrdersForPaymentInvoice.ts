@@ -22,6 +22,9 @@ import { orderDocNumbersStringFragment } from '@/shared/pipelineFragments/orderD
 import { orderDocsStatusConditionBuilder } from '@/shared/pipelineFragments/orderDocsStatusConditionBuilder'
 import { orderDateFragmentBuilder } from '@/shared/pipelineFragments/orderDateFragmentBuilder'
 import { OrderPickedForInvoiceDTO } from '@/domain/paymentInvoice/dto/orderPickedForInvoice.dto'
+import { agreementLookupBuilder } from '@/shared/pipelineFragments/agreementLookupBuilder'
+import { paymentPartsSumBuilder } from '@/shared/pipelineFragments/paymentPartsSumBuilder'
+import { calcTotalBuilder } from '@/shared/pipelineFragments/calcTotalBuilder'
 
 const setStatisticData = (res: any): IStaticticData => {
   if (!res.total?.length)
@@ -48,39 +51,9 @@ const setStatisticData = (res: any): IStaticticData => {
   }
 }
 
-// Делитель для приведения цены с НДС к цене без НДС (1.20 для 20%)
-const vatRateDivisor = () => ({
-  $add: [1, { $multiply: ['$agreementVatRate', 0.01] }],
-})
-
-// Рассчитать сумму с НДС из суммы без НДС: totalWOVat * (1 + vatRate/100)
-const _calcPriceWithVat = (priceWOVatField: string) => ({
-  $multiply: [`$${priceWOVatField}`, vatRateDivisor()],
-})
-
-// Рассчитать сумму без НДС из суммы с НДС: total / (1 + vatRate/100)
-const _calcPriceWOVat = (priceWithVatField: string) => ({
-  $divide: [`$${priceWithVatField}`, vatRateDivisor()],
-})
-
-const calcTotal = () => ({
-  $reduce: {
-    input: { $objectToArray: '$totalByTypes' },
-    initialValue: {
-      price: 0,
-      priceWOVat: 0,
-    },
-    in: {
-      price: { $add: ['$$value.price', '$$this.v.price'] },
-      priceWOVat: { $add: ['$$value.priceWOVat', '$$this.v.priceWOVat'] },
-    },
-  },
-})
-
 export async function pickOrdersForPaymentInvoice(
   p: IPickOrdersForPaymentInvoiceProps,
-  vatRate: number,
-  usePriceWithVat: boolean
+  vatRate: number
 ): Promise<[unknown[], IStaticticData?]> {
   const firstMatcherBuilder = (
     filtersExpressions: Array<BooleanExpression | ArrayExpressionOperator>
@@ -158,20 +131,6 @@ export async function pickOrdersForPaymentInvoice(
     { $match: { $expr: { $eq: [{ $size: '$paymentInvoices' }, 0] } } },
   ]
 
-  const addAgreementBuilder = (
-    localField = 'client.agreement'
-  ): PipelineStage[] => [
-    {
-      $lookup: {
-        from: 'agreements',
-        localField: localField,
-        foreignField: '_id',
-        as: 'agreement',
-      },
-    },
-    { $addFields: { agreement: { $first: '$agreement' } } },
-  ]
-
   const addFields: PipelineStage[] = [
     {
       $addFields: {
@@ -179,7 +138,6 @@ export async function pickOrdersForPaymentInvoice(
         orderId: '$_id',
         isSelectable: true,
         agreementVatRate: vatRate,
-        usePriceWithVat,
         itemType: 'order',
         docNumbers: orderDocNumbersStringFragment({
           docsFieldName: '$docs',
@@ -189,30 +147,13 @@ export async function pickOrdersForPaymentInvoice(
     },
     {
       $addFields: {
-        paymentPartsSum: {
-          $reduce: {
-            initialValue: 0,
-            input: '$paymentParts',
-            in: {
-              $add: [
-                '$$value',
-                {
-                  $cond: {
-                    if: '$$ROOT.usePriceWithVat',
-                    then: '$$this.price',
-                    else: '$$this.priceWOVat',
-                  },
-                },
-              ],
-            },
-          },
-        },
+        paymentPartsSum: paymentPartsSumBuilder(),
       },
     },
     { $unset: ['paymentParts'] },
     {
       $addFields: {
-        totalByTypes: finalPricesFragmentBuilder(usePriceWithVat),
+        totalByTypes: finalPricesFragmentBuilder(),
       },
     },
     {
@@ -236,7 +177,7 @@ export async function pickOrdersForPaymentInvoice(
     },
     {
       $addFields: {
-        total: calcTotal(),
+        total: calcTotalBuilder(),
       },
     },
   ]
@@ -284,21 +225,19 @@ export async function pickOrdersForPaymentInvoice(
         { $unwind: { path: '$paymentParts' } },
         unionSecondMatcher(p.agreement, p.agreements, p.client),
         ...paymentInvoiceFilterBuilder('paymentParts._id'),
-        ...addAgreementBuilder('paymentParts.agreement'),
+        ...agreementLookupBuilder('paymentParts.agreement'),
         {
           $addFields: {
             orderId: '$_id',
             _id: '$paymentParts._id',
             plannedDate: orderDateFragmentBuilder(),
             isSelectable: true,
-            usePriceWithVat,
             agreementVatRate: vatRate,
             itemType: 'paymentPart',
             paymentPartsSum: 0,
-            // Базовая цена для расчета: с НДС или без в зависимости от usePriceWithVat
             _basePrice: {
               $cond: {
-                if: { $literal: usePriceWithVat },
+                if: '$$ROOT.usePriceWithVat',
                 then: '$paymentParts.price',
                 else: '$paymentParts.priceWOVat',
               },
@@ -319,7 +258,7 @@ export async function pickOrdersForPaymentInvoice(
         },
         {
           $addFields: {
-            total: calcTotal(),
+            total: calcTotalBuilder(),
           },
         },
 
@@ -397,7 +336,7 @@ export async function pickOrdersForPaymentInvoice(
   const [res] = await OrderModel.aggregate([
     firstMatcherBuilder([...filters, ...clientFilters]),
     ...paymentInvoiceFilterBuilder('_id'),
-    ...addAgreementBuilder('client.agreement'),
+    ...agreementLookupBuilder('client.agreement'),
     ...addFields,
     unionWithPaymentPartsOrders,
     ...orderLoadingZoneFragmentBuilder(p.loadingZones),
@@ -407,6 +346,7 @@ export async function pickOrdersForPaymentInvoice(
 
   const statisticData: IStaticticData = setStatisticData(res)
   return [
+    // res.items,
     res.items.map(
       (i: OrderPickedForInvoiceDTOProps) => new OrderPickedForInvoiceDTO(i)
     ),

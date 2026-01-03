@@ -53,17 +53,24 @@ class PaymentInvoiceRepository {
     )
   }
 
-  async getInvoiceById(id: string): Promise<PaymentInvoiceDomain | null> {
+  async getInvoiceById(
+    id: string,
+    withOrders = true
+  ): Promise<PaymentInvoiceDomain | null> {
     const invoice: PaymentInvoiceDomain | null =
       await PaymentInvoiceModel.findById(id).lean()
     if (!invoice || !invoice._id) return null
 
-    const orders = await this.getOrdersPickedForInvoice({
-      invoiceId: invoice._id.toString(),
-      company: invoice.company.toString(),
-    })
-    const paymentInvoice = PaymentInvoiceDomain.create(invoice, orders)
+    let orders: OrderPickedForInvoiceDTO[] = []
 
+    // TODO: Убрать получение всех рейсов акта в отдельный метод с пагинацией
+    if (withOrders)
+      orders = await this.getOrdersPickedForInvoice({
+        invoiceId: invoice._id.toString(),
+        company: invoice.company.toString(),
+        vatRate: invoice.vatRate,
+      })
+    const paymentInvoice = PaymentInvoiceDomain.create(invoice, orders)
     return paymentInvoice
   }
 
@@ -99,14 +106,9 @@ class PaymentInvoiceRepository {
 
   async pickOrdersForPaymentInvoice(
     params: IPickOrdersForPaymentInvoiceProps,
-    vatRate: number,
-    usePriceWithVatRate: boolean
+    vatRate: number
   ): Promise<[unknown[], IStaticticData?]> {
-    return await pickOrdersForPaymentInvoice(
-      params,
-      vatRate,
-      usePriceWithVatRate
-    )
+    return await pickOrdersForPaymentInvoice(params, vatRate)
   }
 
   async getOrdersPickedForInvoiceDTOByOrders(

@@ -7,12 +7,18 @@ import {
 import { Order as OrderModel } from '@/models'
 import { orderDriverFullNameBuilder } from '@/shared/pipelineFragments/orderDriverFullNameBuilder'
 import { orderDateFragmentBuilder } from '@/shared/pipelineFragments/orderDateFragmentBuilder'
+import { agreementLookupBuilder } from '@/shared/pipelineFragments/agreementLookupBuilder'
+import { paymentPartsSumBuilder } from '@/shared/pipelineFragments/paymentPartsSumBuilder'
+import { calcTotalBuilder } from '@/shared/pipelineFragments/calcTotalBuilder'
+import { recalcTotalByTypesFragmentBuilder } from './pipelineFragments/orderFinalPricesFragmentBuilder'
+import { finalPricesFragmentBuilder } from './pipelineFragments/orderFinalPricesFragmentBuilder'
 
 export const getOrdersPickedForInvoiceDTOByOrders = async ({
   orderIds,
   company,
+  vatRate,
 }: GetOrdersPickedForInvoiceProps): Promise<OrderPickedForInvoiceDTO[]> => {
-  GetOrdersPickedForInvoicePropsSchema.parse({ orderIds, company })
+  GetOrdersPickedForInvoicePropsSchema.parse({ orderIds, company, vatRate })
   if (!orderIds?.length)
     throw new Error(
       'getOrdersPickedForInvoiceDTOByOrders : orderIds is missing'
@@ -29,28 +35,6 @@ export const getOrdersPickedForInvoiceDTOByOrders = async ({
     { $addFields: { driver: { $first: '$driver' } } },
   ]
 
-  const agreementLookup: PipelineStage[] = [
-    {
-      $lookup: {
-        from: 'agreements',
-        localField: 'agreement',
-        foreignField: '_id',
-        as: 'agreement',
-      },
-    },
-    {
-      $addFields: {
-        agreement: { $first: '$agreement' },
-        agreementVatRate: {
-          $getField: {
-            field: 'vatRate',
-            input: { $first: '$agreement' },
-          },
-        },
-      },
-    },
-  ]
-
   const ordersMatcher: PipelineStage[] = [
     {
       $match: {
@@ -60,91 +44,126 @@ export const getOrdersPickedForInvoiceDTOByOrders = async ({
         },
       },
     },
+    ...agreementLookupBuilder('client.agreement'),
     {
       $addFields: {
         itemType: 'order',
         orderId: '$_id',
         rowId: '$_id',
-        agreement: '$client.agreement',
-        paymentPartsSumWOVat: {
-          $ifNull: [
+        vatRate,
+
+        paymentPartsSum: paymentPartsSumBuilder(),
+      },
+    },
+    { $unset: ['paymentParts'] },
+    {
+      $addFields: {
+        totalByTypes: finalPricesFragmentBuilder(),
+      },
+    },
+    {
+      $addFields: {
+        totalByTypes: {
+          $mergeObjects: [
+            '$totalByTypes',
             {
-              $reduce: {
-                input: '$paymentParts',
-                initialValue: 0,
-                in: { $add: ['$$value', '$$this.priceWOVat'] },
+              base: {
+                $subtract: ['$totalByTypes.base', '$paymentPartsSum'],
               },
             },
-            0,
           ],
         },
       },
     },
-    { $unset: ['paymentParts'] },
-  ]
-
-  const unionWithPaymentParts: PipelineStage[] = [
     {
-      $unionWith: {
-        coll: 'orders',
-        pipeline: [
-          {
-            $match: {
-              company: new Types.ObjectId(company),
-              $expr: {
-                $and: [
-                  {
-                    $gte: [
-                      {
-                        $size: {
-                          $filter: {
-                            input: { $ifNull: ['$paymentParts', []] },
-                            as: 'part',
-                            cond: {
-                              $in: [
-                                '$$part._id',
-                                orderIds.map((i) => new Types.ObjectId(i)),
-                              ],
-                            },
-                          },
-                        },
-                      },
-                      1,
-                    ],
-                  },
-                ],
-              },
-            },
-          },
-          { $unwind: '$paymentParts' },
-          {
-            $match: {
-              $expr: {
-                $and: [
-                  {
-                    $in: [
-                      '$paymentParts._id',
-                      orderIds.map((i) => new Types.ObjectId(i)),
-                    ],
-                  },
-                ],
-              },
-            },
-          },
-          {
-            $addFields: {
-              agreement: '$paymentParts.agreement',
-              paymentPartsSumWOVat: 0,
-              itemType: 'paymentPart',
-              orderId: '$_id',
-              rowId: '$_id',
-              _id: '$paymentParts._id',
-            },
-          },
-        ],
+      $addFields: {
+        totalByTypes: recalcTotalByTypesFragmentBuilder(),
+      },
+    },
+    {
+      $addFields: {
+        total: calcTotalBuilder(),
       },
     },
   ]
+
+  const unionWithPaymentParts = {
+    $unionWith: {
+      coll: 'orders',
+      pipeline: [
+        {
+          $match: {
+            company: new Types.ObjectId(company),
+            $expr: {
+              $and: [
+                {
+                  $gte: [
+                    {
+                      $size: {
+                        $filter: {
+                          input: { $ifNull: ['$paymentParts', []] },
+                          as: 'part',
+                          cond: {
+                            $in: [
+                              '$$part._id',
+                              orderIds.map((i) => new Types.ObjectId(i)),
+                            ],
+                          },
+                        },
+                      },
+                    },
+                    1,
+                  ],
+                },
+              ],
+            },
+          },
+        },
+        { $unwind: '$paymentParts' },
+
+        {
+          $match: {
+            $expr: {
+              $and: [
+                {
+                  $in: [
+                    '$paymentParts._id',
+                    orderIds.map((i) => new Types.ObjectId(i)),
+                  ],
+                },
+              ],
+            },
+          },
+        },
+        ...agreementLookupBuilder('paymentParts.agreement'),
+        {
+          $addFields: {
+            paymentPartsSum: 0,
+            agreementVatRate: vatRate,
+            itemType: 'paymentPart',
+            orderId: '$_id',
+            rowId: '$_id',
+            _id: '$paymentParts._id',
+          },
+        },
+        {
+          $addFields: {
+            totalByTypes: finalPricesFragmentBuilder(),
+          },
+        },
+        {
+          $addFields: {
+            totalByTypes: recalcTotalByTypesFragmentBuilder(['base']),
+          },
+        },
+        {
+          $addFields: {
+            total: calcTotalBuilder(),
+          },
+        },
+      ],
+    },
+  } as PipelineStage
 
   const addFields: PipelineStage[] = [
     {
@@ -157,9 +176,8 @@ export const getOrdersPickedForInvoiceDTOByOrders = async ({
 
   const res = await OrderModel.aggregate([
     ...ordersMatcher,
-    ...unionWithPaymentParts,
+    unionWithPaymentParts,
     ...driverLookup,
-    ...agreementLookup,
     ...addFields,
   ])
   return res.map((i) => new OrderPickedForInvoiceDTO(i))

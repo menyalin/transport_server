@@ -2,7 +2,7 @@ import { ORDER_PRICE_TYPES_ENUM_VALUES } from '../../../constants/priceTypes'
 const priceGroups = ['$finalPrices', '$prices', '$prePrices']
 
 // Получить базовую цену для типа (в зависимости от usePriceWithVat)
-const getBasePriceByType = (type: string, usePriceWithVat: boolean) => ({
+const getBasePriceByType = (type: string) => ({
   $switch: {
     branches: priceGroups.map((group) => ({
       case: {
@@ -19,15 +19,31 @@ const getBasePriceByType = (type: string, usePriceWithVat: boolean) => ({
         ],
       },
       then: {
-        $getField: {
-          // Если usePriceWithVat = true, берём price как базу (она сохраняется)
-          // Если usePriceWithVat = false, берём priceWOVat как базу (он сохраняется)
-          field: usePriceWithVat ? 'price' : 'priceWOVat',
-          input: {
-            $first: {
-              $filter: {
-                input: group,
-                cond: { $eq: ['$$this.type', type] },
+        $cond: {
+          if: '$$ROOT.usePriceWithVat',
+          then: {
+            $getField: {
+              field: 'price',
+              input: {
+                $first: {
+                  $filter: {
+                    input: group,
+                    cond: { $eq: ['$$this.type', type] },
+                  },
+                },
+              },
+            },
+          },
+          else: {
+            $getField: {
+              field: 'priceWOVat',
+              input: {
+                $first: {
+                  $filter: {
+                    input: group,
+                    cond: { $eq: ['$$this.type', type] },
+                  },
+                },
               },
             },
           },
@@ -40,11 +56,11 @@ const getBasePriceByType = (type: string, usePriceWithVat: boolean) => ({
 })
 
 // Создаёт объект с базовыми ценами для каждого типа
-export const finalPricesFragmentBuilder = (usePriceWithVat: boolean) => {
+export const finalPricesFragmentBuilder = () => {
   let res = {}
   ORDER_PRICE_TYPES_ENUM_VALUES.forEach((priceType) => {
     res = Object.assign(res, {
-      [priceType]: getBasePriceByType(priceType, usePriceWithVat),
+      [priceType]: getBasePriceByType(priceType),
     })
   })
   return res
@@ -64,7 +80,7 @@ export const recalcTotalByTypesFragmentBuilder = (
     res = Object.assign(res, {
       [priceType]: {
         $cond: {
-          if: '$usePriceWithVat',
+          if: '$$ROOT.usePriceWithVat',
           then: {
             price: `$totalByTypes.${priceType}`,
             priceWOVat: {

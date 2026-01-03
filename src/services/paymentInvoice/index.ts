@@ -1,30 +1,31 @@
-import { emitTo } from '../../socket'
+import { emitTo } from '@/socket'
 import ChangeLogService from '../changeLog'
-import PaymentInvoiceRepository from '../../repositories/paymentInvoice/paymentInvoice.repository'
+import PaymentInvoiceRepository from '@/repositories/paymentInvoice/paymentInvoice.repository'
 import {
   OrderInPaymentInvoice as OrderInPaymentInvoiceModel,
   PaymentInvoice as PaymentInvoiceModel,
-} from '../../models'
+} from '@/models'
 import { BadRequestError } from '../../helpers/errors'
 import { getListPipeline } from './pipelines/getListPipeline'
 
-import { PaymentInvoiceDomain } from '../../domain/paymentInvoice/paymentInvoice'
+import { PaymentInvoiceDomain } from '@/domain/paymentInvoice/paymentInvoice'
 import {
   IAddOrdersToInvoiceProps,
+  IInvoiceVatRateInfo,
   IPickOrdersForPaymentInvoiceProps,
   PickOrdersForPaymentInvoicePropsSchema,
 } from '../../domain/paymentInvoice/interfaces'
 import { PipelineStage } from 'mongoose'
-import { OrderInPaymentInvoice } from '../../domain/paymentInvoice/orderInPaymentInvoice'
-import { OrderPickedForInvoiceDTO } from '../../domain/paymentInvoice/dto/orderPickedForInvoice.dto'
+import { OrderInPaymentInvoice } from '@/domain/paymentInvoice/orderInPaymentInvoice'
+import { OrderPickedForInvoiceDTO } from '@/domain/paymentInvoice/dto/orderPickedForInvoice.dto'
 
 import * as pf from './printForms'
-import { PrintForm } from '../../domain/printForm/printForm.domain'
+import { PrintForm } from '@/domain/printForm/printForm.domain'
 import {
   AgreementRepository,
   CarrierRepository,
   PrintFormRepository,
-} from '../../repositories'
+} from '@/repositories'
 import { BusEvent } from 'ts-bus/types'
 import { EventBus } from 'ts-bus'
 import { bus } from '@/eventBus'
@@ -63,6 +64,34 @@ class PaymentInvoiceService {
     this.bus = bus
   }
 
+  private async getInvoiceVatRateInfoByAgreementAndDate(
+    clientAgreementId: string,
+    date: Date
+  ): Promise<IInvoiceVatRateInfo> {
+    const agreement = await AgreementRepository.getById(clientAgreementId)
+    if (!agreement)
+      throw new BadRequestError(
+        'указанное в акте соглашение с клиентом не найдено'
+      )
+
+    if (!agreement.executor)
+      throw new BadRequestError('В выбранном соглашении не указан исполнитель')
+
+    const carrier = await CarrierRepository.getById(agreement.executor)
+    if (!carrier) throw new BadRequestError('Исполнитель не найден')
+
+    const vatRate = carrier.getVatRateByDate(date)
+    if (vatRate === null)
+      throw new BadRequestError(
+        'У исполнителя на указанную дату ставка НДС отсутствует'
+      )
+
+    return {
+      vatRate,
+      usePriceWithVat: agreement.usePriceWithVAT,
+    }
+  }
+
   async deleteById({
     id,
     user,
@@ -96,18 +125,32 @@ class PaymentInvoiceService {
     return data
   }
 
-  async getById(id: string): Promise<any> {
+  async getById(id: string): Promise<PaymentInvoiceDomain | null> {
     const paymentInvoice: PaymentInvoiceDomain | null =
       await PaymentInvoiceRepository.getInvoiceById(id)
-    if (!paymentInvoice) return null
     return paymentInvoice
   }
 
   async updateOne({ id, body, user }: { id: string; body: any; user: string }) {
-    const updatedInvoice = await PaymentInvoiceRepository.updateInvoice(
-      id,
-      body
-    )
+    let vatRateData: IInvoiceVatRateInfo | null = null
+    const existedInvoice = await PaymentInvoiceRepository.getInvoiceById(id)
+    if (!existedInvoice)
+      throw new BadRequestError('Редактируемый исходящий акт не найден')
+
+    if (
+      existedInvoice.vatRateInfoIsMissing ||
+      +existedInvoice.date !== +new Date(body.date)
+    ) {
+      vatRateData = await this.getInvoiceVatRateInfoByAgreementAndDate(
+        body.agreement,
+        new Date(body.date)
+      )
+    }
+
+    const updatedInvoice = await PaymentInvoiceRepository.updateInvoice(id, {
+      ...body,
+      ...vatRateData,
+    })
 
     await this.logService.add({
       docId: updatedInvoice._id,
@@ -121,6 +164,7 @@ class PaymentInvoiceService {
     const orders = await PaymentInvoiceRepository.getOrdersPickedForInvoice({
       invoiceId: updatedInvoice._id,
       company: updatedInvoice.company,
+      vatRate: updatedInvoice.vatRate,
     })
 
     updatedInvoice.setOrders(orders)
@@ -153,7 +197,7 @@ class PaymentInvoiceService {
       opType: 'create',
       user,
       company: data.company.toString(),
-      body: JSON.stringify(data.toJSON()),
+      body: data.toJSON(),
     })
     this.emitter(data.company.toString(), `${this.modelName}:created`, data)
     return data
@@ -198,12 +242,17 @@ class PaymentInvoiceService {
       throw new BadRequestError(
         'PaymentInvoiceService:addOrdersToInvoice. missing required params'
       )
-    // Формирую новые объекты в коллекции
+
     try {
+      const invoice =
+        await PaymentInvoiceRepository.getInvoiceById(paymentInvoiceId)
+      if (!invoice) throw new BadRequestError('Исходящий АКТ не найден')
+
       const ordersDTO: OrderPickedForInvoiceDTO[] =
         await PaymentInvoiceRepository.getOrdersPickedForInvoiceDTOByOrders({
           orderIds: orders,
           company,
+          vatRate: invoice.vatRate,
         })
 
       ordersDTO.forEach((i) => {
@@ -274,15 +323,14 @@ class PaymentInvoiceService {
       throw new BadRequestError(
         'Исполнитель по соглашению с клиентом не найден'
       )
-    const usePriceWithVat = clientAgreement.usePriceWithVAT
+
     const vatRate = executor.getVatRateByDate(parsedProps.invoiceDate)
 
     if (!vatRate)
       throw new BadRequestError('Для исполнителя не определена ставка НДС')
     const result = await PaymentInvoiceRepository.pickOrdersForPaymentInvoice(
       props,
-      vatRate,
-      usePriceWithVat
+      vatRate
     )
 
     return result || [[]]
@@ -312,16 +360,26 @@ class PaymentInvoiceService {
     company: string
   }): Promise<OrderPickedForInvoiceDTO | null> {
     try {
-      const [order] = await PaymentInvoiceRepository.getOrdersPickedForInvoice({
-        orderIds: [orderId],
-        company,
-      })
-      if (!order) return null
-
       const [item] =
         await PaymentInvoiceRepository.getOrderInPaymentInvoiceItemsByOrders([
           orderId,
         ])
+      const invoice = await PaymentInvoiceRepository.getInvoiceById(
+        item.paymentInvoice
+      )
+      if (!invoice)
+        throw new BadRequestError(
+          'Исходящий акт отсутствует, обновление цен рейса не возможно'
+        )
+      if (invoice.vatRateInfoIsMissing)
+        throw new BadRequestError('В акте отсутствует информация о ставке НДС')
+
+      const [order] = await PaymentInvoiceRepository.getOrdersPickedForInvoice({
+        orderIds: [orderId],
+        company,
+        vatRate: invoice.vatRate,
+      })
+      if (!order) return null
 
       item.setTotal(order)
       order.saveTotal()
