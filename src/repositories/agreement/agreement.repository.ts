@@ -17,6 +17,11 @@ class AgreementRepository {
     if (!doc) return null
     return new Agreement(doc)
   }
+
+  async getByIds(ids: string[]): Promise<Agreement[]> {
+    const docs = await this.model.find({ _id: { $in: ids } })
+    return docs.map((doc) => new Agreement(doc))
+  }
 }
 
 export default new AgreementRepository({ model: AgreementModel })

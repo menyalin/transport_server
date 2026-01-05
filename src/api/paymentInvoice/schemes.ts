@@ -51,3 +51,12 @@ export const downloadDocsSchema = {
   required: ['templateName'],
   additionalProperties: true,
 }
+
+export const getInvoiceOrdersSchema = {
+  type: 'object',
+  properties: {
+    limit: { type: 'string' },
+    skip: { type: 'string' },
+  },
+  additionalProperties: true,
+}

@@ -23,8 +23,8 @@ export async function okAktBuilder({
     endPeriod:
       invoice.invoicePeriod?.end.toLocaleDateString(locale) ||
       'Дата не определена',
-    totalSum: moneyFormatter(invoice.invoiceTotalSumWithVat, locale),
-    vatSum: moneyFormatter(invoice.invoiceVatSum, locale),
+    totalSum: moneyFormatter(invoice.priceWithVat, locale),
+    vatSum: moneyFormatter(invoice.priceWithVat - invoice.priceWOVat, locale),
   }
   const doc = formBuilder(p)
   return await Packer.toBuffer(doc)

@@ -1,38 +1,62 @@
 import { PipelineStage, Types } from 'mongoose'
-import { OrderPickedForInvoiceDTO } from '../../domain/paymentInvoice/dto/orderPickedForInvoice.dto'
 import { OrderInPaymentInvoice as OrderInPaymentInvoiceModel } from '../../models'
-import { lookupOrdersForOrderInInvoice } from './pipelineFragments/lookupOrdersForOrderInInvoice'
+
 import {
   GetOrdersPickedForInvoiceProps,
   GetOrdersPickedForInvoicePropsSchema,
-} from '../../domain/paymentInvoice/interfaces'
+} from '@/domain/paymentInvoice/interfaces'
+import { lookupOrdersForOrderInInvoice } from './pipelines/pipelineFragments/lookupOrdersForOrderInInvoice'
+import { InvoiceOrdersResultDTO } from './dto/invoiceOrdersResult.dto'
 
 export async function getOrdersPickedForInvoice(
   p: GetOrdersPickedForInvoiceProps
-): Promise<OrderPickedForInvoiceDTO[]> {
-  GetOrdersPickedForInvoicePropsSchema.parse(p)
+): Promise<InvoiceOrdersResultDTO> {
+  const parsedProps = GetOrdersPickedForInvoicePropsSchema.parse(p)
 
   const firstMatcher: PipelineStage.Match = {
     $match: {
-      company: new Types.ObjectId(p.company),
+      company: new Types.ObjectId(parsedProps.company),
       $expr: {
         $and: [],
       },
     },
   }
-  if (p.invoiceId)
+  if (parsedProps.invoiceId)
     firstMatcher.$match.$expr?.$and.push({
-      $eq: ['$paymentInvoice', new Types.ObjectId(p.invoiceId)],
+      $eq: ['$paymentInvoice', new Types.ObjectId(parsedProps.invoiceId)],
     })
-  else if (p.orderIds?.length)
+  else if (parsedProps.orderIds?.length)
     firstMatcher.$match.$expr?.$and.push({
-      $in: ['$order', p.orderIds.map((i) => new Types.ObjectId(i))],
+      $in: ['$_id', parsedProps.orderIds.map((i) => new Types.ObjectId(i))],
     })
+
+  const finalFacet: PipelineStage.Facet = {
+    $facet: {
+      total: [
+        {
+          $group: {
+            _id: null,
+            count: { $sum: 1 },
+            withVat: { $sum: '$total.price' },
+            woVat: { $sum: '$total.priceWOVat' },
+          },
+        },
+      ],
+      items: [
+        { $skip: parsedProps?.skip || 0 },
+        { $limit: parsedProps.limit || 50 },
+      ],
+    },
+  }
 
   const res = await OrderInPaymentInvoiceModel.aggregate([
     firstMatcher,
-    ...lookupOrdersForOrderInInvoice(),
+    ...lookupOrdersForOrderInInvoice({
+      vatRate: p.vatRate,
+      usePriceWithVat: p.usePriceWithVat,
+    }),
+    finalFacet,
   ])
 
-  return res.map((i) => new OrderPickedForInvoiceDTO(i))
+  return new InvoiceOrdersResultDTO(res[0] || { total: [], items: [] })
 }

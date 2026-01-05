@@ -8,6 +8,7 @@ import {
   addOrdersToInvoiceSchema,
   downloadDocsSchema,
   getAllowedPFSchema,
+  getInvoiceOrdersSchema,
 } from './schemes'
 import ctrl from '../../controllers/paymentInvoice.controller'
 
@@ -30,6 +31,12 @@ router.get(
   (...args) => ctrl.getAllowedPrintForms(...args)
 )
 router.get('/:id', [jwtAuth], (...args) => ctrl.getById(...args))
+
+router.get(
+  '/:id/orders',
+  [jwtAuth, queryValidator(getInvoiceOrdersSchema)],
+  (...args) => ctrl.getInvoiceOrders(...args)
+)
 
 router.post(
   '/add_orders_to_invoice',

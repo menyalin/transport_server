@@ -7,9 +7,10 @@ import { OrderPickedForInvoiceDTO } from './dto/orderPickedForInvoice.dto'
 import { DateRange } from '@/classes/dateRange'
 import { BusEvent } from 'ts-bus/types'
 import { PaymentInvoicePaidEvent, PaymentInvoiceSendedEvent } from './events'
+import { IPaymentInvoiceAnalytics } from './interfaces'
 
-export class PaymentInvoiceDomain {
-  _id?: string
+export class PaymentInvoiceDomain implements IPaymentInvoiceAnalytics {
+  _id: string
   company: string
   number: string
   numberByClient?: string
@@ -26,6 +27,11 @@ export class PaymentInvoiceDomain {
   note?: string
   orders?: OrderPickedForInvoiceDTO[]
   agreement?: any
+  vatRate: number
+  usePriceWithVat: boolean
+  ordersCount: number
+  priceWOVat: number
+  priceWithVat: number
 
   private constructor(invoice: any) {
     this._id = invoice?._id.toString()
@@ -53,6 +59,11 @@ export class PaymentInvoiceDomain {
     this.isActive = invoice.isActive
     this.note = invoice.note
     if (invoice.client?._id) this.client = invoice.client
+    this.ordersCount = invoice.ordersCount || 0
+    this.priceWithVat = invoice.priceWithVat || 0
+    this.priceWOVat = invoice.priceWOVat || 0
+    this.vatRate = invoice.vatRate ?? null
+    this.usePriceWithVat = invoice.usePriceWithVat
   }
 
   setAgreement(agreement: any) {
@@ -71,17 +82,18 @@ export class PaymentInvoiceDomain {
     return new DateRange(dates[0], dates[dates.length - 1])
   }
 
-  get invoiceTotalSumWithVat(): number {
-    if (!this.orders || this.orders.length === 0) return 0
-    return this.orders.reduce((sum, order) => (sum += order.total.price), 0)
+  get vatRateInfoIsMissing(): boolean {
+    return this.vatRate == null || this.usePriceWithVat == null
   }
 
-  get invoiceVatSum(): number {
-    if (!this.orders || this.orders.length === 0) return 0
-
-    return this.orders.reduce((sum, order) => {
-      return sum + (order.total.price - order.total.priceWOVat)
-    }, 0)
+  updateOrderPriceChanged(
+    oldPrice: { price: number; priceWOVat: number },
+    newPrice: { price: number; priceWOVat: number }
+  ): void {
+    const priceDiff = newPrice.price - oldPrice.price
+    const priceWOVatDiff = newPrice.priceWOVat - oldPrice.priceWOVat
+    this.priceWithVat = Math.max(0, (this.priceWithVat || 0) + priceDiff)
+    this.priceWOVat = Math.max(0, (this.priceWOVat || 0) + priceWOVatDiff)
   }
 
   setStatusSended(sendDate: Date): BusEvent[] {
@@ -120,6 +132,11 @@ export class PaymentInvoiceDomain {
       status: { type: String, enum: PAIMENT_INVOICE_STATUSES_ENUM_VALUES },
       isActive: { type: Boolean, default: true },
       note: String,
+      ordersCount: Number,
+      priceWOVat: Number,
+      priceWithVat: Number,
+      vatRate: Number,
+      usePriceWithVat: Boolean,
     }
   }
 }
