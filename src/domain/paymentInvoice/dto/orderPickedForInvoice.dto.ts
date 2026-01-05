@@ -93,7 +93,11 @@ export class OrderPickedForInvoiceDTO {
     this.totalByTypes = preparedProps.totalByTypes
     this.total = preparedProps.total
 
-    this.needUpdate = utils.isNeedUpdatePrices(this.total, this.savedTotal)
+    this.needUpdate = utils.isNeedUpdatePrices(
+      this.usePriceWithVat,
+      this.total,
+      this.savedTotal
+    )
     this.note = preparedProps.paymentParts
       ? preparedProps.paymentParts.note
       : preparedProps.note

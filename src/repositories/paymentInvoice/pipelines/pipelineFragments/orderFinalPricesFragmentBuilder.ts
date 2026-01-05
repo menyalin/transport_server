@@ -1,4 +1,4 @@
-import { ORDER_PRICE_TYPES_ENUM_VALUES } from '../../../constants/priceTypes'
+import { ORDER_PRICE_TYPES_ENUM_VALUES } from '@/constants/priceTypes'
 const priceGroups = ['$finalPrices', '$prices', '$prePrices']
 
 // Получить базовую цену для типа (в зависимости от usePriceWithVat)
@@ -56,9 +56,11 @@ const getBasePriceByType = (type: string) => ({
 })
 
 // Создаёт объект с базовыми ценами для каждого типа
-export const finalPricesFragmentBuilder = () => {
+export const finalPricesFragmentBuilder = (
+  types: string[] = ORDER_PRICE_TYPES_ENUM_VALUES
+) => {
   let res = {}
-  ORDER_PRICE_TYPES_ENUM_VALUES.forEach((priceType) => {
+  types.forEach((priceType) => {
     res = Object.assign(res, {
       [priceType]: getBasePriceByType(priceType),
     })

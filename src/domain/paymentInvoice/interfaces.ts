@@ -51,6 +51,9 @@ export const GetOrdersPickedForInvoicePropsSchema = z
     invoiceId: z.string().optional(),
     orderIds: z.array(z.string()).optional(),
     vatRate: z.number(),
+    usePriceWithVat: z.boolean(),
+    skip: z.number().optional(),
+    limit: z.number().optional(),
   })
   .refine((data) => (data.invoiceId ? !data.orderIds : data.orderIds), {
     message:
@@ -150,4 +153,10 @@ export type OrderPickedForInvoiceDTOProps = z.infer<
 export interface IInvoiceVatRateInfo {
   vatRate: number
   usePriceWithVat: boolean
+}
+
+export interface IPaymentInvoiceAnalytics {
+  ordersCount: number
+  priceWOVat: number
+  priceWithVat: number
 }

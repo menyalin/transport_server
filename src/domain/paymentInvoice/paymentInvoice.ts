@@ -7,9 +7,10 @@ import { OrderPickedForInvoiceDTO } from './dto/orderPickedForInvoice.dto'
 import { DateRange } from '@/classes/dateRange'
 import { BusEvent } from 'ts-bus/types'
 import { PaymentInvoicePaidEvent, PaymentInvoiceSendedEvent } from './events'
+import { IPaymentInvoiceAnalytics } from './interfaces'
 
-export class PaymentInvoiceDomain {
-  _id?: string
+export class PaymentInvoiceDomain implements IPaymentInvoiceAnalytics {
+  _id: string
   company: string
   number: string
   numberByClient?: string
@@ -28,9 +29,9 @@ export class PaymentInvoiceDomain {
   agreement?: any
   vatRate: number
   usePriceWithVat: boolean
-  ordersCount: number | null
-  priceWOVat: number | null
-  priceWithVat: number | null
+  ordersCount: number
+  priceWOVat: number
+  priceWithVat: number
 
   private constructor(invoice: any) {
     this._id = invoice?._id.toString()
@@ -58,9 +59,9 @@ export class PaymentInvoiceDomain {
     this.isActive = invoice.isActive
     this.note = invoice.note
     if (invoice.client?._id) this.client = invoice.client
-    this.ordersCount = invoice.ordersCount || null
-    this.priceWithVat = invoice.priceWithVat || null
-    this.priceWOVat = invoice.priceWOVat || null
+    this.ordersCount = invoice.ordersCount || 0
+    this.priceWithVat = invoice.priceWithVat || 0
+    this.priceWOVat = invoice.priceWOVat || 0
     this.vatRate = invoice.vatRate ?? null
     this.usePriceWithVat = invoice.usePriceWithVat
   }
@@ -85,17 +86,14 @@ export class PaymentInvoiceDomain {
     return this.vatRate == null || this.usePriceWithVat == null
   }
 
-  get invoiceTotalSumWithVat(): number {
-    if (!this.orders || this.orders.length === 0) return 0
-    return this.orders.reduce((sum, order) => (sum += order.total.price), 0)
-  }
-
-  get invoiceVatSum(): number {
-    if (!this.orders || this.orders.length === 0) return 0
-
-    return this.orders.reduce((sum, order) => {
-      return sum + (order.total.price - order.total.priceWOVat)
-    }, 0)
+  updateOrderPriceChanged(
+    oldPrice: { price: number; priceWOVat: number },
+    newPrice: { price: number; priceWOVat: number }
+  ): void {
+    const priceDiff = newPrice.price - oldPrice.price
+    const priceWOVatDiff = newPrice.priceWOVat - oldPrice.priceWOVat
+    this.priceWithVat = Math.max(0, (this.priceWithVat || 0) + priceDiff)
+    this.priceWOVat = Math.max(0, (this.priceWOVat || 0) + priceWOVatDiff)
   }
 
   setStatusSended(sendDate: Date): BusEvent[] {

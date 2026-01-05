@@ -7,10 +7,6 @@ import {
 } from 'mongoose'
 
 import {
-  finalPricesFragmentBuilder,
-  recalcTotalByTypesFragmentBuilder,
-} from './pipelineFragments/orderFinalPricesFragmentBuilder'
-import {
   IStaticticData,
   IPickOrdersForPaymentInvoiceProps,
   OrderPickedForInvoiceDTOProps,
@@ -22,9 +18,7 @@ import { orderDocNumbersStringFragment } from '@/shared/pipelineFragments/orderD
 import { orderDocsStatusConditionBuilder } from '@/shared/pipelineFragments/orderDocsStatusConditionBuilder'
 import { orderDateFragmentBuilder } from '@/shared/pipelineFragments/orderDateFragmentBuilder'
 import { OrderPickedForInvoiceDTO } from '@/domain/paymentInvoice/dto/orderPickedForInvoice.dto'
-import { agreementLookupBuilder } from '@/shared/pipelineFragments/agreementLookupBuilder'
-import { paymentPartsSumBuilder } from '@/shared/pipelineFragments/paymentPartsSumBuilder'
-import { calcTotalBuilder } from '@/shared/pipelineFragments/calcTotalBuilder'
+import { totalByTypesFragementBuilder } from './pipelines/pipelineFragments/totalByTypesFragementBuilder'
 
 const setStatisticData = (res: any): IStaticticData => {
   if (!res.total?.length)
@@ -53,7 +47,8 @@ const setStatisticData = (res: any): IStaticticData => {
 
 export async function pickOrdersForPaymentInvoice(
   p: IPickOrdersForPaymentInvoiceProps,
-  vatRate: number
+  vatRate: number,
+  usePriceWithVat: boolean
 ): Promise<[unknown[], IStaticticData?]> {
   const firstMatcherBuilder = (
     filtersExpressions: Array<BooleanExpression | ArrayExpressionOperator>
@@ -138,6 +133,7 @@ export async function pickOrdersForPaymentInvoice(
         orderId: '$_id',
         isSelectable: true,
         agreementVatRate: vatRate,
+        usePriceWithVat: usePriceWithVat,
         itemType: 'order',
         docNumbers: orderDocNumbersStringFragment({
           docsFieldName: '$docs',
@@ -145,41 +141,8 @@ export async function pickOrdersForPaymentInvoice(
         }),
       },
     },
-    {
-      $addFields: {
-        paymentPartsSum: paymentPartsSumBuilder(),
-      },
-    },
-    { $unset: ['paymentParts'] },
-    {
-      $addFields: {
-        totalByTypes: finalPricesFragmentBuilder(),
-      },
-    },
-    {
-      $addFields: {
-        totalByTypes: {
-          $mergeObjects: [
-            '$totalByTypes',
-            {
-              base: {
-                $subtract: ['$totalByTypes.base', '$paymentPartsSum'],
-              },
-            },
-          ],
-        },
-      },
-    },
-    {
-      $addFields: {
-        totalByTypes: recalcTotalByTypesFragmentBuilder(),
-      },
-    },
-    {
-      $addFields: {
-        total: calcTotalBuilder(),
-      },
-    },
+
+    ...totalByTypesFragementBuilder(false),
   ]
 
   const unionSecondMatcher = (
@@ -225,7 +188,7 @@ export async function pickOrdersForPaymentInvoice(
         { $unwind: { path: '$paymentParts' } },
         unionSecondMatcher(p.agreement, p.agreements, p.client),
         ...paymentInvoiceFilterBuilder('paymentParts._id'),
-        ...agreementLookupBuilder('paymentParts.agreement'),
+        // ...agreementLookupBuilder('paymentParts.agreement'),
         {
           $addFields: {
             orderId: '$_id',
@@ -233,35 +196,12 @@ export async function pickOrdersForPaymentInvoice(
             plannedDate: orderDateFragmentBuilder(),
             isSelectable: true,
             agreementVatRate: vatRate,
+            usePriceWithVat: usePriceWithVat,
             itemType: 'paymentPart',
             paymentPartsSum: 0,
-            _basePrice: {
-              $cond: {
-                if: '$$ROOT.usePriceWithVat',
-                then: '$paymentParts.price',
-                else: '$paymentParts.priceWOVat',
-              },
-            },
           },
         },
-        {
-          $addFields: {
-            totalByTypes: {
-              base: '$_basePrice',
-            },
-          },
-        },
-        {
-          $addFields: {
-            totalByTypes: recalcTotalByTypesFragmentBuilder(['base']),
-          },
-        },
-        {
-          $addFields: {
-            total: calcTotalBuilder(),
-          },
-        },
-
+        ...totalByTypesFragementBuilder(true),
         { $limit: 50 },
       ] as any[],
     },
@@ -336,7 +276,7 @@ export async function pickOrdersForPaymentInvoice(
   const [res] = await OrderModel.aggregate([
     firstMatcherBuilder([...filters, ...clientFilters]),
     ...paymentInvoiceFilterBuilder('_id'),
-    ...agreementLookupBuilder('client.agreement'),
+    // ...agreementLookupBuilder('client.agreement'),
     ...addFields,
     unionWithPaymentPartsOrders,
     ...orderLoadingZoneFragmentBuilder(p.loadingZones),

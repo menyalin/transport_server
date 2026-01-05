@@ -74,9 +74,8 @@ export const paymentInvoiceDataBuilder = async (
       mainColumnTitle: 'Наименование работ, услуг',
     },
     resultTable: {
-      priceWithVat: invoice?.invoiceTotalSumWithVat ?? 0,
-      priceWOVat:
-        (invoice?.invoiceTotalSumWithVat ?? 0) - (invoice?.invoiceVatSum ?? 0),
+      priceWithVat: invoice?.priceWithVat ?? 0,
+      priceWOVat: invoice?.priceWOVat ?? 0,
 
       count: invoice?.orders.length ?? 0,
       // invoice?.ordersCount ?? 0,

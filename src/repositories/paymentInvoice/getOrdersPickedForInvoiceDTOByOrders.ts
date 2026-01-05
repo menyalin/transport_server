@@ -7,19 +7,14 @@ import {
 import { Order as OrderModel } from '@/models'
 import { orderDriverFullNameBuilder } from '@/shared/pipelineFragments/orderDriverFullNameBuilder'
 import { orderDateFragmentBuilder } from '@/shared/pipelineFragments/orderDateFragmentBuilder'
-import { agreementLookupBuilder } from '@/shared/pipelineFragments/agreementLookupBuilder'
-import { paymentPartsSumBuilder } from '@/shared/pipelineFragments/paymentPartsSumBuilder'
-import { calcTotalBuilder } from '@/shared/pipelineFragments/calcTotalBuilder'
-import { recalcTotalByTypesFragmentBuilder } from './pipelineFragments/orderFinalPricesFragmentBuilder'
-import { finalPricesFragmentBuilder } from './pipelineFragments/orderFinalPricesFragmentBuilder'
+import { totalByTypesFragementBuilder } from './pipelines/pipelineFragments/totalByTypesFragementBuilder'
 
-export const getOrdersPickedForInvoiceDTOByOrders = async ({
-  orderIds,
-  company,
-  vatRate,
-}: GetOrdersPickedForInvoiceProps): Promise<OrderPickedForInvoiceDTO[]> => {
-  GetOrdersPickedForInvoicePropsSchema.parse({ orderIds, company, vatRate })
-  if (!orderIds?.length)
+export const getOrdersPickedForInvoiceDTOByOrders = async (
+  p: GetOrdersPickedForInvoiceProps
+): Promise<OrderPickedForInvoiceDTO[]> => {
+  const parsedProps = GetOrdersPickedForInvoicePropsSchema.parse(p)
+
+  if (!parsedProps.orderIds?.length)
     throw new Error(
       'getOrdersPickedForInvoiceDTOByOrders : orderIds is missing'
     )
@@ -38,53 +33,30 @@ export const getOrdersPickedForInvoiceDTOByOrders = async ({
   const ordersMatcher: PipelineStage[] = [
     {
       $match: {
-        company: new Types.ObjectId(company),
+        company: new Types.ObjectId(parsedProps.company),
         $expr: {
-          $and: [{ $in: ['$_id', orderIds.map((i) => new Types.ObjectId(i))] }],
-        },
-      },
-    },
-    ...agreementLookupBuilder('client.agreement'),
-    {
-      $addFields: {
-        itemType: 'order',
-        orderId: '$_id',
-        rowId: '$_id',
-        vatRate,
-
-        paymentPartsSum: paymentPartsSumBuilder(),
-      },
-    },
-    { $unset: ['paymentParts'] },
-    {
-      $addFields: {
-        totalByTypes: finalPricesFragmentBuilder(),
-      },
-    },
-    {
-      $addFields: {
-        totalByTypes: {
-          $mergeObjects: [
-            '$totalByTypes',
+          $and: [
             {
-              base: {
-                $subtract: ['$totalByTypes.base', '$paymentPartsSum'],
-              },
+              $in: [
+                '$_id',
+                parsedProps.orderIds.map((i) => new Types.ObjectId(i)),
+              ],
             },
           ],
         },
       },
     },
+    // ...agreementLookupBuilder('client.agreement'),
     {
       $addFields: {
-        totalByTypes: recalcTotalByTypesFragmentBuilder(),
+        itemType: 'order',
+        orderId: '$_id',
+        rowId: '$_id',
+        usePriceWithVat: parsedProps.usePriceWithVat,
+        agreementVatRate: parsedProps.vatRate,
       },
     },
-    {
-      $addFields: {
-        total: calcTotalBuilder(),
-      },
-    },
+    ...totalByTypesFragementBuilder(false),
   ]
 
   const unionWithPaymentParts = {
@@ -93,7 +65,7 @@ export const getOrdersPickedForInvoiceDTOByOrders = async ({
       pipeline: [
         {
           $match: {
-            company: new Types.ObjectId(company),
+            company: new Types.ObjectId(parsedProps.company),
             $expr: {
               $and: [
                 {
@@ -106,7 +78,9 @@ export const getOrdersPickedForInvoiceDTOByOrders = async ({
                           cond: {
                             $in: [
                               '$$part._id',
-                              orderIds.map((i) => new Types.ObjectId(i)),
+                              parsedProps.orderIds.map(
+                                (i) => new Types.ObjectId(i)
+                              ),
                             ],
                           },
                         },
@@ -128,39 +102,26 @@ export const getOrdersPickedForInvoiceDTOByOrders = async ({
                 {
                   $in: [
                     '$paymentParts._id',
-                    orderIds.map((i) => new Types.ObjectId(i)),
+                    parsedProps.orderIds.map((i) => new Types.ObjectId(i)),
                   ],
                 },
               ],
             },
           },
         },
-        ...agreementLookupBuilder('paymentParts.agreement'),
+        // ...agreementLookupBuilder('paymentParts.agreement'),
         {
           $addFields: {
             paymentPartsSum: 0,
-            agreementVatRate: vatRate,
+            agreementVatRate: parsedProps.vatRate,
+            usePriceWithVat: parsedProps.usePriceWithVat,
             itemType: 'paymentPart',
             orderId: '$_id',
             rowId: '$_id',
             _id: '$paymentParts._id',
           },
         },
-        {
-          $addFields: {
-            totalByTypes: finalPricesFragmentBuilder(),
-          },
-        },
-        {
-          $addFields: {
-            totalByTypes: recalcTotalByTypesFragmentBuilder(['base']),
-          },
-        },
-        {
-          $addFields: {
-            total: calcTotalBuilder(),
-          },
-        },
+        ...totalByTypesFragementBuilder(true),
       ],
     },
   } as PipelineStage
@@ -172,6 +133,7 @@ export const getOrdersPickedForInvoiceDTOByOrders = async ({
         driverName: orderDriverFullNameBuilder(),
       },
     },
+    { $unset: ['driver'] },
   ]
 
   const res = await OrderModel.aggregate([

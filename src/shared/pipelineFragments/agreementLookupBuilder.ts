@@ -23,5 +23,8 @@ export const agreementLookupBuilder = (
         usePriceWithVat: '$agreement.usePriceWithVAT',
       },
     },
+    {
+      $unset: 'agreement',
+    },
   ]
 }
