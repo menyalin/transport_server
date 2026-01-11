@@ -127,8 +127,11 @@ class PaymentInvoiceService {
   }
 
   async getById(id: string): Promise<PaymentInvoiceDomain | null> {
-    const paymentInvoice: PaymentInvoiceDomain | null =
-      await PaymentInvoiceRepository.getInvoiceById(id)
+    const paymentInvoice = await PaymentInvoiceRepository.getInvoiceById(id)
+    if (paymentInvoice?.agreementId)
+      paymentInvoice.setAgreement(
+        await AgreementRepository.getById(paymentInvoice.agreementId)
+      )
     return paymentInvoice
   }
 

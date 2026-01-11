@@ -22,6 +22,7 @@ import {
 } from '@/domain/paymentInvoice/events'
 import { InvoiceOrdersResultDTO } from './dto/invoiceOrdersResult.dto'
 import { invoiceAnalyticsPipelineBuilder } from './pipelines/invoiceAnalyticsPipelineBuilder'
+import { Types } from 'mongoose'
 
 interface IProps {
   invoiceModel: typeof PaymentInvoiceModel
@@ -57,9 +58,15 @@ class PaymentInvoiceRepository {
   }
 
   async getInvoiceById(id: string): Promise<PaymentInvoiceDomain | null> {
-    const invoice = await PaymentInvoiceModel.findById(id).lean()
-    if (!invoice || !invoice._id) return null
-    return PaymentInvoiceDomain.create(invoice)
+    const res = await PaymentInvoiceModel.aggregate([
+      {
+        $match: {
+          _id: new Types.ObjectId(id),
+        },
+      },
+    ])
+    if (!res || !res[0]) return null
+    return PaymentInvoiceDomain.create(res[0])
   }
 
   async getInvoiceOrders(
