@@ -97,13 +97,22 @@ class PaymentInvoiceController {
   }
 
   async getInvoiceOrders(
-    req: AuthorizedRequest<{ id: string }, any, any, { limit?: string; skip?: string }>,
+    req: AuthorizedRequest<
+      { id: string },
+      any,
+      any,
+      { limit?: string; skip?: string }
+    >,
     res: Response
   ) {
     try {
       const limit = req.query.limit ? parseInt(req.query.limit) : 100
       const skip = req.query.skip ? parseInt(req.query.skip) : 0
-      const data = await this.service.getInvoiceOrders(req.params.id, limit, skip)
+      const data = await this.service.getInvoiceOrders(
+        req.params.id,
+        limit,
+        skip
+      )
       res.status(200).json(data)
     } catch (e) {
       if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
@@ -258,7 +267,6 @@ class PaymentInvoiceController {
         ...req.query,
         company: req.companyId,
         period: new DateRange(req.query.period[0], req.query.period[1]),
-        invoiceDate: new Date(req.query.invoiceDate),
       })
       res.status(200).json(data)
     } catch (e) {
