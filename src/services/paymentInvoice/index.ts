@@ -153,7 +153,8 @@ class PaymentInvoiceService {
 
     if (
       existedInvoice.vatRateInfoIsMissing ||
-      +existedInvoice.date !== +new Date(body.date)
+      +existedInvoice.date !== +new Date(body.date) ||
+      existedInvoice.agreementId !== body.agreement
     ) {
       vatRateData = await this.getInvoiceVatRateInfoByAgreementAndDate(
         body.agreement,
