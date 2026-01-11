@@ -15,10 +15,13 @@ export const paymentInvoiceDataBuilder = async (
   invoiceId: string
 ): Promise<ICommonActData> => {
   const invoice = await PaymentInvoiceRepository.getInvoiceById(invoiceId)
+  const { items: orders } =
+    await PaymentInvoiceRepository.getInvoiceOrders(invoiceId)
   if (!invoice) throw new BadRequestError('Invoice not found')
-  if (!invoice?.orders) throw new BadRequestError('Orders not found')
-  let orderRows: ICommonDocMainTableRowProps[] = []
+  if (!orders || !orders?.length) throw new BadRequestError('Orders not found')
+  invoice.setOrders(orders)
 
+  let orderRows: ICommonDocMainTableRowProps[] = []
   const customer = await PartnerRepository.getById(invoice.clientId)
   if (!customer) throw new BadRequestError('Заказчик не найден')
 
@@ -30,7 +33,7 @@ export const paymentInvoiceDataBuilder = async (
       'В соглашении с клиентом не указан основной исполнитель'
     )
 
-  for (const orderInInvoice of invoice.orders) {
+  for (const orderInInvoice of orders) {
     const orderData = await OrderRepository.getFullOrderDataDTO(
       orderInInvoice.orderId.toString()
     )
@@ -77,9 +80,8 @@ export const paymentInvoiceDataBuilder = async (
       priceWithVat: invoice?.priceWithVat ?? 0,
       priceWOVat: invoice?.priceWOVat ?? 0,
 
-      count: invoice?.orders.length ?? 0,
-      // invoice?.ordersCount ?? 0,
-      vatRate: clientAgreement?.vatRate ?? 0,
+      count: invoice.ordersCount ?? 0,
+      vatRate: invoice.vatRate,
       showTotalToPay: false,
       serviceTitle: 'Всего оказано услуг',
     },
