@@ -12,6 +12,13 @@ export async function getOrdersPickedForInvoice(
   p: GetOrdersPickedForInvoiceProps
 ): Promise<InvoiceOrdersResultDTO> {
   const parsedProps = GetOrdersPickedForInvoicePropsSchema.parse(p)
+  const limitFragmentBuilder = (
+    limit?: number,
+    skip?: number
+  ): PipelineStage[] => {
+    if (!limit) return []
+    return [{ $skip: skip || 0 }, { $limit: limit }]
+  }
 
   const firstMatcher: PipelineStage.Match = {
     $match: {
@@ -30,33 +37,34 @@ export async function getOrdersPickedForInvoice(
       $in: ['$_id', parsedProps.orderIds.map((i) => new Types.ObjectId(i))],
     })
 
-  const finalFacet: PipelineStage.Facet = {
-    $facet: {
-      total: [
-        {
-          $group: {
-            _id: null,
-            count: { $sum: 1 },
-            withVat: { $sum: '$total.price' },
-            woVat: { $sum: '$total.priceWOVat' },
-          },
-        },
-      ],
-      items: [
-        { $skip: parsedProps?.skip || 0 },
-        { $limit: parsedProps.limit || 50 },
-      ],
-    },
-  }
+  // const finalFacet: PipelineStage.Facet = {
+  //   $facet: {
+  //     total: [
+  //       {
+  //         $group: {
+  //           _id: null,
+  //           count: { $sum: 1 },
+  //           withVat: { $sum: '$total.price' },
+  //           woVat: { $sum: '$total.priceWOVat' },
+  //         },
+  //       },
+  //     ],
+  //     items: [
+  //       { $skip: parsedProps?.skip || 0 },
+  //       { $limit: parsedProps.limit || 50 },
+  //     ],
+  //   },
+  // }
 
   const res = await OrderInPaymentInvoiceModel.aggregate([
     firstMatcher,
+    ...limitFragmentBuilder(parsedProps.limit, parsedProps.skip),
     ...lookupOrdersForOrderInInvoice({
       vatRate: p.vatRate,
       usePriceWithVat: p.usePriceWithVat,
     }),
-    finalFacet,
+    // finalFacet,
   ])
 
-  return new InvoiceOrdersResultDTO(res[0] || { total: [], items: [] })
+  return new InvoiceOrdersResultDTO({ total: [], items: res || [] })
 }
