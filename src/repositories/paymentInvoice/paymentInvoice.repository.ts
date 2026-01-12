@@ -71,8 +71,8 @@ class PaymentInvoiceRepository {
 
   async getInvoiceOrders(
     invoiceId: string,
-    limit = 50,
-    skip = 0
+    limit?: number,
+    skip?: number
   ): Promise<InvoiceOrdersResultDTO> {
     const invoice = await PaymentInvoiceModel.findById(invoiceId).lean()
     if (!invoice) throw new Error('Invoice not found')
