@@ -366,8 +366,6 @@ class PaymentInvoiceService {
     )
     if (!invoice) throw new BadRequestError('Исходящий акт не найден')
 
-    if (!invoice.vatRate)
-      throw new BadRequestError('В исходящем акте не указана ставка НДС')
     const result = await PaymentInvoiceRepository.pickOrdersForPaymentInvoice(
       props,
       invoice.vatRate,
