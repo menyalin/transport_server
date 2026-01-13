@@ -17,6 +17,10 @@ export const paymentInvoiceDocumentBuilder = async (
 
   if (!paymentInvoice)
     throw new Error('paymentInvoiceDocumentBuilder : paymentInvoice not found')
+  const { items } = await PaymentInvoiceRepository.getInvoiceOrders(invoiceId)
+  if (!items || !items.length)
+    throw new Error('paymentInvoiceDocumentBuilder : Рейсы для акта не найдены')
+  paymentInvoice.setOrders(items)
 
   const printForm = await PrintFormRepository.getByTemplateName(templateName)
 
