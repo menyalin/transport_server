@@ -42,6 +42,7 @@ export interface IOrderDTO {
     driver?: string
     outsourceAgreement?: string
     tkName?: string
+    directiveAgreement?: boolean
   }
   docs?: []
   client: {
@@ -87,6 +88,7 @@ export class Order {
     driver?: string | null | Types.ObjectId
     outsourceAgreement?: string | null | Types.ObjectId
     tkName?: string | null | Types.ObjectId
+    directiveAgreement?: boolean
   }
   docs: any
   client: Client
