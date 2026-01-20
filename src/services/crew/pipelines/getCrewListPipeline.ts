@@ -35,6 +35,29 @@ export default (props: unknown) => {
       break
   }
 
+  const carrierLookupFragmentBuilder = (): PipelineStage[] => [
+    {
+      $lookup: {
+        from: 'tknames',
+        localField: 'tkName',
+        foreignField: '_id',
+        as: '_carrier',
+      },
+    },
+    { $addFields: { _carrier: { $first: '$_carrier' } } },
+    {
+      $addFields: {
+        carrierName: {
+          $getField: {
+            field: 'name',
+            input: '$_carrier',
+          },
+        },
+      },
+    },
+    { $unset: ['_carrier'] },
+  ]
+
   let firstMatcher: PipelineStage.Match = {
     $match: {
       isActive: true,
@@ -67,31 +90,31 @@ export default (props: unknown) => {
   if (p.state === 'inactive')
     firstMatcher.$match['transport.endDate'] = { $ne: null }
 
-  const group = [
+  const facet = [
     {
       $sort: {
         [sortingField]: sortingDirection,
       },
     },
     {
-      $group: {
-        _id: 'crews',
-        items: {
-          $push: '$$ROOT',
-        },
+      $facet: {
+        items: [
+          { $skip: p.skip },
+          { $limit: p.limit },
+          ...carrierLookupFragmentBuilder(),
+        ],
+        count: [{ $count: 'total' }],
       },
     },
     {
-      $addFields: {
+      $project: {
+        items: 1,
         count: {
-          $size: '$items',
-        },
-        items: {
-          $slice: ['$items', p.skip, p.limit],
+          $arrayElemAt: ['$count.total', 0],
         },
       },
     },
   ]
 
-  return [firstMatcher, ...group]
+  return [firstMatcher, ...facet]
 }

@@ -330,7 +330,11 @@ class OrderService {
           : false
     }
 
-    if (!orderIncludedInInvoice && newVersionOrder.truckId) {
+    if (
+      !orderIncludedInInvoice &&
+      newVersionOrder.truckId &&
+      !newVersionOrder.confirmedCrew?.directiveAgreement
+    ) {
       const carrierData = await getCarrierData(
         newVersionOrder.truckId,
         newVersionOrder.orderDate

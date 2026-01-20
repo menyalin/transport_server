@@ -4,8 +4,14 @@ import z from 'zod'
 const propSchema = z.object({
   company: z.string(),
   type: z.string().optional(),
-  limit: z.string().transform((v) => +v),
-  skip: z.string().transform((v) => +v),
+  limit: z
+    .string()
+    .optional()
+    .transform((v) => (v ? +v : undefined)),
+  skip: z
+    .string()
+    .optional()
+    .transform((v) => (v ? +v : undefined)),
   search: z.string().optional(),
 })
 
@@ -71,7 +77,11 @@ export const createGetListPipeline = (params: unknown): PipelineStage[] => {
 
   const finalFacet: PipelineStage.Facet = {
     $facet: {
-      items: [{ $skip: p.skip }, { $limit: p.limit }, ...agreementData],
+      items: [
+        { $skip: p.skip || 0 },
+        { $limit: p.limit || 10000 },
+        ...agreementData,
+      ],
       count: [{ $count: 'count' }],
     },
   }
