@@ -134,7 +134,7 @@ export const orderPickedForInvoiceDTOSchema = z
     totalByTypes: z.record(z.string(), PriceByTypeSchema),
     savedTotal: TotalPriceSchema.optional(),
     savedTotalByTypes: z.record(z.string(), PriceByTypeSchema).optional(),
-    driverName: z.string().optional(),
+    driverName: z.string().optional().nullable(),
     // needUpdate: z.boolean().optional(),
     itemType: z.string(),
     rowId: z.unknown().optional(),

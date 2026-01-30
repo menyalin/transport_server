@@ -1,16 +1,27 @@
-FROM node:lts-alpine
+# Builder stage
+FROM node:lts-alpine AS builder
 
-WORKDIR /usr/src/app
+WORKDIR /app
+
+# Копируем только package файлы - этот слой кешируется при неизменных зависимостях
 COPY package*.json ./
-COPY tsconfig.json ./
-COPY jest.config.js ./ 
 RUN npm ci
 
-COPY src src
-RUN npm run build 
+# Копируем конфигурацию и исходники
+COPY tsconfig.json jest.config.js ./
+COPY src ./src
+RUN npm run build
 
-COPY templates templates
-COPY emailTemplates emailTemplates
+# Production образ без dev зависимостей
+FROM node:lts-alpine
+WORKDIR /app
+ENV NODE_ENV=production
+
+# Копируем только необходимое из builder
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY templates ./templates
+COPY emailTemplates ./emailTemplates
+
 EXPOSE 3000
-
-CMD [ "node", "./dist/bin/www.js" ]
+CMD ["node", "./dist/bin/www.js"]
