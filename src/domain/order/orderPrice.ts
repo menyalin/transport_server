@@ -26,7 +26,7 @@ export class OrderPrice {
   }
 
   private static propsValidationSchema = z.object({
-    type: z.nativeEnum(ORDER_PRICE_TYPES_ENUM),
+    type: z.enum(ORDER_PRICE_TYPES_ENUM),
     priceWOVat: z.number(),
     price: z.number().optional(),
     sumVat: z.number().optional(),

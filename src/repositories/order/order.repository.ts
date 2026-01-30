@@ -40,7 +40,7 @@ class OrderRepository {
   }
 
   async getById(orderId: string): Promise<OrderDomain> {
-    const order = await OrderModel.findById<IOrderDTO>(orderId)
+    const order = await OrderModel.findById(orderId).lean()
     if (!order) throw new Error(`${orderId} not found`)
     return new OrderDomain(order, false)
   }

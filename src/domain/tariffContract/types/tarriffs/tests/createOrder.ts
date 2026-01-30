@@ -1,22 +1,26 @@
+import { Client } from '@/domain/order/client'
+import { ConfirmedCrew } from '@/domain/order/confirmedCrew'
 import { Order } from '@/domain/order/order.domain'
 import { OrderReqTransport } from '@/domain/order/reqTransport'
 import { RoutePoint } from '@/domain/order/route/routePoint'
+
 import { Types } from 'mongoose'
 
 export const createTestOrder = (args: object): Order => {
   const mockObjectId = new Types.ObjectId().toString()
   return new Order({
-    client: {
+    client: new Client({
       client: mockObjectId,
-    },
+      agreement: mockObjectId,
+    }),
     reqTransport: new OrderReqTransport({
       kind: 'ref',
       liftCapacity: 20,
       loadDirection: 'rear',
     }),
-    confirmedCrew: {
+    confirmedCrew: new ConfirmedCrew({
       truck: mockObjectId,
-    },
+    }),
     state: {
       status: 'inProgress',
     },

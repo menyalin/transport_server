@@ -48,11 +48,17 @@ class MassUpdateService {
     let tmpError: string | undefined
 
     try {
+      let counter = 0
       for await (const orderDoc of this.ordersCursor) {
         const order = new Order(orderDoc, false)
         this.currentOrder = order
         await OrderService.refresh(order)
         this.ordersProcessed++
+
+        // Освобождаем event loop каждые 5 заказов, чтобы cron задачи могли выполняться
+        if (++counter % 5 === 0) {
+          await new Promise((resolve) => setImmediate(resolve))
+        }
       }
       this.currentOrder = undefined
     } catch (e) {

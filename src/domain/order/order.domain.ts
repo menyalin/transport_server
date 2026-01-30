@@ -5,6 +5,7 @@ import { isDateRangesOverlapping } from '@/utils/isDateRangesOverlapping'
 import { ORDER_DOMAIN_EVENTS, OrderRemoveEvent } from './domainEvents'
 import { NotifyClientsEvent } from '@/socket/notifyClientsEvent'
 import { Client } from './client'
+import { ConfirmedCrew } from './confirmedCrew'
 import { IOrderPriceProps, OrderPrice } from './orderPrice'
 import { ORDER_PRICE_TYPES_ENUM } from '../../constants/priceTypes'
 import { BadRequestError } from '../../helpers/errors'
@@ -37,12 +38,17 @@ export interface IOrderDTO {
   }
   company: string
   confirmedCrew: {
-    truck: string
-    trailer?: string
-    driver?: string
-    outsourceAgreement?: string
-    tkName?: string
+    truck?: string | null
+    trailer?: string | null
+    driver?: string | null
+    outsourceAgreement?: string | null
+    tkName?: string | null
     directiveAgreement?: boolean
+    vatRateInfo?: {
+      date: Date | string
+      vatRate: number
+      usePriceWithVat: boolean
+    }
   }
   docs?: []
   client: {
@@ -82,14 +88,7 @@ export class Order {
   company: string
   orderDate: Date
   route: Route
-  confirmedCrew: {
-    truck: string | null | Types.ObjectId
-    trailer?: string | null | Types.ObjectId
-    driver?: string | null | Types.ObjectId
-    outsourceAgreement?: string | null | Types.ObjectId
-    tkName?: string | null | Types.ObjectId
-    directiveAgreement?: boolean
-  }
+  confirmedCrew: ConfirmedCrew
   docs: any
   client: Client
   prePrices?: OrderPrice[]
@@ -127,7 +126,8 @@ export class Order {
     this.company = order.company.toString()
     this.orderDate = Order.getOrderDate(order)
     this.route = new Route(order.route)
-    this.confirmedCrew = order.confirmedCrew
+    this.confirmedCrew = new ConfirmedCrew(order.confirmedCrew)
+
     this.docs = order.docs || []
     this.client = new Client(order.client)
     if (Array.isArray(order.prePrices))
@@ -206,10 +206,18 @@ export class Order {
       )
     }
   }
+
   toObject(): object {
     const obj: { [key: string]: any } = {}
     Object.getOwnPropertyNames(this).forEach((prop: string) => {
-      obj[prop] = (this as any)[prop]
+      const value = (this as any)[prop]
+      if (prop === 'client' && value?.toJSON) {
+        obj[prop] = value.toJSON()
+      } else if (prop === 'confirmedCrew' && value?.toJSON) {
+        obj[prop] = value.toJSON()
+      } else {
+        obj[prop] = value
+      }
     })
     obj.route = obj.route.route
     return obj

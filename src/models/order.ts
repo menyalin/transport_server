@@ -6,11 +6,11 @@ import {
 } from '@/constants/accounting'
 import { ORDER_STATUSES_ENUM } from '../constants/order'
 import { Client } from '@/domain/order/client'
+import { ConfirmedCrew } from '@/domain/order/confirmedCrew'
 import { OrderPrice } from '@/domain/order/orderPrice'
 import { OrderPaymentPart } from '@/domain/order/paymentPart'
 import { OrderAnalytics } from '@/domain/order/analytics'
 import { OrderReqTransport } from '@/domain/order/reqTransport'
-import { Order } from '@/domain/order/order.domain'
 import { RoutePoint } from '@/domain/order/route/routePoint'
 import { CargoInfo } from '@/domain/cargoInfo'
 
@@ -96,14 +96,7 @@ const state = {
   },
 }
 
-const confirmedCrew = {
-  truck: { type: Types.ObjectId, ref: 'Truck' },
-  trailer: { type: Types.ObjectId, ref: 'Truck' },
-  driver: { type: Types.ObjectId, ref: 'Driver' },
-  outsourceAgreement: { type: Types.ObjectId, ref: 'Agreement' },
-  directiveAgreement: { type: Boolean, default: false },
-  tkName: { type: Types.ObjectId, ref: 'TkName' },
-}
+const confirmedCrew = ConfirmedCrew.dbSchema()
 
 const schema = new Schema(
   {
@@ -133,4 +126,4 @@ const schema = new Schema(
   { timestamps: true }
 )
 
-export const OrderModel = model<Order>('Order', schema, 'orders')
+export const OrderModel = model('Order', schema, 'orders')

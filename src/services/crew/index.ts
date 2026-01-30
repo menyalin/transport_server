@@ -143,9 +143,8 @@ class CrewService {
 
   async getOneByTruckAndDate({ truck, date }) {
     const pipeline = getCrewByTruckAndDatePipeline({ truck, date })
-    const data = await Crew.aggregate(pipeline)
-    if (data.length) return data[0]
-    else return null
+    const [crew] = await Crew.aggregate(pipeline)
+    return crew ? crew : null
   }
 
   async getActualCrews(profile) {

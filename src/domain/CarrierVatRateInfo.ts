@@ -1,13 +1,13 @@
 import { z } from 'zod'
 
-export class VatRateInfo {
+export class CarrierVatRateInfo {
   startPeriod: Date
   endPeriod?: Date | null
   vatRate: number
   note?: string | null
 
   constructor(p: unknown) {
-    const parsed = VatRateInfo.validationSchema.parse(p)
+    const parsed = CarrierVatRateInfo.validationSchema.parse(p)
     this.startPeriod = parsed.startPeriod
     this.endPeriod = parsed.endPeriod
     this.vatRate = parsed.vatRate

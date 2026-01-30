@@ -109,12 +109,12 @@ class NotificationService {
     const notifications: IdleTruckNotificationMessage[] =
       await NotificationRepository.getByOrderId(orderId)
 
-    notifications.forEach(async (notification) => {
+    for (const notification of notifications) {
       notification.delete()
       await NotificationRepository.updateIdleTruckNotificationMessage(
         notification
       )
-    })
+    }
   }
 
   async createIdleTruckNotificationMessage(
