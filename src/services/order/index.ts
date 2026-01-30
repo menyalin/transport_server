@@ -403,9 +403,9 @@ class OrderService {
   }
 
   async refresh(order: OrderDomain): Promise<void> {
-    order.client.vatRateInfo = await this.getOrderVatRateInfo(order)
-    order.analytics = await this.updateOrderAnalytics(order)
-    order.prePrices = await this.updatePrePrices(order)
+    // order.client.vatRateInfo = await this.getOrderVatRateInfo(order)
+    // order.analytics = await this.updateOrderAnalytics(order)
+    // order.prePrices = await this.updatePrePrices(order)
     bus.publish(OrdersUpdatedEvent([order]))
   }
 
