@@ -84,7 +84,7 @@ export class OrderPickedForInvoiceDTO {
     this.agreement = preparedProps.agreement
     this.agreementVatRate = preparedProps.agreementVatRate
     this.usePriceWithVat = preparedProps.usePriceWithVat
-    this.driverName = preparedProps.driverName
+    this.driverName = preparedProps.driverName || undefined
     this.itemType = preparedProps.itemType
     this.rowId = preparedProps.rowId
     this._loadingZones = preparedProps._loadingZones
