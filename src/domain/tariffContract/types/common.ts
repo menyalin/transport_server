@@ -1,5 +1,5 @@
 import { Order } from '@/domain/order/order.domain'
-import { TRUCK_KINDS_ENUM } from '../../../constants/truck'
+import { TRUCK_KINDS_ENUM } from '@/constants/truck'
 import { Agreement } from '@/domain/agreement/agreement.domain'
 import { OrderPrice } from '@/domain/order/orderPrice'
 

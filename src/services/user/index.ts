@@ -11,7 +11,6 @@ import {
   CompanyService,
   DriverService,
   PartnerService,
-  CarrierService,
   TruckService,
   OrderTemplateService,
   PermissionService,
@@ -53,7 +52,7 @@ class UserService {
     return user
   }
 
-  async getUserData(id: string, fields = '-password') {
+  async getUserData(id: string, fields = '-password'): Promise<unknown> {
     const user = await User.findById(id, fields).lean()
     if (!user) throw new Error('user not found!')
     const profile = user.directoriesProfile?.toString()
@@ -98,7 +97,6 @@ class UserService {
     const addresses = await AddressService.getByProfile(profile)
     const drivers = await DriverService.getByProfile(profile)
     const trucks = await TruckService.getByProfile(profile)
-    const carriers = await CarrierService.getByProfile(profile)
     const partners = await PartnerService.getByProfile(profile)
     const zones = await ZoneService.getByProfile(profile)
     const regions = await RegionService.getByProfile(profile)
@@ -114,7 +112,6 @@ class UserService {
       addresses,
       drivers,
       trucks,
-      tkNames: carriers,
       partners,
       permissions,
       orderTemplates,

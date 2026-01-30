@@ -43,30 +43,44 @@ class MassUpdateService {
     this.ordersCount = await this.getOrdersCount(p)
     this.ordersCursor = OrderRepository.orderAggregationCursor(p)
 
+    let tmpOrderCount = 0
+    let tmpOrder: Order | undefined
+    let tmpError: string | undefined
+
     try {
+      let counter = 0
       for await (const orderDoc of this.ordersCursor) {
         const order = new Order(orderDoc, false)
         this.currentOrder = order
         await OrderService.refresh(order)
         this.ordersProcessed++
+
+        // Освобождаем event loop каждые 5 заказов, чтобы cron задачи могли выполняться
+        if (++counter % 5 === 0) {
+          await new Promise((resolve) => setImmediate(resolve))
+        }
       }
       this.currentOrder = undefined
     } catch (e) {
       this.error = e as Error
     } finally {
-      const tmpOrderCount = this.ordersProcessed
-      const tmpOrder = this.currentOrder
-      const tmpError = this.error?.message
+      // Сохраняем значения до сброса
+      tmpOrderCount = this.ordersProcessed
+      tmpOrder = this.currentOrder
+      tmpError = this.error?.message
 
+      // Сбрасываем состояние в finally
       this.error = undefined
       this.ordersProcessed = 0
       this.isOrdersProcessing = false
       this.ordersCount = 0
-      return {
-        error: tmpError,
-        order: tmpOrder,
-        ordersCount: tmpOrderCount,
-      }
+    }
+
+    // Возвращаем результат после finally
+    return {
+      error: tmpError,
+      order: tmpOrder,
+      ordersCount: tmpOrderCount,
     }
   }
 }

@@ -96,6 +96,30 @@ class PaymentInvoiceController {
     }
   }
 
+  async getInvoiceOrders(
+    req: AuthorizedRequest<
+      { id: string },
+      any,
+      any,
+      { limit?: string; skip?: string }
+    >,
+    res: Response
+  ) {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit) : 100
+      const skip = req.query.skip ? parseInt(req.query.skip) : 0
+      const data = await this.service.getInvoiceOrders(
+        req.params.id,
+        limit,
+        skip
+      )
+      res.status(200).json(data)
+    } catch (e) {
+      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
+      else res.status(500).json(e)
+    }
+  }
+
   async downloadDocs(
     req: AuthorizedRequest<{ id: string }, any, { templateName: string }>,
     res: Response
@@ -232,6 +256,7 @@ class PaymentInvoiceController {
         loadingZone?: string
         search?: string
         numbers?: string[]
+        invoiceDate: string
       }
     >,
     res: Response

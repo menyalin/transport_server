@@ -10,7 +10,6 @@ import getCrewByTruckAndDatePipeline from './pipelines/getCrewByTruckAndDatePipe
 import getLastCrewByDriverPipeline from './pipelines/getLastCrewByDriverPipeline'
 import getCrewListPipeline from './pipelines/getCrewListPipeline'
 import { getCrewUnwindedDataPipeline } from './pipelines/getCrewUnwindedDataPipeline'
-import pipeline from '../worker/pipelines/getCompaniesByUserIdPipeline'
 import { BadRequestError } from '@/helpers/errors'
 
 class CrewService {
@@ -144,9 +143,8 @@ class CrewService {
 
   async getOneByTruckAndDate({ truck, date }) {
     const pipeline = getCrewByTruckAndDatePipeline({ truck, date })
-    const data = await Crew.aggregate(pipeline)
-    if (data.length) return data[0]
-    else return null
+    const [crew] = await Crew.aggregate(pipeline)
+    return crew ? crew : null
   }
 
   async getActualCrews(profile) {

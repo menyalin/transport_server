@@ -1,5 +1,5 @@
 import { DocTemplate } from '@/models'
-import { Condition, isValidObjectId, PipelineStage, Types } from 'mongoose'
+import { isValidObjectId, PipelineStage, Types } from 'mongoose'
 
 interface IProps {
   docTemplateModel: typeof DocTemplate
@@ -15,7 +15,6 @@ class DocTemplateService {
     client,
     company,
     agreement,
-    type,
   }: {
     client: string
     company: string

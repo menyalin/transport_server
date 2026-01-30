@@ -1,5 +1,5 @@
 // @ts-nocheck
-/* eslint-disable no-unused-vars */
+
 import { Driver } from '../../models'
 
 import { emitTo } from '../../socket'

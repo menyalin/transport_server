@@ -5,29 +5,21 @@ export default (dayLimit = 30, profile: string, carriers?: string[]) => {
   const additionalNotifications = {
     $ifNull: [
       {
-        $filter: {
-          input: {
-            $map: {
-              input: '$additionalNotifications',
-              as: 'item',
-              in: {
-                title: '$$item.title',
-                daysBeforeRemind: '$$item.daysBeforeRemind',
-                note: '$$item.note',
+        $map: {
+          input: '$additionalNotifications',
+          as: 'item',
+          in: {
+            title: '$$item.title',
+            daysBeforeRemind: '$$item.daysBeforeRemind',
+            note: '$$item.note',
+            endDate: '$$item.expDate',
+            validDays: {
+              $dateDiff: {
+                startDate: '$$NOW',
                 endDate: '$$item.expDate',
-                validDays: {
-                  $dateDiff: {
-                    startDate: '$$NOW',
-                    endDate: '$$item.expDate',
-                    unit: 'day',
-                  },
-                },
+                unit: 'day',
               },
             },
-          },
-          as: 'item',
-          cond: {
-            $gte: ['$$item.daysBeforeRemind', '$$item.validDays'],
           },
         },
       },

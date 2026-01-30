@@ -11,7 +11,6 @@ import getDriversGradesAppayPipeline from './pipelines/driversGradesArray'
 import getGrossProfitPivotPipeline from './pipelines/grossProfitPivotPipeline'
 import getGrossProfitDetailsPipeline from './pipelines/getGrossProfitDetailsPipeline'
 import getOrderDocsPipeline from './pipelines/getOrderDocs'
-import carrier from '@/services/carrier'
 
 export interface IDriversGradesXlsxReportProps {
   company: string
@@ -119,9 +118,7 @@ class ReportService implements IReportService {
       additionalFilters,
     })
     const res = await Order.aggregate(pipeline as PipelineStage[])
-    if (Array.isArray(res) && !Array.isArray(res[0]?.items)) {
-      return { items: [], count: 0 }
-    } else return res[0]
+    return res[0] || { items: [], count: 0 }
   }
 
   async driversGradesXlsxReport({

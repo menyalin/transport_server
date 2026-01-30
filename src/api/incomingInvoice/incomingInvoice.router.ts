@@ -52,9 +52,9 @@ router.get('/orders/:id', [jwtAuth], (req: Request, res: Response) =>
 router.post('/orders/:id', [jwtAuth], (req: Request, res: Response) =>
   IncomingInvoiceController.addOrdersToInvoice(req as AuthorizedRequest, res)
 )
-router.put('/orders/:id/:orderId', [jwtAuth], (req: Request, res: Response) =>
-  IncomingInvoiceController.updateOrderInInvoice(req as AuthorizedRequest, res)
-)
+// router.put('/orders/:id/:orderId', [jwtAuth], (req: Request, res: Response) =>
+//   IncomingInvoiceController.updateOrderInInvoice(req as AuthorizedRequest, res)
+// )
 router.delete('/orders/:id', [jwtAuth], (req: Request, res: Response) =>
   IncomingInvoiceController.deleteOrderFromInvoice(
     req as AuthorizedRequest,

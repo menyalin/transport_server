@@ -32,7 +32,7 @@ export default ({
       case 'driver':
         groupType = '$driverId'
         break
-      case 'tkName':
+      case 'carrier':
         groupType = '$tkName'
         break
       case 'loadingRegion':

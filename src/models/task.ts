@@ -6,29 +6,29 @@ const taskSchema = new Schema(
   {
     isActive: {
       type: Boolean,
-      default: true
+      default: true,
     },
     initiator: {
       type: Types.ObjectId,
-      ref: 'User'
+      ref: 'User',
     },
     executor: {
       type: Types.ObjectId,
-      ref: 'User'
+      ref: 'User',
     },
     type: {
       type: String,
-      enum: ['addEmployee']
+      enum: ['addEmployee'],
     },
     room: {
-      type: String
+      type: String,
     },
     title: {
-      type: String
+      type: String,
     },
     content: {
-      type: String
-    }
+      type: String,
+    },
   },
   { timestamps: true }
 )

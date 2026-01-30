@@ -5,19 +5,21 @@ import { BankAccountInfo } from '../bankAccountInfo'
 import { CompanyInfo } from '../companyInfo'
 import { ContactInfo } from '../сontactInfo'
 import { ICarreierPFData } from './interfaces'
-import { AllowedCarrierAgreement } from './allowedCarrierAgreement'
+import { CarrierVatRateInfo } from '../CarrierVatRateInfo'
+import { AllowedAgreement } from '../allowedAgreement'
 
 export class Carrier {
   _id?: string
   name: string
   company: string
-  agreements: AllowedCarrierAgreement[]
+  agreements: AllowedAgreement[]
   bankAccountInfo?: BankAccountInfo
   companyInfo?: CompanyInfo
   contacts?: ContactInfo[]
   outsource: boolean
   allowUseCustomerRole: boolean
   isActive: boolean
+  vatRates?: CarrierVatRateInfo[] | null
   version: number = 0
 
   constructor(props: unknown) {
@@ -36,7 +38,7 @@ export class Carrier {
     this.outsource = p.outsource
     this.allowUseCustomerRole = p.allowUseCustomerRole ?? false
     this.isActive = p.isActive
-
+    this.vatRates = p.vatRates
     this.version = p.version ?? 0
   }
 
@@ -67,6 +69,15 @@ export class Carrier {
     this.version += 1
   }
 
+  getVatRateByDate(date: Date): number | null {
+    if (!this.vatRates || this.vatRates.length === 0) return null
+    const vatRateInfo = this.vatRates.find(
+      (vr) =>
+        +vr.startPeriod <= +date && (!vr.endPeriod || +vr.endPeriod > +date)
+    )
+    return vatRateInfo?.vatRate ?? null
+  }
+
   getAgreementIdsByDate(date: Date): string[] {
     return this.agreements
       .filter(
@@ -87,12 +98,15 @@ export class Carrier {
       allowUseCustomerRole: z.boolean().optional().default(false),
       isActive: z.boolean().default(true),
       version: z.number().optional().nullable().default(0),
+      vatRates: z
+        .array(CarrierVatRateInfo.validationSchema)
+        .optional()
+        .nullable()
+        .transform((v) => (v ? v.map((i) => new CarrierVatRateInfo(i)) : [])),
       agreements: z
-        .array(AllowedCarrierAgreement.validationSchema)
+        .array(AllowedAgreement.validationSchema)
         .default([])
-        .transform((v) =>
-          v ? v.map((i) => new AllowedCarrierAgreement(i)) : []
-        ),
+        .transform((v) => (v ? v.map((i) => new AllowedAgreement(i)) : [])),
     })
   }
 
@@ -103,7 +117,7 @@ export class Carrier {
         type: Types.ObjectId,
         ref: 'Company',
       },
-      agreements: [AllowedCarrierAgreement.dbSchema],
+      agreements: [AllowedAgreement.dbSchema],
       companyInfo: CompanyInfo.dbSchema,
       bankAccountInfo: BankAccountInfo.dbSchema,
       contacts: [ContactInfo.dbSchema],
@@ -120,6 +134,7 @@ export class Carrier {
         default: true,
       },
       version: { type: Number, default: 0 },
+      vatRates: [CarrierVatRateInfo.dbSchema],
     }
   }
 }

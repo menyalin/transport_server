@@ -2,7 +2,6 @@ import z from 'zod'
 import { Types } from 'mongoose'
 
 import {
-  AdditionalPointsTariff,
   DirectDistanceZonesBaseTariff,
   IdleTimeTariff,
   ReturnPercentTariff,
@@ -23,6 +22,7 @@ import { AddressZone } from '../address'
 export class TariffContract {
   _id?: string
   agreement: string
+  agreements?: string[]
   name: string
   company: string
   startDate: Date
@@ -31,7 +31,6 @@ export class TariffContract {
   withVat: boolean
   zonesTariffs: ZonesBaseTariff[]
   directDistanceZonesTariffs: DirectDistanceZonesBaseTariff[]
-  additionalPointsTariffs: AdditionalPointsTariff[]
   returnPercentTariffs: ReturnPercentTariff[]
   idleTimeTariffs: IdleTimeTariff[]
   note?: string | null
@@ -39,10 +38,11 @@ export class TariffContract {
   _version: number = 0
   createdAt?: Date
 
-  constructor(data: any) {
+  constructor(data: unknown) {
     const parsedData = TariffContract.validationSchema.parse(data)
     this._id = parsedData._id?.toString()
     this.agreement = parsedData.agreement
+    this.agreements = parsedData.agreements
     this.name = parsedData.name
     this.startDate = parsedData.startDate
     this.endDate = parsedData.endDate
@@ -51,7 +51,6 @@ export class TariffContract {
     this.company = parsedData.company.toString()
     this.zonesTariffs = parsedData.zonesTariffs
     this.directDistanceZonesTariffs = parsedData.directDistanceZonesTariffs
-    this.additionalPointsTariffs = parsedData.additionalPointsTariffs
     this.returnPercentTariffs = parsedData.returnPercentTariffs
     this.idleTimeTariffs = parsedData.idleTimeTariffs
     this.note = parsedData.note
@@ -81,6 +80,22 @@ export class TariffContract {
       endDate: body.endDate ? new Date(body.endDate) : null,
     })
 
+    // Проверяем простые поля - быстрые проверки
+    if (this.agreement !== parsedData.agreement) {
+      this.agreement = parsedData.agreement
+      updated = true
+    }
+
+    if (
+      !isEqualArraysOfObjects(
+        this.agreements || [],
+        parsedData.agreements || []
+      )
+    ) {
+      this.agreements = parsedData.agreements
+      updated = true
+    }
+
     if (this.name !== parsedData.name) {
       this.name = parsedData.name
       updated = true
@@ -103,45 +118,51 @@ export class TariffContract {
       updated = true
     }
 
-    if (!isEqualArraysOfObjects(this.zonesTariffs, parsedData.zonesTariffs)) {
+    // Если уже есть изменения, применяем все массивы без сравнения (оптимизация)
+    if (updated) {
       this.zonesTariffs = parsedData.zonesTariffs
-      updated = true
-    }
-
-    if (
-      !isEqualArraysOfObjects(
-        this.directDistanceZonesTariffs,
-        parsedData.directDistanceZonesTariffs
-      )
-    ) {
       this.directDistanceZonesTariffs = parsedData.directDistanceZonesTariffs
-      updated = true
-    }
-
-    if (
-      !isEqualArraysOfObjects(
-        this.additionalPointsTariffs,
-        parsedData.additionalPointsTariffs
-      )
-    ) {
-      this.additionalPointsTariffs = parsedData.additionalPointsTariffs
-      updated = true
-    }
-    if (
-      !isEqualArraysOfObjects(
-        this.returnPercentTariffs,
-        parsedData.returnPercentTariffs
-      )
-    ) {
       this.returnPercentTariffs = parsedData.returnPercentTariffs
-      updated = true
-    }
-
-    if (
-      !isEqualArraysOfObjects(this.idleTimeTariffs, parsedData.idleTimeTariffs)
-    ) {
       this.idleTimeTariffs = parsedData.idleTimeTariffs
-      updated = true
+    } else {
+      // Сравниваем массивы только если простые поля не изменились
+      if (!isEqualArraysOfObjects(this.zonesTariffs, parsedData.zonesTariffs)) {
+        this.zonesTariffs = parsedData.zonesTariffs
+        updated = true
+      }
+
+      if (
+        !updated &&
+        !isEqualArraysOfObjects(
+          this.directDistanceZonesTariffs,
+          parsedData.directDistanceZonesTariffs
+        )
+      ) {
+        this.directDistanceZonesTariffs = parsedData.directDistanceZonesTariffs
+        updated = true
+      }
+
+      if (
+        !updated &&
+        !isEqualArraysOfObjects(
+          this.returnPercentTariffs,
+          parsedData.returnPercentTariffs
+        )
+      ) {
+        this.returnPercentTariffs = parsedData.returnPercentTariffs
+        updated = true
+      }
+
+      if (
+        !updated &&
+        !isEqualArraysOfObjects(
+          this.idleTimeTariffs,
+          parsedData.idleTimeTariffs
+        )
+      ) {
+        this.idleTimeTariffs = parsedData.idleTimeTariffs
+        updated = true
+      }
     }
 
     if (updated) {
@@ -160,57 +181,50 @@ export class TariffContract {
     return zones
   }
 
-  getSortedZoneTariffs(zones: AddressZone[]): ZonesBaseTariff[] {
-    this.zonesTariffs.forEach((i) => {
-      i.setPriority(zones)
-      i.setContractData({
-        withVat: this.withVat,
-        contractName: this.name,
-        contractDate: this.startDate,
-      })
+  private getTariffsWithContractData<
+    T extends { setContractData: (_data: any) => void },
+  >(tariffs: T[]): T[] {
+    const contractData = {
+      withVat: this.withVat,
+      contractName: this.name,
+      contractDate: this.startDate,
+    }
+
+    return tariffs.map((tariff) => {
+      const tariffCopy = Object.assign(
+        Object.create(Object.getPrototypeOf(tariff)),
+        tariff
+      )
+      tariffCopy.setContractData(contractData)
+      return tariffCopy
     })
-    return this.zonesTariffs
+  }
+
+  getSortedZoneTariffs(zones: AddressZone[]): ZonesBaseTariff[] {
+    const result = this.getTariffsWithContractData(this.zonesTariffs)
+    result.forEach((tariff) => tariff.setPriority(zones))
+    return result
   }
 
   getDirectDistanceZonesTariffs(): DirectDistanceZonesBaseTariff[] {
-    const res = this.directDistanceZonesTariffs.slice()
-    res.forEach((i) => {
-      i.setContractData({
-        withVat: this.withVat,
-        contractName: this.name,
-        contractDate: this.startDate,
-      })
-    })
-    return res
+    return this.getTariffsWithContractData(this.directDistanceZonesTariffs)
   }
 
   getIdleTimeTariffs(): IdleTimeTariff[] {
-    const res = this.idleTimeTariffs.slice()
-    res.forEach((i) => {
-      i.setContractData({
-        withVat: this.withVat,
-        contractName: this.name,
-        contractDate: this.startDate,
-      })
-    })
-    return res
+    return this.getTariffsWithContractData(this.idleTimeTariffs)
   }
 
   getReturnPercentTariffs(): ReturnPercentTariff[] {
-    const res = this.returnPercentTariffs.slice()
-    res.forEach((i) => {
-      i.setContractData({
-        withVat: this.withVat,
-        contractName: this.name,
-        contractDate: this.startDate,
-      })
-    })
-    return res
+    return this.getTariffsWithContractData(this.returnPercentTariffs)
   }
 
   static validationSchema = z.object({
     _id: objectIdSchema.optional(),
     agreement: objectIdSchema.transform((val) => val.toString()),
+    agreements: z
+      .array(objectIdSchema)
+      .transform((arr) => arr?.map((i) => i.toString()) || [])
+      .optional(),
     name: z.string(),
     startDate: z.date(),
     company: objectIdSchema.transform((val) => val.toString()),
@@ -224,10 +238,6 @@ export class TariffContract {
     directDistanceZonesTariffs: z
       .array(DirectDistanceZonesBaseTariff.validationSchema)
       .transform((arr) => arr.map((i) => new DirectDistanceZonesBaseTariff(i))),
-
-    additionalPointsTariffs: z
-      .array(AdditionalPointsTariff.validationSchema)
-      .transform((arr) => arr.map((i) => new AdditionalPointsTariff(i))),
 
     returnPercentTariffs: z
       .array(ReturnPercentTariff.validationSchema)
@@ -246,6 +256,7 @@ export class TariffContract {
     return {
       company: { type: Types.ObjectId, ref: 'Company' },
       agreement: { type: Types.ObjectId, ref: 'Agreement' },
+      agreements: [{ type: Types.ObjectId, ref: 'Agreement' }],
       name: { type: String, required: true },
       startDate: { type: Date, required: true },
       endDate: { type: Date, default: null },
@@ -253,7 +264,6 @@ export class TariffContract {
       withVat: Boolean,
       zonesTariffs: [ZonesBaseTariff.dbSchema],
       directDistanceZonesTariffs: [DirectDistanceZonesBaseTariff.dbSchema],
-      additionalPointsTariffs: [AdditionalPointsTariff.dbSchema],
       returnPercentTariffs: [ReturnPercentTariff.dbSchema],
       idleTimeTariffs: [IdleTimeTariff.dbSchema],
       note: String,

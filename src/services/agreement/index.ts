@@ -1,15 +1,16 @@
-import { PipelineStage } from 'mongoose'
 import ChangeLogService from '../changeLog'
 import { Agreement as AgreementModel } from '../../models'
 import { emitTo } from '../../socket'
 import getListPipeline from './pipelines/getListPipeline'
-import getForOrderPipeline from './pipelines/getForOrderPipeline'
 import getForClientPipeline from './pipelines/getForClientPipeline'
 import {
   Agreement,
   Agreement as AgreementDomain,
 } from '@/domain/agreement/agreement.domain'
 import { TtlMap } from '@/utils/ttlMap'
+import { getAgreementsForClientPropsSchema } from './schemas'
+import { Partner } from '@/domain/partner/partner.domain'
+import { AgreementRepository, PartnerRepository } from '@/repositories'
 
 interface IConstructorProps {
   model: typeof AgreementModel
@@ -49,17 +50,26 @@ class AgreementService {
     return agreement
   }
 
-  // TODO: удалить, вроде бы не используется
-  async getForOrder(params: unknown) {
-    const pipeline: PipelineStage[] = getForOrderPipeline(params)
-    const res = await this.model.aggregate(pipeline)
-    return res.length ? res[0] : null
-  }
-
   async getForClient(props: unknown): Promise<unknown[]> {
-    const pipeline = getForClientPipeline(props)
-    const res = await this.model.aggregate(pipeline)
-    return res
+    const p = getAgreementsForClientPropsSchema.parse(props)
+    let client: Partner | null = null
+    if (p.client) {
+      client = await PartnerRepository.getById(p.client)
+    }
+    const agreemenentIds: string[] =
+      client?.allowedAgreementsOnDate(p.date) || []
+
+    if (agreemenentIds.length > 0) {
+      const agreements = await AgreementRepository.getByIds(agreemenentIds)
+      return agreements
+    }
+
+    // TODO: Удалить после перехода на новую схему работы с соглашениями клиентов. Соглашения должны быть только в Клиенте
+    else {
+      const pipeline = getForClientPipeline(p)
+      const res = await this.model.aggregate(pipeline)
+      return res
+    }
   }
 
   async create({ body, user }: { body: any; user: string }) {

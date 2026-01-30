@@ -1,5 +1,3 @@
-import { Types } from 'mongoose'
-
 import { OrderAnalytics } from '@/domain/order/analytics'
 import { Order } from '@/domain/order/order.domain'
 import { createTestOrder } from './createOrder'

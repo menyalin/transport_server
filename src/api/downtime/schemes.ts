@@ -3,38 +3,38 @@ export const getListSchema = {
   type: 'object',
   properties: {
     company: {
-      type: 'string'
+      type: 'string',
     },
     startDate: {
-      type: 'string'
+      type: 'string',
     },
     endDate: {
-      type: 'string'
+      type: 'string',
     },
     limit: {
-      type: 'string'
+      type: 'string',
     },
     skip: {
-      type: 'string'
-    }
+      type: 'string',
+    },
   },
   required: ['company', 'limit', 'skip'],
-  additionalProperties: true
+  additionalProperties: true,
 }
 
 export const getListForSchedule = {
   type: 'object',
   properties: {
     company: {
-      type: 'string'
+      type: 'string',
     },
     startDate: {
-      type: 'string'
+      type: 'string',
     },
     endDate: {
-      type: 'string'
-    }
+      type: 'string',
+    },
   },
   required: ['company', 'startDate', 'endDate'],
-  additionalProperties: true
+  additionalProperties: true,
 }

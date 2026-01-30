@@ -1,6 +1,8 @@
 import { PipelineStage } from 'mongoose'
 import { orderDriverFullNameBuilder } from '@/shared/pipelineFragments/orderDriverFullNameBuilder'
 import { orderDateFragmentBuilder } from '@/shared/pipelineFragments/orderDateFragmentBuilder'
+import { IInvoiceVatRateInfo } from '@/domain/paymentInvoice/interfaces'
+import { totalByTypesFragementBuilder } from './totalByTypesFragementBuilder'
 
 const driverLookup: PipelineStage[] = [
   {
@@ -14,29 +16,9 @@ const driverLookup: PipelineStage[] = [
   { $addFields: { driver: { $first: '$driver' } } },
 ]
 
-const agreementLookup: PipelineStage[] = [
-  {
-    $lookup: {
-      from: 'agreements',
-      localField: 'agreement',
-      foreignField: '_id',
-      as: 'agreement',
-    },
-  },
-  {
-    $addFields: {
-      agreement: { $first: '$agreement' },
-      agreementVatRate: {
-        $getField: {
-          field: 'vatRate',
-          input: { $first: '$agreement' },
-        },
-      },
-    },
-  },
-]
-
-export function lookupOrdersForOrderInInvoice(): PipelineStage[] {
+export function lookupOrdersForOrderInInvoice(
+  p: IInvoiceVatRateInfo
+): PipelineStage[] {
   return [
     {
       $lookup: {
@@ -52,26 +34,13 @@ export function lookupOrdersForOrderInInvoice(): PipelineStage[] {
           },
           {
             $addFields: {
-              agreement: '$client.agreement',
+              usePriceWithVat: p.usePriceWithVat,
+              agreementVatRate: p.vatRate,
               itemType: 'order',
               orderId: '$_id',
-              paymentPartsSumWOVat: {
-                $ifNull: [
-                  {
-                    $reduce: {
-                      input: '$paymentParts',
-                      initialValue: 0,
-                      in: { $add: ['$$value', '$$this.priceWOVat'] },
-                    },
-                  },
-                  0,
-                ],
-              },
             },
           },
-          {
-            $unset: ['paymentParts'],
-          },
+          ...totalByTypesFragementBuilder(),
           {
             $unionWith: {
               coll: 'orders',
@@ -104,15 +73,16 @@ export function lookupOrdersForOrderInInvoice(): PipelineStage[] {
                     orderId: '$_id',
                     _id: '$paymentParts._id',
                     itemType: 'paymentPart',
-                    agreement: '$paymentParts.agreement',
-                    paymentPartsSumWOVat: 0,
+                    usePriceWithVat: p.usePriceWithVat,
+                    agreementVatRate: p.vatRate,
+                    paymentPartsSum: 0,
                   },
                 },
+                ...totalByTypesFragementBuilder(true),
               ],
             },
           },
           ...driverLookup,
-          ...agreementLookup,
           {
             $addFields: {
               plannedDate: orderDateFragmentBuilder(),

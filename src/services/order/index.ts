@@ -8,7 +8,6 @@ import { getSchedulePipeline } from './pipelines/getSchedulePipeline'
 import { AgreementService, ChangeLogService, PermissionService } from '..'
 import checkCrossItems from './checkCrossItems'
 import getRouteFromTemplate from './getRouteFromTemplate'
-import getClientAgreementId from './getClientAgreement'
 import { getCarrierData } from './getCarrierData'
 import { orsDirections } from '../../helpers/orsClient'
 import { BadRequestError } from '../../helpers/errors'
@@ -20,6 +19,9 @@ import {
   TariffContractRepository,
   PrintFormRepository,
   IncomingInvoiceRepository,
+  CarrierRepository,
+  AgreementRepository,
+  PaymentInvoiceRepository,
 } from '@/repositories'
 import {
   IChainedOrderData,
@@ -41,6 +43,7 @@ import { PrintForm } from '@/domain/printForm/printForm.domain'
 import { orderPFBuilder } from './printForms/pfBuilder'
 import { RouteStats } from '@/domain/order/route/routeStats'
 import { isValidObjectId } from 'mongoose'
+import { OrderVatRateInfo } from '@/domain/OrderVatRateInfo'
 
 class OrderService {
   async create({ body, user }: { body: any; user: string }) {
@@ -53,8 +56,6 @@ class OrderService {
       startDate: newOrder.orderDate,
     })
     await checkCrossItems({ body })
-    if (!newOrder.clientAgreementId)
-      newOrder.setClientAgreement(await getClientAgreementId(newOrder))
 
     if (newOrder.truckId) {
       const carrierData = await getCarrierData(
@@ -65,6 +66,7 @@ class OrderService {
       newOrder.confirmedCrew.outsourceAgreement =
         carrierData.outsourceAgreementId
     }
+    newOrder.client.vatRateInfo = await this.getOrderVatRateInfo(newOrder)
     newOrder.analytics = await this.updateOrderAnalytics(newOrder)
     newOrder.prePrices = await this.updatePrePrices(newOrder)
 
@@ -234,10 +236,12 @@ class OrderService {
     if (!isValidObjectId(id))
       throw new BadRequestError(`Invalid order id: ${id}`)
 
-    const order: OrderDomain = await OrderRepository.getById(id)
+    const order = await OrderRepository.getById(id)
 
     if (!order) throw new BadRequestError('order not found')
-
+    if (!order.client?.vatRateInfo) {
+      order.client.vatRateInfo = await this.getOrderVatRateInfo(order)
+    }
     if (order.isCompleted) {
       chainedData = await this.getChainedOrderDataById(
         order.id,
@@ -332,10 +336,11 @@ class OrderService {
           : false
     }
 
-    if (!newVersionOrder.clientAgreementId)
-      newVersionOrder.setClientAgreement(await getClientAgreementId(body))
-
-    if (!orderIncludedInInvoice && newVersionOrder.truckId) {
+    if (
+      !orderIncludedInInvoice &&
+      newVersionOrder.truckId &&
+      !newVersionOrder.confirmedCrew?.directiveAgreement
+    ) {
       const carrierData = await getCarrierData(
         newVersionOrder.truckId,
         newVersionOrder.orderDate
@@ -371,7 +376,10 @@ class OrderService {
       ...newVersionOrder.toObject(),
       _id: existedOrder._id,
     })
+
     updatedOrder.setDisableStatus(false)
+    updatedOrder.client.vatRateInfo =
+      await this.getOrderVatRateInfo(updatedOrder)
     updatedOrder.analytics = await this.updateOrderAnalytics(updatedOrder)
     updatedOrder.prePrices = await this.updatePrePrices(updatedOrder)
 
@@ -395,6 +403,7 @@ class OrderService {
   }
 
   async refresh(order: OrderDomain): Promise<void> {
+    order.client.vatRateInfo = await this.getOrderVatRateInfo(order)
     order.analytics = await this.updateOrderAnalytics(order)
     order.prePrices = await this.updatePrePrices(order)
     bus.publish(OrdersUpdatedEvent([order]))
@@ -448,6 +457,42 @@ class OrderService {
     return prePrices
   }
 
+  async getOrderVatRateInfo(
+    order: OrderDomain
+  ): Promise<OrderVatRateInfo | undefined> {
+    // TODO: доработать для корректной обработки paymentParts
+
+    if (order.isCompleted) {
+      const [paymentInvoice] =
+        await PaymentInvoiceRepository.getInvoicesByOrderIds([order._id])
+
+      if (paymentInvoice)
+        return new OrderVatRateInfo({
+          vatRate: paymentInvoice.vatRate,
+          usePriceWithVat: paymentInvoice.usePriceWithVat,
+          date: paymentInvoice.date,
+        })
+    }
+
+    if (!order.clientAgreementId) return
+    const clientAgreement = await AgreementRepository.getById(
+      order.clientAgreementId
+    )
+    if (!clientAgreement || !clientAgreement.executor) return
+
+    const executor = await CarrierRepository.getById(clientAgreement.executor)
+    if (!executor) return
+
+    const vatRate = executor.getVatRateByDate(order.orderDate)
+    if (vatRate === null) return
+
+    return new OrderVatRateInfo({
+      vatRate,
+      date: order.orderDate,
+      usePriceWithVat: clientAgreement.usePriceWithVAT,
+    })
+  }
+
   async getDistance({ coords }: { coords: any[] }) {
     try {
       const radiusesArray: any[] = []
@@ -466,7 +511,7 @@ class OrderService {
         durationInSec: res.routes[0].summary.duration,
         durationStr: 'TODO',
       }
-    } catch (e) {
+    } catch {
       return { distanceRoad: 0, durationInSec: 0, durationStr: 'TODO' }
     }
   }
@@ -484,7 +529,7 @@ class OrderService {
     return order
   }
 
-  async setDocs(id: string, docs: any[]) {
+  async setDocs(id: string, docs: any) {
     const order = await OrderModel.findById(id)
     if (!order) throw new BadRequestError('order not found')
     order.docs = docs
@@ -521,7 +566,7 @@ class OrderService {
       if (events.length) {
         emitTo(company.toString(), 'order:autoFillDatesError', {
           token: inputData.operationToken,
-          message: `overlapping orders`,
+          message: 'overlapping orders',
           truck,
         })
       } else if (updatedOrders.length > 0) needSaveOrdes.push(...updatedOrders)
@@ -541,7 +586,7 @@ class OrderService {
     }
     emitTo(company.toString(), 'order:autoFillDatesCompleted', {
       token: inputData.operationToken,
-      message: `operation completed`,
+      message: 'operation completed',
     })
     return
   }

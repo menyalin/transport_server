@@ -11,11 +11,10 @@ export const PickOrdersForPaymentInvoicePropsSchema = z.object({
   company: z.string(),
   period: DateRange.validationSchema,
   client: z.string().optional(),
-  agreement: z.string().optional(),
+  agreement: z.string(),
   agreements: z.string().array().optional(),
-  tks: z.string().array().optional(),
   paymentInvoiceId: z.string().optional(),
-  docStatuses: z.array(z.nativeEnum(ORDER_DOC_STATUSES_ENUM)).optional(),
+  docStatuses: z.array(z.enum(ORDER_DOC_STATUSES_ENUM)).optional(),
   onlySelectable: z.boolean().optional(),
   truck: z.string().optional(),
   driver: z.string().optional(),
@@ -50,6 +49,10 @@ export const GetOrdersPickedForInvoicePropsSchema = z
     company: z.string(),
     invoiceId: z.string().optional(),
     orderIds: z.array(z.string()).optional(),
+    vatRate: z.number(),
+    usePriceWithVat: z.boolean(),
+    skip: z.number().optional(),
+    limit: z.number().optional(),
   })
   .refine((data) => (data.invoiceId ? !data.orderIds : data.orderIds), {
     message:
@@ -60,12 +63,11 @@ export type GetOrdersPickedForInvoiceProps = z.infer<
   typeof GetOrdersPickedForInvoicePropsSchema
 >
 
-export const LoaderDataSchema = z
-  .object({
-    _id: z.string(),
-    loaderName: z.string().optional(),
-  })
-  .and(z.record(z.unknown()))
+export const LoaderDataSchema = z.object({
+  _id: z.string(),
+  loaderName: z.string().optional(),
+})
+
 export type ILoaderData = z.infer<typeof LoaderDataSchema>
 
 export interface ICreateOrderInPaymentInvoiceProps {
@@ -87,7 +89,8 @@ export const orderPickedForInvoiceDTOSchema = z
     orderId: z.union([z.string(), z.instanceof(Types.ObjectId)]),
     isSelectable: z.boolean().optional(),
     agreementVatRate: z.number(),
-    paymentPartsSumWOVat: z.number(),
+    usePriceWithVat: z.boolean(),
+    paymentPartsSum: z.number().optional().default(0),
     reqTransport: z.unknown(),
     confirmedCrew: z.object({
       truck: objectIdSchema.optional().nullable(),
@@ -127,18 +130,16 @@ export const orderPickedForInvoiceDTOSchema = z
         })
       )
       .optional(),
-    // total: TotalPriceSchema,
-    // totalByTypes: z.record(PriceByTypeSchema).optional(),
+
+    totalByTypes: z.record(z.string(), PriceByTypeSchema),
     savedTotal: TotalPriceSchema.optional(),
-    savedTotalByTypes: z.record(PriceByTypeSchema).optional(),
-    driverName: z.string().optional(),
+    savedTotalByTypes: z.record(z.string(), PriceByTypeSchema).optional(),
+    driverName: z.string().optional().nullable(),
     // needUpdate: z.boolean().optional(),
     itemType: z.string(),
     rowId: z.unknown().optional(),
     loaderData: LoaderDataSchema.optional(),
-    // need remove
-    _total: z.number().optional(),
-    _totalWOVat: z.number().optional(),
+    total: TotalPriceSchema,
   })
   .refine(() => true, {
     message: 'orderPickedForInvoiceDTOSchema error',
@@ -147,3 +148,14 @@ export const orderPickedForInvoiceDTOSchema = z
 export type OrderPickedForInvoiceDTOProps = z.infer<
   typeof orderPickedForInvoiceDTOSchema
 >
+
+export interface IInvoiceVatRateInfo {
+  vatRate: number
+  usePriceWithVat: boolean
+}
+
+export interface IPaymentInvoiceAnalytics {
+  ordersCount: number
+  priceWOVat: number
+  priceWithVat: number
+}

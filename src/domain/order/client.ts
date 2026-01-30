@@ -1,28 +1,24 @@
-import { isObjectIdOrHexString, Schema } from 'mongoose'
-
-interface IClientProps {
-  client: string | Schema.Types.ObjectId
-  num?: string
-  auctionNum?: string
-  agreement?: string | Schema.Types.ObjectId
-  directiveAgreement?: boolean
-}
+import { Schema } from 'mongoose'
+import { z } from 'zod'
+import { objectIdSchema } from '@/shared/validationSchemes'
+import { OrderVatRateInfo } from '../OrderVatRateInfo'
 
 export class Client {
   client: string
   num?: string
-  directiveAgreement: boolean = false
+  directiveAgreement: boolean
   auctionNum?: string
-  agreement?: string | Schema.Types.ObjectId
-  constructor(props: IClientProps) {
-    this.client = props.client?.toString()
-    this.num = props.num
-    this.auctionNum = props.auctionNum
-    this.directiveAgreement = props.directiveAgreement || false
-    this.agreement =
-      isObjectIdOrHexString(props.agreement) && !!props.agreement
-        ? props.agreement.toString()
-        : props.agreement
+  agreement: string
+  vatRateInfo?: OrderVatRateInfo
+
+  constructor(props: unknown) {
+    const p = Client.validationSchema.parse(props)
+    this.client = p.client.toString()
+    this.num = p.num
+    this.auctionNum = p.auctionNum
+    this.directiveAgreement = p.directiveAgreement
+    this.agreement = p.agreement.toString()
+    this.vatRateInfo = p.vatRateInfo
   }
 
   toJSON() {
@@ -32,8 +28,25 @@ export class Client {
       auctionNum: this.auctionNum,
       agreement: this.agreement,
       directiveAgreement: this.directiveAgreement,
+      vatRateInfo: this.vatRateInfo,
     }
   }
+
+  static get validationSchema() {
+    return z.object({
+      client: objectIdSchema.transform((v) => v.toString()),
+      num: z.string().optional(),
+      auctionNum: z.string().optional(),
+      directiveAgreement: z
+        .boolean()
+        .optional()
+        .default(false)
+        .transform((v) => Boolean(v)),
+      agreement: objectIdSchema,
+      vatRateInfo: OrderVatRateInfo.validationSchema.optional(),
+    })
+  }
+
   static dbSchema() {
     return {
       client: {
@@ -50,6 +63,7 @@ export class Client {
         type: Schema.Types.ObjectId,
         ref: 'Agreement',
       },
+      vatRateInfo: OrderVatRateInfo.dbSchema,
     }
   }
 }

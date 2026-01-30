@@ -70,7 +70,7 @@ class PartnerService {
   async updateOne({ id, body, user }: IUpdateOneProps) {
     const partner = new PartnerDomain({
       _id: id,
-      ...body,
+      ...(body as Object),
     })
     await PartnerRepository.updatePartner(partner)
 

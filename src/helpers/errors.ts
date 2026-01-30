@@ -1,6 +1,3 @@
-interface ErrorDetails {
-  message: string
-}
 export class CustomError extends Error {
   constructor(
     public message: string,

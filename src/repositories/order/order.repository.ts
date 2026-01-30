@@ -1,10 +1,7 @@
 import './orderStats.repository'
 import { bus } from '../../eventBus'
 import { Cursor } from 'mongoose'
-import {
-  IOrderDTO,
-  Order as OrderDomain,
-} from '@/domain/order/order.domain'
+import { IOrderDTO, Order as OrderDomain } from '@/domain/order/order.domain'
 import { Order as OrderModel } from '@/models'
 import {
   getOrdersByTrucksAndPeriodPipeline,
@@ -43,7 +40,7 @@ class OrderRepository {
   }
 
   async getById(orderId: string): Promise<OrderDomain> {
-    const order = await OrderModel.findById<IOrderDTO>(orderId)
+    const order = await OrderModel.findById(orderId).lean()
     if (!order) throw new Error(`${orderId} not found`)
     return new OrderDomain(order, false)
   }
@@ -95,7 +92,7 @@ class OrderRepository {
         `OrderRepository : save : expected array of orders, received type:  ${typeof orders}`
       )
     if (!orders.every((o) => o instanceof OrderDomain))
-      throw new Error(`OrderRepository : save : expected OrderDomain instance`)
+      throw new Error('OrderRepository : save : expected OrderDomain instance')
 
     const operations = orders.map((order) =>
       makeOperation(

@@ -14,19 +14,23 @@ import { CompanyRepository, FileRepository } from '@/repositories'
 import { isValidObjectId, Types } from 'mongoose'
 import { FileRecord, FileRecordStatus } from '@/domain/fileRecord'
 import { BadRequestError } from '@/helpers/errors'
+import dns from 'dns'
 
 class FileService {
   private bucketName: string
   private s3client: S3Client
   private readonly URL_EXPIRATION_SECONDS = 600 //  10 минут
   private hasBucketCORSParams: boolean = false
+  private currentCORSRules?: any[]
 
   constructor() {
     this.bucketName = process.env.S3_BUCKET_NAME as string
     const s3KeyId = process.env.S3_ACCESS_KEY_ID as string
-    const s3Endpoint = (process.env.S3_ENDPOINT as string) ?? 's3.cloud.ru'
+    const s3Endpoint =
+      (process.env.S3_ENDPOINT as string) ?? 'https://s3.cloud.ru'
+
     const s3SecretAccessKey = process.env.S3_SECRET_ACCESS_KEY as string
-    const s3Region = process.env.S3_REGION as string
+    const s3Region = (process.env.S3_REGION as string) || 'ru-central-1'
 
     if (!this.bucketName) throw new Error('S3_BUCKET_NAME is not defined')
     if (!s3KeyId) throw new Error('S3_ACCESS_KEY_ID is not defined')
@@ -36,45 +40,67 @@ class FileService {
 
     this.s3client = new S3Client({
       endpoint: s3Endpoint,
+      forcePathStyle: true,
       region: s3Region,
       credentials: {
         accessKeyId: s3KeyId,
         secretAccessKey: s3SecretAccessKey,
       },
     })
-    const allowedOrigins = process.env.S3_ALLOWED_ORIGINS?.split(',')
-    console.log('origins: ', allowedOrigins)
   }
+
+  async init() {
+    dns.lookup('s4logprod.s3.cloud.ru', { family: 4 }, (err, address) => {
+      if (err) console.log('ошибка DNS: ', err)
+      else console.log('DNS адрес s4logprod.s3.cloud.ru: ', address)
+    })
+    await this.getBucketCORSParams()
+
+    const allowedOrigins = process.env.S3_ALLOWED_ORIGINS?.split(',') || ['*']
+    const desiredCORSRules = [
+      {
+        AllowedHeaders: ['*'],
+        AllowedMethods: ['GET', 'PUT', 'POST', 'DELETE'],
+        AllowedOrigins: allowedOrigins,
+        MaxAgeSeconds: 3000,
+      },
+    ]
+
+    const currentRulesStr = this.currentCORSRules
+      ? JSON.stringify(this.currentCORSRules)
+      : ''
+    const desiredRulesStr = JSON.stringify(desiredCORSRules)
+
+    if (!this.hasBucketCORSParams || currentRulesStr !== desiredRulesStr) {
+      await this.setBucketCORSParams(desiredCORSRules)
+    }
+  }
+
   private async getBucketCORSParams(): Promise<void> {
     try {
       const command = new GetBucketCorsCommand({
         Bucket: this.bucketName,
       })
-      await this.s3client.send(command)
+      const res = await this.s3client.send(command)
+
+      this.currentCORSRules = res.CORSRules
       this.hasBucketCORSParams = true
     } catch (e) {
       console.log('Ошибка получения параметров CORS : ', e)
+      this.currentCORSRules = undefined
       this.hasBucketCORSParams = false
     }
   }
-  private async setBucketCORSParams() {
+  private async setBucketCORSParams(desiredCORSRules: any[]) {
     try {
-      await this.getBucketCORSParams()
-      const allowedOrigins = process.env.S3_ALLOWED_ORIGINS?.split(',')
       const putCorsCommand = new PutBucketCorsCommand({
         Bucket: this.bucketName,
         CORSConfiguration: {
-          CORSRules: [
-            {
-              AllowedHeaders: allowedOrigins,
-              AllowedMethods: ['GET', 'PUT', 'POST', 'DELETE'],
-              AllowedOrigins: ['*'],
-            },
-          ],
+          CORSRules: desiredCORSRules,
         },
       })
       await this.s3client.send(putCorsCommand)
-      console.log('Параметры CORS для S3 установлены')
+      console.log('setBucketCORSParams : CORSRules', desiredCORSRules)
     } catch (e) {
       console.log('Ошибка установки параметров CORS: ', e)
     }
@@ -110,7 +136,6 @@ class FileService {
       ...props,
       fileId,
     })
-    if (!this.hasBucketCORSParams) await this.setBucketCORSParams()
 
     const fileRecord = new FileRecord({
       _id: fileId,
@@ -154,12 +179,17 @@ class FileService {
   }
 
   async deleteObjectByKey(key: string): Promise<void> {
-    const command = new DeleteObjectCommand({
-      Bucket: this.bucketName,
-      Key: key,
-    })
-    const res = await this.s3client.send(command)
-    await FileRepository.deleteByKey(key)
+    try {
+      const command = new DeleteObjectCommand({
+        Bucket: this.bucketName,
+        Key: key,
+      })
+      await this.s3client.send(command)
+      await FileRepository.deleteByKey(key)
+    } catch (e) {
+      console.log('deleteObjectByKey error: ', e)
+      throw e
+    }
   }
 
   async update(id: string, body: unknown): Promise<FileRecord> {
@@ -171,4 +201,10 @@ class FileService {
   }
 }
 
-export default new FileService()
+const fileService = new FileService()
+fileService
+  .init()
+  .then(() => console.log('FileService is ready'))
+  .catch((e) => console.log('FileService init error: ', e))
+
+export default fileService

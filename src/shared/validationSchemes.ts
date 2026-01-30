@@ -8,14 +8,14 @@ import {
 import { IdleTimeRoundingIntervalEnum } from '@/constants/tariff'
 
 export const dateOrISOStringSchema = z
-  .union([z.date(), z.string().datetime({ offset: true })])
+  .union([z.date(), z.string()])
   .transform((val) => {
     if (val instanceof Date) return val
     const parsedDate = new Date(val)
     return parsedDate
   })
 
-export const TruckKindsEnumSchema = z.nativeEnum(TRUCK_KINDS_ENUM)
+export const TruckKindsEnumSchema = z.enum(TRUCK_KINDS_ENUM)
 export const LoadDirectonEnumSchema = z.nativeEnum(LOAD_DIRECTION_ENUM)
 
 export const LiftCapacityEnumSchema = z.union([
@@ -29,7 +29,7 @@ export const LiftCapacityEnumSchema = z.union([
 const stringSchema = z
   .string()
   .refine((value) => Types.ObjectId.isValid(value), {
-    message: 'Invalid sting of ObjectId', // Сообщение об ошибке в случае невалидного значения
+    message: 'Invalid string of ObjectId', // Сообщение об ошибке в случае невалидного значения
   })
 
 const objectSchema = z
@@ -40,6 +40,6 @@ const objectSchema = z
 
 export const objectIdSchema = z.union([stringSchema, objectSchema])
 
-export const idleTimeRoundingIntervalSchema = z.nativeEnum(
+export const idleTimeRoundingIntervalSchema = z.enum(
   IdleTimeRoundingIntervalEnum
 )

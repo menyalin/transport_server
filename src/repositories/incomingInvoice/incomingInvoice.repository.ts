@@ -18,6 +18,7 @@ import { pickOrdersForIncomingInvoice } from './pipelines/pickOrdersPipeline'
 import { InvoiceOrdersResultDTO } from './dto/invoiceOrdersResult.dto'
 import { getInvoiceOrdersPipeline } from './pipelines/getInvoiceOrdersPipeline'
 import { IncomingInvoiceForOrderDTO } from './dto/IncomingInvoiceForOrder.dto'
+import { getInvoiceByOrderIdPipelineBuilder } from './pipelines/getInvoiceByOrderIdPipelineBuilder'
 
 interface IProps {
   invoiceModel: typeof IncomingInvoiceModel
@@ -65,6 +66,12 @@ class IncomingInvoiceRepository {
     const pipeline = getListPipeline(props)
     const result = await this.invoiceModel.aggregate(pipeline)
     return new ListResultDTO(result[0])
+  }
+
+  async getInvoiceByOrderId(orderId: string): Promise<IncomingInvoice | null> {
+    const pipeline = getInvoiceByOrderIdPipelineBuilder(orderId)
+    const res = await this.invoiceOrderModel.aggregate(pipeline)
+    return res[0] ? new IncomingInvoice(res[0]) : null
   }
 
   async getInvoiceOrders(

@@ -1,5 +1,5 @@
 // @ts-nocheck
-/* eslint-disable no-unused-vars */
+
 import axios from 'axios'
 import { ChangeLogService } from '../../services'
 import { Address } from '../../models'
@@ -20,7 +20,7 @@ class AddressService {
     return str.split(',').reverse()
   }
 
-  async getSuggestions(query, userId) {
+  async getSuggestions(query) {
     const {
       data: { suggestions },
     } = await dadataApi.post(URL, { query })

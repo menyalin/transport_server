@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import express, { Request, Response } from 'express'
 
 import { jwtAuth } from '@/utils/auth.middleware'
@@ -16,13 +15,6 @@ router.get(
   [jwtAuth, queryValidator(getListSchema)],
   (req: Request, res: Response) => ctrl.getList(req as AuthorizedRequest, res)
 )
-
-// router.get(
-//   '/get_for_order',
-//   [jwtAuth, queryValidator(getForOrderSchema)],
-//   (req: Request, res: Response) =>
-//     ctrl.getForOrder(req as AuthorizedRequest, res)
-// )
 
 router.get('/get_for_client', [jwtAuth], (req: Request, res: Response) =>
   ctrl.getForClient(req as AuthorizedRequest, res)

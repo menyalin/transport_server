@@ -1,6 +1,7 @@
 import { OrderPickedForInvoiceDTO } from '../../domain/paymentInvoice/dto/orderPickedForInvoice.dto'
 import {
   GetOrdersPickedForInvoiceProps,
+  IPaymentInvoiceAnalytics,
   IPickOrdersForPaymentInvoiceProps,
   IStaticticData,
 } from '@/domain/paymentInvoice/interfaces'
@@ -19,6 +20,10 @@ import {
   PaymentInvoicePaidEvent,
   PaymentInvoiceSendedEvent,
 } from '@/domain/paymentInvoice/events'
+import { InvoiceOrdersResultDTO } from './dto/invoiceOrdersResult.dto'
+import { invoiceAnalyticsPipelineBuilder } from './pipelines/invoiceAnalyticsPipelineBuilder'
+import { Types } from 'mongoose'
+import { getInvoicesByOrderIdsPipelineBuilder } from './pipelines/getInvoicesByOrderIdsPipelineBuilder'
 
 interface IProps {
   invoiceModel: typeof PaymentInvoiceModel
@@ -54,17 +59,32 @@ class PaymentInvoiceRepository {
   }
 
   async getInvoiceById(id: string): Promise<PaymentInvoiceDomain | null> {
-    const invoice: PaymentInvoiceDomain | null =
-      await PaymentInvoiceModel.findById(id).lean()
-    if (!invoice || !invoice._id) return null
+    const res = await PaymentInvoiceModel.aggregate([
+      {
+        $match: {
+          _id: new Types.ObjectId(id),
+        },
+      },
+    ])
+    if (!res || !res[0]) return null
+    return PaymentInvoiceDomain.create(res[0])
+  }
 
-    const orders = await this.getOrdersPickedForInvoice({
-      invoiceId: invoice._id.toString(),
+  async getInvoiceOrders(
+    invoiceId: string,
+    limit?: number,
+    skip?: number
+  ): Promise<InvoiceOrdersResultDTO> {
+    const invoice = await PaymentInvoiceModel.findById(invoiceId).lean()
+    if (!invoice) throw new Error('Invoice not found')
+    return await getOrdersPickedForInvoice({
+      invoiceId,
+      limit,
+      skip,
       company: invoice.company.toString(),
+      usePriceWithVat: invoice.usePriceWithVat,
+      vatRate: invoice.vatRate,
     })
-    const paymentInvoice = PaymentInvoiceDomain.create(invoice, orders)
-
-    return paymentInvoice
   }
 
   async updateInvoice(id: string, body: any): Promise<PaymentInvoiceDomain> {
@@ -97,10 +117,20 @@ class PaymentInvoiceRepository {
     await OrderInPaymentInvoiceModel.create(items)
   }
 
+  async removeOrdersFromInvoice(
+    items: OrderPickedForInvoiceDTO[]
+  ): Promise<void> {
+    await OrderInPaymentInvoiceModel.deleteMany({
+      order: { $in: items.map((i) => i._id) },
+    })
+  }
+
   async pickOrdersForPaymentInvoice(
-    params: IPickOrdersForPaymentInvoiceProps
-  ): Promise<[OrderPickedForInvoiceDTO[], IStaticticData]> {
-    return await pickOrdersForPaymentInvoice(params)
+    params: IPickOrdersForPaymentInvoiceProps,
+    vatRate: number,
+    usePriceWithVat: boolean
+  ): Promise<[unknown[], IStaticticData?]> {
+    return await pickOrdersForPaymentInvoice(params, vatRate, usePriceWithVat)
   }
 
   async getOrdersPickedForInvoiceDTOByOrders(
@@ -111,7 +141,7 @@ class PaymentInvoiceRepository {
 
   async getOrdersPickedForInvoice(
     params: GetOrdersPickedForInvoiceProps
-  ): Promise<OrderPickedForInvoiceDTO[]> {
+  ): Promise<InvoiceOrdersResultDTO> {
     return await getOrdersPickedForInvoice(params)
   }
 
@@ -129,6 +159,22 @@ class PaymentInvoiceRepository {
       })
       .lean()
     return items.map((i) => new OrderInPaymentInvoice(i))
+  }
+
+  async getInvoiceAnalytics(
+    invoiceId: string
+  ): Promise<IPaymentInvoiceAnalytics> {
+    const pipeline = invoiceAnalyticsPipelineBuilder(invoiceId)
+    const res = await OrderInPaymentInvoiceModel.aggregate(pipeline)
+    return res[0]
+  }
+
+  async getInvoicesByOrderIds(
+    orderIds: string[]
+  ): Promise<PaymentInvoiceDomain[]> {
+    const pipeline = getInvoicesByOrderIdsPipelineBuilder(orderIds)
+    const res = await this.invoiceOrderModel.aggregate(pipeline)
+    return res.map((i) => PaymentInvoiceDomain.create(i))
   }
 }
 

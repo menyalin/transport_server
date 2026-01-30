@@ -5,10 +5,12 @@ import { Client } from './client'
 import { OrderPrice } from './orderPrice'
 import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
 import { RoutePoint } from './route/routePoint'
+import { Types } from 'mongoose'
+import agreement from '@/models/agreement'
 
 describe('Order.Domain', () => {
   const orderPlannedDate = dayjs('2023-05-27')
-
+  const mockObjectId = new Types.ObjectId()
   const tripDurationInMinutes = 30
   const unloadingDurationInMinutes = 15
 
@@ -23,8 +25,8 @@ describe('Order.Domain', () => {
       company: '1',
       state: { status: 'completed' },
       orderDate: orderPlannedDate.toISOString(),
-      client: new Client({ client: '1' }),
-      confirmedCrew: { truck: 'truck_id' },
+      client: new Client({ client: mockObjectId, agreement: mockObjectId }),
+      confirmedCrew: { truck: mockObjectId },
       analytics: mockAnalytics,
       prices: [
         new OrderPrice({
@@ -56,8 +58,8 @@ describe('Order.Domain', () => {
       state: { status: 'inProgress' },
       company: '1',
       orderDate: orderPlannedDate.toISOString(),
-      confirmedCrew: { truck: 'truck_id' },
-      client: new Client({ client: '1' }),
+      client: new Client({ client: mockObjectId, agreement: mockObjectId }),
+      confirmedCrew: { truck: mockObjectId },
       analytics: mockAnalytics,
       prices: [
         new OrderPrice({
@@ -86,8 +88,8 @@ describe('Order.Domain', () => {
       company: '1',
       state: { status: 'inProgress' },
       orderDate: orderPlannedDate.toISOString(),
-      confirmedCrew: { truck: 'truck_id' },
-      client: new Client({ client: '1' }),
+      client: new Client({ client: mockObjectId, agreement: mockObjectId }),
+      confirmedCrew: { truck: mockObjectId },
       analytics: mockAnalytics,
       prices: [
         new OrderPrice({
@@ -115,8 +117,8 @@ describe('Order.Domain', () => {
       company: '1',
       state: { status: 'inProgress' },
       orderDate: orderPlannedDate.toISOString(),
-      confirmedCrew: { truck: 'truck_id' },
-      client: new Client({ client: '1' }),
+      client: new Client({ client: mockObjectId, agreement: mockObjectId }),
+      confirmedCrew: { truck: mockObjectId },
       analytics: mockAnalytics,
       prices: [
         new OrderPrice({

@@ -4,6 +4,11 @@ import routePointsNameBuilder from './fragments/routePointsNameBuilder'
 import truckKindTextBuilder from './fragments/truckKindText'
 import docsNumbersByTypesBuilder from './fragments/docsNumbersByTypes'
 import { IDriversGradesXlsxReportProps } from '..'
+import { orderDocsStatusBuilder } from '@/shared/pipelineFragments/orderDocsStatusBuilder'
+import { ORDER_DOC_STATUSES_ENUM } from '@/constants/orderDocsStatus'
+import { INCOMING_INVOICE_STATUSES_ENUM } from '../../../constants/incomingInvoice'
+import { PAIMENT_INVOICE_STATUSES_ENUM } from '@/constants/paymentInvoice'
+import { POINT_TYPES_ENUM } from '@/constants/enums'
 
 export default ({
   dateRange,
@@ -19,6 +24,7 @@ export default ({
   const firstMatcher = {
     $match: {
       company: new mongoose.Types.ObjectId(company),
+
       isActive: true,
       $expr: {
         $and: [
@@ -50,6 +56,36 @@ export default ({
         },
       },
     },
+    {
+      $lookup: {
+        from: 'partners',
+        localField: 'route.address.partner',
+        foreignField: '_id',
+        as: 'route.address.partner',
+      },
+    },
+    {
+      $addFields: {
+        'route.address.partner': {
+          $first: '$route.address.partner',
+        },
+      },
+    },
+    {
+      $lookup: {
+        from: 'regions',
+        localField: 'route.address.region',
+        foreignField: '_id',
+        as: 'route.address.region',
+      },
+    },
+    {
+      $addFields: {
+        'route.address.region': {
+          $first: '$route.address.region',
+        },
+      },
+    },
   ]
 
   const groupRoute = {
@@ -60,11 +96,14 @@ export default ({
       client: { $first: '$client' },
       confirmedCrew: { $first: '$confirmedCrew' },
       reqTransport: { $first: '$reqTransport' },
+      cargoParams: { $first: '$cargoParams' },
       docs: { $first: '$docs' },
+      docsState: { $first: '$docsState' },
       prePrices: { $first: '$prePrices' },
       prices: { $first: '$prices' },
       finalPrices: { $first: '$finalPrices' },
       outsourceCosts: { $first: '$outsourceCosts' },
+      analytics: { $first: '$analytics' },
     },
   }
 
@@ -80,11 +119,55 @@ export default ({
   const lookupTkName = {
     $lookup: {
       from: 'tknames',
-      localField: 'truck.tkName',
+      localField: 'confirmedCrew.tkName',
       foreignField: '_id',
       as: 'tkName',
     },
   }
+
+  const lookupClientAgreement = [
+    {
+      $lookup: {
+        from: 'agreements',
+        localField: 'client.agreement',
+        foreignField: '_id',
+        as: 'clientAgreement',
+      },
+    },
+    {
+      $addFields: {
+        clientAgreement: { $first: '$clientAgreement' },
+      },
+    },
+    {
+      $lookup: {
+        from: 'tknames',
+        localField: 'clientAgreement.executor',
+        foreignField: '_id',
+        as: 'clientExecutorCarrier',
+      },
+    },
+    {
+      $addFields: {
+        clientExecutorCarrier: { $first: '$clientExecutorCarrier' },
+      },
+    },
+  ]
+  const lookupCarrierAgreement = [
+    {
+      $lookup: {
+        from: 'carrierAgreements',
+        localField: 'confirmedCrew.outsourceAgreement',
+        foreignField: '_id',
+        as: 'carrierAgreement',
+      },
+    },
+    {
+      $addFields: {
+        carrierAgreement: { $first: '$carrierAgreement' },
+      },
+    },
+  ]
 
   const lookupTruck = {
     $lookup: {
@@ -120,6 +203,70 @@ export default ({
     },
   ]
 
+  const incomingInvoiceLookup = [
+    {
+      $lookup: {
+        from: 'incomingInvoiceOrders',
+        localField: '_id',
+        foreignField: 'order',
+        as: 'incomingInvoiceOrder',
+      },
+    },
+    {
+      $addFields: {
+        incomingInvoiceOrder: { $first: '$incomingInvoiceOrder' },
+      },
+    },
+    {
+      $lookup: {
+        from: 'incomingInvoices',
+        localField: 'incomingInvoiceOrder.incomingInvoice',
+        foreignField: '_id',
+        as: 'incomingInvoice',
+      },
+    },
+    {
+      $addFields: {
+        incomingInvoice: { $first: '$incomingInvoice' },
+        incomingInvoicePrices: {
+          $ifNull: ['$incomingInvoiceOrder.total', { price: 0, priceWOVat: 0 }],
+        },
+      },
+    },
+  ]
+
+  const paymentInvoiceLookup = [
+    {
+      $lookup: {
+        from: 'ordersInPaymentInvoices',
+        localField: '_id',
+        foreignField: 'order',
+        as: 'paymentInvoiceOrder',
+      },
+    },
+    {
+      $addFields: {
+        paymentInvoiceOrder: { $first: '$paymentInvoiceOrder' },
+      },
+    },
+    {
+      $lookup: {
+        from: 'paymentInvoices',
+        localField: 'paymentInvoiceOrder.paymentInvoice',
+        foreignField: '_id',
+        as: 'paymentInvoice',
+      },
+    },
+    {
+      $addFields: {
+        paymentInvoice: { $first: '$paymentInvoice' },
+        paymentInvoicePrices: {
+          $ifNull: ['$paymentInvoiceOrder.total', { price: 0, priceWOVat: 0 }],
+        },
+      },
+    },
+  ]
+
   const priceArraysToObjects = {
     $addFields: {
       prices: {
@@ -148,7 +295,47 @@ export default ({
       },
     },
   }
-
+  const addTmpFields = {
+    $addFields: {
+      _firstArrivalDate: {
+        $getField: {
+          field: 'arrivalDateDoc',
+          input: { $first: '$route' },
+        },
+      },
+      _lastDepartureDate: {
+        $getField: {
+          field: 'departureDateDoc',
+          input: { $last: '$route' },
+        },
+      },
+      _firstLoadingPoint: {
+        $first: '$route',
+      },
+      _unloadingPoints: {
+        $filter: {
+          input: '$route',
+          cond: {
+            $and: [
+              { $eq: ['$$this.type', 'unloading'] },
+              { $ne: ['$$this.isReturn', true] },
+            ],
+          },
+        },
+      },
+      _returnPoints: {
+        $filter: {
+          input: '$route',
+          cond: {
+            $and: [
+              { $eq: ['$$this.type', 'unloading'] },
+              { $eq: ['$$this.isReturn', true] },
+            ],
+          },
+        },
+      },
+    },
+  }
   const addPriceTypeFieldsBuilder = (priceTypes: string[]) => {
     let res = {}
     priceTypes.forEach((type) => {
@@ -175,21 +362,76 @@ export default ({
       $ifNull: [`$${type}.${withVat ? 'price' : 'priceWOVat'}`, 0],
     })),
   })
+  const formattedDate = (fieldName: string | object) => {
+    return {
+      $dateToString: {
+        format: '%d.%m.%Y %H:%M:%S',
+        date: fieldName,
+        timezone: '+03',
+      },
+    }
+  }
+
+  const trimmedAddressHandler = (fieldName: string, exprIn: Object) => ({
+    $trim: {
+      input: {
+        $reduce: {
+          input: fieldName,
+          initialValue: '',
+          in: exprIn,
+        },
+      },
+      chars: '; ',
+    },
+  })
 
   const finalProject = {
     $project: {
-      'Плановая дата погрузки': {
-        $dateToString: {
-          date: '$firstPlannedDate',
-          format: '%Y-%m-%d',
-          timezone: '+03:00',
-        },
+      'Плановая дата погрузки': formattedDate('$firstPlannedDate'),
+      Погрузка: routePointsNameBuilder(POINT_TYPES_ENUM.loading),
+      'Погрузка: Партнер - Адрес': {
+        $concat: [
+          '$_firstLoadingPoint.address.partner.name',
+          ' - ',
+          '$_firstLoadingPoint.address.name',
+        ],
       },
-      Погрузка: routePointsNameBuilder('loading'),
-      Выгрузка: routePointsNameBuilder('unloading'),
+      'Погрузка: Регион': {
+        $ifNull: ['$_firstLoadingPoint.address.region.name', ''],
+      },
+
+      Выгрузка: routePointsNameBuilder(POINT_TYPES_ENUM.unloading),
+      'Выгрузка: Партнер - Адрес': trimmedAddressHandler('$_unloadingPoints', {
+        $concat: [
+          '$$value',
+          '$$this.address.partner.name',
+          ' - ',
+          '$$this.address.name',
+          '; ',
+        ],
+      }),
+      'Выгрузка: регионы': trimmedAddressHandler('$_unloadingPoints', {
+        $concat: ['$$value', '$$this.address.region.name', '; '],
+      }),
+
+      'Возврат: Партнер - Адрес': trimmedAddressHandler('$_returnPoints', {
+        $concat: [
+          '$$value',
+          '$$this.address.partner.name',
+          ' - ',
+          '$$this.address.name',
+          '; ',
+        ],
+      }),
+      'Возврат: регионы': trimmedAddressHandler('$_returnPoints', {
+        $concat: ['$$value', '$$this.address.region.name', '; '],
+      }),
+      'Расстояние по дорогам между дальними точками, км':
+        '$analytics.distanceRoad',
       ТК: {
         $getField: { field: 'name', input: { $first: '$tkName' } },
       },
+      'Соглашение с перевозчиком': '$carrierAgreement.name',
       Грузовик: {
         $getField: {
           field: 'regNum',
@@ -244,12 +486,31 @@ export default ({
         },
       },
       Клиент: '$clientDoc.name',
+      'Соглашение с клиентом': '$clientAgreement.name',
+      'Исполнитель для клиента': '$clientExecutorCarrier.name',
       'Тип ТС': {
         $concat: [
           { $toString: '$reqTransport.liftCapacity' },
           ' ',
           truckKindTextBuilder('$reqTransport.kind'),
         ],
+      },
+
+      Гидроборт: '$reqTransport.tailLift',
+      'Тип груза': {
+        $getField: { field: 'description', input: '$cargoParams' },
+      },
+      'Вес груза': '$cargoParams.weight',
+      'Количество паллет': '$cargoParams.plt',
+      'Температурный режим': '$cargoParams.tRegime',
+      'Тип рейса': {
+        $switch: {
+          branches: [
+            { case: { $eq: ['$analytics.type', 'city'] }, then: 'Город' },
+            { case: { $eq: ['$analytics.type', 'region'] }, then: 'Регион' },
+          ],
+          default: '',
+        },
       },
       'Номер рейса': '$client.num',
       'Номер аукциона': '$client.auctionNum',
@@ -260,6 +521,167 @@ export default ({
       'Экспедиторская расписка': docsNumbersByTypesBuilder('shippingReceipt'),
       'Акт возврата': docsNumbersByTypesBuilder('returnAct'),
       УПД: docsNumbersByTypesBuilder('upd'),
+      'Факт прибытия в первую точку': formattedDate('$_firstArrivalDate'),
+      'Факт убытия из последней точки': formattedDate('$_lastDepartureDate'),
+      'Время работы': {
+        $round: [
+          {
+            $divide: [
+              {
+                $dateDiff: {
+                  startDate: '$_firstArrivalDate',
+                  endDate: '$_lastDepartureDate',
+                  unit: 'minute',
+                },
+              },
+              60,
+            ],
+          },
+          1, // Округление до одного десятичного знака
+        ],
+      },
+      'Статус документов': {
+        $switch: {
+          branches: [
+            {
+              case: {
+                $eq: ['$docsStatus', ORDER_DOC_STATUSES_ENUM.missing],
+              },
+              then: 'Не получены',
+            },
+            {
+              case: { $eq: ['$docsStatus', ORDER_DOC_STATUSES_ENUM.onCheck] },
+              then: 'На проверке',
+            },
+            {
+              case: { $eq: ['$docsStatus', ORDER_DOC_STATUSES_ENUM.needFix] },
+              then: 'На исправлении',
+            },
+            {
+              case: { $eq: ['$docsStatus', ORDER_DOC_STATUSES_ENUM.accepted] },
+              then: 'Приняты',
+            },
+          ],
+          default: '',
+        },
+      },
+      'Статус входящего акта': {
+        $switch: {
+          branches: [
+            {
+              case: {
+                $eq: [
+                  '$incomingInvoice.status',
+                  INCOMING_INVOICE_STATUSES_ENUM.preparing,
+                ],
+              },
+              then: 'Подготовка',
+            },
+            {
+              case: {
+                $eq: [
+                  '$incomingInvoice.status',
+                  INCOMING_INVOICE_STATUSES_ENUM.toPay,
+                ],
+              },
+              then: 'К оплате',
+            },
+            {
+              case: {
+                $eq: [
+                  '$incomingInvoice.status',
+                  INCOMING_INVOICE_STATUSES_ENUM.paid,
+                ],
+              },
+              then: 'Оплачен',
+            },
+          ],
+          default: '',
+        },
+      },
+      'Номер входящего акта': { $ifNull: ['$incomingInvoice.number', ''] },
+      'Дата входящего акта': formattedDate('$incomingInvoice.date'),
+      'План дата оплаты вх акта': formattedDate(
+        '$incomingInvoice.plannedPayDate'
+      ),
+      'Факт дата оплаты вх акта': formattedDate('$incomingInvoice.payDate'),
+      'Стоимость вх акт без НДС': '$incomingInvoicePrices.priceWOVat',
+      'Стоимость вх акт с НДС': '$incomingInvoicePrices.price',
+      'Статус исходящего акта': {
+        $switch: {
+          branches: [
+            {
+              case: {
+                $eq: [
+                  '$paymentInvoice.status',
+                  PAIMENT_INVOICE_STATUSES_ENUM.accepted,
+                ],
+              },
+              then: 'Принят',
+            },
+            {
+              case: {
+                $eq: [
+                  '$paymentInvoice.status',
+                  PAIMENT_INVOICE_STATUSES_ENUM.inProcess,
+                ],
+              },
+              then: 'Подготовка',
+            },
+            {
+              case: {
+                $eq: [
+                  '$paymentInvoice.status',
+                  PAIMENT_INVOICE_STATUSES_ENUM.paid,
+                ],
+              },
+              then: 'Оплачен',
+            },
+            {
+              case: {
+                $eq: [
+                  '$paymentInvoice.status',
+                  PAIMENT_INVOICE_STATUSES_ENUM.prepared,
+                ],
+              },
+              then: 'Готов к отправке',
+            },
+            {
+              case: {
+                $eq: [
+                  '$paymentInvoice.status',
+                  PAIMENT_INVOICE_STATUSES_ENUM.sended,
+                ],
+              },
+              then: 'Отправлен',
+            },
+          ],
+          default: '',
+        },
+      },
+      'Номер исходящего акта': { $ifNull: ['$paymentInvoice.number', ''] },
+      'Номер реестра клиента': {
+        $ifNull: ['$paymentInvoice.numberByClient', ''],
+      },
+      'Дата исходящего акта': formattedDate('$paymentInvoice.date'),
+      'План дата оплаты исх акта': formattedDate(
+        '$paymentInvoice.plannedPayDate'
+      ),
+      'Факт дата оплаты исх акта': formattedDate('$paymentInvoice.payDate'),
+      'Стоимость исх акт без НДС': '$paymentInvoicePrices.priceWOVat',
+      'Стоимость исх акт с НДС': '$paymentInvoicePrices.price',
+      'Маржа, без НДС, руб': {
+        $subtract: [
+          { $ifNull: ['$paymentInvoicePrices.priceWOVat', 0] },
+          { $ifNull: ['$incomingInvoicePrices.priceWOVat', 0] },
+        ],
+      },
+      'Маржа, c НДС, руб': {
+        $subtract: [
+          { $ifNull: ['$paymentInvoicePrices.price', 0] },
+          { $ifNull: ['$incomingInvoicePrices.price', 0] },
+        ],
+      },
     },
   }
 
@@ -268,6 +690,12 @@ export default ({
     unwindRoute,
     ...lookupAddresses,
     groupRoute,
+    addTmpFields,
+    ...orderDocsStatusBuilder(),
+    ...lookupClientAgreement,
+    ...lookupCarrierAgreement,
+    ...incomingInvoiceLookup,
+    ...paymentInvoiceLookup,
     lookupDriver,
     lookupTruck,
     lookupTkName,

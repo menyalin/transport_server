@@ -1,23 +1,7 @@
-import z from 'zod'
 import { Expression, PipelineStage, Types } from 'mongoose'
-import { objectIdSchema } from '@/shared/validationSchemes'
+import { GetAgreementsForClientProps } from '../schemas'
 
-const propsSchema = z
-  .object({
-    company: z.string(),
-    client: z.string().optional(),
-    clients: z.array(z.string()).optional(),
-    date: z.string().transform((v) => new Date(v)),
-    currentAgreementId: objectIdSchema.optional(),
-  })
-  .refine((data) => data.client !== undefined || data.clients !== undefined, {
-    message: 'Поле client или clients должно быть заполнено',
-    path: ['client'],
-  })
-
-export default (props: unknown): PipelineStage[] => {
-  const p = propsSchema.parse(props)
-
+export default (p: GetAgreementsForClientProps): PipelineStage[] => {
   const conditions: Expression[] = [
     { $eq: ['$isActive', true] },
     { $ne: ['$closed', true] },
@@ -36,7 +20,6 @@ export default (props: unknown): PipelineStage[] => {
         { $gt: ['$endDate', p.date] },
       ],
     },
-    ,
   ].filter(Boolean)
 
   const firstMatcher: PipelineStage.Match = {

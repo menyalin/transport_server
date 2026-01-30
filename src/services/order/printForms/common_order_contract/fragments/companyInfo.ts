@@ -22,7 +22,7 @@ export const companyInfo = (p: ICarreierPFData): Paragraph => {
             break: 1,
           })
         : new TextRun({
-            text: ``,
+            text: '',
           }),
       p.ogrnip
         ? new TextRun({
@@ -30,7 +30,7 @@ export const companyInfo = (p: ICarreierPFData): Paragraph => {
             break: 1,
           })
         : new TextRun({
-            text: ``,
+            text: '',
           }),
 
       new TextRun({

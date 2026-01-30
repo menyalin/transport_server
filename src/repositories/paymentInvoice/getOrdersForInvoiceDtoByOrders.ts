@@ -1,13 +1,14 @@
 import { PipelineStage, Types } from 'mongoose'
 import { OrderPickedForInvoiceDTO } from '@/domain/paymentInvoice/dto/orderPickedForInvoice.dto'
 import { Order as OrderModel } from '@/models'
-import { paymentPartsSumWOVatFragemt } from './pipelineFragments/paymentPartsSumWOVatFragemt'
+
 import { orderDriverFullNameBuilder } from '@/shared/pipelineFragments/orderDriverFullNameBuilder'
 import {
   finalPricesFragmentBuilder,
   totalSumFragmentBuilder,
-} from '@/shared/pipelineFragments/orderFinalPricesFragmentBuilder'
+} from './pipelines/pipelineFragments/orderFinalPricesFragmentBuilder'
 import { orderDateFragmentBuilder } from '@/shared/pipelineFragments/orderDateFragmentBuilder'
+import { paymentPartsSumWOVatFragemt } from './pipelines/pipelineFragments/paymentPartsSumWOVatFragemt'
 
 export const getOrdersForInvoiceDtoByOrders = async (
   orders: string[],
@@ -54,16 +55,16 @@ export const getOrdersForInvoiceDtoByOrders = async (
         {
           $match: {
             company: new Types.ObjectId(company),
-            // $expr: {
-            //   $and: [
-            //     {
-            //       $in: [
-            //         '$paymentParts._id',
-            //         orders.map((i) => new Types.ObjectId(i)),
-            //       ],
-            //     },
-            //   ],
-            // },
+            $expr: {
+              $and: [
+                {
+                  $in: [
+                    '$paymentParts._id',
+                    orders.map((i) => new Types.ObjectId(i)),
+                  ],
+                },
+              ],
+            },
           },
         },
         { $unwind: { path: '$paymentParts' } },

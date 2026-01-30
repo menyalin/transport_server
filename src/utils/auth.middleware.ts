@@ -1,11 +1,16 @@
 import jwt from 'jsonwebtoken'
 import { UserService } from '../services'
-import { UnauthorizedError } from '../helpers/errors'
 import { NextFunction, Request, Response } from 'express'
 import { AuthorizedRequest } from '@/controllers/interfaces'
+import { TokenExpiredError } from 'jsonwebtoken'
 
 interface JWTPayload {
   userId: string
+}
+
+// Отправляем 401 ответ без создания объекта ошибки, чтобы не засорять логи
+const sendUnauthorized = (res: Response, message: string): void => {
+  res.status(401).json({ message })
 }
 
 export const jwtAuth = async (
@@ -13,31 +18,49 @@ export const jwtAuth = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  // Указали void вместо возвращаемого значения
-  if (req.headers.authorization) {
-    const token = req.headers.authorization.split(' ')[1]
-    try {
-      const payload = jwt.verify(
-        token,
-        process.env.ACCESS_JWT_SECRET as string
-      ) as JWTPayload
+  const authHeader = req.headers.authorization
 
-      const user = await UserService.findById(payload.userId)
+  if (!authHeader) {
+    sendUnauthorized(res, 'Access token is missing')
+    return
+  }
 
-      if (!user) {
-        res.status(401).send('Unauthorized') // Убрали return, т.к. res.send завершит выполнение
-        return
-      }
+  if (!authHeader.startsWith('Bearer ')) {
+    sendUnauthorized(res, 'Invalid authorization header format')
+    return
+  }
 
-      const authReq = req as AuthorizedRequest
-      authReq.userId = user._id.toString()
-      authReq.companyId = user.directoriesProfile?.toString()
+  const token = authHeader.split(' ')[1]
 
-      next()
-    } catch (e) {
-      next(new UnauthorizedError('Invalid token'))
+  if (!token) {
+    sendUnauthorized(res, 'Token is missing')
+    return
+  }
+
+  try {
+    const payload = jwt.verify(
+      token,
+      process.env.ACCESS_JWT_SECRET as string
+    ) as JWTPayload
+
+    const user = await UserService.findById(payload.userId)
+
+    if (!user) {
+      sendUnauthorized(res, 'User not found')
+      return
     }
-  } else {
-    next(new UnauthorizedError('Access token is missing'))
+
+    const authReq = req as AuthorizedRequest
+    authReq.userId = user._id.toString()
+    authReq.companyId = user.directoriesProfile?.toString()
+
+    next()
+  } catch (err) {
+    // Не логируем истекшие токены - это нормальная ситуация
+    const message =
+      err instanceof TokenExpiredError
+        ? 'Token expired'
+        : 'Invalid token'
+    sendUnauthorized(res, message)
   }
 }
