@@ -10,7 +10,7 @@ export class ConfirmedCrew {
   outsourceAgreement?: string | null
   tkName?: string | null
   directiveAgreement: boolean
-  vatRateInfo?: OrderVatRateInfo
+  // vatRateInfo?: OrderVatRateInfo
 
   constructor(props: unknown) {
     const p = ConfirmedCrew.validationSchema.parse(props)
@@ -20,7 +20,7 @@ export class ConfirmedCrew {
     this.outsourceAgreement = p.outsourceAgreement?.toString() || null
     this.tkName = p.tkName?.toString() || null
     this.directiveAgreement = p.directiveAgreement
-    this.vatRateInfo = p.vatRateInfo || undefined
+    // this.vatRateInfo = p.vatRateInfo || undefined
   }
 
   toJSON() {
@@ -31,7 +31,7 @@ export class ConfirmedCrew {
       outsourceAgreement: this.outsourceAgreement || undefined,
       tkName: this.tkName || undefined,
       directiveAgreement: this.directiveAgreement,
-      vatRateInfo: this.vatRateInfo,
+      // vatRateInfo: this.vatRateInfo,
     }
   }
 
@@ -47,7 +47,7 @@ export class ConfirmedCrew {
         .optional()
         .default(false)
         .transform((v) => Boolean(v)),
-      vatRateInfo: OrderVatRateInfo.validationSchema.optional().nullable(),
+      // vatRateInfo: OrderVatRateInfo.validationSchema.optional().nullable(),
     })
   }
 
