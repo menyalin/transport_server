@@ -6,11 +6,11 @@ const schema = z.object({
   routeAddressesString: z.string(),
   companyName: z.string(),
   plannedDate: z.string(),
-  fullDriverName: z.string(),
-  shortDriverName: z.string(),
-  driverPhones: z.string(),
+  fullDriverName: z.string().optional(),
+  shortDriverName: z.string().optional(),
+  driverPhones: z.string().optional(),
   truckBrand: z.string().nullable().optional().default(''),
-  truckNum: z.string(),
+  truckNum: z.string().optional(),
   trailerNum: z.string().optional(),
   addresses: z.array(z.unknown()),
   loadingAddresses: z.array(z.unknown()),
@@ -18,14 +18,20 @@ const schema = z.object({
   note: z.string().optional().nullable(),
 })
 
-const getDriverFullName = (driver: any): string =>
-  `${driver.surname} ${driver.name} ${driver.patronymic}`.trim()
+const getDriverFullName = (driver: any): string => {
+  if (!driver) return ''
+  else return `${driver?.surname} ${driver?.name} ${driver?.patronymic}`.trim()
+}
 
-const getShortDriverName = (driver: any): string =>
-  `${driver.surname ?? ''} ${driver.name[0] ?? ''}.${driver?.patronymic[0] ?? ''}.`.trim()
+const getShortDriverName = (driver: any): string => {
+  if (!driver) return ''
+  return `${driver?.surname ?? ''} ${driver?.name[0] ?? ''}.${driver?.patronymic[0] ?? ''}.`.trim()
+}
 
-const getDriverPhones = (driver: any): string =>
-  `${driver.phone}${driver.phone2 ? ', ' + driver.phone2 : ''}`.trim()
+const getDriverPhones = (driver: any): string => {
+  if (!driver) return ''
+  return `${driver?.phone}${driver.phone2 ? ', ' + driver.phone2 : ''}`.trim()
+}
 
 const getAddressesString = (route: any[], addresses: any[]): string =>
   route
@@ -43,11 +49,11 @@ export class FullOrderDataDTO {
   routeAddressesString: string
   companyName: string
   plannedDate: string
-  fullDriverName: string
-  shortDriverName: string
-  driverPhones: string
-  truckNum: string
-  truckBrand: string | null = ''
+  fullDriverName?: string
+  shortDriverName?: string
+  driverPhones?: string
+  truckNum?: string
+  truckBrand?: string | null = ''
   trailerNum?: string
   addresses: any[]
   loadingAddresses: any[]
