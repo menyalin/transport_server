@@ -22,9 +22,9 @@ export class OrderVatRateInfo {
 
   static get dbSchema() {
     return {
-      date: { type: Date, required: true },
-      vatRate: { type: Number, required: true },
-      usePriceWithVat: { type: Boolean, required: true },
+      date: { type: Date },
+      vatRate: { type: Number },
+      usePriceWithVat: { type: Boolean },
     }
   }
 }
