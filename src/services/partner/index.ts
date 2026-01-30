@@ -30,15 +30,15 @@ class PartnerService {
     this.modelName = modelName
     this.logService = logService
     bus.subscribe(OrdersUpdatedEvent, ({ payload: orders }) => {
-      orders.forEach((order) => {
+      for (const order of orders) {
         this.createIdleTruckNotification(order)
-      })
+      }
     })
   }
 
   private async createIdleTruckNotification(order: OrderDomain): Promise<void> {
     if (order.isInProgress || order.isCompleted) {
-      const partner = await PartnerRepository.getById(order.client.client)
+      const partner = await PartnerRepository.getById(order.clientId)
 
       const notifications = partner.notificationsByOrder(order)
       notifications.forEach((notification) => {

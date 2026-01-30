@@ -175,7 +175,7 @@ export class Order {
   }
 
   get clientId(): string {
-    return this.client.client
+    return this.client.client.toString()
   }
 
   get carrierId(): string | null {
