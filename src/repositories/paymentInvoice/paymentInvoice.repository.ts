@@ -23,6 +23,7 @@ import {
 import { InvoiceOrdersResultDTO } from './dto/invoiceOrdersResult.dto'
 import { invoiceAnalyticsPipelineBuilder } from './pipelines/invoiceAnalyticsPipelineBuilder'
 import { Types } from 'mongoose'
+import { getInvoicesByOrderIdsPipelineBuilder } from './pipelines/getInvoicesByOrderIdsPipelineBuilder'
 
 interface IProps {
   invoiceModel: typeof PaymentInvoiceModel
@@ -166,6 +167,14 @@ class PaymentInvoiceRepository {
     const pipeline = invoiceAnalyticsPipelineBuilder(invoiceId)
     const res = await OrderInPaymentInvoiceModel.aggregate(pipeline)
     return res[0]
+  }
+
+  async getInvoicesByOrderIds(
+    orderIds: string[]
+  ): Promise<PaymentInvoiceDomain[]> {
+    const pipeline = getInvoicesByOrderIdsPipelineBuilder(orderIds)
+    const res = await this.invoiceOrderModel.aggregate(pipeline)
+    return res.map((i) => PaymentInvoiceDomain.create(i))
   }
 }
 

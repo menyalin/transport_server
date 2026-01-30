@@ -5,7 +5,7 @@ import { BankAccountInfo } from '../bankAccountInfo'
 import { CompanyInfo } from '../companyInfo'
 import { ContactInfo } from '../сontactInfo'
 import { ICarreierPFData } from './interfaces'
-import { VatRateInfo } from '../vatRateInfo'
+import { CarrierVatRateInfo } from '../CarrierVatRateInfo'
 import { AllowedAgreement } from '../allowedAgreement'
 
 export class Carrier {
@@ -19,7 +19,7 @@ export class Carrier {
   outsource: boolean
   allowUseCustomerRole: boolean
   isActive: boolean
-  vatRates?: VatRateInfo[] | null
+  vatRates?: CarrierVatRateInfo[] | null
   version: number = 0
 
   constructor(props: unknown) {
@@ -72,7 +72,8 @@ export class Carrier {
   getVatRateByDate(date: Date): number | null {
     if (!this.vatRates || this.vatRates.length === 0) return null
     const vatRateInfo = this.vatRates.find(
-      (vr) => +vr.startPeriod <= +date && (!vr.endPeriod || +vr.endPeriod > +date)
+      (vr) =>
+        +vr.startPeriod <= +date && (!vr.endPeriod || +vr.endPeriod > +date)
     )
     return vatRateInfo?.vatRate ?? null
   }
@@ -98,10 +99,10 @@ export class Carrier {
       isActive: z.boolean().default(true),
       version: z.number().optional().nullable().default(0),
       vatRates: z
-        .array(VatRateInfo.validationSchema)
+        .array(CarrierVatRateInfo.validationSchema)
         .optional()
         .nullable()
-        .transform((v) => (v ? v.map((i) => new VatRateInfo(i)) : [])),
+        .transform((v) => (v ? v.map((i) => new CarrierVatRateInfo(i)) : [])),
       agreements: z
         .array(AllowedAgreement.validationSchema)
         .default([])
@@ -133,7 +134,7 @@ export class Carrier {
         default: true,
       },
       version: { type: Number, default: 0 },
-      vatRates: [VatRateInfo.dbSchema],
+      vatRates: [CarrierVatRateInfo.dbSchema],
     }
   }
 }

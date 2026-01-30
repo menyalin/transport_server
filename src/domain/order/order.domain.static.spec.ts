@@ -4,11 +4,12 @@ import { Order } from './order.domain'
 import { Client } from './client'
 import { OrderPrice } from './orderPrice'
 import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
+import { Types } from 'mongoose'
 
 describe('Order.Domain static functions', () => {
   const orderPlannedDate1 = dayjs('2023-05-27T06:00:00.000Z')
   const orderPlannedDate2 = dayjs('2023-05-27T09:00:00.000Z')
-
+  const mockObjectId = new Types.ObjectId()
   const tripDurationInMinutes = 30
   const unloadingDurationInMinutes = 15
 
@@ -30,8 +31,8 @@ describe('Order.Domain static functions', () => {
       ],
       state: { status: 'completed' },
       orderDate: orderPlannedDate1.toISOString(),
-      confirmedCrew: { truck: 'truck_id' },
-      client: new Client({ client: '1' }),
+      client: new Client({ client: mockObjectId, agreement: mockObjectId }),
+      confirmedCrew: { truck: mockObjectId },
       analytics: mockAnalytics,
       route: [
         {
@@ -54,8 +55,8 @@ describe('Order.Domain static functions', () => {
       _id: 'id3',
       state: { status: 'inProgress' },
       orderDate: orderPlannedDate1.add(40, 'minutes').toISOString(),
-      confirmedCrew: { truck: 'truck_id' },
-      client: new Client({ client: '1' }),
+      client: new Client({ client: mockObjectId, agreement: mockObjectId }),
+      confirmedCrew: { truck: mockObjectId },
       analytics: mockAnalytics,
       company: '1',
       prices: [
@@ -84,8 +85,8 @@ describe('Order.Domain static functions', () => {
       _id: 'id2',
       state: { status: 'inProgress' },
       orderDate: orderPlannedDate2.toISOString(),
-      confirmedCrew: { truck: 'truck_id' },
-      client: new Client({ client: '1' }),
+      client: new Client({ client: mockObjectId, agreement: mockObjectId }),
+      confirmedCrew: { truck: mockObjectId },
       analytics: mockAnalytics,
       company: '1',
       prices: [
@@ -109,35 +110,6 @@ describe('Order.Domain static functions', () => {
         },
       ],
     })
-
-    // let orderInProgress2 = new Order({
-    //   _id: 'id4',
-    //   state: { status: 'inProgress' },
-    //   orderDate: orderPlannedDate1.toISOString(),
-    //   confirmedCrew: { truck: 'truck_id' },
-    //   client: new Client({ client: '1' }),
-    //   analytics: mockAnalytics,
-    //   company: '1',
-    //   prices: [
-    //     new OrderPrice({
-    //       type: ORDER_PRICE_TYPES_ENUM.base,
-    //       price: 12,
-    //       sumVat: 2,
-    //       priceWOVat: 10,
-    //     }),
-    //   ],
-    //   route: [
-    //     {
-    //       type: 'loading',
-    //       plannedDate: new Date('2023-01-01'),
-    //       address: 'address',
-    //     },
-    //     {
-    //       type: 'unloading',
-    //       address: 'address',
-    //     },
-    //   ],
-    // })
   })
 
   describe('autoCompleteOrders', () => {
