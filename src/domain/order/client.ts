@@ -1,23 +1,23 @@
-import { Schema } from 'mongoose'
+import { Schema, Types } from 'mongoose'
 import { z } from 'zod'
 import { objectIdSchema } from '@/shared/validationSchemes'
 import { OrderVatRateInfo } from '../OrderVatRateInfo'
 
 export class Client {
-  client: string
+  client: string | Types.ObjectId
   num?: string
   directiveAgreement: boolean
   auctionNum?: string
-  agreement: string
+  agreement: string | Types.ObjectId
   vatRateInfo?: OrderVatRateInfo
 
   constructor(props: unknown) {
     const p = Client.validationSchema.parse(props)
-    this.client = p.client.toString()
+    this.client = p.client
     this.num = p.num
     this.auctionNum = p.auctionNum
     this.directiveAgreement = p.directiveAgreement
-    this.agreement = p.agreement.toString()
+    this.agreement = p.agreement
     this.vatRateInfo = p.vatRateInfo
   }
 
@@ -34,7 +34,7 @@ export class Client {
 
   static get validationSchema() {
     return z.object({
-      client: objectIdSchema.transform((v) => v.toString()),
+      client: objectIdSchema,
       num: z.string().optional(),
       auctionNum: z.string().optional(),
       directiveAgreement: z

@@ -1,24 +1,24 @@
-import { Schema } from 'mongoose'
+import { Schema, Types } from 'mongoose'
 import { z } from 'zod'
 import { objectIdSchema } from '@/shared/validationSchemes'
 import { OrderVatRateInfo } from '../OrderVatRateInfo'
 
 export class ConfirmedCrew {
-  truck: string | null
-  trailer?: string | null
-  driver?: string | null
-  outsourceAgreement?: string | null
-  tkName?: string | null
+  truck: string | Types.ObjectId | null
+  trailer?: string | Types.ObjectId | null
+  driver?: string | Types.ObjectId | null
+  outsourceAgreement?: string | Types.ObjectId | null
+  tkName?: string | Types.ObjectId | null
   directiveAgreement: boolean
   // vatRateInfo?: OrderVatRateInfo
 
   constructor(props: unknown) {
     const p = ConfirmedCrew.validationSchema.parse(props)
-    this.truck = p.truck?.toString() || null
-    this.trailer = p.trailer?.toString() || null
-    this.driver = p.driver?.toString() || null
-    this.outsourceAgreement = p.outsourceAgreement?.toString() || null
-    this.tkName = p.tkName?.toString() || null
+    this.truck = p.truck || null
+    this.trailer = p.trailer || null
+    this.driver = p.driver || null
+    this.outsourceAgreement = p.outsourceAgreement || null
+    this.tkName = p.tkName || null
     this.directiveAgreement = p.directiveAgreement
     // this.vatRateInfo = p.vatRateInfo || undefined
   }

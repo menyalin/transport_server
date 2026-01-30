@@ -53,7 +53,7 @@ export const commonOrderContractBuilder = async (
 
   const customer = await CarrierRepository.getById(clientAgreement.executor)
   if (!customer) throw new BadRequestError('Заказчик не найден')
-  const shipper = await PartnerRepository.getById(order.client.client)
+  const shipper = await PartnerRepository.getById(order.clientId)
   const routePFData = await OrderRepository.getRoutePointPFData(order)
   if (!routePFData) throw new BadRequestError('Маршрут не определен')
 
