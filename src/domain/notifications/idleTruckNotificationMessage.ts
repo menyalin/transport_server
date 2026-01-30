@@ -110,11 +110,11 @@ export class IdleTruckNotificationMessage {
         point.plannedDate?.toLocaleString('ru') ||
         point.arrivalDate?.toLocaleString('ru') ||
         'invalid date',
-      fullDriverName: order.fullDriverName,
-      driverPhones: order.driverPhones,
+      fullDriverName: order.fullDriverName || '',
+      driverPhones: order.driverPhones || '',
       routeAddressesString: order.routeAddressesString,
       truckBrand: order.truckBrand || '',
-      truckNum: order.truckNum,
+      truckNum: order.truckNum || '',
       trailerNum: order.trailerNum,
       currentAddressString: utils.getCurrentAddress(point, order),
       showPointStatus: !!point.arrivalDate,
