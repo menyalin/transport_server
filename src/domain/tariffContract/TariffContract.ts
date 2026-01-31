@@ -21,7 +21,7 @@ import { AddressZone } from '../address'
 
 export class TariffContract {
   _id?: string
-  agreement: string
+  agreement: string | null
   agreements?: string[]
   name: string
   company: string
@@ -118,7 +118,7 @@ export class TariffContract {
       updated = true
     }
 
-    // Если уже есть изменения, применяем все массивы без сравнения (оптимизация)
+    // Если уже есть изменения, применяем все массивы без сравнения
     if (updated) {
       this.zonesTariffs = parsedData.zonesTariffs
       this.directDistanceZonesTariffs = parsedData.directDistanceZonesTariffs
@@ -220,7 +220,10 @@ export class TariffContract {
 
   static validationSchema = z.object({
     _id: objectIdSchema.optional(),
-    agreement: objectIdSchema.transform((val) => val.toString()),
+    agreement: objectIdSchema
+      .optional()
+      .nullable()
+      .transform((val) => (val ? val.toString() : null)),
     agreements: z
       .array(objectIdSchema)
       .transform((arr) => arr?.map((i) => i.toString()) || [])
