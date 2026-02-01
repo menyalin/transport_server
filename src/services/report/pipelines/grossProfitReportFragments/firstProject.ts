@@ -1,8 +1,7 @@
-// @ts-nocheck
 import { firstPlannedDate } from '../fragments/firstPlannedDate'
-import { POINT_TYPE_VALUES } from '../../../../constants/enums'
+import { POINT_TYPE_VALUES, POINT_TYPES_ENUM } from '@/constants/enums'
 
-const getPointAddressIdsByType = (type) => {
+const getPointAddressIdsByType = (type: POINT_TYPES_ENUM) => {
   if (!type || !POINT_TYPE_VALUES.includes(type))
     throw new Error(`GROSS PROFIT ERROR: incorrect point type: ${type}`)
   return {
@@ -18,7 +17,7 @@ const getPointAddressIdsByType = (type) => {
   }
 }
 
-const getOutsourceCosts = (withVat) => ({
+const getOutsourceCosts = (withVat: Boolean) => ({
   $reduce: {
     input: '$outsourceCosts',
     initialValue: 0,
@@ -33,13 +32,13 @@ export const firstProject = () => ({
     client: '$client.client',
     orderDate: firstPlannedDate(),
     orderType: '$analytics.type',
-    loadingAddressIds: getPointAddressIdsByType('loading'),
-    unloadingAddressIds: getPointAddressIdsByType('unloading'),
+    loadingAddressIds: getPointAddressIdsByType(POINT_TYPES_ENUM.loading),
+    unloadingAddressIds: getPointAddressIdsByType(POINT_TYPES_ENUM.unloading),
     capacityType: '$reqTransport.liftCapacity',
     tRegime: '$cargoParams.tRegime',
     truckKind: '$reqTransport.kind',
     truckId: '$confirmedCrew.truck',
-    tkName: '$confirmedCrew.tkName',
+    carrierId: '$confirmedCrew.tkName',
     driverId: '$confirmedCrew.driver',
     clientId: '$client.client',
     outsourceCostsWithVat: getOutsourceCosts(true),
