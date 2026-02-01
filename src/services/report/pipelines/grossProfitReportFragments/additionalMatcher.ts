@@ -37,12 +37,12 @@ export const additionalMatcher = (filters) => {
     )
 
   // Основной отбор по TkNames
-  if (filters.tkNames?.values.length)
+  if (filters.carriers?.values.length)
     matcher.$match.$expr.$and.push(
       _getMainFilterBlock({
-        field: '$tkName',
-        cond: filters.tkNames.cond,
-        values: filters.tkNames.values,
+        field: '$carrierId',
+        cond: filters.carriers.cond,
+        values: filters.carriers.values,
       })
     )
 

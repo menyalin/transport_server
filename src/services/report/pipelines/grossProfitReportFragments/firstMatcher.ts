@@ -51,12 +51,12 @@ export const firstMatcher = ({ company, dateRange, mainFilters }) => {
     )
 
   // Основной отбор по TkNames
-  if (mainFilters.tkNames?.values.length)
+  if (mainFilters.carriers?.values.length)
     firstMatcher.$match.$expr.$and.push(
       _getMainFilterBlock({
         field: '$confirmedCrew.tkName',
-        cond: mainFilters.tkNames.cond,
-        values: mainFilters.tkNames.values,
+        cond: mainFilters.carriers.cond,
+        values: mainFilters.carriers.values,
       })
     )
 

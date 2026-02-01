@@ -1,5 +1,6 @@
-// @ts-nocheck
-export const lookupAddressParams = () => [
+import { PipelineStage } from 'mongoose'
+
+export const lookupAddressParams = (): PipelineStage[] => [
   {
     $lookup: {
       from: 'addresses',
