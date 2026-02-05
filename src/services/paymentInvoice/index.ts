@@ -303,6 +303,7 @@ class PaymentInvoiceService {
       this.emitter(company, 'orders:addedToPaymentInvoice', {
         orders: ordersDTO,
         paymentInvoiceId,
+        total: newInvoiceAnalytics,
       })
 
       return newItemRows
@@ -350,7 +351,7 @@ class PaymentInvoiceService {
     this.emitter(company, 'orders:removedFromPaimentInvoice', {
       rowIds,
       paymentInvoiceId: paymentInvoiceId,
-      updatedAnalytics: newAnalylicsInfo,
+      total: newAnalylicsInfo,
     })
 
     return true

@@ -166,7 +166,14 @@ class PaymentInvoiceRepository {
   ): Promise<IPaymentInvoiceAnalytics> {
     const pipeline = invoiceAnalyticsPipelineBuilder(invoiceId)
     const res = await OrderInPaymentInvoiceModel.aggregate(pipeline)
-    return res[0]
+
+    return (
+      res[0] || {
+        ordersCount: 0,
+        priceWithVat: 0,
+        priceWOVat: 0,
+      }
+    )
   }
 
   async getInvoicesByOrderIds(
