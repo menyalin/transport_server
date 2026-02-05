@@ -149,7 +149,7 @@ export default ({
     ...lookupAgreements(),
     secondMatcher({ filters: mainFilters }),
     ...addTotalPriceFields(),
-    // Приводим carrierId к строке для корректной группировки
+
     {
       $addFields: {
         carrierId: {

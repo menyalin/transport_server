@@ -1,6 +1,5 @@
-// @ts-nocheck
-export const addPriceObjByTypes = (priceTypes) => {
-  const prices = {}
+export const addPriceObjByTypes = (priceTypes: string[]) => {
+  const prices: Record<string, unknown> = {}
   priceTypes.forEach((type) => {
     prices[type] = {
       $arrayToObject: {
