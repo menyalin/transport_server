@@ -21,7 +21,7 @@ interface Props {
 
 export class OrderReqTransport {
   kind: TRUCK_KINDS_ENUM
-  liftCapacity: (typeof TRUCK_LIFT_CAPACITY_TYPES)[number]
+  liftCapacity: number
   loadDirection: LOAD_DIRECTION_ENUM
   tailLift: boolean = false
 

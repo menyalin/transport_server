@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction, ErrorRequestHandler } from 'express'
+import { Request, Response, NextFunction } from 'express'
 
 interface CustomError extends Error {
   statusCode: number
 }
 
-export const errorMiddleware: ErrorRequestHandler = async (
+export const errorMiddleware = async (
   err: CustomError,
   _req: Request,
   res: Response,

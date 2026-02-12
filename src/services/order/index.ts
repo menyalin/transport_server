@@ -44,6 +44,7 @@ import { orderPFBuilder } from './printForms/pfBuilder'
 import { RouteStats } from '@/domain/order/route/routeStats'
 import { isValidObjectId } from 'mongoose'
 import { OrderVatRateInfo } from '@/domain/OrderVatRateInfo'
+import { Client } from '@/domain/order/client'
 
 class OrderService {
   async create({ body, user }: { body: any; user: string }) {
@@ -66,9 +67,13 @@ class OrderService {
       newOrder.confirmedCrew.outsourceAgreement =
         carrierData.outsourceAgreementId
     }
-    newOrder.client.vatRateInfo = await this.getOrderVatRateInfo(newOrder)
     newOrder.analytics = await this.updateOrderAnalytics(newOrder)
-    newOrder.prePrices = await this.updatePrePrices(newOrder)
+
+    const vatRateInfo = await this.getOrderVatRateInfo(newOrder)
+    if (vatRateInfo) {
+      newOrder.client.vatRateInfo = vatRateInfo
+      newOrder.prePrices = await this.updatePrePrices(newOrder)
+    }
 
     const order = await OrderRepository.create(newOrder)
     bus.publish(OrdersUpdatedEvent([order]))
@@ -100,11 +105,13 @@ class OrderService {
       if (!template) continue
       const startDate = body[i].date
       const route = getRouteFromTemplate({ template, date: startDate })
+
       for (let j = 0; j < body[i].count; j++) {
         const newOrder = {
-          client: {
+          client: new Client({
             client: template.client,
-          },
+            agreement: null,
+          }),
           startPositionDate: route[0].plannedDate,
           route,
           analytics: template.analytics,
@@ -449,9 +456,9 @@ class OrderService {
         await AddressRepository.getZonesByIds(zoneIds)
 
       prePrices.push(
-        ...priceCalculator.basePrice(order, tariffContracts, agreement, zones),
+        ...priceCalculator.basePrice(order, tariffContracts, zones),
         ...priceCalculator.idlePrice(order, tariffContracts, agreement),
-        ...priceCalculator.returnPrice(order, tariffContracts, agreement)
+        ...priceCalculator.returnPrice(order, tariffContracts)
       )
     }
     return prePrices

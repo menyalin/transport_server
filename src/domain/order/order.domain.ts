@@ -129,7 +129,7 @@ export class Order {
     this.confirmedCrew = new ConfirmedCrew(order.confirmedCrew)
 
     this.docs = order.docs || []
-    this.client = new Client(order.client)
+
     if (Array.isArray(order.prePrices))
       this.prePrices = order.prePrices?.map(
         (i: IOrderPriceProps) => new OrderPrice(i)
@@ -160,6 +160,7 @@ export class Order {
     this.noteAccountant = order.noteAccountant
     this.isActive = order.isActive !== undefined ? order.isActive : true
     this.isDisabled = order.isDisabled || false
+    this.client = new Client(order.client)
     if (
       isBasePriceFilledCheck &&
       this.state?.status === 'completed' &&

@@ -8,7 +8,7 @@ export class Client {
   num?: string
   directiveAgreement: boolean
   auctionNum?: string
-  agreement: string
+  agreement: string | null
   vatRateInfo?: OrderVatRateInfo
 
   constructor(props: unknown) {
@@ -17,8 +17,8 @@ export class Client {
     this.num = p.num
     this.auctionNum = p.auctionNum
     this.directiveAgreement = p.directiveAgreement
-    this.agreement = p.agreement.toString()
-    this.vatRateInfo = p.vatRateInfo
+    this.agreement = p.agreement?.toString() || null
+    if (p.vatRateInfo) this.vatRateInfo = p.vatRateInfo
   }
 
   toJSON() {
@@ -28,7 +28,7 @@ export class Client {
       auctionNum: this.auctionNum,
       agreement: this.agreement,
       directiveAgreement: this.directiveAgreement,
-      vatRateInfo: this.vatRateInfo,
+      vatRateInfo: this.vatRateInfo ?? undefined,
     }
   }
 
@@ -42,7 +42,7 @@ export class Client {
         .optional()
         .default(false)
         .transform((v) => Boolean(v)),
-      agreement: objectIdSchema,
+      agreement: objectIdSchema.nullable(),
       vatRateInfo: OrderVatRateInfo.validationSchema.optional(),
     })
   }
@@ -63,7 +63,7 @@ export class Client {
         type: Schema.Types.ObjectId,
         ref: 'Agreement',
       },
-      vatRateInfo: OrderVatRateInfo.dbSchema,
+      vatRateInfo: { type: OrderVatRateInfo.dbSchema, default: undefined },
     }
   }
 }

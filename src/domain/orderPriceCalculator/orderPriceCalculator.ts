@@ -97,29 +97,22 @@ export class OrderPriceCalculator {
   basePrice(
     order: Order,
     contracts: TariffContract[],
-    agreement: Agreement | null,
     zones: AddressZone[] = []
   ): OrderPrice[] {
-    if (!agreement || contracts.length === 0 || order.analytics === undefined)
-      return []
+    if (contracts.length === 0 || order.analytics === undefined) return []
 
     const tariffs = this.basePricePrioritySorter(contracts, zones)
     const tariff = tariffs.find((t: BaseTariff) => t.canApplyToOrder(order))
     if (tariff === undefined) return []
 
-    return tariff.calculateForOrder(order, agreement)
+    return tariff.calculateForOrder(order)
   }
 
-  returnPrice(
-    order: Order,
-    contracts: TariffContract[],
-    agreement: Agreement | null
-  ): OrderPrice[] {
-    if (!agreement || contracts.length === 0 || order.analytics === undefined)
-      return []
+  returnPrice(order: Order, contracts: TariffContract[]): OrderPrice[] {
+    if (contracts.length === 0 || order.analytics === undefined) return []
     const tariffs = this.returnPriceSorter(contracts)
     const tariff = tariffs.find((t) => t.canApplyToOrder(order))
     if (tariff === undefined) return []
-    return tariff.calculateForOrder(order, agreement)
+    return tariff.calculateForOrder(order)
   }
 }

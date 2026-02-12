@@ -3,15 +3,24 @@ import { ConfirmedCrew } from '@/domain/order/confirmedCrew'
 import { Order } from '@/domain/order/order.domain'
 import { OrderReqTransport } from '@/domain/order/reqTransport'
 import { RoutePoint } from '@/domain/order/route/routePoint'
+import { OrderVatRateInfo } from '@/domain/OrderVatRateInfo'
 
 import { Types } from 'mongoose'
 
-export const createTestOrder = (args: object): Order => {
+export const createTestOrder = (
+  args: object,
+  orderVatRate: number = 0
+): Order => {
   const mockObjectId = new Types.ObjectId().toString()
   return new Order({
     client: new Client({
       client: mockObjectId,
       agreement: mockObjectId,
+      vatRateInfo: new OrderVatRateInfo({
+        vatRate: orderVatRate,
+        usePriceWithVat: false,
+        date: new Date(),
+      }),
     }),
     reqTransport: new OrderReqTransport({
       kind: 'ref',

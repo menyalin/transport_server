@@ -28,12 +28,15 @@ describe('ZonesBaseTariff', () => {
       const loadingZoneId = new Types.ObjectId().toString()
       const unloadingZone1 = new Types.ObjectId().toString()
       const unloadingZone2 = new Types.ObjectId().toString()
-      const order: Order = createTestOrder({
-        analytics: createOrderAnalytics({
-          loadingZones: [loadingZoneId],
-          unloadingZones: [unloadingZone1, unloadingZone2],
-        }),
-      })
+      const order: Order = createTestOrder(
+        {
+          analytics: createOrderAnalytics({
+            loadingZones: [loadingZoneId],
+            unloadingZones: [unloadingZone1, unloadingZone2],
+          }),
+        },
+        20
+      )
       const tariff = createTariff({
         loadingZone: loadingZoneId,
         unloadingZones: [unloadingZone1, unloadingZone2],
@@ -164,25 +167,26 @@ describe('ZonesBaseTariff', () => {
       const loadingZoneId = new Types.ObjectId().toString()
       const unloadingZone1 = new Types.ObjectId().toString()
       const unloadingZone2 = new Types.ObjectId().toString()
-      const agreement = createAgreement({
-        vatRate: 20,
-      })
-      const order: Order = createTestOrder({
-        analytics: createOrderAnalytics({}),
-        route: [
-          new RoutePoint({
-            type: 'loading',
-            address: '1',
-            isMainLoadingPoint: true,
-            plannedDate: new Date('2024-01-01'),
-          }),
-          new RoutePoint({
-            type: 'unloading',
-            address: '1',
-            plannedDate: new Date('2024-01-02'),
-          }),
-        ],
-      })
+
+      const order: Order = createTestOrder(
+        {
+          analytics: createOrderAnalytics({}),
+          route: [
+            new RoutePoint({
+              type: 'loading',
+              address: '1',
+              isMainLoadingPoint: true,
+              plannedDate: new Date('2024-01-01'),
+            }),
+            new RoutePoint({
+              type: 'unloading',
+              address: '1',
+              plannedDate: new Date('2024-01-02'),
+            }),
+          ],
+        },
+        20
+      )
 
       const tariff = createTariff({
         loadingZone: loadingZoneId,
@@ -195,10 +199,7 @@ describe('ZonesBaseTariff', () => {
         contractName: 'fake contract',
         contractDate: new Date('2024-05-11'),
       })
-      const [basePrice, additionalPoints] = tariff.calculateForOrder(
-        order,
-        agreement
-      )
+      const [basePrice, additionalPoints] = tariff.calculateForOrder(order)
       expect(basePrice.price).toBe(12000)
       expect(basePrice.sumVat).toBe(2000)
       expect(additionalPoints.price).toBe(0)
@@ -209,30 +210,31 @@ describe('ZonesBaseTariff', () => {
       const loadingZoneId = new Types.ObjectId().toString()
       const unloadingZone1 = new Types.ObjectId().toString()
       const unloadingZone2 = new Types.ObjectId().toString()
-      const agreement = createAgreement({
-        vatRate: 20,
-      })
-      const order: Order = createTestOrder({
-        analytics: createOrderAnalytics({}),
-        route: [
-          new RoutePoint({
-            type: 'loading',
-            address: '1',
-            isMainLoadingPoint: true,
-            plannedDate: new Date('2024-01-01'),
-          }),
-          new RoutePoint({
-            type: 'unloading',
-            address: '1',
-            plannedDate: new Date('2024-01-02'),
-          }),
-          new RoutePoint({
-            type: 'unloading',
-            address: '2',
-            plannedDate: new Date('2024-01-03'),
-          }),
-        ],
-      })
+
+      const order: Order = createTestOrder(
+        {
+          analytics: createOrderAnalytics({}),
+          route: [
+            new RoutePoint({
+              type: 'loading',
+              address: '1',
+              isMainLoadingPoint: true,
+              plannedDate: new Date('2024-01-01'),
+            }),
+            new RoutePoint({
+              type: 'unloading',
+              address: '1',
+              plannedDate: new Date('2024-01-02'),
+            }),
+            new RoutePoint({
+              type: 'unloading',
+              address: '2',
+              plannedDate: new Date('2024-01-03'),
+            }),
+          ],
+        },
+        20
+      )
 
       const tariff = createTariff({
         loadingZone: loadingZoneId,
@@ -245,10 +247,7 @@ describe('ZonesBaseTariff', () => {
         contractName: 'fake contract',
         contractDate: new Date('2024-05-11'),
       })
-      const [basePrice, additionalPoints] = tariff.calculateForOrder(
-        order,
-        agreement
-      )
+      const [basePrice, additionalPoints] = tariff.calculateForOrder(order)
       expect(basePrice.price).toBe(12000)
       expect(basePrice.priceWOVat).toBe(10000)
       expect(basePrice.sumVat).toBe(2000)
@@ -261,36 +260,37 @@ describe('ZonesBaseTariff', () => {
       const loadingZoneId = new Types.ObjectId().toString()
       const unloadingZone1 = new Types.ObjectId().toString()
       const unloadingZone2 = new Types.ObjectId().toString()
-      const agreement = createAgreement({
-        vatRate: 20,
-      })
-      const order: Order = createTestOrder({
-        analytics: createOrderAnalytics({}),
-        route: [
-          new RoutePoint({
-            type: 'loading',
-            address: '1',
-            isMainLoadingPoint: true,
-            plannedDate: new Date('2024-01-01'),
-          }),
-          new RoutePoint({
-            type: 'unloading',
-            address: '1',
-            plannedDate: new Date('2024-01-02'),
-          }),
-          new RoutePoint({
-            type: 'unloading',
-            address: '2',
-            plannedDate: new Date('2024-01-03'),
-          }),
-          new RoutePoint({
-            type: 'unloading',
-            isReturn: true,
-            address: '2',
-            plannedDate: new Date('2024-01-03'),
-          }),
-        ],
-      })
+
+      const order: Order = createTestOrder(
+        {
+          analytics: createOrderAnalytics({}),
+          route: [
+            new RoutePoint({
+              type: 'loading',
+              address: '1',
+              isMainLoadingPoint: true,
+              plannedDate: new Date('2024-01-01'),
+            }),
+            new RoutePoint({
+              type: 'unloading',
+              address: '1',
+              plannedDate: new Date('2024-01-02'),
+            }),
+            new RoutePoint({
+              type: 'unloading',
+              address: '2',
+              plannedDate: new Date('2024-01-03'),
+            }),
+            new RoutePoint({
+              type: 'unloading',
+              isReturn: true,
+              address: '2',
+              plannedDate: new Date('2024-01-03'),
+            }),
+          ],
+        },
+        20
+      )
 
       const tariff = createTariff({
         loadingZone: loadingZoneId,
@@ -303,10 +303,7 @@ describe('ZonesBaseTariff', () => {
         contractName: 'fake contract',
         contractDate: new Date('2024-05-11'),
       })
-      const [basePrice, additionalPoints] = tariff.calculateForOrder(
-        order,
-        agreement
-      )
+      const [basePrice, additionalPoints] = tariff.calculateForOrder(order)
       expect(basePrice.price).toBe(12000)
       expect(basePrice.priceWOVat).toBe(10000)
       expect(basePrice.sumVat).toBe(2000)

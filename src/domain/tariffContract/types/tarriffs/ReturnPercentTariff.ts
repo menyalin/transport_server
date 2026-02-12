@@ -8,7 +8,6 @@ import {
 } from '@/shared/validationSchemes'
 import { OrderPrice } from '@/domain/order/orderPrice'
 import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
-import { Agreement } from '@/domain/agreement/agreement.domain'
 
 export class ReturnPercentTariff implements ICommonTariffFields {
   truckKinds: TRUCK_KINDS_ENUM[]
@@ -61,7 +60,7 @@ export class ReturnPercentTariff implements ICommonTariffFields {
     return true
   }
 
-  calculateForOrder(order: Order, _agreement: Agreement): OrderPrice[] {
+  calculateForOrder(order: Order): OrderPrice[] {
     const basePrice: OrderPrice = this.getOrderBasePrice(order)
     return [
       new OrderPrice({
