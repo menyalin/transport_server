@@ -4,7 +4,6 @@ import { TRUCK_KINDS_ENUM } from '@/constants/truck'
 import { ICommonTariffFields, IContractDataForTariff } from '../common'
 import { ZoneIdSchema, PriceSchema } from '../validationSchemes'
 import { Order } from '@/domain/order/order.domain'
-import { Agreement } from '@/domain/agreement/agreement.domain'
 import { OrderPrice } from '@/domain/order/orderPrice'
 import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
 import {
@@ -99,13 +98,22 @@ export class ZonesBaseTariff implements ICommonTariffFields {
     return this.calculatePrice(sum, vatRate, type)
   }
 
-  calculateForOrder(order: Order, agreement: Agreement): OrderPrice[] {
-    const vatRate = agreement.vatRate
+  calculateForOrder(order: Order): OrderPrice[] {
+    const vatRateInfo = order.client.vatRateInfo
+    if (!vatRateInfo) return []
+
     const type = ORDER_PRICE_TYPES_ENUM.base
     const routePointsCount =
       order.analytics?.routeStats?.countPoints || order.route.countOfPoints
-    const pointsPrice = this.additionalPoints(routePointsCount, vatRate)
-    return [this.calculatePrice(this.price, vatRate, type), pointsPrice]
+
+    const pointsPrice = this.additionalPoints(
+      routePointsCount,
+      vatRateInfo.vatRate
+    )
+    return [
+      this.calculatePrice(this.price, vatRateInfo.vatRate, type),
+      pointsPrice,
+    ]
   }
 
   static validationSchema = z.object({

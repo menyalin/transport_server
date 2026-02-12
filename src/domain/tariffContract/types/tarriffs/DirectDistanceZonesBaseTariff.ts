@@ -9,7 +9,6 @@ import {
 } from '../validationSchemes'
 import { Order } from '@/domain/order/order.domain'
 import { OrderPrice } from '@/domain/order/orderPrice'
-import { Agreement } from '@/domain/agreement/agreement.domain'
 import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
 import { TruckKindsEnumSchema } from '@/shared/validationSchemes'
 
@@ -113,16 +112,23 @@ export class DirectDistanceZonesBaseTariff implements ICommonTariffFields {
     return this.calculatePrice(sum, vatRate, type)
   }
 
-  calculateForOrder(order: Order, agreement: Agreement): OrderPrice[] {
-    const vatRate = agreement.vatRate
+  calculateForOrder(order: Order): OrderPrice[] {
+    const vatRateInfo = order.client.vatRateInfo
+    if (!vatRateInfo) return []
     const type = ORDER_PRICE_TYPES_ENUM.base
     const priceByZone = this.getZonePriceByDistance(
       order.analytics?.distanceDirect ?? 0
     )
     const routePointsCount =
       order.analytics?.routeStats?.countPoints || order.route.countOfPoints
-    const pointsPrice = this.additionalPoints(routePointsCount, vatRate)
-    return [this.calculatePrice(priceByZone, vatRate, type), pointsPrice]
+    const pointsPrice = this.additionalPoints(
+      routePointsCount,
+      vatRateInfo.vatRate
+    )
+    return [
+      this.calculatePrice(priceByZone, vatRateInfo.vatRate, type),
+      pointsPrice,
+    ]
   }
 
   static get dbSchema() {

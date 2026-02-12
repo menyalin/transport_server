@@ -175,7 +175,9 @@ export class IdleTimeTariff implements ICommonTariffFields {
   }
 
   calculateForOrder(order: Order, agreement: Agreement): OrderPrice[] {
-    const vatRate = agreement.vatRate
+    const vatRateInfo = order.client.vatRateInfo
+    if (!vatRateInfo) return []
+
     const loadingDowntimeInMinutes: number[] = this.idleTimeInMinutes(
       order,
       agreement,
@@ -195,17 +197,17 @@ export class IdleTimeTariff implements ICommonTariffFields {
     return [
       this.calculatePrice(
         this.calcSum(loadingDowntimeInMinutes),
-        vatRate,
+        vatRateInfo.vatRate,
         ORDER_PRICE_TYPES_ENUM.loadingDowntime
       ),
       this.calculatePrice(
         this.calcSum(unloadingDowntimeInMinutes),
-        vatRate,
+        vatRateInfo.vatRate,
         ORDER_PRICE_TYPES_ENUM.unloadingDowntime
       ),
       this.calculatePrice(
         this.calcSum(returnDowntimeInMinutes),
-        vatRate,
+        vatRateInfo.vatRate,
         ORDER_PRICE_TYPES_ENUM.returnDowntime
       ),
     ]

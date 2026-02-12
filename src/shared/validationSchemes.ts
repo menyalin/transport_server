@@ -1,10 +1,6 @@
 import z from 'zod'
 import { Types } from 'mongoose'
-import {
-  LOAD_DIRECTION_ENUM,
-  TRUCK_KINDS_ENUM,
-  TRUCK_LIFT_CAPACITY_TYPES,
-} from '@/constants/truck'
+import { LOAD_DIRECTION_ENUM, TRUCK_KINDS_ENUM } from '@/constants/truck'
 import { IdleTimeRoundingIntervalEnum } from '@/constants/tariff'
 
 export const dateOrISOStringSchema = z
@@ -16,15 +12,9 @@ export const dateOrISOStringSchema = z
   })
 
 export const TruckKindsEnumSchema = z.enum(TRUCK_KINDS_ENUM)
-export const LoadDirectonEnumSchema = z.nativeEnum(LOAD_DIRECTION_ENUM)
+export const LoadDirectonEnumSchema = z.enum(LOAD_DIRECTION_ENUM)
 
-export const LiftCapacityEnumSchema = z.union([
-  z.literal(TRUCK_LIFT_CAPACITY_TYPES[0]),
-  z.literal(TRUCK_LIFT_CAPACITY_TYPES[1]),
-  z.literal(TRUCK_LIFT_CAPACITY_TYPES[2]),
-  z.literal(TRUCK_LIFT_CAPACITY_TYPES[3]),
-  z.literal(TRUCK_LIFT_CAPACITY_TYPES[4]),
-])
+export const LiftCapacityEnumSchema = z.number().default(20)
 
 const stringSchema = z
   .string()

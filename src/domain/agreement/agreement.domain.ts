@@ -16,7 +16,7 @@ export class Agreement {
   noWaitingPaymentForAreLateUnloading: boolean = false
   // outsourceCarriers: string[]
   // cashPayment: boolean = false
-  vatRate: number = 0
+  vatRate?: number = 0
   closed: boolean = false
   useCustomPrices: boolean
   usePriceWithVAT: boolean
@@ -61,7 +61,7 @@ export class Agreement {
     //     ? parsedData.outsourceCarriers
     //     : []
     // this.cashPayment = parsedData.cashPayment || false
-    this.vatRate = parsedData.vatRate || 0
+    this.vatRate = parsedData.vatRate ?? undefined
     this.closed = parsedData.closed || false
     this.useCustomPrices = parsedData.useCustomPrices || false
     this.usePriceWithVAT =
@@ -120,7 +120,8 @@ export class Agreement {
       .optional()
       .transform((val) => Boolean(val)),
 
-    vatRate: z.number(),
+    vatRate: z.number().optional().nullable(),
+
     closed: z
       .boolean()
       .nullable()
@@ -171,7 +172,7 @@ export class Agreement {
     noWaitingPaymentForAreLateLoading: { type: Boolean, default: false },
     noWaitingPaymentForAreLateUnloading: { type: Boolean, default: false },
     cashPayment: { type: Boolean, default: false },
-    vatRate: { type: Number, required: true },
+    vatRate: { type: Number, default: 0 },
     closed: { type: Boolean, default: false },
     useCustomPrices: { type: Boolean },
     usePriceWithVAT: { type: Boolean, default: false }, // нужно для определения типа (с/без НДС) при выгрузке в excel

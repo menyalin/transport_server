@@ -240,35 +240,37 @@ describe('IdleTimeTariff: calculate for order', () => {
     expect(returnDowntime.price).toEqual(0)
   })
 
-  it('calculateForOrder: Оплата простоя на выгрузке по фактическому времени прибытия', () => {
+  it('calculateForOrder: Оплата простоя на выгрузке по фактическому времени прибытия, без НДС', () => {
     const agreement = createAgreement({
-      vatRate: 0,
       calcWaitingByArrivalDateLoading: false,
       calcWaitingByArrivalDateUnloading: true,
       noWaitingPaymentForAreLateLoading: false,
       noWaitingPaymentForAreLateUnloading: false,
     })
-    const order: Order = createTestOrder({
-      analytics: createOrderAnalytics({}),
-      route: [
-        new RoutePoint({
-          type: 'loading',
-          address: '1',
-          isMainLoadingPoint: true,
-          plannedDate: new Date('2024-01-02T00:00:00.000Z'),
-          arrivalDate: new Date('2024-01-02T00:00:00.000Z'),
-          departureDate: new Date('2024-01-02T00:10:00.000Z'),
-        }),
+    const order: Order = createTestOrder(
+      {
+        analytics: createOrderAnalytics({}),
+        route: [
+          new RoutePoint({
+            type: 'loading',
+            address: '1',
+            isMainLoadingPoint: true,
+            plannedDate: new Date('2024-01-02T00:00:00.000Z'),
+            arrivalDate: new Date('2024-01-02T00:00:00.000Z'),
+            departureDate: new Date('2024-01-02T00:10:00.000Z'),
+          }),
 
-        new RoutePoint({
-          type: 'unloading',
-          address: '1',
-          plannedDate: new Date('2024-01-03T00:00:00.000Z'),
-          arrivalDate: new Date('2024-01-02T22:00:00.000Z'),
-          departureDate: new Date('2024-01-03T00:00:00.000Z'),
-        }),
-      ],
-    })
+          new RoutePoint({
+            type: 'unloading',
+            address: '1',
+            plannedDate: new Date('2024-01-03T00:00:00.000Z'),
+            arrivalDate: new Date('2024-01-02T22:00:00.000Z'),
+            departureDate: new Date('2024-01-03T00:00:00.000Z'),
+          }),
+        ],
+      },
+      0
+    )
     const tariff = createTariff({
       includeHours: 0,
       roundingInterval: 'hour',
@@ -289,34 +291,36 @@ describe('IdleTimeTariff: calculate for order', () => {
     expect(returnDowntime.price).toEqual(0)
   })
 
-  it('calculateForOrder: округление времени простоя до 1 часа по плановому времени прибытия', () => {
+  it('calculateForOrder: округление времени простоя до 1 часа по плановому времени прибытия, без НДС', () => {
     const agreement = createAgreement({
-      vatRate: 0,
       calcWaitingByArrivalDateLoading: false,
       calcWaitingByArrivalDateUnloading: false,
       noWaitingPaymentForAreLateLoading: false,
       noWaitingPaymentForAreLateUnloading: false,
     })
-    const order: Order = createTestOrder({
-      analytics: createOrderAnalytics({}),
-      route: [
-        new RoutePoint({
-          type: 'loading',
-          address: '1',
-          isMainLoadingPoint: true,
-          plannedDate: new Date('2024-01-02T00:00:00.000Z'),
-          arrivalDate: new Date('2024-01-02T00:00:00.000Z'),
-          departureDate: new Date('2024-01-02T00:10:00.000Z'),
-        }),
+    const order: Order = createTestOrder(
+      {
+        analytics: createOrderAnalytics({}),
+        route: [
+          new RoutePoint({
+            type: 'loading',
+            address: '1',
+            isMainLoadingPoint: true,
+            plannedDate: new Date('2024-01-02T00:00:00.000Z'),
+            arrivalDate: new Date('2024-01-02T00:00:00.000Z'),
+            departureDate: new Date('2024-01-02T00:10:00.000Z'),
+          }),
 
-        new RoutePoint({
-          type: 'unloading',
-          address: '1',
-          arrivalDate: new Date('2024-01-03T00:00:00.000Z'),
-          departureDate: new Date('2024-01-03T23:29:01.000Z'),
-        }),
-      ],
-    })
+          new RoutePoint({
+            type: 'unloading',
+            address: '1',
+            arrivalDate: new Date('2024-01-03T00:00:00.000Z'),
+            departureDate: new Date('2024-01-03T23:29:01.000Z'),
+          }),
+        ],
+      },
+      0
+    )
     const tariff = createTariff({
       includeHours: 0,
       roundingInterval: 'hour',

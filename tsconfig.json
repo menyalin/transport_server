@@ -9,6 +9,7 @@
     "strict": true /* Enable all strict type-checking options. */,
     "skipLibCheck": true,
     "lib": ["esnext"],
+    "types": ["jest"],
     "paths": {
       "@/*": ["./src/*"]
     }
