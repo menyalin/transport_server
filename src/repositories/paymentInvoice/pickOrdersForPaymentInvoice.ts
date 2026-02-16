@@ -19,6 +19,7 @@ import { orderDocsStatusConditionBuilder } from '@/shared/pipelineFragments/orde
 import { orderDateFragmentBuilder } from '@/shared/pipelineFragments/orderDateFragmentBuilder'
 import { OrderPickedForInvoiceDTO } from '@/domain/paymentInvoice/dto/orderPickedForInvoice.dto'
 import { totalByTypesFragementBuilder } from './pipelines/pipelineFragments/totalByTypesFragementBuilder'
+import { agreementLookupBuilder } from '@/shared/pipelineFragments/agreementLookupBuilder'
 
 const setStatisticData = (res: any): IStaticticData => {
   if (!res.total?.length)
@@ -47,8 +48,8 @@ const setStatisticData = (res: any): IStaticticData => {
 
 export async function pickOrdersForPaymentInvoice(
   p: IPickOrdersForPaymentInvoiceProps,
-  vatRate: number,
-  usePriceWithVat: boolean
+  vatRate?: number,
+  usePriceWithVat?: boolean
 ): Promise<[unknown[], IStaticticData?]> {
   const firstMatcherBuilder = (
     filtersExpressions: Array<BooleanExpression | ArrayExpressionOperator>
@@ -73,9 +74,11 @@ export async function pickOrdersForPaymentInvoice(
   })
 
   const filters: Array<BooleanExpression | ArrayExpressionOperator> = []
+
   if (p.search) {
     filters.push(orderSearchByNumberFragmentBuilder(p.search))
   }
+
   if (p.docStatuses?.length)
     filters.push({
       $or: p.docStatuses.map((docStatus) =>
@@ -85,6 +88,13 @@ export async function pickOrdersForPaymentInvoice(
   if (p.truck)
     filters.push({
       $eq: ['$confirmedCrew.truck', new Types.ObjectId(p.truck)],
+    })
+  if (p.carriers?.length)
+    filters.push({
+      $in: [
+        '$confirmedCrew.tkName',
+        p.carriers.map((i) => new Types.ObjectId(i)),
+      ],
     })
 
   if (p.numbers && p.numbers.length > 0)
@@ -127,13 +137,16 @@ export async function pickOrdersForPaymentInvoice(
   ]
 
   const addFields: PipelineStage[] = [
+    ...agreementLookupBuilder(),
     {
       $addFields: {
         plannedDate: orderDateFragmentBuilder(),
         orderId: '$_id',
         isSelectable: true,
-        agreementVatRate: vatRate,
-        usePriceWithVat: usePriceWithVat,
+        agreementVatRate: { $ifNull: [vatRate, '$client.vatRateInfo.vatRate'] },
+        usePriceWithVat: {
+          $ifNull: [usePriceWithVat, '$client.vatRateInfo.usePriceWithVat'],
+        },
         itemType: 'order',
         docNumbers: orderDocNumbersStringFragment({
           docsFieldName: '$docs',
@@ -188,15 +201,19 @@ export async function pickOrdersForPaymentInvoice(
         { $unwind: { path: '$paymentParts' } },
         unionSecondMatcher(p.agreement, p.agreements, p.client),
         ...paymentInvoiceFilterBuilder('paymentParts._id'),
-        // ...agreementLookupBuilder('paymentParts.agreement'),
+        ...agreementLookupBuilder('paymentParts.agreement'),
         {
           $addFields: {
             orderId: '$_id',
             _id: '$paymentParts._id',
             plannedDate: orderDateFragmentBuilder(),
             isSelectable: true,
-            agreementVatRate: vatRate,
-            usePriceWithVat: usePriceWithVat,
+            agreementVatRate: {
+              $ifNull: [vatRate, '$client.vatRateInfo.vatRate'],
+            },
+            usePriceWithVat: {
+              $ifNull: [usePriceWithVat, '$client.vatRateInfo.usePriceWithVat'],
+            },
             itemType: 'paymentPart',
             paymentPartsSum: 0,
           },
@@ -276,7 +293,6 @@ export async function pickOrdersForPaymentInvoice(
   const [res] = await OrderModel.aggregate([
     firstMatcherBuilder([...filters, ...clientFilters]),
     ...paymentInvoiceFilterBuilder('_id'),
-    // ...agreementLookupBuilder('client.agreement'),
     ...addFields,
     unionWithPaymentPartsOrders,
     ...orderLoadingZoneFragmentBuilder(p.loadingZones),

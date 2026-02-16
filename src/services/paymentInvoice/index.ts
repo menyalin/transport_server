@@ -359,18 +359,17 @@ class PaymentInvoiceService {
 
   async pickOrders(props: IPickOrdersForPaymentInvoiceProps) {
     const parsedProps = PickOrdersForPaymentInvoicePropsSchema.parse(props)
-    if (!parsedProps.paymentInvoiceId)
-      throw new BadRequestError('paymentInvoiceId is undefined.')
+    let invoice: PaymentInvoiceDomain | null = null
 
-    const invoice = await PaymentInvoiceRepository.getInvoiceById(
-      parsedProps.paymentInvoiceId
-    )
-    if (!invoice) throw new BadRequestError('Исходящий акт не найден')
+    if (parsedProps.paymentInvoiceId)
+      invoice = await PaymentInvoiceRepository.getInvoiceById(
+        parsedProps.paymentInvoiceId
+      )
 
     const result = await PaymentInvoiceRepository.pickOrdersForPaymentInvoice(
       props,
-      invoice.vatRate,
-      invoice.usePriceWithVat
+      invoice?.vatRate,
+      invoice?.usePriceWithVat
     )
 
     return result || [[]]
