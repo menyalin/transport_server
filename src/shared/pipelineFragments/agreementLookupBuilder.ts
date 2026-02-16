@@ -1,6 +1,5 @@
 import { PipelineStage } from 'mongoose'
 
-// Получает agreement и опционально извлекает vatRate
 export const agreementLookupBuilder = (
   localField = 'client.agreement'
 ): PipelineStage[] => {
@@ -20,7 +19,7 @@ export const agreementLookupBuilder = (
     },
     {
       $addFields: {
-        usePriceWithVat: '$agreement.usePriceWithVAT',
+        agreementName: '$agreement.name',
       },
     },
     {

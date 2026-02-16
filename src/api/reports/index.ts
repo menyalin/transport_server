@@ -1,5 +1,3 @@
-// @ ts-nocheck
-
 import express, { Response, Request } from 'express'
 
 import { jwtAuth } from '@/utils/auth.middleware'

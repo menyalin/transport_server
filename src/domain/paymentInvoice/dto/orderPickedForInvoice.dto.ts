@@ -57,6 +57,7 @@ export class OrderPickedForInvoiceDTO {
   itemType?: string
   rowId?: any
   loaderData?: ILoaderData
+  agreementName?: string
 
   constructor(props: OrderPickedForInvoiceDTOProps) {
     const preparedProps = orderPickedForInvoiceDTOSchema.parse(props)
@@ -92,7 +93,7 @@ export class OrderPickedForInvoiceDTO {
     this.savedTotalByTypes = preparedProps.savedTotalByTypes
     this.totalByTypes = preparedProps.totalByTypes
     this.total = preparedProps.total
-
+    this.agreementName = preparedProps.agreementName
     this.needUpdate = utils.isNeedUpdatePrices(
       this.usePriceWithVat,
       this.total,

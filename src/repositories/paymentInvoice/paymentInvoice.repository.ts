@@ -127,8 +127,8 @@ class PaymentInvoiceRepository {
 
   async pickOrdersForPaymentInvoice(
     params: IPickOrdersForPaymentInvoiceProps,
-    vatRate: number,
-    usePriceWithVat: boolean
+    vatRate?: number,
+    usePriceWithVat?: boolean
   ): Promise<[unknown[], IStaticticData?]> {
     return await pickOrdersForPaymentInvoice(params, vatRate, usePriceWithVat)
   }

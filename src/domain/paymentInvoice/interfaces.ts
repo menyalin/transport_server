@@ -11,8 +11,9 @@ export const PickOrdersForPaymentInvoicePropsSchema = z.object({
   company: z.string(),
   period: DateRange.validationSchema,
   client: z.string().optional(),
-  agreement: z.string(),
+  agreement: z.string().optional(),
   agreements: z.string().array().optional(),
+  carriers: z.string().array().optional(),
   paymentInvoiceId: z.string().optional(),
   docStatuses: z.array(z.enum(ORDER_DOC_STATUSES_ENUM)).optional(),
   onlySelectable: z.boolean().optional(),
@@ -121,6 +122,7 @@ export const orderPickedForInvoiceDTOSchema = z
     note: z.string().nullable().optional(),
     paymentInvoices: z.array(z.unknown()).optional(),
     agreement: z.unknown().optional(),
+    agreementName: z.string().optional(),
     _loadingZones: z
       .array(
         z.object({
