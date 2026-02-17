@@ -55,11 +55,13 @@ export async function pickOrdersForPaymentInvoice(
     filtersExpressions: Array<BooleanExpression | ArrayExpressionOperator>
   ): PipelineStage.Match => ({
     $match: {
+      'client.vatRateInfo': { $exists: true },
       company: new Types.ObjectId(p.company),
       isActive: true,
       $expr: {
         $and: [
           { $eq: ['$state.status', 'completed'] },
+
           {
             $and: [
               { $gte: [orderDateFragmentBuilder(), p.period.start] },
