@@ -71,7 +71,7 @@ class PaymentInvoiceController {
       if (this.permissionName)
         await PermissionService.check({
           userId: req.userId,
-          companyId: req.companyId,
+          companyId: req.companyId as string,
           operation: this.permissionName + ':write',
         })
       const data = await this.service.updateOne({
@@ -127,7 +127,7 @@ class PaymentInvoiceController {
     try {
       await PermissionService.check({
         userId: req.userId,
-        companyId: req.companyId,
+        companyId: req.companyId as string,
         operation: this.permissionName + ':write',
       })
 
@@ -148,7 +148,7 @@ class PaymentInvoiceController {
     try {
       await PermissionService.check({
         userId: req.userId,
-        companyId: req.companyId,
+        companyId: req.companyId as string,
         operation: this.permissionName + ':readList',
       })
       const data = await this.service.getList(req.query)
@@ -163,7 +163,7 @@ class PaymentInvoiceController {
     try {
       await PermissionService.check({
         userId: req.userId,
-        companyId: req.companyId,
+        companyId: req.companyId as string,
         operation: this.permissionName + ':readList',
       })
       const data = await this.service.getList({

@@ -46,4 +46,33 @@ export default [
     value: 'withheldFineSum',
     text: '(Функиця) Редактирование реквизита штрафа: "Удержано"',
   },
+  // Отчеты
+  {
+    value: 'report_daysControl',
+    text: 'Отчет: Контроль сроков',
+  },
+
+  {
+    value: 'report_driversGrades',
+    text: 'Отчет: Оценки водителей',
+  },
+
+  { value: 'report_orderDocs', text: 'Отчет: Отчет по документам' },
+  {
+    value: 'report_ordersWOInvoice',
+    text: ' Отчет: Рейсы, не включенные в акты',
+  },
+  { value: 'report_grossProfit', text: ' Отчет: Валовая прибыль свод' },
+  {
+    value: 'report_crew_diagram',
+    text: 'Отчет: Использование транспорта (будет удален)',
+  },
+  {
+    value: 'report_inProgressOrders',
+    text: 'Отчет: Простой транспорта (будет удален)',
+  },
+  {
+    value: 'report_truckStateOnDate',
+    text: 'Отчет: Статус транспорта на дату (будет удален)',
+  },
 ]

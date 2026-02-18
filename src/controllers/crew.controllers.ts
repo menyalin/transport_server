@@ -11,7 +11,7 @@ export const create = async (req: AuthorizedRequest, res: Response) => {
   try {
     await PermissionService.check({
       userId: req.userId,
-      companyId: req.companyId,
+      companyId: req.companyId as string,
       operation: 'crew:write',
     })
     const data = await service.create(req.body, req.userId)
@@ -26,7 +26,7 @@ export const updateOne = async (req: AuthorizedRequest, res: Response) => {
   try {
     await PermissionService.check({
       userId: req.userId,
-      companyId: req.companyId,
+      companyId: req.companyId as string,
       operation: 'crew:write',
     })
     const data = await service.updateOne(req.params.id, req.body, req.userId)
@@ -41,7 +41,7 @@ export const closeCrew = async (req: AuthorizedRequest, res: Response) => {
   try {
     await PermissionService.check({
       userId: req.userId,
-      companyId: req.companyId,
+      companyId: req.companyId as string,
       operation: 'crew:write',
     })
 
@@ -129,7 +129,7 @@ export const deleteById = async (req: AuthorizedRequest, res: Response) => {
   try {
     await PermissionService.check({
       userId: req.userId,
-      companyId: req.companyId,
+      companyId: req.companyId as string,
       operation: 'crew:delete',
     })
     const data = await service.deleteById({

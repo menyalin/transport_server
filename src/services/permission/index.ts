@@ -1,57 +1,46 @@
-// @ts-nocheck
 import { ForbiddenError } from '../../helpers/errors'
 import { WorkerService, UserService } from '..'
+import { Types } from 'mongoose'
 import USER_ROLES from './userRoles'
 
-import {
-  director,
-  dispatcher,
-  seniorDispatcher,
-  checkman,
-  accountant,
-  mechanic,
-  admin,
-  outsourceCarriersManager,
-  userAdmin,
-  seniorAccountant,
-  autoFillRouteDates,
-  withheldFineSum,
-} from './permissionList'
+import * as roles from './permissionList'
+
+type PermissionValue = boolean | number
+type RoleName = keyof typeof roles
+type PermissionsMap = Record<string, PermissionValue>
 
 class PermissionService {
+  defaultRoles: typeof roles
+
   constructor() {
-    this.defaultRoles = {
-      admin,
-      director,
-      dispatcher,
-      seniorDispatcher,
-      checkman,
-      accountant,
-      mechanic,
-      outsourceCarriersManager,
-      userAdmin,
-      autoFillRouteDates,
-      withheldFineSum,
-      seniorAccountant,
-    }
+    this.defaultRoles = roles
   }
 
-  _getPermissionsByRoles(roles) {
-    const resMap = new Map()
+  _getPermissionsByRoles(roles: RoleName[]): Map<string, PermissionValue> {
+    const resMap = new Map<string, PermissionValue>()
     roles.forEach((role) => {
       const entries = Object.entries(this.defaultRoles[role] || {})
 
       entries.forEach((e) => {
-        if (resMap.has(e[0]) && e[1] !== -1) {
-          const existedVal = resMap.get(e[0])
-          if (existedVal < e[1]) resMap.set(e[0], e[1])
-        } else resMap.set(e[0], e[1])
+        const [key, value] = e
+        if (resMap.has(key) && value !== -1) {
+          const existedVal = resMap.get(key)
+          if (
+            typeof existedVal === 'number' &&
+            typeof value === 'number' &&
+            existedVal < value
+          ) {
+            resMap.set(key, value)
+          }
+        } else {
+          resMap.set(key, value)
+        }
       })
     })
     return resMap
   }
 
-  async adminCheck(userId) {
+  async adminCheck(userId: string): Promise<void> {
     const user = await UserService.findById(userId)
     if (!user || !user.isAdmin) throw new ForbiddenError('only global admin!')
   }
@@ -61,7 +50,13 @@ class PermissionService {
     return user?.isAdmin ?? false
   }
 
-  async getUserPermissions({ userId, companyId }) {
+  async getUserPermissions({
+    userId,
+    companyId,
+  }: {
+    userId: string
+    companyId: string | Types.ObjectId
+  }): Promise<PermissionsMap> {
     const roles = await WorkerService.getWorkerRolesByCompanyIdAndUserId({
       userId,
       companyId: companyId.toString() || companyId,
@@ -71,7 +66,15 @@ class PermissionService {
     return Object.fromEntries(permissionsMap)
   }
 
-  async check({ userId, companyId, operation }) {
+  async check({
+    userId,
+    companyId,
+    operation,
+  }: {
+    userId: string
+    companyId: string | Types.ObjectId
+    operation: string
+  }): Promise<boolean> {
     if (!userId) throw new ForbiddenError('Не указан id пользователя')
     if (!companyId) throw new ForbiddenError('Не указан профиль настроек')
     const roles = await WorkerService.getWorkerRolesByCompanyIdAndUserId({
@@ -87,17 +90,29 @@ class PermissionService {
     throw new ForbiddenError('Действие запрещено')
   }
 
-  async checkPeriod({ userId, companyId, operation, startDate }) {
-    // найти разрешения для пользователя
+  async checkPeriod({
+    userId,
+    companyId,
+    operation,
+    startDate,
+  }: {
+    userId: string
+    companyId: string | Types.ObjectId
+    operation: string
+    startDate: Date | string
+  }): Promise<boolean> {
     const permissions = await this.getUserPermissions({ userId, companyId })
     if (permissions.fullAccess || permissions[operation] === -1) return true
 
     if (!permissions || !permissions[operation])
       throw new ForbiddenError('Нет доступа!')
     const dayCount = Math.floor(
-      (new Date() - new Date(startDate)) / (1000 * 60 * 60 * 24)
+      (Date.now() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)
     )
-    if (dayCount > permissions[operation])
+    if (
+      typeof permissions[operation] === 'number' &&
+      dayCount > permissions[operation]
+    )
       throw new ForbiddenError('Период закрыт')
     return true
   }

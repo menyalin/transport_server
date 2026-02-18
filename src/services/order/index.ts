@@ -328,7 +328,7 @@ class OrderService {
         userId: user,
         companyId: existedOrder.company,
         operation: 'order:daysForWrite',
-        startDate: existedOrder.route.lastRouteDate,
+        startDate: existedOrder.route.lastRouteDate as Date,
       })
 
       chainedOrderData = await this.getChainedOrderDataById(

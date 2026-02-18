@@ -23,7 +23,7 @@ class IncomingInvoiceController {
     try {
       await PermissionService.check({
         userId: req.userId,
-        companyId: req.companyId,
+        companyId: req.companyId as string,
         operation: this.permissionName + ':write',
       })
       const data = await this.service.pickOrders(req.query)
@@ -38,7 +38,7 @@ class IncomingInvoiceController {
     try {
       await PermissionService.check({
         userId: req.userId,
-        companyId: req.companyId,
+        companyId: req.companyId as string,
         operation: this.permissionName + ':readList',
       })
       const data = await this.service.getList(req.query)
@@ -53,7 +53,7 @@ class IncomingInvoiceController {
     try {
       await PermissionService.check({
         userId: req.userId,
-        companyId: req.companyId,
+        companyId: req.companyId as string,
         operation: this.permissionName + ':readItem',
       })
       const data = await this.service.getById(req.params.id)
@@ -84,7 +84,7 @@ class IncomingInvoiceController {
     try {
       await PermissionService.check({
         userId: req.userId,
-        companyId: req.companyId,
+        companyId: req.companyId as string,
         operation: this.permissionName + ':write',
       })
       const data = await this.service.create(req.body)
@@ -98,7 +98,7 @@ class IncomingInvoiceController {
     try {
       await PermissionService.check({
         userId: req.userId,
-        companyId: req.companyId,
+        companyId: req.companyId as string,
         operation: this.permissionName + ':write',
       })
       const data = await this.service.updateOne(req.params.id, req.body)
@@ -113,7 +113,7 @@ class IncomingInvoiceController {
     try {
       await PermissionService.check({
         userId: req.userId,
-        companyId: req.companyId,
+        companyId: req.companyId as string,
         operation: this.permissionName + ':delete',
       })
       const result: boolean = await this.service.deleteById(
@@ -134,7 +134,7 @@ class IncomingInvoiceController {
 
       await PermissionService.check({
         userId: req.userId,
-        companyId: req.companyId,
+        companyId: req.companyId as string,
         operation: this.permissionName + ':write',
       })
       const data = await this.service.addOrdersToInvoice(
@@ -156,7 +156,7 @@ class IncomingInvoiceController {
 
       await PermissionService.check({
         userId: req.userId,
-        companyId: req.companyId,
+        companyId: req.companyId as string,
         operation: this.permissionName + ':write',
       })
       const data = await this.service.removeOrdersFromInvoice({
