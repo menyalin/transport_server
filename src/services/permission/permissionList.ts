@@ -1,9 +1,7 @@
 export const admin = {
   fullAccess: true,
   'modules:accounting': true, // Для отображения вкладки "Учет"
-  'report:drivers_grades': true,
-  'report:orderDocs': true,
-  'report:orders_wo_invoice': true,
+
   'order:showReturnCheckbox': true,
   'order:readFinalPrices': true,
   'order:writeFinalPrices': true,
@@ -11,7 +9,6 @@ export const admin = {
   'document:readItem': true,
   'document:write': true,
   'document:delete': true,
-  'report:gross_profit': true,
   'worker:userAdmin': true,
 
   'fine:readList': true,
@@ -55,7 +52,7 @@ export const outsourceCarriersManager = {
   'order:readPaymentToDriver': true,
   'order:writePaymentToDriver': true,
   'order:printForms': true,
-  'report:orderDocs': true,
+
   'agreement:readList': true,
   'agreement:readItem': true,
 
@@ -97,8 +94,6 @@ export const director = {
   'order:readPaymentToDriver': true,
   'order:writePaymentToDriver': true,
   'modules:accounting': true,
-  'report:orderDocs': true,
-  'report:orders_wo_invoice': true,
   'fine:readList': true,
   'fine:readItem': true,
   'fine:isWithheldRead': true,
@@ -113,9 +108,17 @@ export const director = {
   'agreement:readList': true,
   'agreement:readItem': true,
 
+  'report:daysControl': true,
+  'report:inProgressOrders': true,
+  'report:truckStateOnDate': true,
+  'report:driversGrades': true,
+  'report:orderDocs': true,
+  'report:ordersWOInvoice': true,
+  'report:grossProfit': true,
+  'report:crew_diagram': true,
+
   'carrierAgreement:readList': true,
   'carrierAgreement:readItem': true,
-
   'carrier:readList': true,
   'carrier:readItem': true,
   'address:readList': true,
@@ -137,8 +140,7 @@ export const director = {
   'orderTemplate:readList': true,
   'orderTemplate:readItem': true,
   orderListForAccountant: true,
-  'report:drivers_grades': true,
-  'report:gross_profit': true,
+
   'tariff:readList': true,
   'tariff:readItem': true,
   'document:readList': true,
@@ -205,7 +207,6 @@ export const dispatcher = {
   'order:daysForWritePrice': 4,
   'order:groupCreate': true,
   'order:readDocs': true,
-  'report:orderDocs': true,
 }
 
 export const seniorDispatcher = {
@@ -277,8 +278,6 @@ export const checkman = {
   'orderTemplate:readList': true,
   'orderTemplate:readItem': true,
   'order:readDocs': true,
-
-  'report:orderDocs': true,
 }
 
 export const accountant = {
@@ -318,8 +317,7 @@ export const accountant = {
   'order:readDocs': true,
   'order:showDocDates': true,
   'order:writeDocDates': true,
-  'report:gross_profit': true,
-  'report:orders_wo_invoice': true,
+
   'docsRegistry:readList': true,
   'docsRegistry:readItem': true,
   'docsRegistry:write': true,
@@ -381,7 +379,6 @@ export const mechanic = {
   'truck:readItem': true,
   'driver:readList': true,
   'driver:readItem': true,
-  'report:orderDocs': true,
 }
 
 export const userAdmin = {
@@ -407,6 +404,31 @@ export const withheldFineSum = {
   'fine:readList': true,
   'fine:readItem': true,
   'fine:write': true,
+}
+
+export const report_daysControl = {
+  'report:daysControl': true,
+}
+export const report_inProgressOrders = {
+  'report:inProgressOrders': true,
+}
+export const report_truckStateOnDate = {
+  'report:truckStateOnDate': true,
+}
+export const report_driversGrades = {
+  'report:driversGrades': true,
+}
+export const report_orderDocs = {
+  'report:orderDocs': true,
+}
+export const report_ordersWOInvoice = {
+  'report:ordersWOInvoice': true,
+}
+export const report_grossProfit = {
+  'report:grossProfit': true,
+}
+export const report_crew_diagram = {
+  'report:crew_diagram': true,
 }
 
 /*

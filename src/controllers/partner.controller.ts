@@ -39,7 +39,7 @@ class PartnerController extends IController {
 
       await PermissionService.check({
         userId: req.userId,
-        companyId: req.companyId,
+        companyId: req.companyId as string,
         operation: this.permissionName + ':write',
       })
       const data = await this.service.addPlaceForTransferDocs(
@@ -60,7 +60,7 @@ class PartnerController extends IController {
 
       await PermissionService.check({
         userId: req.userId,
-        companyId: req.companyId,
+        companyId: req.companyId as string,
         operation: this.permissionName + ':write',
       })
       const data = await this.service.updatePlaceForTransferDocs(
@@ -80,7 +80,7 @@ class PartnerController extends IController {
     try {
       await PermissionService.check({
         userId: req.userId,
-        companyId: req.companyId,
+        companyId: req.companyId as string,
         operation: this.permissionName + ':write',
       })
       const data = await this.service.deletePlaceForTransferDocs(
@@ -101,7 +101,7 @@ class PartnerController extends IController {
 
       await PermissionService.check({
         userId: req.userId,
-        companyId: req.companyId,
+        companyId: req.companyId as string,
         operation: this.permissionName + ':write',
       })
 
@@ -124,7 +124,7 @@ class PartnerController extends IController {
 
       await PermissionService.check({
         userId: req.userId,
-        companyId: req.companyId,
+        companyId: req.companyId as string,
         operation: this.permissionName + ':write',
       })
 
@@ -147,7 +147,7 @@ class PartnerController extends IController {
 
       await PermissionService.check({
         userId: req.userId,
-        companyId: req.companyId,
+        companyId: req.companyId as string,
         operation: this.permissionName + ':write',
       })
 

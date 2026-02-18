@@ -69,7 +69,7 @@ class AgreementController {
       if (this.permissionName)
         await PermissionService.check({
           userId: req.userId,
-          companyId: req.companyId,
+          companyId: req.companyId as string,
           operation: this.permissionName + ':write',
         })
       const data = await this.service.updateOne({
@@ -112,7 +112,7 @@ class AgreementController {
       if (this.permissionName)
         await PermissionService.check({
           userId: req.userId,
-          companyId: req.companyId,
+          companyId: req.companyId as string,
           operation: this.permissionName + ':delete',
         })
       const data = await this.service.deleteById({

@@ -18,7 +18,7 @@ class TariffContractController {
     try {
       await PermissionService.check({
         userId: req.userId,
-        companyId: req.companyId,
+        companyId: req.companyId as string,
         operation: this.service.modelName + ':write',
       })
 
@@ -45,7 +45,7 @@ class TariffContractController {
     try {
       const data = await this.service.getList({
         ...req.query,
-        company: req.companyId,
+        company: req.companyId as string,
       })
       res.status(200).json(data)
     } catch (e) {
@@ -58,7 +58,7 @@ class TariffContractController {
     try {
       await PermissionService.check({
         userId: req.userId,
-        companyId: req.companyId,
+        companyId: req.companyId as string,
         operation: this.service.modelName + ':write',
       })
 
@@ -77,7 +77,7 @@ class TariffContractController {
     try {
       await PermissionService.check({
         userId: req.userId,
-        companyId: req.companyId,
+        companyId: req.companyId as string,
         operation: this.service.modelName + ':delete',
       })
       const data = await this.service.deleteById(req.params.id, req.userId)

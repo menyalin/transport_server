@@ -26,7 +26,7 @@ class SalaryTariffController extends IController {
     try {
       await PermissionService.check({
         userId: req.userId,
-        companyId: req.companyId,
+        companyId: req.companyId as string,
         operation: this.permissionName + ':readList',
       })
       const data = await this.service.getList(req.query)
@@ -66,7 +66,7 @@ class SalaryTariffController extends IController {
     try {
       await PermissionService.check({
         userId: req.userId,
-        companyId: req.companyId,
+        companyId: req.companyId as string,
         operation: this.permissionName + ':readList',
       })
 

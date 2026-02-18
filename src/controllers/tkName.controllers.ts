@@ -7,7 +7,7 @@ export const create = async (req: AuthorizedRequest, res: Response) => {
   try {
     await PermissionService.check({
       userId: req.userId,
-      companyId: req.companyId,
+      companyId: req.companyId as string,
       operation: 'carrier:write',
     })
     const data = await service.create({ body: req.body, user: req.userId })
@@ -22,7 +22,7 @@ export const updateOne = async (req: AuthorizedRequest, res: Response) => {
   try {
     await PermissionService.check({
       userId: req.userId,
-      companyId: req.companyId,
+      companyId: req.companyId as string,
       operation: 'carrier:write',
     })
     const data = await service.updateOne({
@@ -65,7 +65,7 @@ export const deleteById = async (req: AuthorizedRequest, res: Response) => {
   try {
     await PermissionService.check({
       userId: req.userId,
-      companyId: req.companyId,
+      companyId: req.companyId as string,
       operation: 'carrier:delete',
     })
     const data = await service.deleteById({
