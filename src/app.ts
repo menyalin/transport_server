@@ -2,6 +2,7 @@ import express from 'express'
 import logger from 'morgan'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
+import qs from 'qs'
 import { errorMiddleware } from './utils/error.middleware'
 
 import authRouter from './api/auth'
@@ -37,7 +38,9 @@ import incomingInvoiceRouter from '@/api/incomingInvoice/incomingInvoice.router'
 
 const app = express()
 
-app.set('query parser', 'extended')
+app.set('query parser', (str: string) =>
+  qs.parse(str, { arrayLimit: 1000, depth: 10 })
+)
 app.set('x-powered-by', false)
 
 app.use(
