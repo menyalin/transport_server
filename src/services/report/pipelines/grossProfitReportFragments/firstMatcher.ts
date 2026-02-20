@@ -1,11 +1,23 @@
-// @ts-nocheck
-import mongoose from 'mongoose'
+import mongoose, { PipelineStage } from 'mongoose'
+import { FilterValue, FilterCondition, FirstMatcherParams } from '../interfaces'
 const { Types, isObjectIdOrHexString } = mongoose
 
-const getValuesArray = (values) =>
+const getValuesArray = (values: FilterValue[]) =>
   values.map((i) => (isObjectIdOrHexString(i) ? new Types.ObjectId(i) : i))
 
-const _getMainFilterBlock = ({ field, cond, values }) => {
+type MainFilterBlockParams = {
+  field: string
+  cond: FilterCondition
+  values: FilterValue[]
+}
+
+const _getMainFilterBlock = ({
+  field,
+  cond,
+  values,
+}: MainFilterBlockParams):
+  | { $in: [string, unknown[]] }
+  | { $not: { $in: [string, unknown[]] } } => {
   if (cond === 'in')
     return {
       $in: [field, getValuesArray(values)],
@@ -16,8 +28,20 @@ const _getMainFilterBlock = ({ field, cond, values }) => {
     }
 }
 
-export const firstMatcher = ({ company, dateRange, mainFilters }) => {
-  const firstMatcher = {
+export const firstMatcher = ({
+  company,
+  dateRange,
+  mainFilters,
+}: FirstMatcherParams): PipelineStage => {
+  const firstMatcher: {
+    $match: {
+      company: mongoose.Types.ObjectId
+      isActive: boolean
+      $expr: {
+        $and: any[]
+      }
+    }
+  } = {
     $match: {
       company: new Types.ObjectId(company),
       isActive: true,
@@ -30,7 +54,7 @@ export const firstMatcher = ({ company, dateRange, mainFilters }) => {
       },
     },
   }
-  // Основной отбор по КЛИЕНТАМ
+
   if (mainFilters.clients?.values.length)
     firstMatcher.$match.$expr.$and.push(
       _getMainFilterBlock({
@@ -40,7 +64,6 @@ export const firstMatcher = ({ company, dateRange, mainFilters }) => {
       })
     )
 
-  // Основной отбор по Соглашениям
   if (mainFilters.agreements?.values.length)
     firstMatcher.$match.$expr.$and.push(
       _getMainFilterBlock({
@@ -50,7 +73,6 @@ export const firstMatcher = ({ company, dateRange, mainFilters }) => {
       })
     )
 
-  // Основной отбор по TkNames
   if (mainFilters.carriers?.values.length)
     firstMatcher.$match.$expr.$and.push(
       _getMainFilterBlock({
@@ -60,7 +82,6 @@ export const firstMatcher = ({ company, dateRange, mainFilters }) => {
       })
     )
 
-  // Основной отбор по грузовикам
   if (mainFilters.trucks?.values.length)
     firstMatcher.$match.$expr.$and.push(
       _getMainFilterBlock({
@@ -70,7 +91,6 @@ export const firstMatcher = ({ company, dateRange, mainFilters }) => {
       })
     )
 
-  // Основной отбор по водителям
   if (mainFilters.drivers?.values.length)
     firstMatcher.$match.$expr.$and.push(
       _getMainFilterBlock({
@@ -80,7 +100,6 @@ export const firstMatcher = ({ company, dateRange, mainFilters }) => {
       })
     )
 
-  // Основной отбор по типу рейса
   if (mainFilters.orderTypes?.values.length)
     firstMatcher.$match.$expr.$and.push(
       _getMainFilterBlock({

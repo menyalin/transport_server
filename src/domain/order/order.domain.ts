@@ -60,7 +60,6 @@ export interface IOrderDTO {
   outsourceCosts?: []
   cargoParams?: object
   reqTransport?: OrderReqTransport
-  paymentParts?: []
   analytics?: any
   docsState?: {
     getted: boolean
@@ -97,7 +96,7 @@ export class Order {
   outsourceCosts?: OrderPrice[]
   cargoParams: CargoInfo
   reqTransport?: OrderReqTransport
-  paymentParts: []
+
   analytics?: OrderAnalytics
   docsState?: {
     getted: boolean
@@ -149,7 +148,7 @@ export class Order {
     this.reqTransport = order.reqTransport
       ? new OrderReqTransport(order.reqTransport)
       : undefined
-    this.paymentParts = order.paymentParts || []
+
     this.analytics = new OrderAnalytics(order.analytics)
 
     this.docsState = order.docState
@@ -185,10 +184,6 @@ export class Order {
 
   get clientAgreementId(): string | null {
     return this.client.agreement?.toString() ?? null
-  }
-
-  get paymentPartIds(): string[] {
-    return this.paymentParts.map((i: any) => i._id?.toString())
   }
 
   setClientAgreement(agreementId: string): void {

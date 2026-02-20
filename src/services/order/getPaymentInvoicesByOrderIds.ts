@@ -1,3 +1,4 @@
+import { PaymentInvoiceDomain } from '@/domain/paymentInvoice/paymentInvoice'
 import {
   PaymentInvoice as PaymentInvoiceModel,
   OrderInPaymentInvoice as OrderInPaymentInvoiceModel,
@@ -5,7 +6,7 @@ import {
 
 export const getPaymentInvoicesByOrderIds = async (
   ids: string[] = []
-): Promise<object[]> => {
+): Promise<PaymentInvoiceDomain[]> => {
   if (!ids.length)
     throw new Error('getPaymentInvoicesByOrderId: orderIds is required')
 
@@ -18,5 +19,5 @@ export const getPaymentInvoicesByOrderIds = async (
     _id: items.map((i) => i.paymentInvoice.toString()),
   }).lean()
 
-  return invoices
+  return invoices.map((i) => PaymentInvoiceDomain.create(i))
 }

@@ -1,12 +1,11 @@
 import { Request, Response } from 'express'
-import { IReportService } from '@/services/report'
 import { BadRequestError } from '@/helpers/errors'
 import { DateRange } from '@/classes/dateRange'
 import { ReportService, PaymentInvoiceService } from '@/services'
 import { AuthorizedRequest } from './interfaces'
 
 interface IServiceProps {
-  service: IReportService
+  service: typeof ReportService
   paymentInvoiceService: typeof PaymentInvoiceService
 }
 
@@ -27,7 +26,7 @@ interface IDriversGradesReportProps {
 }
 
 class ReportController {
-  service: IReportService
+  service: typeof ReportService
   paymentInvoiceService: typeof PaymentInvoiceService
   constructor({ service, paymentInvoiceService }: IServiceProps) {
     this.service = service
@@ -181,6 +180,6 @@ class ReportController {
 }
 
 export default new ReportController({
-  service: ReportService as IReportService,
+  service: ReportService,
   paymentInvoiceService: PaymentInvoiceService,
 })
