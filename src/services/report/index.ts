@@ -24,34 +24,7 @@ interface ITruckStateOnDateProps {
   tkName?: string
 }
 
-export interface IReportService {
-  driversGradesXlsxReport: (
-    props: IDriversGradesXlsxReportProps
-  ) => Promise<Readable>
-
-  daysControl: (
-    days: number,
-    profile: string,
-    carriers?: string[]
-  ) => Promise<unknown[]>
-  truckStateOnDate: (props: ITruckStateOnDateProps) => Promise<unknown[]>
-
-  inProgressOrders: ({
-    profile,
-    client,
-  }: {
-    profile: string
-    client: string
-  }) => Promise<unknown[]>
-
-  orderDocs: (props: unknown) => Promise<unknown>
-
-  grossProfitPivot: (props: unknown) => Promise<unknown>
-
-  grossProfitDetails: (props: unknown) => Promise<unknown>
-}
-
-class ReportService implements IReportService {
+class ReportService {
   async inProgressOrders(props: { profile: string; client: string }) {
     const pipeline = getInProgressOrdersPipeline(props)
     const data = await Order.aggregate(pipeline as PipelineStage[])

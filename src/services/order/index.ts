@@ -217,19 +217,13 @@ class OrderService {
     })
     return order
   }
-  async getChainedOrderDataById(
-    orderId: string,
-    paymentPartIds: string[] = []
-  ): Promise<IChainedOrderData> {
+  async getChainedOrderDataById(orderId: string): Promise<IChainedOrderData> {
     let docsRegistry
     let paymentInvoices
     let incomingInvoice
     docsRegistry = await getDocsRegistryByOrderId(orderId)
 
-    paymentInvoices = await getPaymentInvoicesByOrderIds([
-      orderId,
-      ...paymentPartIds,
-    ])
+    paymentInvoices = await getPaymentInvoicesByOrderIds([orderId])
     incomingInvoice = await IncomingInvoiceRepository.getForOrderById(orderId)
     return {
       docsRegistry,
@@ -250,10 +244,7 @@ class OrderService {
       order.client.vatRateInfo = await this.getOrderVatRateInfo(order)
     }
     if (order.isCompleted) {
-      chainedData = await this.getChainedOrderDataById(
-        order.id,
-        order.paymentPartIds
-      )
+      chainedData = await this.getChainedOrderDataById(order.id)
     }
     return {
       ...order.toObject(),
@@ -331,10 +322,7 @@ class OrderService {
         startDate: existedOrder.route.lastRouteDate as Date,
       })
 
-      chainedOrderData = await this.getChainedOrderDataById(
-        existedOrder.id,
-        existedOrder.paymentPartIds
-      )
+      chainedOrderData = await this.getChainedOrderDataById(existedOrder.id)
 
       orderIncludedInInvoice =
         chainedOrderData.paymentInvoices.length > 0 ||

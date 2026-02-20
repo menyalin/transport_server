@@ -1,4 +1,5 @@
 import { ORDER_PRICE_TYPES_ENUM } from '@/constants/priceTypes'
+import { PipelineStage } from 'mongoose'
 
 const getTotalPrice = (
   priceTypes: ORDER_PRICE_TYPES_ENUM[],
@@ -25,16 +26,53 @@ const addPriceTypeFields = () => {
   return { $addFields: { ...res } }
 }
 
-export const addTotalPriceFields = () => {
+const addPaymentInvoiceInfo = (): PipelineStage[] => {
   return [
-    addPriceTypeFields(),
+    {
+      $lookup: {
+        from: 'ordersInPaymentInvoices',
+        localField: '_id',
+        foreignField: 'order',
+        as: 'invoiceInfo',
+      },
+    },
     {
       $addFields: {
-        totalWithVat: getTotalPrice(
-          Object.values(ORDER_PRICE_TYPES_ENUM),
-          true
-        ),
-        totalWOVat: getTotalPrice(Object.values(ORDER_PRICE_TYPES_ENUM), false),
+        invoiceInfo: { $first: '$invoiceInfo' },
+      },
+    },
+  ]
+}
+
+export const addTotalPriceFields = () => {
+  const calculatedTotalWithVat = getTotalPrice(
+    Object.values(ORDER_PRICE_TYPES_ENUM),
+    true
+  )
+  const calculatedTotalWOVat = getTotalPrice(
+    Object.values(ORDER_PRICE_TYPES_ENUM),
+    false
+  )
+
+  return [
+    addPriceTypeFields(),
+    ...addPaymentInvoiceInfo(),
+    {
+      $addFields: {
+        totalWithVat: {
+          $cond: {
+            if: { $ifNull: ['$invoiceInfo.total.price', false] },
+            then: '$invoiceInfo.total.price',
+            else: calculatedTotalWithVat,
+          },
+        },
+        totalWOVat: {
+          $cond: {
+            if: { $ifNull: ['$invoiceInfo.total.priceWOVat', false] },
+            then: '$invoiceInfo.total.priceWOVat',
+            else: calculatedTotalWOVat,
+          },
+        },
       },
     },
   ]

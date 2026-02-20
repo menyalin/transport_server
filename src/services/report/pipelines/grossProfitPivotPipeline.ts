@@ -6,6 +6,7 @@ import { lookupAddressParams } from './grossProfitReportFragments/lookupAddressP
 import { secondMatcher } from './grossProfitReportFragments/secondMatcher'
 import { addTotalPriceFields } from '../pipelines/grossProfitReportFragments/addTotalPriceFields'
 import { lookupAgreements } from './grossProfitReportFragments/lookupAgreements'
+import { MainFilters } from './interfaces'
 
 type GroupByType =
   | 'client'
@@ -20,7 +21,7 @@ interface GrossProfitPivotParams {
   company: string
   dateRange: [string, string]
   groupBy: GroupByType
-  mainFilters?: Record<string, any>
+  mainFilters: MainFilters
 }
 
 const getGroupExpression = (groupBy: GroupByType): string => {
