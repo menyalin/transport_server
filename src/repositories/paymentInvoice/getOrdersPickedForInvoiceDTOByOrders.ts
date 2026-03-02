@@ -56,75 +56,75 @@ export const getOrdersPickedForInvoiceDTOByOrders = async (
         agreementVatRate: parsedProps.vatRate,
       },
     },
-    ...totalByTypesFragementBuilder(false),
+    ...totalByTypesFragementBuilder(),
   ]
 
-  const unionWithPaymentParts = {
-    $unionWith: {
-      coll: 'orders',
-      pipeline: [
-        {
-          $match: {
-            company: new Types.ObjectId(parsedProps.company),
-            $expr: {
-              $and: [
-                {
-                  $gte: [
-                    {
-                      $size: {
-                        $filter: {
-                          input: { $ifNull: ['$paymentParts', []] },
-                          as: 'part',
-                          cond: {
-                            $in: [
-                              '$$part._id',
-                              parsedProps.orderIds.map(
-                                (i) => new Types.ObjectId(i)
-                              ),
-                            ],
-                          },
-                        },
-                      },
-                    },
-                    1,
-                  ],
-                },
-              ],
-            },
-          },
-        },
-        { $unwind: '$paymentParts' },
+  // const unionWithPaymentParts = {
+  //   $unionWith: {
+  //     coll: 'orders',
+  //     pipeline: [
+  //       {
+  //         $match: {
+  //           company: new Types.ObjectId(parsedProps.company),
+  //           $expr: {
+  //             $and: [
+  //               {
+  //                 $gte: [
+  //                   {
+  //                     $size: {
+  //                       $filter: {
+  //                         input: { $ifNull: ['$paymentParts', []] },
+  //                         as: 'part',
+  //                         cond: {
+  //                           $in: [
+  //                             '$$part._id',
+  //                             parsedProps.orderIds.map(
+  //                               (i) => new Types.ObjectId(i)
+  //                             ),
+  //                           ],
+  //                         },
+  //                       },
+  //                     },
+  //                   },
+  //                   1,
+  //                 ],
+  //               },
+  //             ],
+  //           },
+  //         },
+  //       },
+  //       { $unwind: '$paymentParts' },
 
-        {
-          $match: {
-            $expr: {
-              $and: [
-                {
-                  $in: [
-                    '$paymentParts._id',
-                    parsedProps.orderIds.map((i) => new Types.ObjectId(i)),
-                  ],
-                },
-              ],
-            },
-          },
-        },
-        // ...agreementLookupBuilder('paymentParts.agreement'),
-        {
-          $addFields: {
-            paymentPartsSum: 0,
-            agreementVatRate: parsedProps.vatRate,
-            usePriceWithVat: parsedProps.usePriceWithVat,
-            itemType: 'paymentPart',
-            orderId: '$_id',
-            rowId: '$_id',
-            _id: '$paymentParts._id',
-          },
-        },
-        ...totalByTypesFragementBuilder(true),
-      ],
-    },
-  } as PipelineStage
+  //       {
+  //         $match: {
+  //           $expr: {
+  //             $and: [
+  //               {
+  //                 $in: [
+  //                   '$paymentParts._id',
+  //                   parsedProps.orderIds.map((i) => new Types.ObjectId(i)),
+  //                 ],
+  //               },
+  //             ],
+  //           },
+  //         },
+  //       },
+  //       // ...agreementLookupBuilder('paymentParts.agreement'),
+  //       {
+  //         $addFields: {
+  //           paymentPartsSum: 0,
+  //           agreementVatRate: parsedProps.vatRate,
+  //           usePriceWithVat: parsedProps.usePriceWithVat,
+  //           itemType: 'paymentPart',
+  //           orderId: '$_id',
+  //           rowId: '$_id',
+  //           _id: '$paymentParts._id',
+  //         },
+  //       },
+  //       ...totalByTypesFragementBuilder(true),
+  //     ],
+  //   },
+  // } as PipelineStage
 
   const addFields: PipelineStage[] = [
     {
@@ -138,7 +138,7 @@ export const getOrdersPickedForInvoiceDTOByOrders = async (
 
   const res = await OrderModel.aggregate([
     ...ordersMatcher,
-    unionWithPaymentParts,
+    // unionWithPaymentParts,
     ...driverLookup,
     ...addFields,
   ])

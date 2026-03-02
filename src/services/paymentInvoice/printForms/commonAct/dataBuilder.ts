@@ -38,8 +38,6 @@ export const paymentInvoiceDataBuilder = async (
       orderInInvoice.orderId.toString()
     )
 
-    orderData.note =
-      orderInInvoice.itemType === 'paymentPart' ? orderInInvoice.note : ''
     const row = mainTableRowBuilder(
       orderData,
       orderInInvoice.savedTotal || { price: 0, priceWOVat: 0 }

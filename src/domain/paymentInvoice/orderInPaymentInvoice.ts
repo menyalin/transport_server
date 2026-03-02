@@ -39,7 +39,7 @@ export class OrderInPaymentInvoice {
       order: order._id,
       paymentInvoice: invoiceId,
       company: order.company.toString(),
-      itemType: order.itemType || 'order',
+      itemType: 'order',
       total: order.total,
       totalByTypes: order.totalByTypes,
       loaderData: order.loaderData,
