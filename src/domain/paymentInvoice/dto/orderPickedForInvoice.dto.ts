@@ -21,7 +21,7 @@ export class OrderPickedForInvoiceDTO {
   isSelectable?: boolean = false
   agreementVatRate: number
   usePriceWithVat: boolean
-  paymentPartsSum: number
+
   driverName?: string
   reqTransport: any
   confirmedCrew: {
@@ -43,7 +43,7 @@ export class OrderPickedForInvoiceDTO {
     getted?: boolean | null
     date?: Date | null
   }
-  paymentParts?: any
+
   paymentToDriver: any
   note?: string | null
   paymentInvoices?: any[]
@@ -54,7 +54,7 @@ export class OrderPickedForInvoiceDTO {
   savedTotalByTypes?: any
   savedTotal?: TotalPrice
   needUpdate?: boolean
-  itemType?: string
+
   rowId?: any
   loaderData?: ILoaderData
   agreementName?: string
@@ -72,21 +72,18 @@ export class OrderPickedForInvoiceDTO {
     this.plannedDate = preparedProps.plannedDate
     this.orderId = preparedProps.orderId
     this.isSelectable = preparedProps.isSelectable
-    this.paymentPartsSum = preparedProps.paymentPartsSum
     this.confirmedCrew = preparedProps.confirmedCrew
     this.reqTransport = preparedProps.reqTransport
     this.route = preparedProps.route
     this.analytics = preparedProps.analytics
     this.docsState = preparedProps?.docsState
     this.docNumbers = preparedProps?.docNumbers
-    this.paymentParts = preparedProps.paymentParts
     this.paymentToDriver = preparedProps.paymentToDriver
     this.paymentInvoices = preparedProps.paymentInvoices
     this.agreement = preparedProps.agreement
     this.agreementVatRate = preparedProps.agreementVatRate
     this.usePriceWithVat = preparedProps.usePriceWithVat
     this.driverName = preparedProps.driverName || undefined
-    this.itemType = preparedProps.itemType
     this.rowId = preparedProps.rowId
     this._loadingZones = preparedProps._loadingZones
     this.savedTotal = preparedProps.savedTotal
@@ -99,9 +96,7 @@ export class OrderPickedForInvoiceDTO {
       this.total,
       this.savedTotal
     )
-    this.note = preparedProps.paymentParts
-      ? preparedProps.paymentParts.note
-      : preparedProps.note
+    this.note = preparedProps.note
     if (preparedProps.loaderData) this.loaderData = preparedProps.loaderData
   }
 

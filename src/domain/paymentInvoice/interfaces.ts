@@ -2,7 +2,6 @@ import z from 'zod'
 import { Types } from 'mongoose'
 import { DateRange } from '../../classes/dateRange'
 import { OrderPickedForInvoiceDTO } from './dto/orderPickedForInvoice.dto'
-import { OrderPaymentPartPropsSchema } from '../order/paymentPart'
 import { objectIdSchema } from '@/shared/validationSchemes'
 import { PriceByTypeSchema, TotalPriceSchema } from '../commonInterfaces'
 import { ORDER_DOC_STATUSES_ENUM } from '@/constants/orderDocsStatus'
@@ -91,7 +90,7 @@ export const orderPickedForInvoiceDTOSchema = z
     isSelectable: z.boolean().optional(),
     agreementVatRate: z.number(),
     usePriceWithVat: z.boolean(),
-    paymentPartsSum: z.number().optional().default(0),
+
     reqTransport: z.unknown(),
     confirmedCrew: z.object({
       truck: objectIdSchema.optional().nullable(),
@@ -117,7 +116,6 @@ export const orderPickedForInvoiceDTOSchema = z
       })
       .optional(),
 
-    paymentParts: OrderPaymentPartPropsSchema.optional(),
     paymentToDriver: z.unknown(),
     note: z.string().nullable().optional(),
     paymentInvoices: z.array(z.unknown()).optional(),
@@ -138,7 +136,7 @@ export const orderPickedForInvoiceDTOSchema = z
     savedTotalByTypes: z.record(z.string(), PriceByTypeSchema).optional(),
     driverName: z.string().optional().nullable(),
     // needUpdate: z.boolean().optional(),
-    itemType: z.string(),
+
     rowId: z.unknown().optional(),
     loaderData: LoaderDataSchema.optional(),
     total: TotalPriceSchema,

@@ -13,6 +13,7 @@ import { PaymentInvoiceDomain } from '@/domain/paymentInvoice/paymentInvoice'
 import {
   IAddOrdersToInvoiceProps,
   IInvoiceVatRateInfo,
+  IPaymentInvoiceAnalytics,
   IPickOrdersForPaymentInvoiceProps,
   PickOrdersForPaymentInvoicePropsSchema,
 } from '@/domain/paymentInvoice/interfaces'
@@ -390,24 +391,27 @@ class PaymentInvoiceService {
     events.forEach((event) => this.bus.publish(event))
     return invoice
   }
-
+  // Обновление сумм рейса в акте по текущей стоимости рейса
   async updateOrderPrices({
     orderId,
     company,
   }: {
     orderId: string
     company: string
-  }): Promise<OrderPickedForInvoiceDTO | null> {
+  }): Promise<{
+    order: OrderPickedForInvoiceDTO
+    total: IPaymentInvoiceAnalytics
+  } | null> {
     try {
-      const [item] =
+      const [orderRowInInvoice] =
         await PaymentInvoiceRepository.getOrderInPaymentInvoiceItemsByOrders([
           orderId,
         ])
-      if (!item || !item.paymentInvoice)
+      if (!orderRowInInvoice || !orderRowInInvoice.paymentInvoice)
         throw new BadRequestError('Запись рейса не найдена в акте')
 
       const invoice = await PaymentInvoiceRepository.getInvoiceById(
-        item.paymentInvoice
+        orderRowInInvoice.paymentInvoice
       )
       if (!invoice)
         throw new BadRequestError(
@@ -424,23 +428,28 @@ class PaymentInvoiceService {
           usePriceWithVat: invoice.usePriceWithVat,
         })
       if (!items || !items[0]) return null
-      const order = items[0]
-      // Сохранить старую цену
-      const oldPrice = { ...item.total }
 
-      item.setTotal(order)
-      order.saveTotal()
+      const baseOrderForInvoice = items[0]
 
-      await PaymentInvoiceRepository.updateOrdersInPaymentInvoce([item])
+      orderRowInInvoice.setTotal(baseOrderForInvoice)
 
-      // Обновить метаданные акта (дельта)
-      invoice.updateOrderPriceChanged(oldPrice, order.total)
-      await PaymentInvoiceRepository.updateInvoice(invoice._id, {
-        priceWithVat: invoice.priceWithVat,
-        priceWOVat: invoice.priceWOVat,
-      })
+      await PaymentInvoiceRepository.updateOrdersInPaymentInvoce([
+        orderRowInInvoice,
+      ])
+      baseOrderForInvoice.saveTotal()
+      const analytic = await PaymentInvoiceRepository.getInvoiceAnalytics(
+        orderRowInInvoice.paymentInvoice
+      )
 
-      return order
+      await PaymentInvoiceRepository.updateInvoice(
+        orderRowInInvoice.paymentInvoice,
+        analytic
+      )
+
+      return {
+        order: baseOrderForInvoice,
+        total: analytic,
+      }
     } catch {
       return null
     }
