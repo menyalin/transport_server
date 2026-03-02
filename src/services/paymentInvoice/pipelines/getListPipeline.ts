@@ -134,88 +134,88 @@ export const getListPipeline = (p: IProps): PipelineStage[] => {
     },
   ]
 
-  const priceLookup = [
-    {
-      $lookup: {
-        from: 'ordersInPaymentInvoices',
-        localField: '_id',
-        foreignField: 'paymentInvoice',
-        as: '_orders',
-      },
-    },
-    {
-      $addFields: {
-        _orders: {
-          $map: {
-            input: '$_orders',
-            as: 'order',
-            in: {
-              total: '$$order.total',
-              itemType: '$$order.itemType',
-            },
-          },
-        },
-      },
-    },
-    {
-      $addFields: {
-        total: {
-          $reduce: {
-            initialValue: { price: 0, priceWOVat: 0 },
-            input: '$_orders',
-            in: {
-              price: { $add: ['$$this.total.price', '$$value.price'] },
-              priceWOVat: {
-                $add: ['$$this.total.priceWOVat', '$$value.priceWOVat'],
-              },
-            },
-          },
-        },
-        count: {
-          $size: {
-            $filter: {
-              input: '$_orders',
-              cond: { $ne: ['$$this.itemType', 'paymentPart'] },
-            },
-          },
-        },
-      },
-    },
-  ]
+  // const priceLookup = [
+  //   {
+  //     $lookup: {
+  //       from: 'ordersInPaymentInvoices',
+  //       localField: '_id',
+  //       foreignField: 'paymentInvoice',
+  //       as: '_orders',
+  //     },
+  //   },
+  //   {
+  //     $addFields: {
+  //       _orders: {
+  //         $map: {
+  //           input: '$_orders',
+  //           as: 'order',
+  //           in: {
+  //             total: '$$order.total',
+  //             itemType: '$$order.itemType',
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  //   {
+  //     $addFields: {
+  //       total: {
+  //         $reduce: {
+  //           initialValue: { price: 0, priceWOVat: 0 },
+  //           input: '$_orders',
+  //           in: {
+  //             price: { $add: ['$$this.total.price', '$$value.price'] },
+  //             priceWOVat: {
+  //               $add: ['$$this.total.priceWOVat', '$$value.priceWOVat'],
+  //             },
+  //           },
+  //         },
+  //       },
+  //       count: {
+  //         $size: {
+  //           $filter: {
+  //             input: '$_orders',
+  //             cond: { $ne: ['$$this.itemType', 'paymentPart'] },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  // ]
 
   const group: PipelineStage[] = [
     { $sort: listSortingFragment(p.sortBy, p.sortDesc) },
-    { $unset: ['_orders'] },
     {
-      $group: {
-        _id: 'paymentInvoices',
-        items: { $push: '$$ROOT' },
+      $facet: {
+        items: [{ $skip: +p.skip }, { $limit: +p.limit }],
+        res: [
+          {
+            $group: {
+              _id: null,
+              count: { $count: {} },
+              routesCount: { $sum: '$ordersCount' },
+              sum: { $sum: '$priceWithVat' },
+              sumWOVat: { $sum: '$priceWOVat' },
+            },
+          },
+        ],
       },
     },
     {
       $addFields: {
-        routesCount: {
-          $reduce: {
-            initialValue: 0,
-            input: '$items',
-            in: { $add: ['$$this.count', '$$value'] },
-          },
-        },
+        res: { $first: '$res' },
+      },
+    },
+    {
+      $project: {
+        _id: 'paymentInvoice',
+        items: 1,
+        count: '$res.count',
+        routesCount: '$res.routesCount',
         total: {
-          $reduce: {
-            initialValue: { sum: 0, sumWOVat: 0 },
-            input: '$items',
-            in: {
-              sum: { $add: ['$$this.total.price', '$$value.sum'] },
-              sumWOVat: {
-                $add: ['$$this.total.priceWOVat', '$$value.sumWOVat'],
-              },
-            },
-          },
+          sum: '$res.sum',
+          sumWOVat: '$res.sumWOVat',
         },
-        count: { $size: '$items' },
-        items:
-          +p.limit > 0 ? { $slice: ['$items', +p.skip, +p.limit] } : '$items',
       },
     },
   ]
@@ -225,7 +225,6 @@ export const getListPipeline = (p: IProps): PipelineStage[] => {
     ...clientLookup,
     ...agreementLookup,
     ...additionalFields,
-    ...priceLookup,
   ]
 
   return [...pipeline, ...group]
