@@ -184,3 +184,13 @@ S3_*=...
 - Strict TypeScript is enabled but some files bypass type checking
 - MongoDB aggregation is preferred over complex Mongoose queries
 - Real-time updates should emit to entity-specific rooms
+
+### Git Conventions
+
+**Commit Message Format**: Используется conventional commits формат:
+
+- `feat(scope): description` - для новых функций
+- `refactor(scope): description` - для рефакторинга
+- `fix(scope): description` - для исправлений багов
+
+**ВАЖНО**: Никогда не добавляй подпись `Co-Authored-By` в коммиты. Описания коммитов должны быть чистыми, без подписей.

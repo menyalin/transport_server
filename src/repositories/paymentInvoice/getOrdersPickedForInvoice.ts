@@ -12,6 +12,7 @@ export async function getOrdersPickedForInvoice(
   p: GetOrdersPickedForInvoiceProps
 ): Promise<InvoiceOrdersResultDTO> {
   const parsedProps = GetOrdersPickedForInvoicePropsSchema.parse(p)
+
   const limitFragmentBuilder = (
     limit?: number,
     skip?: number
@@ -34,7 +35,7 @@ export async function getOrdersPickedForInvoice(
     })
   else if (parsedProps.orderIds?.length)
     firstMatcher.$match.$expr?.$and.push({
-      $in: ['$_id', parsedProps.orderIds.map((i) => new Types.ObjectId(i))],
+      $in: ['$order', parsedProps.orderIds.map((i) => new Types.ObjectId(i))],
     })
 
   // const finalFacet: PipelineStage.Facet = {

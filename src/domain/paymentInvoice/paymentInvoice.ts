@@ -86,16 +86,6 @@ export class PaymentInvoiceDomain implements IPaymentInvoiceAnalytics {
     return this.vatRate == null || this.usePriceWithVat == null
   }
 
-  updateOrderPriceChanged(
-    oldPrice: { price: number; priceWOVat: number },
-    newPrice: { price: number; priceWOVat: number }
-  ): void {
-    const priceDiff = newPrice.price - oldPrice.price
-    const priceWOVatDiff = newPrice.priceWOVat - oldPrice.priceWOVat
-    this.priceWithVat = Math.max(0, (this.priceWithVat || 0) + priceDiff)
-    this.priceWOVat = Math.max(0, (this.priceWOVat || 0) + priceWOVatDiff)
-  }
-
   setStatusSended(sendDate: Date): BusEvent[] {
     if (!this._id || !sendDate) return []
     this.sendDate = sendDate

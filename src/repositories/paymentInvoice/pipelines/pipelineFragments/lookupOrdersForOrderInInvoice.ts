@@ -36,52 +36,10 @@ export function lookupOrdersForOrderInInvoice(
             $addFields: {
               usePriceWithVat: p.usePriceWithVat,
               agreementVatRate: p.vatRate,
-              itemType: 'order',
               orderId: '$_id',
             },
           },
           ...totalByTypesFragementBuilder(),
-          {
-            $unionWith: {
-              coll: 'orders',
-              pipeline: [
-                {
-                  $match: {
-                    $expr: {
-                      $in: [
-                        '$$order_id',
-                        {
-                          $map: {
-                            input: { $ifNull: ['$paymentParts', []] },
-                            in: '$$this._id',
-                          },
-                        },
-                      ],
-                    },
-                  },
-                },
-                { $unwind: '$paymentParts' },
-                {
-                  $match: {
-                    $expr: {
-                      $eq: ['$$order_id', '$paymentParts._id'],
-                    },
-                  },
-                },
-                {
-                  $addFields: {
-                    orderId: '$_id',
-                    _id: '$paymentParts._id',
-                    itemType: 'paymentPart',
-                    usePriceWithVat: p.usePriceWithVat,
-                    agreementVatRate: p.vatRate,
-                    paymentPartsSum: 0,
-                  },
-                },
-                ...totalByTypesFragementBuilder(true),
-              ],
-            },
-          },
           ...driverLookup,
           {
             $addFields: {
