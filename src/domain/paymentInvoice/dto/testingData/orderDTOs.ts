@@ -5,7 +5,7 @@ const fakeObjectd = new Types.ObjectId()
 const emptyOrderData: OrderPickedForInvoiceDTOProps = {
   _id: '1',
   agreementVatRate: 20,
-  paymentPartsSum: 0,
+
   company: fakeObjectd,
   confirmedCrew: {
     driver: fakeObjectd,
@@ -15,7 +15,7 @@ const emptyOrderData: OrderPickedForInvoiceDTOProps = {
     truck: fakeObjectd,
   },
   orderId: fakeObjectd,
-  itemType: 'order',
+
   plannedDate: new Date('2024-01-01'),
   route: [],
   client: '1',

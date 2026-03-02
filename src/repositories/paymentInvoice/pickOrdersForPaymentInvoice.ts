@@ -156,75 +156,74 @@ export async function pickOrdersForPaymentInvoice(
         }),
       },
     },
-
-    ...totalByTypesFragementBuilder(false),
+    ...totalByTypesFragementBuilder(),
   ]
 
-  const unionSecondMatcher = (
-    agreement?: string,
-    agreements?: string[],
-    client?: string
-  ): PipelineStage.Match => {
-    const matcher: PipelineStage.Match = {
-      $match: {
-        $expr: {
-          $and: [],
-        },
-      },
-    }
-    if (agreement)
-      matcher.$match.$expr?.$and.push({
-        $eq: ['$paymentParts.agreement', new Types.ObjectId(agreement)],
-      })
-    if (agreements?.length)
-      matcher.$match.$expr?.$and.push({
-        $in: [
-          '$paymentParts.agreement',
-          agreements.map((i) => new Types.ObjectId(i)),
-        ],
-      })
-    if (client)
-      matcher.$match.$expr?.$and.push({
-        $eq: ['$paymentParts.client', new Types.ObjectId(client)],
-      })
-    return matcher
-  }
+  // const unionSecondMatcher = (
+  //   agreement?: string,
+  //   agreements?: string[],
+  //   client?: string
+  // ): PipelineStage.Match => {
+  //   const matcher: PipelineStage.Match = {
+  //     $match: {
+  //       $expr: {
+  //         $and: [],
+  //       },
+  //     },
+  //   }
+  //   if (agreement)
+  //     matcher.$match.$expr?.$and.push({
+  //       $eq: ['$paymentParts.agreement', new Types.ObjectId(agreement)],
+  //     })
+  //   if (agreements?.length)
+  //     matcher.$match.$expr?.$and.push({
+  //       $in: [
+  //         '$paymentParts.agreement',
+  //         agreements.map((i) => new Types.ObjectId(i)),
+  //       ],
+  //     })
+  //   if (client)
+  //     matcher.$match.$expr?.$and.push({
+  //       $eq: ['$paymentParts.client', new Types.ObjectId(client)],
+  //     })
+  //   return matcher
+  // }
 
-  const unionWithPaymentPartsOrders: PipelineStage.UnionWith = {
-    $unionWith: {
-      coll: 'orders',
-      pipeline: [
-        firstMatcherBuilder([
-          ...filters,
-          { $isArray: '$paymentParts' },
-          { $gte: [{ $size: '$paymentParts' }, 1] },
-        ] as BooleanExpression[]) as PipelineStage.Match,
+  // const unionWithPaymentPartsOrders: PipelineStage.UnionWith = {
+  //   $unionWith: {
+  //     coll: 'orders',
+  //     pipeline: [
+  //       firstMatcherBuilder([
+  //         ...filters,
+  //         { $isArray: '$paymentParts' },
+  //         { $gte: [{ $size: '$paymentParts' }, 1] },
+  //       ] as BooleanExpression[]) as PipelineStage.Match,
 
-        { $unwind: { path: '$paymentParts' } },
-        unionSecondMatcher(p.agreement, p.agreements, p.client),
-        ...paymentInvoiceFilterBuilder('paymentParts._id'),
-        ...agreementLookupBuilder('paymentParts.agreement'),
-        {
-          $addFields: {
-            orderId: '$_id',
-            _id: '$paymentParts._id',
-            plannedDate: orderDateFragmentBuilder(),
-            isSelectable: true,
-            agreementVatRate: {
-              $ifNull: [vatRate, '$client.vatRateInfo.vatRate'],
-            },
-            usePriceWithVat: {
-              $ifNull: [usePriceWithVat, '$client.vatRateInfo.usePriceWithVat'],
-            },
-            itemType: 'paymentPart',
-            paymentPartsSum: 0,
-          },
-        },
-        ...totalByTypesFragementBuilder(true),
-        { $limit: 50 },
-      ] as any[],
-    },
-  }
+  //       { $unwind: { path: '$paymentParts' } },
+  //       unionSecondMatcher(p.agreement, p.agreements, p.client),
+  //       ...paymentInvoiceFilterBuilder('paymentParts._id'),
+  //       ...agreementLookupBuilder('paymentParts.agreement'),
+  //       {
+  //         $addFields: {
+  //           orderId: '$_id',
+  //           _id: '$paymentParts._id',
+  //           plannedDate: orderDateFragmentBuilder(),
+  //           isSelectable: true,
+  //           agreementVatRate: {
+  //             $ifNull: [vatRate, '$client.vatRateInfo.vatRate'],
+  //           },
+  //           usePriceWithVat: {
+  //             $ifNull: [usePriceWithVat, '$client.vatRateInfo.usePriceWithVat'],
+  //           },
+  //           itemType: 'paymentPart',
+  //           paymentPartsSum: 0,
+  //         },
+  //       },
+  //       ...totalByTypesFragementBuilder(true),
+  //       { $limit: 50 },
+  //     ] as any[],
+  //   },
+  // }
 
   const sortingBuilder = (
     sortBy: string[] = [],
@@ -296,7 +295,7 @@ export async function pickOrdersForPaymentInvoice(
     firstMatcherBuilder([...filters, ...clientFilters]),
     ...paymentInvoiceFilterBuilder('_id'),
     ...addFields,
-    unionWithPaymentPartsOrders,
+    // unionWithPaymentPartsOrders,
     ...orderLoadingZoneFragmentBuilder(p.loadingZones),
     sortingBuilder(p.sortBy, p.sortDesc),
     ...finalFacet,
