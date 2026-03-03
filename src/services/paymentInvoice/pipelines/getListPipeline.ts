@@ -187,7 +187,10 @@ export const getListPipeline = (p: IProps): PipelineStage[] => {
     { $sort: listSortingFragment(p.sortBy, p.sortDesc) },
     {
       $facet: {
-        items: [{ $skip: +p.skip }, { $limit: +p.limit }],
+        items: [
+          { $skip: +p.skip },
+          { $limit: +p?.limit > 0 ? +p.limit : 10000 },
+        ],
         res: [
           {
             $group: {

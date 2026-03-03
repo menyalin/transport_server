@@ -182,9 +182,9 @@ class PaymentInvoiceController {
           ['Статус']: i.statusStr,
           ['Клиент']: i.clientName,
           ['Соглашение']: i.agreementName,
-          ['Рейсы']: i.count,
-          ['Сумма без НДС']: i.total.priceWOVat,
-          ['Сумма с НДС']: i.total.price,
+          ['Рейсы']: i.ordersCount,
+          ['Сумма без НДС']: i.priceWOVat,
+          ['Сумма с НДС']: i.priceWithVat,
           ['Дата создания']: i.createdAt,
           ['Комментарий']: i.note,
         }))
