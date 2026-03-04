@@ -330,8 +330,7 @@ class PaymentInvoiceController {
       })
 
       const data = await this.service.removeOrdersFromPaymentInvoice({
-        paymentInvoiceId: req.body.paymentInvoiceId,
-        rowIds: req.body.rowIds,
+        ...req.body,
         company: req.companyId,
       })
       res.status(200).json(data)

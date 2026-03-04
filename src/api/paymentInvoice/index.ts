@@ -53,7 +53,6 @@ router.post(
 router.post(
   '/remove_orders_from_invoice',
   [jwtAuth, bodyValidator(addOrdersToInvoiceSchema)],
-
   (...args) => ctrl.removeOrdersFromPaymentInvoice(...args)
 )
 

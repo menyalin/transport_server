@@ -279,6 +279,10 @@ class PaymentInvoiceService {
           vatRate: invoice.vatRate,
           usePriceWithVat: invoice.usePriceWithVat,
         })
+      if (ordersDTO.length === 0)
+        throw new BadRequestError(
+          'PaymentInvoiceService.addOrdersToInvoice: Подходящие заказы не найдены'
+        )
 
       ordersDTO.forEach((i) => {
         if (registryData) i.addLoaderData(registryData)
@@ -314,16 +318,13 @@ class PaymentInvoiceService {
     }
   }
 
-  async removeOrdersFromPaymentInvoice({
-    company,
-    rowIds,
-    paymentInvoiceId,
-  }: {
+  async removeOrdersFromPaymentInvoice(p: {
     company: string
-    rowIds: string[]
+    orderIds: string[]
     paymentInvoiceId: string
   }) {
-    if (!rowIds || rowIds.length === 0)
+    const { company, orderIds, paymentInvoiceId } = p
+    if (!orderIds || orderIds.length === 0)
       throw new BadRequestError(
         'PaymentInvoiceService:removeOrdersFromInvoice. missing required params'
       )
@@ -334,15 +335,16 @@ class PaymentInvoiceService {
     if (invoice.vatRate == null)
       throw new BadRequestError('В акте отсутствует ставка НДС')
 
-    const ordersToRemove =
+    const { items: ordersToRemove } =
       await PaymentInvoiceRepository.getOrdersPickedForInvoice({
-        orderIds: rowIds,
+        orderIds,
         company,
         vatRate: invoice.vatRate,
         usePriceWithVat: invoice.usePriceWithVat,
       })
-    if (ordersToRemove.items.length === 0) return false
-    await PaymentInvoiceRepository.removeOrdersFromInvoice(ordersToRemove.items)
+    if (ordersToRemove.length === 0) return null
+
+    await PaymentInvoiceRepository.removeOrdersFromInvoice(ordersToRemove)
 
     const newAnalylicsInfo =
       await PaymentInvoiceRepository.getInvoiceAnalytics(paymentInvoiceId)
@@ -350,7 +352,7 @@ class PaymentInvoiceService {
     await PaymentInvoiceRepository.updateInvoice(invoice._id, newAnalylicsInfo)
 
     this.emitter(company, 'orders:removedFromPaimentInvoice', {
-      rowIds,
+      orderIds,
       paymentInvoiceId: paymentInvoiceId,
       total: newAnalylicsInfo,
     })
