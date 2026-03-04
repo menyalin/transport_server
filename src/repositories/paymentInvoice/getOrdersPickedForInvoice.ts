@@ -18,7 +18,7 @@ export async function getOrdersPickedForInvoice(
     skip?: number
   ): PipelineStage[] => {
     if (!limit) return []
-    return [{ $skip: skip || 0 }, { $limit: limit }]
+    return [{ $skip: skip || 0 }, { $limit: limit || 10000 }]
   }
 
   const firstMatcher: PipelineStage.Match = {
@@ -38,24 +38,24 @@ export async function getOrdersPickedForInvoice(
       $in: ['$order', parsedProps.orderIds.map((i) => new Types.ObjectId(i))],
     })
 
-  // const finalFacet: PipelineStage.Facet = {
-  //   $facet: {
-  //     total: [
-  //       {
-  //         $group: {
-  //           _id: null,
-  //           count: { $sum: 1 },
-  //           withVat: { $sum: '$total.price' },
-  //           woVat: { $sum: '$total.priceWOVat' },
-  //         },
-  //       },
-  //     ],
-  //     items: [
-  //       { $skip: parsedProps?.skip || 0 },
-  //       { $limit: parsedProps.limit || 50 },
-  //     ],
-  //   },
-  // }
+  const finalFacet: PipelineStage.Facet = {
+    $facet: {
+      total: [
+        {
+          $group: {
+            _id: null,
+            count: { $sum: 1 },
+            withVat: { $sum: '$total.price' },
+            woVat: { $sum: '$total.priceWOVat' },
+          },
+        },
+      ],
+      items: [
+        { $skip: parsedProps?.skip || 0 },
+        { $limit: parsedProps.limit || 50 },
+      ],
+    },
+  }
 
   const res = await OrderInPaymentInvoiceModel.aggregate([
     firstMatcher,
@@ -64,8 +64,8 @@ export async function getOrdersPickedForInvoice(
       vatRate: p.vatRate,
       usePriceWithVat: p.usePriceWithVat,
     }),
-    // finalFacet,
+    finalFacet,
   ])
 
-  return new InvoiceOrdersResultDTO({ total: [], items: res || [] })
+  return new InvoiceOrdersResultDTO(res[0])
 }
