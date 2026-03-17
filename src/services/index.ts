@@ -26,6 +26,7 @@ import DocsRegistryService from './docsRegistry'
 import PaymentInvoiceService from './paymentInvoice'
 import IncomingInvoiceService from './incomingInvoice/IncomingInvoiceService'
 import GlobalSettingsService from './globalSettings'
+import TransportWaybillService from './transportWaybill'
 
 import TokenService from './token'
 import NotificationService from './notification/notification.service'
@@ -73,4 +74,5 @@ export {
   MassUpdateService,
   IncomingInvoiceService,
   CarrierAgreementService,
+  TransportWaybillService,
 }
