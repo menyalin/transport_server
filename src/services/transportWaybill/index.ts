@@ -1,9 +1,9 @@
 import { TransportWaybill } from '@/domain/transportWaybill'
 import { TransportWaybillRepository } from '@/repositories'
 import { ChangeLogService } from '..'
-import { emitTo } from '@/socket'
 
 class TransportWaybillService {
+  collectionName = 'transportWaybills'
   async create({
     body,
     user,
@@ -13,12 +13,10 @@ class TransportWaybillService {
   }): Promise<TransportWaybill> {
     const waybill = await TransportWaybillRepository.create(body)
 
-    emitTo(waybill.orderId.toString(), 'transport-waybill:created', waybill)
-
     await ChangeLogService.add({
-      docId: (waybill as any)._id,
-      company: body.company,
-      coll: 'transportWaybill',
+      docId: waybill._id,
+      company: waybill.company,
+      coll: this.collectionName,
       user,
       opType: 'create',
       body: waybill,
@@ -47,11 +45,11 @@ class TransportWaybillService {
       id,
       data: body,
     })
-    emitTo(waybill.orderId.toString(), 'transport-waybill:updated', waybill)
+
     await ChangeLogService.add({
-      docId: id,
-      company: body.company,
-      coll: 'transportWaybill',
+      docId: waybill._id,
+      company: waybill.company,
+      coll: this.collectionName,
       user,
       opType: 'update',
       body: waybill,
@@ -61,15 +59,15 @@ class TransportWaybillService {
 
   async deleteById({ id, user }: { id: string; user: string }): Promise<void> {
     const waybill = await TransportWaybillRepository.getById(id)
-    await TransportWaybillRepository.deleteById({ id })
-    emitTo(waybill.orderId.toString(), 'transport-waybill:deleted', id)
+    await TransportWaybillRepository.deleteById(id)
+
     await ChangeLogService.add({
       docId: id,
-      company: waybill.orderId,
-      coll: 'transportWaybill',
+      company: waybill.company,
+      coll: this.collectionName,
       user,
       opType: 'delete',
-      body: waybill,
+      body: {},
     })
   }
 

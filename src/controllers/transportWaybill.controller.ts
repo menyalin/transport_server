@@ -6,7 +6,7 @@ class TransportWaybillController {
   async create(req: AuthorizedRequest, res: Response) {
     try {
       const data = await TransportWaybillService.create({
-        body: req.body,
+        body: { ...req.body, company: req.companyId },
         user: req.userId,
       })
       res.status(201).json(data)
@@ -39,7 +39,7 @@ class TransportWaybillController {
     try {
       const data = await TransportWaybillService.updateOne({
         id: req.params.id,
-        body: req.body,
+        body: { ...req.body, company: req.companyId },
         user: req.userId,
       })
       res.status(200).json(data)

@@ -11,10 +11,6 @@ interface IUpdateWaybillProps {
   data: Partial<TransportWaybill>
 }
 
-interface IDeleteWaybillProps {
-  id: string
-}
-
 class TransportWaybillRepository {
   model: typeof TransportWaybillModel
 
@@ -51,8 +47,7 @@ class TransportWaybillRepository {
     return new TransportWaybill(waybill)
   }
 
-  async deleteById(props: IDeleteWaybillProps): Promise<void> {
-    const { id } = props
+  async deleteById(id: string): Promise<void> {
     const result = await this.model.findByIdAndDelete(id)
     if (!result)
       throw new BadRequestError(
