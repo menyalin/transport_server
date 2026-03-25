@@ -1,6 +1,7 @@
 import { TransportWaybill } from '@/domain/transportWaybill'
 import { TransportWaybillRepository } from '@/repositories'
 import { ChangeLogService } from '..'
+import { transportWaybillPFBuilder } from './printForms/transportWaybillPFBuilder'
 
 class TransportWaybillService {
   collectionName = 'transportWaybills'
@@ -55,6 +56,21 @@ class TransportWaybillService {
       body: waybill,
     })
     return waybill
+  }
+
+  async downloadDoc(
+    transportWaybillId: string,
+    templateName: string
+  ): Promise<{ buffer: Buffer; filename: string }> {
+    if (!transportWaybillId || !templateName)
+      throw new Error(
+        'TransportWaybillService : downloadDocs : required args is missing'
+      )
+    const docBuffer: Buffer = await transportWaybillPFBuilder({
+      transportWaybillId,
+      templateName,
+    })
+    return { buffer: docBuffer, filename: 'someName.docx' }
   }
 
   async deleteById({ id, user }: { id: string; user: string }): Promise<void> {

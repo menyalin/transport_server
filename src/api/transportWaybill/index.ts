@@ -21,6 +21,10 @@ router.get('/order/:orderId', [jwtAuth], (req: Request, res: Response) =>
   ctrl.getByOrderId(req as AuthorizedRequest, res)
 )
 
+router.post('/:id/download_docs', [jwtAuth], (req: Request, res: Response) =>
+  ctrl.downloadDocs(req as AuthorizedRequest, res)
+)
+
 router.post('/', [jwtAuth], (req: Request, res: Response) =>
   ctrl.create(req as AuthorizedRequest, res)
 )
