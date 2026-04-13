@@ -70,7 +70,7 @@ class TransportWaybillService {
       transportWaybillId,
       templateName,
     })
-    return { buffer: docBuffer, filename: 'someName.docx' }
+    return { buffer: docBuffer, filename: 'transportWaybill.xlsx' }
   }
 
   async deleteById({ id, user }: { id: string; user: string }): Promise<void> {

@@ -76,10 +76,7 @@ class TransportWaybillController {
         'Content-Disposition',
         `attachment; filename="${encodeURIComponent(filename)}"`
       )
-      res.setHeader(
-        'Content-Type',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-      )
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
       const stream = Readable.from(buffer)
       res.status(201)
       stream.pipe(res)
