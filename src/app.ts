@@ -35,6 +35,7 @@ import docTemplateRouter from './api/docTemplate'
 import adminRouter from './api/admin'
 import utilsRouter from './api/utils/utils'
 import incomingInvoiceRouter from '@/api/incomingInvoice/incomingInvoice.router'
+import transportWaybillRouter from './api/transportWaybill'
 
 const app = express()
 
@@ -53,6 +54,7 @@ app.use(
       'https://carrier.logicore.ru',
       'https://logicore.ru',
     ],
+    exposedHeaders: ['Content-Disposition', 'Content-Type', 'X-*'],
   })
 )
 if (process.env.MODE === 'dev') app.use(logger('dev'))
@@ -88,6 +90,7 @@ app.use('/api/storage', fileRouter)
 app.use('/api/docs_registry', docsRegistryRouter)
 app.use('/api/payment_invoice', paymentInvoiceRouter)
 app.use('/api/incoming_invoice', incomingInvoiceRouter)
+app.use('/api/transport_waybills', transportWaybillRouter)
 app.use('/api/doc_templates', docTemplateRouter)
 app.use('/api/utils', utilsRouter)
 app.use('/api/carrier_agreements', carrierAgreementRouter)

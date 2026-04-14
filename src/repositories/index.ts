@@ -12,6 +12,7 @@ import VehicleRepository from './vehicle/vehicle.repository'
 import CompanyRepository from './company/company.repository'
 import { IncomingInvoiceRepository } from './incomingInvoice'
 import FileRepository from './file/file.repository'
+import TransportWaybillRepository from './transportWaybill/transportWaybill.repository'
 
 export {
   AddressRepository,
@@ -28,4 +29,5 @@ export {
   CompanyRepository,
   IncomingInvoiceRepository,
   FileRepository,
+  TransportWaybillRepository,
 }
