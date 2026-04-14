@@ -16,6 +16,10 @@ class AddressRepository {
     this.addressModel = p.addressModel
   }
 
+  async getById(id: string) {
+    return await this.addressModel.findById(id).lean()
+  }
+
   async getPointsZones(points: RoutePoint[]): Promise<string[]> {
     const addresses = points.map((i) => i.address)
     const zones: string[] = []
