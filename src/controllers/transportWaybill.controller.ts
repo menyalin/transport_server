@@ -80,9 +80,13 @@ class TransportWaybillController {
 
       const stream = Readable.from(buffer)
       stream.pipe(res)
-    } catch (e) {
-      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
-      else res.status(500).json(e)
+    } catch (e: any) {
+      res.setHeader('Content-Type', 'application/json')
+      if (e instanceof BadRequestError) {
+        res.status(e.statusCode).json({ message: e.message })
+      } else {
+        res.status(500).json({ message: e.message || 'Internal server error' })
+      }
     }
   }
 
