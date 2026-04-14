@@ -67,18 +67,18 @@ class TransportWaybillController {
     res: Response
   ) {
     try {
-      const { filename, buffer } = await TransportWaybillService.downloadDoc(
-        req.params.id,
-        req.body.templateName
-      )
+      const { filename, buffer, contentType } =
+        await TransportWaybillService.downloadDoc(
+          req.params.id,
+          req.body.templateName
+        )
 
-      res.setHeader(
-        'Content-Disposition',
-        `attachment; filename="${encodeURIComponent(filename)}"`
-      )
-      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+      const disposition = `attachment; filename="${encodeURIComponent(filename)}"`
+      res.setHeader('Content-Disposition', disposition)
+      res.setHeader('Content-Type', contentType)
+      res.status(200)
+
       const stream = Readable.from(buffer)
-      res.status(201)
       stream.pipe(res)
     } catch (e) {
       if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)

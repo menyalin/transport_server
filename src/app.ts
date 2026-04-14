@@ -54,6 +54,7 @@ app.use(
       'https://carrier.logicore.ru',
       'https://logicore.ru',
     ],
+    exposedHeaders: ['Content-Disposition', 'Content-Type', 'X-*'],
   })
 )
 if (process.env.MODE === 'dev') app.use(logger('dev'))

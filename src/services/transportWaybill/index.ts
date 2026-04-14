@@ -2,6 +2,7 @@ import { TransportWaybill } from '@/domain/transportWaybill'
 import { TransportWaybillRepository } from '@/repositories'
 import { ChangeLogService } from '..'
 import { transportWaybillPFBuilder } from './printForms/transportWaybillPFBuilder'
+import dayjs from 'dayjs'
 
 class TransportWaybillService {
   collectionName = 'transportWaybills'
@@ -61,16 +62,35 @@ class TransportWaybillService {
   async downloadDoc(
     transportWaybillId: string,
     templateName: string
-  ): Promise<{ buffer: Buffer; filename: string }> {
+  ): Promise<{
+    buffer: Buffer
+    filename: string
+    contentType: string
+  }> {
     if (!transportWaybillId || !templateName)
       throw new Error(
         'TransportWaybillService : downloadDocs : required args is missing'
       )
+
+    const waybill = await TransportWaybillRepository.getById(transportWaybillId)
     const docBuffer: Buffer = await transportWaybillPFBuilder({
       transportWaybillId,
       templateName,
     })
-    return { buffer: docBuffer, filename: 'transportWaybill.xlsx' }
+
+    // Формируем имя файла на основе номера и даты накладной
+    const dateStr = waybill.date
+      ? dayjs(waybill.date).format('DD.MM.YYYY')
+      : ''
+    const sanitizedNumber = waybill.number.replace(/[^a-zA-Z0-9а-яА-Я]/g, '_')
+    const filename = dateStr
+      ? `ТН_${sanitizedNumber}_${dateStr}.pdf`
+      : `ТН_${sanitizedNumber}.pdf`
+
+    // Content-Type для PDF файлов
+    const contentType = 'application/pdf'
+
+    return { buffer: docBuffer, filename, contentType }
   }
 
   async deleteById({ id, user }: { id: string; user: string }): Promise<void> {

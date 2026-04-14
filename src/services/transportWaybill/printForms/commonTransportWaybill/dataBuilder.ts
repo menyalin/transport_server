@@ -1,12 +1,17 @@
 import { Order } from '@/domain/order/order.domain'
 import { Partner } from '@/domain/partner'
 import { TransportWaybill, TnDataDTO } from '@/domain/transportWaybill'
+import { Vehicle } from '@/domain/vehicle'
 import { BadRequestError } from '@/helpers/errors'
+
 import {
   AddressRepository,
+  AgreementRepository,
+  CarrierRepository,
   DriverRepository,
   OrderRepository,
   PartnerRepository,
+  VehicleRepository,
 } from '@/repositories'
 
 const formatDate = (date: Date): string => {
@@ -25,8 +30,25 @@ export const dataBuilder = async (
   if (!order.confirmedCrew?.driver)
     throw new BadRequestError('в рейсе отсутствует водитель')
 
+  if (!order.clientAgreementId)
+    throw new BadRequestError('в рейсе отсутствует соглашение с клиентом')
+
+  if (!order.confirmedCrew.truck)
+    throw new BadRequestError('в рейсе отсутствует грузовик')
+
   const client: Partner = await PartnerRepository.getById(order.clientId)
+
   if (!client) throw new BadRequestError('client not found')
+
+  const clientAgreement = await AgreementRepository.getById(
+    order.clientAgreementId
+  )
+  if (!clientAgreement?.executor)
+    throw new BadRequestError('в соглашении с клиентом отсутсвует исполнитель')
+
+  const carrier = await CarrierRepository.getById(clientAgreement.executor)
+  if (!carrier)
+    throw new BadRequestError('Указанный в соглашении перевозчик не найден')
 
   const loadingAddress = await AddressRepository.getById(
     waybill.shipperAddressId
@@ -46,6 +68,17 @@ export const dataBuilder = async (
   const driver = await DriverRepository.getById(
     order.confirmedCrew.driver.toString()
   )
+
+  const truck = await VehicleRepository.getById(
+    order.confirmedCrew.truck.toString()
+  )
+  if (!truck) throw new BadRequestError('Грузовик, указанный в рейсе не найден')
+  let trailer: Vehicle | null = null
+
+  if (order.confirmedCrew.trailer)
+    trailer = await VehicleRepository.getById(
+      order.confirmedCrew.trailer.toString()
+    )
 
   return {
     num: waybill.number,
@@ -70,14 +103,14 @@ export const dataBuilder = async (
       name: driver?.fullName || '',
     },
     carrier: {
-      name: '',
-      address: '',
-      inn: '',
+      name: carrier.companyInfo?.fullName || carrier.name,
+      address: carrier.companyInfo?.legalAddress || '',
+      inn: carrier.companyInfo?.inn || '',
     },
     vehicle: {
-      model: '',
-      truckNum: '',
-      trailerNum: '',
+      model: truck?.model || '',
+      truckNum: truck.regNum,
+      trailerNum: trailer?.regNum,
     },
   }
 }
