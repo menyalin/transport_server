@@ -10,16 +10,19 @@ export const TnPersonSchema = z.object({
 
 export const TnShipperSchema = TnPersonSchema.extend({
   loadingAddress: z.string(),
+  shortLoadingAddress: z.string(),
 })
 
 export const TnConsigneeSchema = TnPersonSchema.extend({
   unloadingAddress: z.string(),
+  shortUnloadingAddress: z.string(),
 })
 
 export const TnCarrierSchema = TnPersonSchema
 
 export const TnDriverSchema = z.object({
   name: z.string().min(1, 'Имя водителя обязательно'),
+  surname: z.string().optional(),
 })
 
 export const TnVehicleSchema = z.object({
