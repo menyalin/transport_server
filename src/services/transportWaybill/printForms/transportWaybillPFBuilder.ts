@@ -9,7 +9,7 @@ interface IPFBuilderProps {
 export const transportWaybillPFBuilder = async ({
   transportWaybillId,
   templateName,
-}: IPFBuilderProps): Promise<Buffer> => {
+}: IPFBuilderProps): Promise<{ buffer: Buffer; filename: string }> => {
   if (!transportWaybillId || !templateName)
     throw new Error('orderPFBuilder : required args is missing')
   const transportWaybill =

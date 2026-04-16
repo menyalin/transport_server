@@ -2,7 +2,6 @@ import { TransportWaybill } from '@/domain/transportWaybill'
 import { TransportWaybillRepository } from '@/repositories'
 import { ChangeLogService } from '..'
 import { transportWaybillPFBuilder } from './printForms/transportWaybillPFBuilder'
-import dayjs from 'dayjs'
 
 class TransportWaybillService {
   collectionName = 'transportWaybills'
@@ -72,25 +71,17 @@ class TransportWaybillService {
         'TransportWaybillService : downloadDocs : required args is missing'
       )
 
-    const waybill = await TransportWaybillRepository.getById(transportWaybillId)
-    const docBuffer: Buffer = await transportWaybillPFBuilder({
+    const { buffer, filename } = await transportWaybillPFBuilder({
       transportWaybillId,
       templateName,
     })
 
     // Формируем имя файла на основе номера и даты накладной
-    const dateStr = waybill.date
-      ? dayjs(waybill.date).format('DD.MM.YYYY')
-      : ''
-    const sanitizedNumber = waybill.number.replace(/[^a-zA-Z0-9а-яА-Я]/g, '_')
-    const filename = dateStr
-      ? `ТН_${sanitizedNumber}_${dateStr}.pdf`
-      : `ТН_${sanitizedNumber}.pdf`
 
     // Content-Type для PDF файлов
     const contentType = 'application/pdf'
 
-    return { buffer: docBuffer, filename, contentType }
+    return { buffer: buffer, filename, contentType }
   }
 
   async deleteById({ id, user }: { id: string; user: string }): Promise<void> {

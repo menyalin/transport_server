@@ -92,15 +92,18 @@ export const dataBuilder = async (
       inn: client.companyInfo?.inn || '',
       address: client.companyInfo?.legalAddress || '',
       loadingAddress: (loadingAddress.name || '') as string,
+      shortLoadingAddress: (loadingAddress.shortName || '') as string,
     },
     consignee: {
       name: consignee.companyInfo?.fullName || consignee.name || '',
       inn: consignee.companyInfo?.inn || '',
       address: consignee.companyInfo?.legalAddress || '',
       unloadingAddress: unloadingAddress.name?.toString() || '',
+      shortUnloadingAddress: (unloadingAddress.shortName || '') as string,
     },
     driver: {
       name: driver?.fullName || '',
+      surname: driver?.surname || '',
     },
     carrier: {
       name: carrier.companyInfo?.fullName || carrier.name,
