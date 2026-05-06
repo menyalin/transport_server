@@ -8,6 +8,7 @@ interface IProps {
   company: string
   limit: string
   skip: string
+  clients: string[]
   statuses?: string[]
   search?: string
   agreements?: string[]
@@ -21,11 +22,12 @@ const IPropsSchema = z.object({
     .nullable()
     .default('date')
     .transform((v) => (v ? v : 'date')),
-  period: z.array(z.string().datetime()).length(2),
+  period: z.array(z.string()).length(2),
   company: z.string(),
   limit: z.string().optional(),
   skip: z.string().optional(),
   status: z.string().optional(),
+  clients: z.array(z.string()).optional(),
   search: z.string().optional(),
   agreements: z.array(z.string()).optional(),
   sortBy: z.array(z.string()).optional(),
@@ -82,11 +84,18 @@ export const getListPipeline = (p: IProps): PipelineStage[] => {
     })
   }
 
+  if (p.clients && p.clients.length) {
+    firstMatcher.$match.$expr?.$and.push({
+      $in: ['$client', p.clients.map((i) => new Types.ObjectId(i))],
+    })
+  }
+
   if (p.agreements && p.agreements.length) {
     firstMatcher.$match.$expr?.$and.push({
       $in: ['$agreement', p.agreements.map((i) => new Types.ObjectId(i))],
     })
   }
+
   if (p.statuses?.length)
     firstMatcher.$match.$expr?.$and.push({ $in: ['$status', p.statuses] })
 
