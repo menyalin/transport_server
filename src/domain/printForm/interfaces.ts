@@ -5,3 +5,9 @@ export interface IPaymentInvoicePrintFormBuilder {
   invoice: PaymentInvoiceDomain
   pf: PrintForm
 }
+
+export interface IPrintFormFileData {
+  filetype: string
+  filename: string
+  buffer: Buffer
+}

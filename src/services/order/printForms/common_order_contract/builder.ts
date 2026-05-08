@@ -9,6 +9,7 @@ import { cargoInfo } from './fragments/cargoInfo'
 import { headerInfo } from './fragments/headerInfo'
 import { ICommonOrderContractProps } from './interfaces'
 import { Order } from '@/domain/order/order.domain'
+import { IPrintFormFileData } from '@/domain/printForm/interfaces'
 import {
   AgreementRepository,
   CarrierRepository,
@@ -22,7 +23,7 @@ import { BadRequestError } from '@/helpers/errors'
 
 export const commonOrderContractBuilder = async (
   order: Order
-): Promise<Buffer> => {
+): Promise<IPrintFormFileData> => {
   const carrierId = order.confirmedCrew.tkName
     ? order.confirmedCrew.tkName.toString()
     : null
@@ -144,5 +145,9 @@ export const commonOrderContractBuilder = async (
       },
     ],
   })
-  return await Packer.toBuffer(doc)
+  return {
+    buffer: await Packer.toBuffer(doc),
+    filename: '1.docx',
+    filetype: 'docx',
+  }
 }

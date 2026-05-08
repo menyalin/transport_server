@@ -36,6 +36,7 @@ import OrderStatsService from './orderStats/orderStats.service'
 import SchedulerService from './scheduler/scheduler.service'
 import TariffContractService from './tariffContract/tariffContract.service'
 import MassUpdateService from './massUpdate/massUpdate.service'
+import PrintFormsService from './printFormsService/index'
 
 export {
   UserService,
@@ -75,4 +76,5 @@ export {
   IncomingInvoiceService,
   CarrierAgreementService,
   TransportWaybillService,
+  PrintFormsService,
 }
