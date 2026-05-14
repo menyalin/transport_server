@@ -81,6 +81,7 @@ export class CompanyInfo {
   ogrn?: string | null
   ogrnip?: string | null
   kpp?: string | null
+  okpo?: string 
   director?: Director | null
   accountant?: Director | null
   signatory?: Signatory | null
@@ -95,6 +96,7 @@ export class CompanyInfo {
     this.ogrn = p.ogrn
     this.ogrnip = p.ogrnip
     this.kpp = p.kpp
+    this.okpo = p.okpo || ''
     this.director = p.director ? new Director(p.director) : undefined
     this.signatory = p.signatory ? new Signatory(p.signatory) : undefined
     this.accountant = p.accountant ? new Director(p.accountant) : undefined
@@ -102,6 +104,10 @@ export class CompanyInfo {
 
   getFullDataString(): string {
     return `${this.fullName ?? ''}, ИНН ${this.inn ?? ''}, ${this.legalAddress ?? ''}`
+  }
+
+  get isLegalEntity(): boolean {
+    return !!this.legalForm && this.legalForm === LEGAL_ENTITY_TYPE_ENUM.legalEntity
   }
 
   static get dbSchema() {
@@ -117,6 +123,7 @@ export class CompanyInfo {
       ogrn: String,
       ogrnip: String,
       kpp: String,
+      okpo: String,
       director: Director.dbSchema,
       accountant: Director.dbSchema,
       signatory: Signatory.dbSchema,
@@ -133,6 +140,7 @@ export class CompanyInfo {
       ogrn: z.string().nullable().optional(),
       ogrnip: z.string().nullable().optional(),
       kpp: z.string().nullable().optional(),
+      okpo: z.string().nullable().optional(),
       director: Director.validationSchema.optional().nullable(),
       signatory: Signatory.validationSchema.optional().nullable(),
       accountant: Director.validationSchema.optional().nullable(),

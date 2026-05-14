@@ -76,6 +76,20 @@ export class Driver {
     return `${this.passportId}, Выдан: ${this.passportIssued} ${this.passportDate?.toLocaleDateString('ru-RU') ?? ''}`.trim()
   }
 
+  private cleanPassportId(): string {
+    return this.passportId?.replace(/[^a-zA-Zа-яА-ЯёЁ0-9]/g, '') ?? ''
+  }
+
+  get passportSeria(): string {
+    const cleaned = this.cleanPassportId()
+    const seria = cleaned.slice(0, 4)
+    return seria.slice(0, 2) + ' ' + seria.slice(2)
+  }
+
+  get passportNumber(): string {
+    return this.cleanPassportId().slice(4)
+  }
+
   static get validationSchema() {
     return z.object({
       name: z.string(),

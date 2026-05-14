@@ -20,6 +20,7 @@ import {
   CarrierAgreementRepository,
 } from '@/repositories'
 import { BadRequestError } from '@/helpers/errors'
+import { sanitizeFilename } from '@/utils/sanitizeFilename'
 
 export const commonOrderContractBuilder = async (
   order: Order
@@ -145,9 +146,13 @@ export const commonOrderContractBuilder = async (
       },
     ],
   })
+
   return {
     buffer: await Packer.toBuffer(doc),
-    filename: '1.docx',
-    filetype: 'docx',
+    filename: sanitizeFilename(
+      `Договор-заявка № ${data.headerInfo.num} от ${data.headerInfo.date}.docx`
+    ),
+    filetype:
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
   }
 }

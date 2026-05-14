@@ -32,6 +32,7 @@ export class Agreement {
   allowedCarriers?: string[] = []
   actBasis?: string
   actDescription?: string
+  contract?: string
 
   constructor(data: unknown) {
     const parsedData = Agreement.validationSchema.parse(data)
@@ -78,7 +79,7 @@ export class Agreement {
     this.allowedCarriers = parsedData.allowedCarriers
     this.actBasis = parsedData.actBasis || ''
     this.actDescription = parsedData.actDescription || ''
-
+    this.contract = parsedData.contract || ''
     // this.paymentDescription = parsedData.paymentDescription
   }
 
@@ -149,6 +150,7 @@ export class Agreement {
     note: z.string().nullable().optional(),
     actBasis: z.string().nullable().optional(),
     actDescription: z.string().nullable().optional(),
+    contract: z.string().nullable().optional(),
     executor: objectIdSchema.nullable().optional(),
     executorName: z.string().nullable().optional(),
     allowedCarriers: z
@@ -185,5 +187,6 @@ export class Agreement {
     allowedCarriers: [{ type: Types.ObjectId, ref: 'Company' }],
     actBasis: String,
     actDescription: String,
+    contract: String,
   }
 }

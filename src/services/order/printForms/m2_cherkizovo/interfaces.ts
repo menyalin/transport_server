@@ -12,16 +12,12 @@ interface IShipper {
   contract: string
 }
 
-interface IPerson {
-  name: string
-  position: string
-}
-
 interface ICompany {
   fullData: string
   fullName: string
   inn: string
   kpp: string
+  okpo: string
   bankAccountInfo: string
   address: string
   isLegalEntity: boolean
@@ -39,7 +35,7 @@ export interface IM2Cherkizovo {
   num: string
   issueDate: string
   expiredAtDate: string
-  person: IPerson
+
   truckInfo: string
   shipper: IShipper
   recipient: IRecipient
