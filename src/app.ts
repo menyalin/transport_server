@@ -53,6 +53,7 @@ app.use(
       'https://alfa.s4log.ru',
       'https://carrier.logicore.ru',
       'https://logicore.ru',
+      'http://192.168.1.121:8080',
     ],
     exposedHeaders: ['Content-Disposition', 'Content-Type', 'X-*'],
   })

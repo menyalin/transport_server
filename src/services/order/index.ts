@@ -264,8 +264,8 @@ class OrderService {
   }: {
     orderId: string
     templateName: string
-  }): Promise<Buffer> {
-    const docBuffer: Buffer = await orderPFBuilder({
+  }) {
+    const docBuffer = await orderPFBuilder({
       orderId,
       templateName,
     })

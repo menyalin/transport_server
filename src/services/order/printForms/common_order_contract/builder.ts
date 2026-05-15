@@ -9,6 +9,7 @@ import { cargoInfo } from './fragments/cargoInfo'
 import { headerInfo } from './fragments/headerInfo'
 import { ICommonOrderContractProps } from './interfaces'
 import { Order } from '@/domain/order/order.domain'
+import { IPrintFormFileData } from '@/domain/printForm/interfaces'
 import {
   AgreementRepository,
   CarrierRepository,
@@ -19,10 +20,11 @@ import {
   CarrierAgreementRepository,
 } from '@/repositories'
 import { BadRequestError } from '@/helpers/errors'
+import { sanitizeFilename } from '@/utils/sanitizeFilename'
 
 export const commonOrderContractBuilder = async (
   order: Order
-): Promise<Buffer> => {
+): Promise<IPrintFormFileData> => {
   const carrierId = order.confirmedCrew.tkName
     ? order.confirmedCrew.tkName.toString()
     : null
@@ -144,5 +146,13 @@ export const commonOrderContractBuilder = async (
       },
     ],
   })
-  return await Packer.toBuffer(doc)
+
+  return {
+    buffer: await Packer.toBuffer(doc),
+    filename: sanitizeFilename(
+      `Договор-заявка № ${data.headerInfo.num} от ${data.headerInfo.date}.docx`
+    ),
+    filetype:
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  }
 }

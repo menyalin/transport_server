@@ -149,16 +149,24 @@ class OrderController {
 
   async downloadDoc(req, res) {
     try {
-      const buffer = await service.downloadDoc({
+      const { buffer, filename, filetype } = await service.downloadDoc({
         orderId: req.params.id,
         templateName: req.body.templateName,
       })
+      const disposition = `attachment; filename="${encodeURIComponent(filename)}"`
+      res.setHeader('Content-Disposition', disposition)
+      res.setHeader('Content-Type', filetype)
+      res.status(200)
+
       const stream = Readable.from(buffer)
-      res.status(201)
       stream.pipe(res)
     } catch (e) {
-      if (e instanceof BadRequestError) res.status(e.statusCode).json(e.message)
-      else res.status(500).json(e)
+      res.setHeader('Content-Type', 'application/json')
+      if (e instanceof BadRequestError) {
+        res.status(e.statusCode).json({ message: e.message })
+      } else {
+        res.status(500).json({ message: e.message || 'Internal server error' })
+      }
     }
   }
 
