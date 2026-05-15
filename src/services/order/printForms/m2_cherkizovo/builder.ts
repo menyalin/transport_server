@@ -54,7 +54,7 @@ export const m2CherkizovoBuilder: IOrderPrintFormBuilder = async (
   const data: IM2Cherkizovo = {
     num: 'Б/Н',
     issueDate: dayjs(order.orderDate).format(dateFormat),
-    expiredAtDate: dayjs(order.orderDate).add(10, 'day').format(dateFormat),
+    expiredAtDate: dayjs(order.orderDate).add(9, 'day').format(dateFormat),
 
     truckInfo:  ((truck.brand ? truck.brand : '') + ' ' + truck.regNum + (trailer ? ` ПП ${trailer?.regNum}` : '')).trim(),
 
