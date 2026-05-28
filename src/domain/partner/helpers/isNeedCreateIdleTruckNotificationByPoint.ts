@@ -6,6 +6,6 @@ export const isNeedCreateNotificationByPoint = (
   point: RoutePoint
 ): boolean => {
   if (point.isStarted) return true
-  if (notification.usePlannedDate && point.plannedDate) return true
+  if (notification.usePlannedDate || point.plannedDate) return true
   return false
 }

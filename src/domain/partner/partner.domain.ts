@@ -131,7 +131,7 @@ export class Partner {
       .forEach((notification) => {
         if (utils.isNeedCreateNotificationByOrder(notification, order)) {
           order.route.activePoints.forEach((point) => {
-            if (utils.isNeedCreateNotificationByPoint(notification, point))
+             if (utils.isNeedCreateNotificationByPoint(notification, point))
               res.push({ notification, point })
           })
         }
