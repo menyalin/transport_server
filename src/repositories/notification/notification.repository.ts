@@ -42,7 +42,10 @@ class NotificationRepository {
   ): Promise<IdleTruckNotificationMessage[]> {
     const messages = await IdleTruckNotificationModel.find({
       status: MESSAGE_STATUS_ENUM.created,
-      sendDate: { $lte: sendDate },
+      sendDate: { $and: [
+        { $lte: sendDate }, 
+        { $ne: null }
+      ] },
     }).lean()
     return messages.map((i) => new IdleTruckNotificationMessage(i))
   }

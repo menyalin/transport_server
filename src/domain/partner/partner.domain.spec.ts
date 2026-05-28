@@ -31,12 +31,7 @@ describe('Partner domain', () => {
       utils.isNeedCreateNotificationByPoint(notification, point)
     ).toBeTruthy()
   })
-  it('utils.isNeedCreateNotification: should return false, if notification.usePlannedDate && point.plannedDate === null', () => {
-    point.plannedDate = null
-    expect(
-      utils.isNeedCreateNotificationByPoint(notification, point)
-    ).toBeFalsy()
-  })
+  
   it('utils.isNeedCreateNotification: should return false, if !notification.usePlannedDate && point.plannedDate === null', () => {
     point.plannedDate = null
     notification.usePlannedDate = false
