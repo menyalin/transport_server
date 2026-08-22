@@ -1,5 +1,5 @@
 # Builder stage
-FROM node:lts-alpine AS builder
+FROM node:24.15-alpine AS builder
 
 WORKDIR /app
 
@@ -13,7 +13,7 @@ COPY src ./src
 RUN npm run build
 
 # Production образ без dev зависимостей
-FROM node:lts-alpine
+FROM node:24.15-alpine
 WORKDIR /app
 ENV NODE_ENV=production
 
