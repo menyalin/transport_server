@@ -104,6 +104,8 @@ export default ({
       finalPrices: { $first: '$finalPrices' },
       outsourceCosts: { $first: '$outsourceCosts' },
       analytics: { $first: '$analytics' },
+      note: {$first: '$note'},
+      noteAccountant: {$first: '$noteAccountant'}
     },
   }
 
@@ -670,6 +672,7 @@ export default ({
       'Факт дата оплаты исх акта': formattedDate('$paymentInvoice.payDate'),
       'Стоимость исх акт без НДС': '$paymentInvoicePrices.priceWOVat',
       'Стоимость исх акт с НДС': '$paymentInvoicePrices.price',
+
       'Маржа, без НДС, руб': {
         $subtract: [
           { $ifNull: ['$paymentInvoicePrices.priceWOVat', 0] },
@@ -682,6 +685,8 @@ export default ({
           { $ifNull: ['$incomingInvoicePrices.price', 0] },
         ],
       },
+      'Примечание': '$note',
+      'Примечание для бухгалтера': '$noteAccountant',
     },
   }
 
